@@ -22,7 +22,37 @@ $(function(){
 });
 
 function replacePkm(page) {
-    if (location.href.includes(page)) {
+    if (location.href.includes('battle.cgi')) {
+        $(document).ready(function() {
+            let startConvert = false;
+            let finishConvert = false;
+            $('body *').each(function(){$(this).contents().filter(function() {
+                return this.nodeType === 3;
+            }).each(function() {
+                if (this.textContent.includes('怪物')) {
+                    startConvert = true;
+                }
+                if (startConvert && !finishConvert) {
+                    for(let i =0;i<pokemonDictKeys.length;i++) {
+                        if (this.textContent.includes(pokemonDictKeys[i])) {
+                            const originalText = this.textContent;
+                            const newText = originalText.replace(pokemonDictKeys[i], pokemonDict[pokemonDictKeys[i]]);
+                            const $newContent = $('<span>').html(newText);
+                            const parentElement = this.parentElement;
+                            $(this).replaceWith($newContent);
+                            finishConvert = true;
+                            $(parentElement).children().each(function() {
+                                if (this.nodeType === 3) {
+                                    $(this).replaceWith(this.textContent);
+                                    finishConvert = true;
+                                }
+                            });
+                        }
+                    }
+                }
+            })})
+        })
+    } else if (location.href.includes(page)) {
         $(document).ready(function() {
             console.log(location.href)
             $('body *').each(function(){$(this).contents().filter(function() {
@@ -44,6 +74,7 @@ function replacePkm(page) {
                 }
             })})
         })
+    } else {
+        // do nothing
     }
-
 }
