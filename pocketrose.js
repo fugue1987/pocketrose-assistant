@@ -3,6 +3,7 @@
 // @namespace    https://pocketrose.itsns.net.cn/
 // @description  Intercepts and modifies pocketrose CGI requests
 // @icon         data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==
+// @license      mit
 // @author       fugue
 // @version      1.0
 // @grant        unsafeWindow
