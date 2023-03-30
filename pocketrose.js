@@ -18,8 +18,17 @@ const pokemonDict = {'大猩猩(289)': '<a href="https://wiki.52poke.com/wiki/%E
 const pokemonDictKeys = Object.keys(pokemonDict)
 
 $(function(){
+    hideChat()
     replacePkm('pocketrose')
 });
+
+function hideChat() {
+    if (location.href.includes('status.cgi')) {
+        $(document).ready(function() {
+            $('body > table:eq(1)').hide();
+        })
+    }
+}
 
 function replacePkm(page) {
     if (location.href.includes('battle.cgi')) {
