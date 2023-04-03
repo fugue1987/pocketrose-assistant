@@ -5,7 +5,7 @@
 // @icon         data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==
 // @license      mit
 // @author       fugue
-// @version      1.1.2
+// @version      1.2.0
 // @grant        unsafeWindow
 // @match        *://pocketrose.itsns.net.cn/*
 // @require      https://code.jquery.com/jquery-2.1.4.min.js
@@ -45,7 +45,56 @@ function replacePkm(page) {
                 }
             })})
             if (location.href.includes("battle.cgi")) {
-                $('a[target="_blank"]').attr('tabIndex', -1);
+                $('a[target="_blank"]').attr('tabIndex', -1);            
+                var counter = 1;
+                var fullText = $('html').html();
+                if(fullText.indexOf("＜＜ - 秘宝之岛 - ＞＞") != -1 ||
+                    fullText.indexOf("＜＜ - 初级之森 - ＞＞") != -1 ||
+                    fullText.indexOf("＜＜ - 中级之塔 - ＞＞") != -1 ||
+                    fullText.indexOf("＜＜ - 上级之洞窟 - ＞＞") != -1 ||
+                    fullText.indexOf("＜＜ - 十二神殿 - ＞＞") != -1) {
+                    // 只处理以上的战斗场所
+                    // 耐久度初始值10000以下的最大的质数，表示没有发现无忧
+                    var endure = 9973;        
+                    var resultText = $('#ueqtweixin').text();
+                    var start = resultText.indexOf("无忧之果(自动)使用。(剩余");
+                    if (start != -1) {
+                        // 找到了无忧之果
+                        endure = resultText.substring(start+14, start+17);
+                    }
+                    // 规则1：所有战斗无忧耐久模100余0时修理装备
+                    if (endure%100 == 0) {
+                        // 需要修理装备啦
+                        $('input[value="返回修理"]').attr('tabIndex', counter);
+                        counter = counter + 1;
+                    }
+                    // 规则2：秘宝之岛战斗后去存钱
+                    if (fullText.indexOf("＜＜ - 秘宝之岛 - ＞＞") != -1) {
+                        $('input[value="返回银行"]').attr('tabIndex', counter);
+                        counter = counter + 1;
+                    }
+                    // 规则3：上洞战斗无忧耐久模5余0时去存钱
+                    if (fullText.indexOf("＜＜ - 上级之洞窟 - ＞＞") != -1) {
+                        if (endure%5 == 0) {
+                            $('input[value="返回银行"]').attr('tabIndex', counter);
+                            counter = counter + 1;
+                        }
+                    }
+                    // 规则4：上洞和十二宫战斗失败去住宿
+                    if (fullText.indexOf("＜＜ - 上级之洞窟 - ＞＞") != -1 || fullText.indexOf("＜＜ - 十二神殿 - ＞＞") != -1) {
+                        if(fullText.indexOf("将 怪物 全灭！") == -1) {
+                            $('input[value="返回住宿"]').attr('tabIndex', counter);
+                            counter = counter + 1;
+                        }
+                    }
+                    // 规则5：十二宫战斗胜利去存钱
+                    if (fullText.indexOf("＜＜ - 十二神殿 - ＞＞") != -1) {
+                        if(fullText.indexOf("将 怪物 全灭！") != -1) {
+                            $('input[value="返回银行"]').attr('tabIndex', counter);
+                            counter = counter + 1;
+                        }
+                    }
+                }
             }
         })
     } 
