@@ -5,7 +5,7 @@
 // @icon         data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==
 // @license      mit
 // @author       fugue
-// @version      1.2.0
+// @version      1.2.1
 // @grant        unsafeWindow
 // @match        *://pocketrose.itsns.net.cn/*
 // @require      https://code.jquery.com/jquery-2.1.4.min.js
@@ -96,6 +96,33 @@ function replacePkm(page) {
                     }
                 }
             }
+            if (location.href.includes("town.cgi")) {
+                var petMapText = $('html').html();
+                if (petMapText.indexOf("* 宠物图鉴 *") != -1) {
+                    var petCount = "";
+                    $("td:parent").each(function(index, element) {
+                            var img = $(element).children("img");
+                            var src = img.attr("src");
+                            if (src!=undefined && src.indexOf("https://pocketrose.itsns.net.cn/pocketrose/image/386/")!=-1) {
+                                    var code = img.attr("alt");
+
+                                    // Next TD element
+                                    var count = $(element).next();
+
+                                    petCount += code;
+                                    petCount += "/";
+                                    petCount += count.text();
+                                    petCount += "  ";
+                            }
+                    });
+                    if (petCount != "") {
+                            var messageBox = $('font[color="#FFFFFF"]').parent();
+                            var currentText = messageBox.html();
+                            currentText += "<BR><font color='#FFFFFF'>"+petCount+"</font>";
+                            messageBox.html(currentText);
+                    }
+                }
+        }
         })
     } 
 }
