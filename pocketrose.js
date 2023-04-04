@@ -77,13 +77,13 @@ function replacePkm(page) {
                     }
                     // 规则2：秘宝之岛战斗后去存钱
                     if (fullText.indexOf("＜＜ - 秘宝之岛 - ＞＞") != -1) {
-                        $('input[value="返回银行"]').attr('tabIndex', counter);
+                        $('input[value="全部存入"]').attr('tabIndex', counter);
                         counter = counter + 1;
                     }
                     // 规则3：上洞战斗无忧耐久模5余0时去存钱
                     if (fullText.indexOf("＜＜ - 上级之洞窟 - ＞＞") != -1) {
                         if (endure%5 == 0) {
-                            $('input[value="返回银行"]').attr('tabIndex', counter);
+                            $('input[value="全部存入"]').attr('tabIndex', counter);
                             counter = counter + 1;
                         }
                     }
@@ -97,7 +97,7 @@ function replacePkm(page) {
                     // 规则5：十二宫战斗胜利去存钱
                     if (fullText.indexOf("＜＜ - 十二神殿 - ＞＞") != -1) {
                         if(fullText.indexOf("将 怪物 全灭！") != -1) {
-                            $('input[value="返回银行"]').attr('tabIndex', counter);
+                            $('input[value="全部存入"]').attr('tabIndex', counter);
                             counter = counter + 1;
                         }
                     }
