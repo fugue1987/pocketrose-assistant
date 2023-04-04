@@ -5,7 +5,7 @@
 // @icon         data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==
 // @license      mit
 // @author       fugue
-// @version      1.2.1
+// @version      1.2.2
 // @grant        unsafeWindow
 // @match        *://pocketrose.itsns.net.cn/*
 // @require      https://code.jquery.com/jquery-2.1.4.min.js
@@ -54,6 +54,13 @@ function replacePkm(page) {
                     fullText.indexOf("＜＜ - 上级之洞窟 - ＞＞") != -1 ||
                     fullText.indexOf("＜＜ - 十二神殿 - ＞＞") != -1) {
                     // 只处理以上的战斗场所
+
+                    // 修改返回银行按钮的内容，直接变成全部存入
+                    // 战斗完成后选择全部存入即可自动存钱并返回
+                    var bankFormElement = $('input[value="返回银行"]').parent();
+                    bankFormElement.prepend('<input type="hidden" name="azukeru" value="all">');
+                    $('input[value="BANK"]').attr('value', 'BANK_SELL');
+                    $('input[value="返回银行"]').attr('value', '全部存入');
                     // 耐久度初始值10000以下的最大的质数，表示没有发现无忧
                     var endure = 9973;        
                     var resultText = $('#ueqtweixin').text();
