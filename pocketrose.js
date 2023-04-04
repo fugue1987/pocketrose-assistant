@@ -5,7 +5,7 @@
 // @icon         data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==
 // @license      mit
 // @author       fugue
-// @version      1.2.3
+// @version      1.3.0
 // @grant        unsafeWindow
 // @match        *://pocketrose.itsns.net.cn/*
 // @require      https://code.jquery.com/jquery-2.1.4.min.js
@@ -45,8 +45,8 @@ function replacePkm(page) {
                 }
             })})
             if (location.href.includes("battle.cgi")) {
-                $('a[target="_blank"]').attr('tabIndex', -1);            
-                var counter = 1;
+                $('a[target="_blank"]').attr('tabIndex', -1);
+                
                 var fullText = $('html').html();
                 if(fullText.indexOf("＜＜ - 秘宝之岛 - ＞＞") != -1 ||
                     fullText.indexOf("＜＜ - 初级之森 - ＞＞") != -1 ||
@@ -55,50 +55,45 @@ function replacePkm(page) {
                     fullText.indexOf("＜＜ - 十二神殿 - ＞＞") != -1) {
                     // 只处理以上的战斗场所
 
-                    // 修改返回银行按钮的内容，直接变成全部存入
-                    // 战斗完成后选择全部存入即可自动存钱并返回
+                    // 修改返回修理按钮的行为，直接变成全部修理
+                    // 修理按钮增加了id：repaireEquipmentButton
+                    var repaireFormElement = $('input[value="返回修理"]').parent();
+                    repaireFormElement.prepend('<input type="hidden" name="arm_mode" value="all">');
+                    $('input[value="MY_ARM"]').attr('value', 'MY_ARM2');
+                    $('input[value="返回修理"]').attr('id', 'repaireEquipmentButton');
+                    $('input[value="返回修理"]').attr('value', '去修理下装备吧，等爆掉你就知道痛了！');
+
+                    // 修改返回银行按钮的行为，直接变成全部存入
+                    // 存钱按钮增加了id：depositMoneyButton
                     var bankFormElement = $('input[value="返回银行"]').parent();
                     bankFormElement.prepend('<input type="hidden" name="azukeru" value="all">');
                     $('input[value="BANK"]').attr('value', 'BANK_SELL');
-                    $('input[value="返回银行"]').attr('value', '全部存入');
+                    $('input[value="返回银行"]').attr('id', 'depositMoneyButton');
+                    $('input[value="返回银行"]').attr('value', '顺风不浪，逆风不怂，身上不要放太多的钱！');
+
+                    // 住宿按钮增加了id：restButton
+                    $('input[value="返回住宿"]').attr('id', 'restButton');
+                    $('input[value="返回住宿"]').attr('value', '你看起来很疲惫的样子呀，妈妈喊你回去休息啦！');
+
                     // 耐久度初始值10000以下的最大的质数，表示没有发现无忧
-                    var endure = 9973;        
+                    var endure = 9973;
                     var resultText = $('#ueqtweixin').text();
                     var start = resultText.indexOf("无忧之果(自动)使用。(剩余");
                     if (start != -1) {
                         // 找到了无忧之果
                         endure = resultText.substring(start+14, start+17);
                     }
-                    // 规则1：所有战斗无忧耐久模100余0时修理装备
+
                     if (endure%100 == 0) {
-                        // 需要修理装备啦
-                        $('input[value="返回修理"]').attr('tabIndex', counter);
-                        counter = counter + 1;
-                    }
-                    // 规则2：秘宝之岛战斗后去存钱
-                    if (fullText.indexOf("＜＜ - 秘宝之岛 - ＞＞") != -1) {
-                        $('input[value="全部存入"]').attr('tabIndex', counter);
-                        counter = counter + 1;
-                    }
-                    // 规则3：上洞战斗无忧耐久模5余0时去存钱
-                    if (fullText.indexOf("＜＜ - 上级之洞窟 - ＞＞") != -1) {
-                        if (endure%5 == 0) {
-                            $('input[value="全部存入"]').attr('tabIndex', counter);
-                            counter = counter + 1;
-                        }
-                    }
-                    // 规则4：上洞和十二宫战斗失败去住宿
-                    if (fullText.indexOf("＜＜ - 上级之洞窟 - ＞＞") != -1 || fullText.indexOf("＜＜ - 十二神殿 - ＞＞") != -1) {
-                        if(fullText.indexOf("将 怪物 全灭！") == -1) {
-                            $('input[value="返回住宿"]').attr('tabIndex', counter);
-                            counter = counter + 1;
-                        }
-                    }
-                    // 规则5：十二宫战斗胜利去存钱
-                    if (fullText.indexOf("＜＜ - 十二神殿 - ＞＞") != -1) {
-                        if(fullText.indexOf("将 怪物 全灭！") != -1) {
-                            $('input[value="全部存入"]').attr('tabIndex', counter);
-                            counter = counter + 1;
+                        repaireEquipments();
+                    } else {
+                        var needRest = checkNeedRest(fullText);
+                        if(needRest) {
+                            // 处理住宿
+                            doRest();
+                        } else {
+                            // 处理存钱
+                            doDeposit();
                         }
                     }
                 }
@@ -129,7 +124,74 @@ function replacePkm(page) {
                             messageBox.html(currentText);
                     }
                 }
-        }
+            }
         })
-    } 
+    }
+}
+
+// 修理装备的函数实现，必须依赖身上有无忧之果。
+// 当无忧之果的耐久度掉到100整倍数时触发。
+// 只保留修理装备的按钮。其余的表单都删除
+function repaireEquipments() {
+    // 当前的情况下，只保留修理装备这个唯一的按钮
+    $("#repaireEquipmentButton").attr('tabIndex', 1);
+
+    // 删除返回城市按钮
+    $('input[value="返回城市"]').parent().remove();
+    // 删除存钱按钮
+    $("#depositMoneyButton").parent().remove();
+    // 删除返回更新按钮
+    $('input[value="返回更新"]').parent().remove();
+    // 删除返回住宿按钮
+    $("#restButton").parent().remove();
+}
+
+// 检查是否需要住宿：
+// 1. 战败需要住宿
+// 2. 战胜/平手情况下，检查生命力是否低于某个阈值
+function checkNeedRest(htmlText) {
+    if(htmlText.indexOf("将 怪物 全灭！") == -1) {
+        return true;
+    }
+    var playerName = "";
+    var remaingHealth = 0;
+    var maxHealth = 0;
+    $("td:parent").each(function(index, element) {
+        var img = $(element).children("img");
+        var src = img.attr("src");
+        if (src!=undefined && src.indexOf("https://pocketrose.itsns.net.cn/pocketrose/")!=-1) {
+            // 通过第一个头像找到玩家的名字
+            if (playerName == "") {
+                playerName = img.attr("alt");
+            }
+        }
+        if (playerName == $(element).text()) {
+            var healthElement = $(element).next();
+            var healthText = healthElement.text();
+            var pos = healthText.indexOf("/");
+            remaingHealth = healthText.substring(0, pos-1);
+            maxHealth = healthText.substring(pos+1);
+        }
+    });
+    // 生命力低于最大值的60%，住宿推荐
+    if (remaingHealth <= maxHealth*0.6) {
+        return true;
+    }
+    return false;
+}
+
+function doRest() {
+    $("#restButton").attr('tabIndex', 1);
+
+    $("#repaireEquipmentButton").parent().remove();
+    $('input[value="返回城市"]').parent().remove();
+    $('input[value="返回更新"]').parent().remove();
+}
+
+function doDeposit() {
+    $("#depositMoneyButton").attr('tabIndex', 1);
+
+    $("#repaireEquipmentButton").parent().remove();
+    $('input[value="返回城市"]').parent().remove();
+    $('input[value="返回更新"]').parent().remove();
 }
