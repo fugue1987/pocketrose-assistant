@@ -13,6 +13,10 @@
 // @unwrap
 // ==/UserScript==
 
+const bankButtonText = "顺风不浪，逆风不怂，身上不要放太多的钱！";
+const blacksmithButtonText = "去修理下装备吧，等爆掉你就知道痛了！";
+const innButtonText = "你看起来很疲惫的样子呀，妈妈喊你回去休息啦！";
+
 const pokemonDict = {
     '大猩猩(289)': '<a href="https://wiki.52poke.com/wiki/%E8%AF%B7%E5%81%87%E7%8E%8B" target="_blank" rel="noopener noreferrer">请假王(289)</a>',
     '忍耐龙(202)': '<a href="https://wiki.52poke.com/wiki/%E6%9E%9C%E7%84%B6%E7%BF%81" target="_blank" rel="noopener noreferrer">果然翁(202)</a>',
@@ -542,58 +546,7 @@ function replacePkm(page) {
                 })
             })
             if (location.href.includes("battle.cgi")) {
-                $('a[target="_blank"]').attr('tabIndex', -1);
-
-                var fullText = $('html').html();
-                if (fullText.indexOf("＜＜ - 秘宝之岛 - ＞＞") != -1 ||
-                    fullText.indexOf("＜＜ - 初级之森 - ＞＞") != -1 ||
-                    fullText.indexOf("＜＜ - 中级之塔 - ＞＞") != -1 ||
-                    fullText.indexOf("＜＜ - 上级之洞窟 - ＞＞") != -1 ||
-                    fullText.indexOf("＜＜ - 十二神殿 - ＞＞") != -1) {
-                    // 只处理以上的战斗场所
-
-                    // 修改返回修理按钮的行为，直接变成全部修理
-                    // 修理按钮增加了id：repaireEquipmentButton
-                    var repaireFormElement = $('input[value="返回修理"]').parent();
-                    repaireFormElement.prepend('<input type="hidden" name="arm_mode" value="all">');
-                    $('input[value="MY_ARM"]').attr('value', 'MY_ARM2');
-                    $('input[value="返回修理"]').attr('id', 'repaireEquipmentButton');
-                    $('input[value="返回修理"]').attr('value', '去修理下装备吧，等爆掉你就知道痛了！');
-
-                    // 修改返回银行按钮的行为，直接变成全部存入
-                    // 存钱按钮增加了id：depositMoneyButton
-                    var bankFormElement = $('input[value="返回银行"]').parent();
-                    bankFormElement.prepend('<input type="hidden" name="azukeru" value="all">');
-                    $('input[value="BANK"]').attr('value', 'BANK_SELL');
-                    $('input[value="返回银行"]').attr('id', 'depositMoneyButton');
-                    $('input[value="返回银行"]').attr('value', '顺风不浪，逆风不怂，身上不要放太多的钱！');
-
-                    // 住宿按钮增加了id：restButton
-                    $('input[value="返回住宿"]').attr('id', 'restButton');
-                    $('input[value="返回住宿"]').attr('value', '你看起来很疲惫的样子呀，妈妈喊你回去休息啦！');
-
-                    // 耐久度初始值10000以下的最大的质数，表示没有发现无忧
-                    var endure = 9973;
-                    var resultText = $('#ueqtweixin').text();
-                    var start = resultText.indexOf("无忧之果(自动)使用。(剩余");
-                    if (start != -1) {
-                        // 找到了无忧之果
-                        endure = resultText.substring(start + 14, start + 17);
-                    }
-
-                    if (endure % 100 == 0) {
-                        repaireEquipments();
-                    } else {
-                        var needRest = checkNeedRest(fullText);
-                        if (needRest) {
-                            // 处理住宿
-                            doRest();
-                        } else {
-                            // 处理存钱
-                            doDeposit();
-                        }
-                    }
-                }
+                postProcessBattleRelatedFunctionalities($('html').html());
             }
             if (location.href.includes("town.cgi")) {
                 postProcessCityRelatedFunctionalities($('html').html());
@@ -667,6 +620,110 @@ function doDeposit() {
     $("#repaireEquipmentButton").parent().remove();
     $('input[value="返回城市"]').parent().remove();
     $('input[value="返回更新"]').parent().remove();
+}
+
+// ============================================================================
+// 战斗后续辅助功能
+// ============================================================================
+function postProcessBattleRelatedFunctionalities(htmlText) {
+    $('a[target="_blank"]').attr('tabIndex', -1);
+
+    if (htmlText.indexOf("＜＜ - 秘宝之岛 - ＞＞") != -1 ||
+        htmlText.indexOf("＜＜ - 初级之森 - ＞＞") != -1 ||
+        htmlText.indexOf("＜＜ - 中级之塔 - ＞＞") != -1 ||
+        htmlText.indexOf("＜＜ - 上级之洞窟 - ＞＞") != -1 ||
+        htmlText.indexOf("＜＜ - 十二神殿 - ＞＞") != -1) {
+        __battle(htmlText);
+    }
+}
+
+function __battle(htmlText) {
+    $('input[value="返回住宿"]').attr('id', 'innButton');
+    $('input[value="返回修理"]').attr('id', 'blacksmithButton');
+    $('input[value="返回城市"]').attr('id', 'returnButton');
+    $('input[value="返回更新"]').attr('id', 'updateButton');
+    $('input[value="返回银行"]').attr('id', 'bankButton');
+
+    // 返回城市,返回更新按钮不再需要
+    $('#returnButton').parent().remove();
+    $('#updateButton').parent().remove();
+
+    // 修改返回修理按钮的行为，直接变成全部修理
+    $('#blacksmithButton').parent().prepend('<input type="hidden" name="arm_mode" value="all">');
+    $('#blacksmithButton').attr('value', blacksmithButtonText);
+    $('input[value="MY_ARM"]').attr('value', 'MY_ARM2');
+
+    // 修改返回银行按钮的行为，直接变成全部存入
+    $('#bankButton').parent().prepend('<input type="hidden" name="azukeru" value="all">');
+    $('#bankButton').attr('value', bankButtonText);
+    $('input[value="BANK"]').attr('value', 'BANK_SELL');
+
+    // 修改返回住宿按钮
+    $('#innButton').attr('value', innButtonText);
+
+    // 耐久度初始值10000以下的最大的质数，表示没有发现无忧
+    var endure = 9973;
+    var resultText = $('#ueqtweixin').text();
+    var start = resultText.indexOf("无忧之果(自动)使用。(剩余");
+    if (start != -1) {
+        // 找到了无忧之果
+        endure = resultText.substring(start + 14, start + 17);
+    }
+
+    if (endure % 100 == 0) {
+        // 当无忧之果的耐久度掉到100整倍数时触发。
+        // 只保留修理装备的按钮。其余的按钮都删除
+        $("#blacksmithButton").attr('tabIndex', 1);
+        $('#innButton').parent().remove();
+        $('#bankButton').parent().remove();
+    } else {
+        $('#blacksmithButton').parent().remove();
+        if (__battle_checkIfShouldGoToInn(htmlText)) {
+            $("#innButton").attr('tabIndex', 1);
+        } else {
+            $("#bankButton").attr('tabIndex', 1);
+        }
+    }
+}
+
+// 检查是否需要住宿：
+// 1. 战败需要住宿
+// 2. 十二宫战斗胜利不需要住宿，直接存钱更好
+// 3. 战胜/平手情况下，检查生命力是否低于某个阈值
+function __battle_checkIfShouldGoToInn(htmlText) {
+    if (htmlText.indexOf("将 怪物 全灭！") == -1) {
+        // 战败了，直接去住宿吧
+        return true;
+    }
+    if (htmlText.indexOf("＜＜ - 十二神殿 - ＞＞") != -1) {
+        // 十二宫战斗胜利不需要住宿，直接存钱更好
+        return false;
+    }
+    var playerName = "";
+    var remaingHealth = 0;
+    var maxHealth = 0;
+    $("td:parent").each(function (index, element) {
+        var img = $(element).children("img");
+        var src = img.attr("src");
+        if (src != undefined && src.indexOf("https://pocketrose.itsns.net.cn/pocketrose/") != -1) {
+            // 通过第一个头像找到玩家的名字
+            if (playerName == "") {
+                playerName = img.attr("alt");
+            }
+        }
+        if (playerName == $(element).text()) {
+            var healthElement = $(element).next();
+            var healthText = healthElement.text();
+            var pos = healthText.indexOf("/");
+            remaingHealth = healthText.substring(0, pos - 1);
+            maxHealth = healthText.substring(pos + 1);
+        }
+    });
+    // 生命力低于最大值的60%，住宿推荐
+    if (remaingHealth <= maxHealth * 0.6) {
+        return true;
+    }
+    return false;
 }
 
 // ============================================================================
