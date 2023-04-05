@@ -16,6 +16,7 @@
 const bankButtonText = "顺风不浪，逆风不怂，身上不要放太多的钱！";
 const blacksmithButtonText = "去修理下装备吧，等爆掉你就知道痛了！";
 const innButtonText = "你看起来很疲惫的样子呀，妈妈喊你回去休息啦！";
+const healthLoseRestoreRatio = 0.6;
 
 const pokemonDict = {
     '大猩猩(289)': '<a href="https://wiki.52poke.com/wiki/%E8%AF%B7%E5%81%87%E7%8E%8B" target="_blank" rel="noopener noreferrer">请假王(289)</a>',
@@ -555,73 +556,6 @@ function replacePkm(page) {
     }
 }
 
-// 修理装备的函数实现，必须依赖身上有无忧之果。
-// 当无忧之果的耐久度掉到100整倍数时触发。
-// 只保留修理装备的按钮。其余的表单都删除
-function repaireEquipments() {
-    // 当前的情况下，只保留修理装备这个唯一的按钮
-    $("#repaireEquipmentButton").attr('tabIndex', 1);
-
-    // 删除返回城市按钮
-    $('input[value="返回城市"]').parent().remove();
-    // 删除存钱按钮
-    $("#depositMoneyButton").parent().remove();
-    // 删除返回更新按钮
-    $('input[value="返回更新"]').parent().remove();
-    // 删除返回住宿按钮
-    $("#restButton").parent().remove();
-}
-
-// 检查是否需要住宿：
-// 1. 战败需要住宿
-// 2. 战胜/平手情况下，检查生命力是否低于某个阈值
-function checkNeedRest(htmlText) {
-    if (htmlText.indexOf("将 怪物 全灭！") == -1) {
-        return true;
-    }
-    var playerName = "";
-    var remaingHealth = 0;
-    var maxHealth = 0;
-    $("td:parent").each(function (index, element) {
-        var img = $(element).children("img");
-        var src = img.attr("src");
-        if (src != undefined && src.indexOf("https://pocketrose.itsns.net.cn/pocketrose/") != -1) {
-            // 通过第一个头像找到玩家的名字
-            if (playerName == "") {
-                playerName = img.attr("alt");
-            }
-        }
-        if (playerName == $(element).text()) {
-            var healthElement = $(element).next();
-            var healthText = healthElement.text();
-            var pos = healthText.indexOf("/");
-            remaingHealth = healthText.substring(0, pos - 1);
-            maxHealth = healthText.substring(pos + 1);
-        }
-    });
-    // 生命力低于最大值的60%，住宿推荐
-    if (remaingHealth <= maxHealth * 0.6) {
-        return true;
-    }
-    return false;
-}
-
-function doRest() {
-    $("#restButton").attr('tabIndex', 1);
-
-    $("#repaireEquipmentButton").parent().remove();
-    $('input[value="返回城市"]').parent().remove();
-    $('input[value="返回更新"]').parent().remove();
-}
-
-function doDeposit() {
-    $("#depositMoneyButton").attr('tabIndex', 1);
-
-    $("#repaireEquipmentButton").parent().remove();
-    $('input[value="返回城市"]').parent().remove();
-    $('input[value="返回更新"]').parent().remove();
-}
-
 // ============================================================================
 // 战斗后续辅助功能
 // ============================================================================
@@ -720,7 +654,7 @@ function __battle_checkIfShouldGoToInn(htmlText) {
         }
     });
     // 生命力低于最大值的60%，住宿推荐
-    if (remaingHealth <= maxHealth * 0.6) {
+    if (remaingHealth <= maxHealth * healthLoseRestoreRatio) {
         return true;
     }
     return false;
