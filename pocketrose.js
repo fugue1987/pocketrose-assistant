@@ -552,6 +552,9 @@ function replacePkm(page) {
             if (location.href.includes("town.cgi")) {
                 postProcessCityRelatedFunctionalities($('html').html());
             }
+            if (location.href.includes("mydata.cgi")) {
+                postProcessPersonalStatusRelatedFunctionalities($('html').html());
+            }
         })
     }
 }
@@ -691,4 +694,52 @@ function __city_petMap(htmlText) {
         currentText += "<BR><font color='#FFFFFF'>" + petIdText + "</font>";
         messageBox.html(currentText);
     }
+}
+
+// ============================================================================
+// 个人状态后续辅助功能
+// ============================================================================
+function postProcessPersonalStatusRelatedFunctionalities(htmlText) {
+    if (htmlText.indexOf("物品使用．装备") != -1) {
+        __personalStatus_equipment(htmlText);
+    }
+}
+
+// 个人状态 -> 物品使用．装备
+function __personalStatus_equipment(htmlText) {
+    // 查找物品栏中有百宝袋和黄金笼子
+    var bagLocation = -1;
+    var cageLocation = -1;
+    $("td:parent").each(function(_i, e) {
+        if ($(e).text() == "百宝袋") {
+            // 百宝袋对应的checkbox
+            var bagCheckboxElement = $(e).prev().prev().children("input");
+            if (bagCheckboxElement != undefined) {
+                bagLocation = bagCheckboxElement.attr("value");
+            }
+        }
+        if ($(e).text() == "黄金笼子") {
+            // 黄金笼子对应的checkbox
+            var cageCheckboxElement = $(e).prev().prev().children("input");
+            if (cageCheckboxElement != undefined) {
+                cageLocation = cageCheckboxElement.attr("value");
+            }
+        }
+    });
+
+    var statusForm = $('form[action="status.cgi"]')
+    var id = statusForm.children('input[name="id"]').attr('value');
+    var pass = statusForm.children('input[name="pass"]').attr('value');
+
+    var statusFormParent = statusForm.parent();
+    var statusFormParentHtml = statusFormParent.html();
+    if (bagLocation != -1) {
+        statusFormParentHtml +=
+            "<p><form action='mydata.cgi' method='post'><input type='hidden' name='id' value='"+id+"'><input type='hidden' name='pass' value='"+pass+"'><input type='hidden' name='mode' value='USE'><input type='hidden' name='chara' value='1'><input type='hidden' name='item"+bagLocation+"' value='"+bagLocation+"'><input type='submit' value='直接进入百宝袋'></form></p>";
+    }
+    if (cageLocation != -1) {
+        statusFormParentHtml +=
+            "<p><form action='mydata.cgi' method='post'><input type='hidden' name='id' value='"+id+"'><input type='hidden' name='pass' value='"+pass+"'><input type='hidden' name='mode' value='USE'><input type='hidden' name='chara' value='1'><input type='hidden' name='item"+cageLocation+"' value='"+cageLocation+"'><input type='submit' value='直接进入黄金笼子'></form></p>";
+    }
+    statusFormParent.html(statusFormParentHtml);
 }
