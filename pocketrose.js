@@ -710,7 +710,7 @@ function __personalStatus_equipment(htmlText) {
     // 查找物品栏中有百宝袋和黄金笼子
     var bagLocation = -1;
     var cageLocation = -1;
-    $("td:parent").each(function(_i, e) {
+    $("td:parent").each(function (_i, e) {
         if ($(e).text() == "百宝袋") {
             // 百宝袋对应的checkbox
             var bagCheckboxElement = $(e).prev().prev().children("input");
@@ -730,16 +730,13 @@ function __personalStatus_equipment(htmlText) {
     var statusForm = $('form[action="status.cgi"]')
     var id = statusForm.children('input[name="id"]').attr('value');
     var pass = statusForm.children('input[name="pass"]').attr('value');
+    var bagFormHtml = "<form action='mydata.cgi' method='post'><input type='hidden' name='id' value='" + id + "'><input type='hidden' name='pass' value='" + pass + "'><input type='hidden' name='mode' value='USE'><input type='hidden' name='chara' value='1'><input type='hidden' name='item" + bagLocation + "' value='" + bagLocation + "'><input type='submit' value='直接进入百宝袋'></form>";
+    var cageFormHtml = "<form action='mydata.cgi' method='post'><input type='hidden' name='id' value='" + id + "'><input type='hidden' name='pass' value='" + pass + "'><input type='hidden' name='mode' value='USE'><input type='hidden' name='chara' value='1'><input type='hidden' name='item" + cageLocation + "' value='" + cageLocation + "'><input type='submit' value='直接进入黄金笼子'></form>";
 
-    var statusFormParent = statusForm.parent();
-    var statusFormParentHtml = statusFormParent.html();
-    if (bagLocation != -1) {
-        statusFormParentHtml +=
-            "<p><form action='mydata.cgi' method='post'><input type='hidden' name='id' value='"+id+"'><input type='hidden' name='pass' value='"+pass+"'><input type='hidden' name='mode' value='USE'><input type='hidden' name='chara' value='1'><input type='hidden' name='item"+bagLocation+"' value='"+bagLocation+"'><input type='submit' value='直接进入百宝袋'></form></p>";
-    }
-    if (cageLocation != -1) {
-        statusFormParentHtml +=
-            "<p><form action='mydata.cgi' method='post'><input type='hidden' name='id' value='"+id+"'><input type='hidden' name='pass' value='"+pass+"'><input type='hidden' name='mode' value='USE'><input type='hidden' name='chara' value='1'><input type='hidden' name='item"+cageLocation+"' value='"+cageLocation+"'><input type='submit' value='直接进入黄金笼子'></form></p>";
-    }
-    statusFormParent.html(statusFormParentHtml);
+    $("td:parent").each(function (_i, e) {
+        if ($(e).text() == "所持金") {
+            $(e).parent().parent().prepend("<tr><td colspan='6' bgcolor='#E8E8D0' id='bagCageCell'></td></tr>");
+        }
+    });
+    $("#bagCageCell").html(bagFormHtml + cageFormHtml);
 }
