@@ -710,6 +710,19 @@ function postProcessPersonalStatusRelatedFunctionalities(htmlText) {
 // 个人状态 -> 状态查看
 function __personalStatus_view(htmlText) {
     $('input[value="返回城市"]').attr('tabIndex', 1);
+    var honor;
+    $("td:parent").each(function (_i, e) {
+        var t = $(e).html();
+        if (t.indexOf("荣誉：") != -1) {
+            honor = $(e);
+        }
+    });
+    if (honor != undefined) {
+        var honorHtml = honor.html();
+        var noBR = honorHtml.replace(/<br>/g, '');
+        honor.attr('style', 'word-break:break-all');
+        honor.html(noBR);
+    }
 }
 
 // 个人状态 -> 物品使用．装备
