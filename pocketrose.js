@@ -563,13 +563,12 @@ function replacePkm(page) {
 // 战斗后续辅助功能
 // ============================================================================
 function postProcessBattleRelatedFunctionalities(htmlText) {
-    $('a[target="_blank"]').attr('tabIndex', -1);
-
     if (htmlText.indexOf("＜＜ - 秘宝之岛 - ＞＞") != -1 ||
         htmlText.indexOf("＜＜ - 初级之森 - ＞＞") != -1 ||
         htmlText.indexOf("＜＜ - 中级之塔 - ＞＞") != -1 ||
         htmlText.indexOf("＜＜ - 上级之洞窟 - ＞＞") != -1 ||
         htmlText.indexOf("＜＜ - 十二神殿 - ＞＞") != -1) {
+        $('a[target="_blank"]').attr('tabIndex', -1);
         __battle(htmlText);
     }
 }
@@ -700,9 +699,17 @@ function __city_petMap(htmlText) {
 // 个人状态后续辅助功能
 // ============================================================================
 function postProcessPersonalStatusRelatedFunctionalities(htmlText) {
+    if (htmlText.indexOf("仙人的宝物") != -1) {
+        __personalStatus_view(htmlText);
+    }
     if (htmlText.indexOf("物品使用．装备") != -1) {
         __personalStatus_equipment(htmlText);
     }
+}
+
+// 个人状态 -> 状态查看
+function __personalStatus_view(htmlText) {
+    $('input[value="返回城市"]').attr('tabIndex', 1);
 }
 
 // 个人状态 -> 物品使用．装备
