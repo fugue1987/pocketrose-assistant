@@ -544,6 +544,11 @@ function replacePkm(page) {
     }
 }
 
+function __common_fetchMaxValue(text) {
+    var index = text.indexOf("/");
+    return text.substring(index + 1);
+}
+
 // ============================================================================
 // 宝可梦百科扩展功能
 // ============================================================================
@@ -798,6 +803,9 @@ function postProcessPersonalStatusRelatedFunctionalities(htmlText) {
     if (htmlText.indexOf("物品使用．装备") != -1) {
         __personalStatus_equipment(htmlText);
     }
+    if (htmlText.indexOf("* 转职神殿 *") != -1) {
+        __personalStatus_transferCareer(htmlText);
+    }
 }
 
 // 个人状态 -> 状态查看
@@ -852,4 +860,43 @@ function __personalStatus_equipment(htmlText) {
         }
     });
     $("#bagCageCell").html(bagFormHtml + cageFormHtml);
+}
+
+
+// 个人状态 -> 转职
+function __personalStatus_transferCareer(htmlText) {
+    $('input[value="转职"]').attr('id', 'transferCarrerButton');
+
+    var statusForm = $('form[action="status.cgi"]')
+    var id = statusForm.children('input[name="id"]').attr('value');
+    var pass = statusForm.children('input[name="pass"]').attr('value');
+
+    // 进入转职页面的时候，读取一下个人信息。把标准的HP/MP和五围读出来
+    $.post('mydata.cgi',
+        {
+            id: id,
+            pass: pass,
+            mode: 'STATUS_PRINT'
+        },
+        function (data) {
+            var statusTable = $(data).find('table').first().find('table').first();
+            var healthText = $(statusTable.find('td')[5]).text();
+            var manaText = $(statusTable.find('td')[7]).text();
+            var maxHealth = __common_fetchMaxValue(healthText);
+            var maxMana = __common_fetchMaxValue(manaText);
+
+            var att = $(statusTable.find('td')[13]).text();
+            var def = $(statusTable.find('td')[15]).text();
+            var int = $(statusTable.find('td')[17]).text();
+            var spi = $(statusTable.find('td')[19]).text();
+            var spe = $(statusTable.find('td')[21]).text();
+
+            var stableCareer = (maxHealth == 1999 && maxMana >= 1000
+                && att >= 300 && def >= 300 && int >= 300 && spi >= 300 && spe >= 300);
+            if (stableCareer) {
+                // 看起来这能力已经可以定型了，给个警告吧，确认是否要转职！
+                var current = maxHealth + "/" + maxHealth + " " + maxMana + "/" + maxMana + " " + att + " " + def + " " + int + " " + spi + " " + spe;
+                $('#transferCarrerButton').attr('value', '看起来你现在满足了最低的定型标准(' + current + ')，你确认要转职吗？');
+            }
+        });
 }
