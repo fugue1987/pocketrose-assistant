@@ -16,7 +16,8 @@
 const bankButtonText = "顺风不浪，逆风不怂，身上不要放太多的钱！";
 const blacksmithButtonText = "去修理下装备吧，等爆掉你就知道痛了！";
 const innButtonText = "你看起来很疲惫的样子呀，妈妈喊你回去休息啦！";
-const healthLoseRestoreRatio = 0.6;
+const healthLoseRestoreRatio = 0.6;                                         // 当前HP小于最大HP触发住宿的比例
+const repaireEdureThreshold = 100;                                          // 装白耐久度下降触发修理的阈值
 
 const pokemonDict = {
     '大猩猩(289)': '<a href="https://wiki.52poke.com/wiki/%E8%AF%B7%E5%81%87%E7%8E%8B" target="_blank" rel="noopener noreferrer">请假王(289)</a>',
@@ -597,22 +598,13 @@ function __battle(htmlText) {
     // 修改返回住宿按钮
     $('#innButton').attr('value', innButtonText);
 
-    // 耐久度初始值10000以下的最大的质数，表示没有发现无忧
-    var endure = 9973;
-    var resultText = $('#ueqtweixin').text();
-    var start = resultText.indexOf("无忧之果(自动)使用。(剩余");
-    if (start != -1) {
-        // 找到了无忧之果
-        endure = resultText.substring(start + 14, start + 17);
-    }
-
-    if (endure % 100 == 0) {
-        // 当无忧之果的耐久度掉到100整倍数时触发。
-        // 只保留修理装备的按钮。其余的按钮都删除
+    if (__battle_checkIfShouldGoToBlacksmith($('#ueqtweixin').text())) {
+        // 只保留修理按钮
         $("#blacksmithButton").attr('tabIndex', 1);
         $('#innButton').parent().remove();
         $('#bankButton').parent().remove();
     } else {
+        // 不需要修理按钮
         $('#blacksmithButton').parent().remove();
         if (__battle_checkIfShouldGoToInn(htmlText)) {
             $("#innButton").attr('tabIndex', 1);
@@ -620,6 +612,66 @@ function __battle(htmlText) {
             $("#bankButton").attr('tabIndex', 1);
         }
     }
+}
+
+// 分析是否需要去修理
+function __battle_checkIfShouldGoToBlacksmith(resultText) {
+    // 耐久度初始值10000以下的最大的质数，表示没有发现无忧
+    var endure = 9973;
+    var start = resultText.indexOf("无忧之果(自动)使用。(剩余");
+    if (start != -1) {
+        // 找到了无忧之果
+        endure = resultText.substring(start + 14, start + 17);
+    }
+    if (endure % 100 == 0) {
+        // 当无忧之果的耐久度掉到100整倍数时触发修理装备。
+        return true;
+    }
+
+    // 然后判断剩余的所有装备的耐久，只要有任意一件装备的耐久低于100，
+    // 也触发修理装备。这里需要注意的是要排除掉大师球、宗师球、怪兽球
+    // 和宠物蛋。。因此判断耐久在10~99区间吧，可以排除掉大师球和宗师球。
+    var sourceText = resultText;
+    var lowEndures = [];
+    for (var i = 0; i < 4; i++) {
+        // 最多查四次耐久度剩余
+        var startIndex = sourceText.indexOf("剩余");
+        if (startIndex != -1) {
+            sourceText = sourceText.substring(startIndex + 2);
+            var numbers = [];
+            for (var j = 0; j < sourceText.length; j++) {
+                if (sourceText[j] >= '0' && sourceText[j] <= '9') {
+                    numbers.push(sourceText[j]);
+                } else {
+                    var number = "";
+                    for (var k = 0; k < numbers.length; k++) {
+                        number += numbers[k];
+                    }
+                    numbers = [];
+                    if (number < repaireEdureThreshold) {
+                        lowEndures.push(number);
+                    }
+                    break;
+                }
+            }
+        }
+    }
+    if (lowEndures.length == 0) {
+        // 没有装备耐久掉到阈值之下，忽略
+        return false;
+    }
+    for (var idx = 0; idx < lowEndures.length; idx++) {
+        var currentEndure = lowEndures[idx];
+        if (resultText.indexOf("大师球剩余" + currentEndure + "耐久度") == -1 &&
+            resultText.indexOf("宗师球球剩余" + currentEndure + "耐久度") == -1 &&
+            resultText.indexOf("超力怪兽球剩余" + currentEndure + "耐久度") == -1 &&
+            resultText.indexOf("宠物蛋剩余" + currentEndure + "耐久度") == -1) {
+            // 这个低耐久的装备不是上述需要排除的，说明真的有装备耐久低了，需要修理
+            return true;
+        }
+    }
+
+    return false;
 }
 
 // 检查是否需要住宿：
