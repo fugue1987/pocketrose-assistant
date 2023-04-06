@@ -692,7 +692,7 @@ function __battle_checkIfShouldGoToInn(htmlText, recoverItemEndure) {
     }
     if (depositEveryBattleTimes > 0 && recoverItemEndure % depositEveryBattleTimes == 0) {
         // 存钱战数到了
-        return true;
+        return false;
     }
     var playerName = "";
     var remaingHealth = 0;
