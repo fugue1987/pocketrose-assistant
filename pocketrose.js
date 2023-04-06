@@ -13,6 +13,7 @@
 // @unwrap
 // ==/UserScript==
 
+const enablePokemonWikiFuture = true;                                       // 改成false就不再啓用百科功能
 const returnButtonText = "少年輕輕的離開，沒有帶走一片雲彩！";
 const bankButtonText = "順風不浪，逆風不慫，身上不要放太多的錢！";
 const blacksmithButtonText = "去修理下裝備吧，等爆掉的時候你就知道痛了！";
@@ -527,28 +528,30 @@ $(function () {
 function replacePkm(page) {
     if (location.href.includes(page)) {
         $(document).ready(function () {
-            $('body *').each(function () {
-                $(this).contents().filter(function () {
-                    return this.nodeType === 3;
-                }).each(function (idx, text) {
-                    let newText = this.textContent;
-                    for (let i = 0; i < pokemonDictKeys.length; i++) {
-                        if (newText.includes(pokemonDictKeys[i])) {
-                            newText = newText.replace(pokemonDictKeys[i], pokemonDict[pokemonDictKeys[i]]);
-                        }
-                    }
-                    if (newText !== this.textContent) {
-                        const $newContent = $('<span>').html(newText);
-                        const parentElement = this.parentElement;
-                        $(this).replaceWith($newContent);
-                        $(parentElement).children().each(function () {
-                            if (this.nodeType === 3) {
-                                $(this).replaceWith(this.textContent);
+            if (enablePokemonWikiFuture) {
+                $('body *').each(function () {
+                    $(this).contents().filter(function () {
+                        return this.nodeType === 3;
+                    }).each(function (idx, text) {
+                        let newText = this.textContent;
+                        for (let i = 0; i < pokemonDictKeys.length; i++) {
+                            if (newText.includes(pokemonDictKeys[i])) {
+                                newText = newText.replace(pokemonDictKeys[i], pokemonDict[pokemonDictKeys[i]]);
                             }
-                        });
-                    }
+                        }
+                        if (newText !== this.textContent) {
+                            const $newContent = $('<span>').html(newText);
+                            const parentElement = this.parentElement;
+                            $(this).replaceWith($newContent);
+                            $(parentElement).children().each(function () {
+                                if (this.nodeType === 3) {
+                                    $(this).replaceWith(this.textContent);
+                                }
+                            });
+                        }
+                    })
                 })
-            })
+            }
             if (location.href.includes("battle.cgi")) {
                 postProcessBattleRelatedFunctionalities($('html').html());
             }
