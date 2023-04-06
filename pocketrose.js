@@ -4,8 +4,8 @@
 // @description  Intercepts and modifies pocketrose CGI requests
 // @icon         data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==
 // @license      mit
-// @author       fugue
-// @version      1.3.1
+// @author       xiaohaiz,fugue
+// @version      1.3.2
 // @grant        unsafeWindow
 // @match        *://pocketrose.itsns.net.cn/*
 // @require      https://code.jquery.com/jquery-2.1.4.min.js
