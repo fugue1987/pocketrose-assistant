@@ -618,10 +618,10 @@ function __battle(htmlText) {
 function __battle_checkIfShouldGoToBlacksmith(resultText) {
     // 耐久度初始值10000以下的最大的质数，表示没有发现无忧
     var endure = 9973;
-    var start = resultText.indexOf("无忧之果(自动)使用。(剩余");
+    var start = resultText.indexOf("(自动)使用。(剩余");
     if (start != -1) {
         // 找到了无忧之果
-        endure = resultText.substring(start + 14, start + 17);
+        endure = resultText.substring(start + 10, start + 13);
     }
     if (endure % 100 == 0) {
         // 当无忧之果的耐久度掉到100整倍数时触发修理装备。
