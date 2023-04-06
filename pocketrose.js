@@ -26,7 +26,20 @@ const blacksmithButtonText = "去修理下裝備吧，等爆掉的時候你就�
 const innButtonText = "你看起來很疲憊的樣子呀，媽媽喊你回去休息啦！";
 const healthLoseRestoreRatio = 0.6;                                         // 当前HP小于最大HP触发住宿的比例
 const repaireEdureThreshold = 100;                                          // 装白耐久度下降触发修理的阈值
-const depositEveryBattleTimes = 5;                                          // 定期存钱的战数，设置为0表示关闭此功能
+const depositEveryBattleTimes = 0;                                          // 定期存钱的战数，设置为0表示关闭此功能
+
+// 转职建议字典，对当前能力的需求，分别是MP，攻击，防御，智力，精神，速度
+const transferCareerRequirementDict = {
+    '圣殿武士': [900, 225, 225, 300, 225, 275],
+    '剑圣': [900, 225, 275, 225, 275, 225],
+    '龙战士': [900, 225, 225, 300, 300, 225],
+    '拳王': [900, 225, 225, 300, 225, 275],
+    '咒灵师': [900, 300, 275, 225, 225, 300],
+    '大魔导士': [900, 275, 275, 225, 225, 275],
+    '贤者': [900, 275, 225, 225, 275, 300],
+    '狙击手': [900, 225, 300, 300, 225, 225],
+    '吟游诗人': [900, 225, 300, 225, 300, 225]
+};
 
 const pokemonDict = {
     '大猩猩(289)': '<a href="https://wiki.52poke.com/wiki/%E8%AF%B7%E5%81%87%E7%8E%8B" target="_blank" rel="noopener noreferrer">请假王(289)</a>',
@@ -873,10 +886,11 @@ function __personalStatus_equipment(htmlText) {
 function __personalStatus_transferCareer(htmlText) {
     $('input[value="转职"]').attr('id', 'transferCarrerButton');
 
+    $('table:first').find('tbody:first').append('<TR><TD id="suggestion" bgcolor="#F8F0E0" height="5"></TD></TR>');
+
     var statusForm = $('form[action="status.cgi"]')
     var id = statusForm.children('input[name="id"]').attr('value');
     var pass = statusForm.children('input[name="pass"]').attr('value');
-
     // 进入转职页面的时候，读取一下个人信息。把标准的HP/MP和五围读出来
     $.post('mydata.cgi',
         {
@@ -904,5 +918,34 @@ function __personalStatus_transferCareer(htmlText) {
                 var current = maxHealth + "/" + maxHealth + " " + maxMana + "/" + maxMana + " " + att + " " + def + " " + int + " " + spi + " " + spe;
                 $('#transferCarrerButton').attr('value', '看起来你现在满足了最低的定型标准(' + current + ')，你确认要转职吗？');
             }
+
+            // 是否需要给个转职建议呢？
+            var recommendationCareers = [];
+            var careers = Object.keys(transferCareerRequirementDict);
+            for (var careerIndex = 0; careerIndex < careers.length; careerIndex++) {
+                var career = careers[careerIndex];
+                var requirement = transferCareerRequirementDict[career];
+                if (maxMana >= requirement[0] && att >= requirement[1] && def >= requirement[2] &&
+                    int >= requirement[3] && spi >= requirement[4] && spe >= requirement[5]) {
+                    // 发现了可以推荐的职业
+                    recommendationCareers.push(career);
+                }
+            }
+
+            var message = "<font color='#FFFFFF'>";
+            if (recommendationCareers.length > 0) {
+                message += "年轻人，让我好好看看你，我向你推荐以下的新职业可以尝试一下：";
+                for (var ci = 0; ci < recommendationCareers.length; ci++) {
+                    message += "<b>" + recommendationCareers[ci] + "</b> "
+                }
+                message += "当然，并不能保证你一定能成功，毕竟大家都知道，现在是看脸的时代。正义凛然的我会在一旁祝福你好运的，加油！加油！加油！";
+            } else {
+                message += "你这战五渣一样的能力，就不要来烦我了，爱转啥转啥去，快点从正义凛然的我的眼前消失！消失！消失！";
+            }
+            message += "</font>";
+
+            $('#suggestion').html("<table bgcolor='#888888' border='0'><tbody><tr>\n" +
+                "<td bgcolor='#F8F0E0'><img src='https://pocketrose.itsns.net.cn/pocketrose/image/head/1117.gif' width='64' height='64' alt='夜苍凉'></td>" +
+                "<td width='100%' bgcolor='#000000'>" + message + "</td></tr></tbody></table>");
         });
 }
