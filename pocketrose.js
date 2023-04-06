@@ -18,6 +18,7 @@ const blacksmithButtonText = "去修理下装备吧，等爆掉你就知道痛�
 const innButtonText = "你看起来很疲惫的样子呀，妈妈喊你回去休息啦！";
 const healthLoseRestoreRatio = 0.6;                                         // 当前HP小于最大HP触发住宿的比例
 const repaireEdureThreshold = 100;                                          // 装白耐久度下降触发修理的阈值
+const depositEveryBattleTimes = 5;                                          // 定期存钱的战数，设置为0表示关闭此功能
 
 const pokemonDict = {
     '大猩猩(289)': '<a href="https://wiki.52poke.com/wiki/%E8%AF%B7%E5%81%87%E7%8E%8B" target="_blank" rel="noopener noreferrer">请假王(289)</a>',
@@ -598,7 +599,16 @@ function __battle(htmlText) {
     // 修改返回住宿按钮
     $('#innButton').attr('value', innButtonText);
 
-    if (__battle_checkIfShouldGoToBlacksmith($('#ueqtweixin').text())) {
+    var resultText = $('#ueqtweixin').text();
+    // 耐久度初始值10000以下的最大的质数，表示没有发现回血道具
+    var endure = 9973;
+    var start = resultText.indexOf("(自动)使用。(剩余");
+    if (start != -1) {
+        // 找到了回血道具
+        endure = resultText.substring(start + 10, start + 13);
+    }
+
+    if (__battle_checkIfShouldGoToBlacksmith(resultText, endure)) {
         // 只保留修理按钮
         $("#blacksmithButton").attr('tabIndex', 1);
         $('#innButton').parent().remove();
@@ -606,7 +616,7 @@ function __battle(htmlText) {
     } else {
         // 不需要修理按钮
         $('#blacksmithButton').parent().remove();
-        if (__battle_checkIfShouldGoToInn(htmlText)) {
+        if (__battle_checkIfShouldGoToInn(htmlText, endure)) {
             $("#innButton").attr('tabIndex', 1);
         } else {
             $("#bankButton").attr('tabIndex', 1);
@@ -615,15 +625,8 @@ function __battle(htmlText) {
 }
 
 // 分析是否需要去修理
-function __battle_checkIfShouldGoToBlacksmith(resultText) {
-    // 耐久度初始值10000以下的最大的质数，表示没有发现无忧
-    var endure = 9973;
-    var start = resultText.indexOf("(自动)使用。(剩余");
-    if (start != -1) {
-        // 找到了无忧之果
-        endure = resultText.substring(start + 10, start + 13);
-    }
-    if (endure % 100 == 0) {
+function __battle_checkIfShouldGoToBlacksmith(resultText, recoverItemEndure) {
+    if (recoverItemEndure % 100 == 0) {
         // 当无忧之果的耐久度掉到100整倍数时触发修理装备。
         return true;
     }
@@ -678,7 +681,7 @@ function __battle_checkIfShouldGoToBlacksmith(resultText) {
 // 1. 战败需要住宿
 // 2. 十二宫战斗胜利不需要住宿，直接存钱更好
 // 3. 战胜/平手情况下，检查生命力是否低于某个阈值
-function __battle_checkIfShouldGoToInn(htmlText) {
+function __battle_checkIfShouldGoToInn(htmlText, recoverItemEndure) {
     if (htmlText.indexOf("将 怪物 全灭！") == -1) {
         // 战败了，直接去住宿吧
         return true;
@@ -686,6 +689,10 @@ function __battle_checkIfShouldGoToInn(htmlText) {
     if (htmlText.indexOf("＜＜ - 十二神殿 - ＞＞") != -1) {
         // 十二宫战斗胜利不需要住宿，直接存钱更好
         return false;
+    }
+    if (depositEveryBattleTimes > 0 && recoverItemEndure % depositEveryBattleTimes == 0) {
+        // 存钱战数到了
+        return true;
     }
     var playerName = "";
     var remaingHealth = 0;
