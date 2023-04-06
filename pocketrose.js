@@ -686,8 +686,8 @@ function __battle_checkIfShouldGoToInn(htmlText, recoverItemEndure) {
         // 战败了，直接去住宿吧
         return true;
     }
-    if (htmlText.indexOf("＜＜ - 十二神殿 - ＞＞") != -1) {
-        // 十二宫战斗胜利不需要住宿，直接存钱更好
+    if (htmlText.indexOf("＜＜ - 十二神殿 - ＞＞") != -1 || htmlText.indexOf("＜＜ - 秘宝之岛 - ＞＞") != -1) {
+        // 十二宫和秘宝之岛战斗胜利不需要住宿，直接存钱更好
         return false;
     }
     if (depositEveryBattleTimes > 0 && recoverItemEndure % depositEveryBattleTimes == 0) {
