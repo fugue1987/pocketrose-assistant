@@ -529,28 +529,7 @@ function replacePkm(page) {
     if (location.href.includes(page)) {
         $(document).ready(function () {
             if (enablePokemonWikiFuture) {
-                $('body *').each(function () {
-                    $(this).contents().filter(function () {
-                        return this.nodeType === 3;
-                    }).each(function (idx, text) {
-                        let newText = this.textContent;
-                        for (let i = 0; i < pokemonDictKeys.length; i++) {
-                            if (newText.includes(pokemonDictKeys[i])) {
-                                newText = newText.replace(pokemonDictKeys[i], pokemonDict[pokemonDictKeys[i]]);
-                            }
-                        }
-                        if (newText !== this.textContent) {
-                            const $newContent = $('<span>').html(newText);
-                            const parentElement = this.parentElement;
-                            $(this).replaceWith($newContent);
-                            $(parentElement).children().each(function () {
-                                if (this.nodeType === 3) {
-                                    $(this).replaceWith(this.textContent);
-                                }
-                            });
-                        }
-                    })
-                })
+                processPokemonWikiReplacement();
             }
             if (location.href.includes("battle.cgi")) {
                 postProcessBattleRelatedFunctionalities($('html').html());
@@ -563,6 +542,34 @@ function replacePkm(page) {
             }
         })
     }
+}
+
+// ============================================================================
+// 宝可梦百科扩展功能
+// ============================================================================
+function processPokemonWikiReplacement() {
+    $('body *').each(function () {
+        $(this).contents().filter(function () {
+            return this.nodeType === 3;
+        }).each(function (idx, text) {
+            let newText = this.textContent;
+            for (let i = 0; i < pokemonDictKeys.length; i++) {
+                if (newText.includes(pokemonDictKeys[i])) {
+                    newText = newText.replace(pokemonDictKeys[i], pokemonDict[pokemonDictKeys[i]]);
+                }
+            }
+            if (newText !== this.textContent) {
+                const $newContent = $('<span>').html(newText);
+                const parentElement = this.parentElement;
+                $(this).replaceWith($newContent);
+                $(parentElement).children().each(function () {
+                    if (this.nodeType === 3) {
+                        $(this).replaceWith(this.textContent);
+                    }
+                });
+            }
+        })
+    });
 }
 
 // ============================================================================
