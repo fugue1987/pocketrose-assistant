@@ -718,6 +718,10 @@ function __battle_checkIfShouldGoToInn(htmlText, recoverItemEndure) {
     if (remaingHealth <= maxHealth * healthLoseRestoreRatio) {
         return true;
     }
+    // 设置了定期存钱，但是没有到战数，那么就去住宿吧
+    if (depositEveryBattleTimes > 0) {
+        return true;
+    }
     return false;
 }
 
