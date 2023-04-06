@@ -13,9 +13,10 @@
 // @unwrap
 // ==/UserScript==
 
-const bankButtonText = "顺风不浪，逆风不怂，身上不要放太多的钱！";
-const blacksmithButtonText = "去修理下装备吧，等爆掉你就知道痛了！";
-const innButtonText = "你看起来很疲惫的样子呀，妈妈喊你回去休息啦！";
+const returnButtonText = "少年輕輕的離開，沒有帶走一片雲彩！";
+const bankButtonText = "順風不浪，逆風不慫，身上不要放太多的錢！";
+const blacksmithButtonText = "去修理下裝備吧，等爆掉的時候你就知道痛了！";
+const innButtonText = "你看起來很疲憊的樣子呀，媽媽喊你回去休息啦！";
 const healthLoseRestoreRatio = 0.6;                                         // 当前HP小于最大HP触发住宿的比例
 const repaireEdureThreshold = 100;                                          // 装白耐久度下降触发修理的阈值
 const depositEveryBattleTimes = 5;                                          // 定期存钱的战数，设置为0表示关闭此功能
@@ -582,8 +583,7 @@ function __battle(htmlText) {
     $('input[value="返回更新"]').attr('id', 'updateButton');
     $('input[value="返回银行"]').attr('id', 'bankButton');
 
-    // 返回城市,返回更新按钮不再需要
-    $('#returnButton').parent().remove();
+    // 返回更新按钮不再需要
     $('#updateButton').parent().remove();
 
     // 修改返回修理按钮的行为，直接变成全部修理
@@ -599,6 +599,9 @@ function __battle(htmlText) {
     // 修改返回住宿按钮
     $('#innButton').attr('value', innButtonText);
 
+    // 修改返回按钮
+    $('#returnButton').attr('value', returnButtonText);
+
     var resultText = $('#ueqtweixin').text();
     // 耐久度初始值10000以下的最大的质数，表示没有发现回血道具
     var endure = 9973;
@@ -613,13 +616,24 @@ function __battle(htmlText) {
         $("#blacksmithButton").attr('tabIndex', 1);
         $('#innButton').parent().remove();
         $('#bankButton').parent().remove();
+        $('#returnButton').parent().remove();
     } else {
         // 不需要修理按钮
         $('#blacksmithButton').parent().remove();
-        if (__battle_checkIfShouldGoToInn(htmlText, endure)) {
+        var returnCode = __battle_checkIfShouldGoToInn(htmlText, endure);
+        if (returnCode == 1) {
+            // 住宿优先
             $("#innButton").attr('tabIndex', 1);
-        } else {
+            $('#returnButton').parent().remove();
+        }
+        if (returnCode == 2) {
+            // 存钱优先
             $("#bankButton").attr('tabIndex', 1);
+            $('#returnButton').parent().remove();
+        }
+        if (returnCode == 3) {
+            // 返回优先
+            $("#returnButton").attr('tabIndex', 1);
         }
     }
 }
@@ -681,18 +695,22 @@ function __battle_checkIfShouldGoToBlacksmith(resultText, recoverItemEndure) {
 // 1. 战败需要住宿
 // 2. 十二宫战斗胜利不需要住宿，直接存钱更好
 // 3. 战胜/平手情况下，检查生命力是否低于某个阈值
+// 返回值：
+// 1 - 表示住宿
+// 2 - 表示存钱
+// 3 - 表示返回
 function __battle_checkIfShouldGoToInn(htmlText, recoverItemEndure) {
     if (htmlText.indexOf("将 怪物 全灭！") == -1) {
         // 战败了，直接去住宿吧
-        return true;
+        return 1;
     }
     if (htmlText.indexOf("＜＜ - 十二神殿 - ＞＞") != -1 || htmlText.indexOf("＜＜ - 秘宝之岛 - ＞＞") != -1) {
         // 十二宫和秘宝之岛战斗胜利不需要住宿，直接存钱更好
-        return false;
+        return 2;
     }
     if (depositEveryBattleTimes > 0 && recoverItemEndure % depositEveryBattleTimes == 0) {
         // 存钱战数到了
-        return false;
+        return 2;
     }
     var playerName = "";
     var remaingHealth = 0;
@@ -716,13 +734,15 @@ function __battle_checkIfShouldGoToInn(htmlText, recoverItemEndure) {
     });
     // 生命力低于最大值的60%，住宿推荐
     if (remaingHealth <= maxHealth * healthLoseRestoreRatio) {
-        return true;
+        return 1;
     }
-    // 设置了定期存钱，但是没有到战数，那么就去住宿吧
     if (depositEveryBattleTimes > 0) {
-        return true;
+        // 设置了定期存钱，但是没有到战数，那么就直接返回吧
+        return 3;
+    } else {
+        // 没有设置定期存钱，那就表示每战都存钱
+        return 2;
     }
-    return false;
 }
 
 // ============================================================================
