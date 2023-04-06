@@ -5,13 +5,19 @@
 // @icon         data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==
 // @license      mit
 // @author       xiaohaiz,fugue
-// @version      1.3.2
+// @version      1.3.2-SNAPSHOT
 // @grant        unsafeWindow
 // @match        *://pocketrose.itsns.net.cn/*
 // @require      https://code.jquery.com/jquery-2.1.4.min.js
 // @run-at       document-start
 // @unwrap
 // ==/UserScript==
+
+// ============================================================================
+// 口 袋 助 手 郑 重 承 诺
+// ----------------------------------------------------------------------------
+// 所有验证码破解的相关领域都设立为禁区，我们绝对不触碰验证码破解！
+// ============================================================================
 
 const enablePokemonWikiFuture = true;                                       // 改成false就不再啓用百科功能
 const returnButtonText = "少年輕輕的離開，沒有帶走一片雲彩！";
