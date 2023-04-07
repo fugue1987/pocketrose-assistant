@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name         pocketrose assistant (物品賣出後自動存錢)
+// @name         pocketrose assistant (本地開發測試專用)
 // @namespace    https://pocketrose.itsns.net.cn/
 // @description  Intercepts and modifies pocketrose CGI requests
 // @icon         data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==
@@ -582,9 +582,16 @@ function replacePkm(page) {
 // 工具功能函数实现
 // ============================================================================
 
-function __common_fetchMaxValue(text) {
-    var index = text.indexOf("/");
-    return text.substring(index + 1);
+function __utilities_substringAfterSlash(text) {
+    var index = text.indexOf("/ ");
+    if (index != -1) {
+        return text.substring(index + 2);
+    }
+    index = text.indexOf("/");
+    if (index != -1) {
+        return text.substring(index + 1);
+    }
+    return text;
 }
 
 // ============================================================================
@@ -1043,8 +1050,8 @@ function __personalStatus_transferCareer(htmlText) {
             var statusTable = $(data).find('table').first().find('table').first();
             var healthText = $(statusTable.find('td')[5]).text();
             var manaText = $(statusTable.find('td')[7]).text();
-            var maxHealth = __common_fetchMaxValue(healthText);
-            var maxMana = __common_fetchMaxValue(manaText);
+            var maxHealth = __utilities_substringAfterSlash(healthText);
+            var maxMana = __utilities_substringAfterSlash(manaText);
 
             var att = $(statusTable.find('td')[13]).text();
             var def = $(statusTable.find('td')[15]).text();
@@ -1073,7 +1080,7 @@ function __personalStatus_transferCareer(htmlText) {
                 }
             }
 
-            var message = "<font color='#FFFFFF'>";
+            var message = "";
             if (recommendationCareers.length > 0) {
                 message += "年轻人，让我好好看看你，我向你推荐以下的新职业可以尝试一下：";
                 for (var ci = 0; ci < recommendationCareers.length; ci++) {
@@ -1083,10 +1090,6 @@ function __personalStatus_transferCareer(htmlText) {
             } else {
                 message += "你这战五渣一样的能力，就不要来烦我了，爱转啥转啥去，快点从正义凛然的我的眼前消失！消失！消失！";
             }
-            message += "</font>";
-
-            $('#suggestion').html("<table bgcolor='#888888' border='0'><tbody><tr>\n" +
-                "<td bgcolor='#F8F0E0'><img src='https://pocketrose.itsns.net.cn/pocketrose/image/head/1117.gif' width='64' height='64' alt='夜苍凉'></td>" +
-                "<td width='100%' bgcolor='#000000'>" + message + "</td></tr></tbody></table>");
+            __common_addPlayerMessage($('#suggestion'), "夜苍凉", message);
         });
 }
