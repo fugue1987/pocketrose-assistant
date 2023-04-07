@@ -1263,56 +1263,46 @@ function __personalStatus_transferCareer(htmlText) {
 
     var IdPass = __common_extractIdPassFromStatusForm();
     // 进入转职页面的时候，读取一下个人信息。把标准的HP/MP和五围读出来
-    $.post('mydata.cgi',
-        {
-            id: IdPass[0],
-            pass: IdPass[1],
-            mode: 'STATUS_PRINT'
-        },
-        function (data) {
-            var statusTable = $(data).find('table').first().find('table').first();
-            var healthText = $(statusTable.find('td')[5]).text();
-            var manaText = $(statusTable.find('td')[7]).text();
-            var maxHealth = __utilities_substringAfterSlash(healthText);
-            var maxMana = __utilities_substringAfterSlash(manaText);
+    __common_fetchPersonalInformation(IdPass[0], IdPass[1], function (id, pass, info) {
+        var mhp = info["MAX_HP"];
+        var mmp = info["MAX_MP"];
+        var at = info["AT"];
+        var df = info["DF"];
+        var sa = info["SA"];
+        var sd = info["SD"];
+        var sp = info["SP"];
+        var stableCareer = (mhp == 1999 && mmp >= 1000
+            && at >= 300 && df >= 300 && sa >= 300 && sd >= 300 && sp >= 300);
 
-            var att = $(statusTable.find('td')[13]).text();
-            var def = $(statusTable.find('td')[15]).text();
-            var int = $(statusTable.find('td')[17]).text();
-            var spi = $(statusTable.find('td')[19]).text();
-            var spe = $(statusTable.find('td')[21]).text();
+        if (stableCareer) {
+            // 看起来这能力已经可以定型了，给个警告吧，确认是否要转职！
+            var current = info["HP"] + "/" + mhp + " " + info["MP"] + "/" + mmp + " " + at + " " + df + " " + sa + " " + sd + " " + sp;
+            $('#transferCarrerButton').attr('value', '看起来你现在满足了最低的定型标准(' + current + ')，你确认要转职吗？');
+        }
 
-            var stableCareer = (maxHealth == 1999 && maxMana >= 1000
-                && att >= 300 && def >= 300 && int >= 300 && spi >= 300 && spe >= 300);
-            if (stableCareer) {
-                // 看起来这能力已经可以定型了，给个警告吧，确认是否要转职！
-                var current = maxHealth + "/" + maxHealth + " " + maxMana + "/" + maxMana + " " + att + " " + def + " " + int + " " + spi + " " + spe;
-                $('#transferCarrerButton').attr('value', '看起来你现在满足了最低的定型标准(' + current + ')，你确认要转职吗？');
+        // 是否需要给个转职建议呢？
+        var recommendationCareers = [];
+        var careers = Object.keys(transferCareerRequirementDict);
+        for (var careerIndex = 0; careerIndex < careers.length; careerIndex++) {
+            var career = careers[careerIndex];
+            var requirement = transferCareerRequirementDict[career];
+            if (mmp >= requirement[0] && at >= requirement[1] && df >= requirement[2] &&
+                sa >= requirement[3] && sd >= requirement[4] && sp >= requirement[5]) {
+                // 发现了可以推荐的职业
+                recommendationCareers.push(career);
             }
+        }
 
-            // 是否需要给个转职建议呢？
-            var recommendationCareers = [];
-            var careers = Object.keys(transferCareerRequirementDict);
-            for (var careerIndex = 0; careerIndex < careers.length; careerIndex++) {
-                var career = careers[careerIndex];
-                var requirement = transferCareerRequirementDict[career];
-                if (maxMana >= requirement[0] && att >= requirement[1] && def >= requirement[2] &&
-                    int >= requirement[3] && spi >= requirement[4] && spe >= requirement[5]) {
-                    // 发现了可以推荐的职业
-                    recommendationCareers.push(career);
-                }
+        var message = "";
+        if (recommendationCareers.length > 0) {
+            message += "年轻人，让我好好看看你，我向你推荐以下的新职业可以尝试一下：";
+            for (var ci = 0; ci < recommendationCareers.length; ci++) {
+                message += "<b>" + recommendationCareers[ci] + "</b> "
             }
-
-            var message = "";
-            if (recommendationCareers.length > 0) {
-                message += "年轻人，让我好好看看你，我向你推荐以下的新职业可以尝试一下：";
-                for (var ci = 0; ci < recommendationCareers.length; ci++) {
-                    message += "<b>" + recommendationCareers[ci] + "</b> "
-                }
-                message += "当然，并不能保证你一定能成功，毕竟大家都知道，现在是看脸的时代。正义凛然的我会在一旁祝福你好运的，加油！加油！加油！";
-            } else {
-                message += "你这战五渣一样的能力，就不要来烦我了，爱转啥转啥去，快点从正义凛然的我的眼前消失！消失！消失！";
-            }
-            __common_appendNPCMessage(message);
-        });
+            message += "当然，并不能保证你一定能成功，毕竟大家都知道，现在是看脸的时代。正义凛然的我会在一旁祝福你好运的，加油！加油！加油！";
+        } else {
+            message += "你这战五渣一样的能力，就不要来烦我了，爱转啥转啥去，快点从正义凛然的我的眼前消失！消失！消失！";
+        }
+        __common_appendNPCMessage(message);
+    });
 }
