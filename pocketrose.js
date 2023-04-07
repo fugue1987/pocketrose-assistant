@@ -5,7 +5,7 @@
 // @icon         data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==
 // @license      mit
 // @author       xiaohaiz,fugue
-// @version      1.3.2-SNAPSHOT
+// @version      1.4.1
 // @grant        unsafeWindow
 // @match        *://pocketrose.itsns.net.cn/*
 // @require      https://code.jquery.com/jquery-2.1.4.min.js
@@ -654,6 +654,79 @@ function __common_extractTownLocationAndProcess(id, pass, townLocationProcessor)
     });
 }
 
+function __common_item_selectBag(parentElement) {
+    var checkedCount = 0;
+    parentElement.find("input[type='checkbox']").each(function (_idx, inputElement) {
+        var inputTableCell = $(inputElement).parent();
+        var name = $(inputTableCell).next().next().text();
+        var category = $(inputTableCell).next().next().next().text();
+        if (category == "物品" && name == "百宝袋") {
+            $(inputElement).prop('checked', true);
+            checkedCount++;
+        } else {
+            $(inputElement).prop('checked', false);
+        }
+    });
+    return checkedCount;
+}
+
+function __common_item_selectCage(parentElement) {
+    var checkedCount = 0;
+    parentElement.find("input[type='checkbox']").each(function (_idx, inputElement) {
+        var inputTableCell = $(inputElement).parent();
+        var name = $(inputTableCell).next().next().text();
+        var category = $(inputTableCell).next().next().next().text();
+        if (category == "物品" && name == "黄金笼子") {
+            $(inputElement).prop('checked', true);
+            checkedCount++;
+        } else {
+            $(inputElement).prop('checked', false);
+        }
+    });
+    return checkedCount;
+}
+
+function __common_item_selectAllGems(parentElement) {
+    var checkedCount = 0;
+    parentElement.find("input[type='checkbox']").each(function (_idx, inputElement) {
+        var inputTableCell = $(inputElement).parent();
+        var name = $(inputTableCell).next().next().text();
+        var category = $(inputTableCell).next().next().next().text();
+        if (category == "物品" && name.indexOf("宝石") != -1) {
+            $(inputElement).prop('checked', true);
+            checkedCount++;
+        } else {
+            $(inputElement).prop('checked', false);
+        }
+    });
+    return checkedCount;
+}
+
+function __common_item_selectAllStorableItems(parentElement) {
+    var checkedCount = 0;
+    parentElement.find("input[type='checkbox']").each(function (_idx, inputElement) {
+        var inputTableCell = $(inputElement).parent();
+        var name = $(inputTableCell).next().next().text();
+        var category = $(inputTableCell).next().next().next().text();
+        if (category == "物品" && name == "百宝袋") {
+            $(inputElement).prop('checked', false);
+        } else if (category == "物品" && name == "黄金笼子") {
+            $(inputElement).prop('checked', false);
+        } else if ($(inputElement).attr('disabled') != undefined) {
+            // 无法放入袋子的物品，忽略
+        } else {
+            var using = $(inputTableCell).next().text();
+            if (using == "★") {
+                $(inputElement).prop('checked', false);
+            } else {
+                $(inputElement).prop('checked', true);
+                checkedCount++;
+            }
+        }
+    });
+    return checkedCount;
+}
+
 // ============================================================================
 // 宝可梦百科扩展功能
 // ============================================================================
@@ -1021,38 +1094,17 @@ function __personalStatus_view(htmlText) {
 
 // 个人状态 -> 物品使用．装备
 function __personalStatus_equipment(htmlText) {
-    // 查找物品栏中有百宝袋和黄金笼子
-    var bagLocation = -1;
-    var cageLocation = -1;
-    $("td:parent").each(function (_i, e) {
-        if ($(e).text() == "百宝袋") {
-            // 百宝袋对应的checkbox
-            var bagCheckboxElement = $(e).prev().prev().children("input");
-            if (bagCheckboxElement != undefined) {
-                bagLocation = bagCheckboxElement.attr("value");
-            }
-        }
-        if ($(e).text() == "黄金笼子") {
-            // 黄金笼子对应的checkbox
-            var cageCheckboxElement = $(e).prev().prev().children("input");
-            if (cageCheckboxElement != undefined) {
-                cageLocation = cageCheckboxElement.attr("value");
-            }
-        }
-    });
-
-    var statusForm = $('form[action="status.cgi"]')
-    var id = statusForm.children('input[name="id"]').attr('value');
-    var pass = statusForm.children('input[name="pass"]').attr('value');
-    var bagFormHtml = "<form action='mydata.cgi' method='post'><input type='hidden' name='id' value='" + id + "'><input type='hidden' name='pass' value='" + pass + "'><input type='hidden' name='mode' value='USE'><input type='hidden' name='chara' value='1'><input type='hidden' name='item" + bagLocation + "' value='" + bagLocation + "'><input type='submit' value='直接进入百宝袋'></form>";
-    var cageFormHtml = "<form action='mydata.cgi' method='post'><input type='hidden' name='id' value='" + id + "'><input type='hidden' name='pass' value='" + pass + "'><input type='hidden' name='mode' value='USE'><input type='hidden' name='chara' value='1'><input type='hidden' name='item" + cageLocation + "' value='" + cageLocation + "'><input type='submit' value='直接进入黄金笼子'></form>";
-
     $("td:parent").each(function (_i, e) {
         if ($(e).text() == "所持金") {
-            $(e).parent().parent().prepend("<tr><td colspan='6' bgcolor='#E8E8D0' id='bagCageCell'></td></tr>");
+            $(e).parent().parent().append("<tr><td colspan='6' bgcolor='#E8E8D0' id='extMenuLocation'></td></tr>");
         }
     });
-    $("#bagCageCell").html(bagFormHtml + cageFormHtml);
+    var extMenu = "";
+    extMenu += "<li><a href='javascript:void(0)' id='goIntoBag'>进入百宝袋</a></li>"
+    extMenu += "<li><a href='javascript:void(0)' id='goIntoCage'>进入黄金笼子</a></li>"
+    extMenu += "<li><a href='javascript:void(0)' id='putAllGemsIntoBag'>所有的宝石放入百宝袋</a></li>"
+    extMenu += "<li><a href='javascript:void(0)' id='putAllItemsIntoBag'>所有非必要装备/物品放入百宝袋</a></li>"
+    $("#extMenuLocation").html(extMenu);
 
     $("input[type='checkbox']").each(function (_idx, inputElement) {
         var inputTableCell = $(inputElement).parent();
@@ -1076,11 +1128,47 @@ function __personalStatus_equipment(htmlText) {
                 .next().next().next().next()
                 .next().next().next().next().text();
 
-            if (itemExpFull = currentExp >= maxExp) {
+            if (currentExp >= maxExp) {
                 var nameHtml = $(inputTableCell).next().next().html();
                 nameHtml = "<font color='red'><b>[满]</b></font>" + nameHtml;
                 $(inputTableCell).next().next().html(nameHtml);
             }
+        }
+    });
+
+    $("#goIntoBag").click(function () {
+        if (__common_item_selectBag($("html")) > 0) {
+            $("option[value='USE']").prop("selected", true);
+            $("option[value='CONSECRATE']").prop("selected", false);
+            $("option[value='PUTINBAG']").prop("selected", false);
+            $("input[value='确定']").trigger("click");
+        }
+    });
+
+    $("#goIntoCage").click(function () {
+        if (__common_item_selectCage($("html")) > 0) {
+            $("option[value='USE']").prop("selected", true);
+            $("option[value='CONSECRATE']").prop("selected", false);
+            $("option[value='PUTINBAG']").prop("selected", false);
+            $("input[value='确定']").trigger("click");
+        }
+    });
+
+    $("#putAllGemsIntoBag").click(function () {
+        if (__common_item_selectAllGems($("html")) > 0) {
+            $("option[value='USE']").prop("selected", false);
+            $("option[value='CONSECRATE']").prop("selected", false);
+            $("option[value='PUTINBAG']").prop("selected", true);
+            $("input[value='确定']").trigger("click");
+        }
+    });
+
+    $("#putAllItemsIntoBag").click(function () {
+        if (__common_item_selectAllStorableItems($("html")) > 0) {
+            $("option[value='USE']").prop("selected", false);
+            $("option[value='CONSECRATE']").prop("selected", false);
+            $("option[value='PUTINBAG']").prop("selected", true);
+            $("input[value='确定']").trigger("click");
         }
     });
 }
