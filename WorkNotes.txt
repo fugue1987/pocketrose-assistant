@@ -1,0 +1,16 @@
+全部存入
+POST: town.cgi
+PAYLOAD:
+  azukeru: all
+  id: x
+  pass: x
+  mode: BANK_SELL
+
+武器屋
+POST: town.cgi
+PAYLOAD:
+  id: x
+  pass: x
+  town: x
+  con_str: 50
+  mode: ARM_SHOP

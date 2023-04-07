@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name         pocketrose assistant
+// @name         pocketrose assistant (物品賣出後自動存錢)
 // @namespace    https://pocketrose.itsns.net.cn/
 // @description  Intercepts and modifies pocketrose CGI requests
 // @icon         data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==
@@ -19,7 +19,11 @@
 // 所有验证码破解的相关领域都设立为禁区，我们绝对不触碰验证码破解！
 // ============================================================================
 
+const POCKETROSE_DOMAIN = "https://pocketrose.itsns.net.cn/pocketrose";
+
 const enablePokemonWikiFuture = true;                                       // 改成false就不再啓用百科功能
+const enableAutoDepositWhenItemSold = true;                                 // 物品卖出后自动存钱功能
+
 const returnButtonText = "少年輕輕的離開，沒有帶走一片雲彩！";
 const bankButtonText = "順風不浪，逆風不慫，身上不要放太多的錢！";
 const blacksmithButtonText = "去修理下裝備吧，等爆掉的時候你就知道痛了！";
@@ -39,6 +43,17 @@ const transferCareerRequirementDict = {
     '贤者': [900, 275, 225, 225, 275, 325],
     '狙击手': [900, 225, 325, 325, 225, 225],
     '吟游诗人': [900, 225, 325, 225, 325, 225]
+};
+
+const playerCharacterDict = {
+    '夜苍凉': {
+        'image': POCKETROSE_DOMAIN + '/image/head/1117.gif',
+        'intro': ''
+    },
+    '青鸟': {
+        'image': POCKETROSE_DOMAIN + '/image/head/7184.gif',
+        'intro': ''
+    }
 };
 
 const pokemonDict = {
@@ -563,9 +578,40 @@ function replacePkm(page) {
     }
 }
 
+// ============================================================================
+// 工具功能函数实现
+// ============================================================================
+
 function __common_fetchMaxValue(text) {
     var index = text.indexOf("/");
     return text.substring(index + 1);
+}
+
+// ============================================================================
+// 通用辅助功能函数实现
+// ============================================================================
+
+function __common_generatePlayerImage(playerName) {
+    var player = playerCharacterDict[playerName];
+    return "<img src='" + player["image"] + "' width='64' height='64' alt='" + playerName + "'>";
+}
+
+function __common_addPlayerMessage(targetDOM, playerName, message) {
+    var image = __common_generatePlayerImage(playerName);
+    var formattedMessage = "<font color='#FFFFFF'>" + message + "</font>";
+    targetDOM.html("<table bgcolor='#888888' border='0'><tbody><tr>" +
+        "<td bgcolor='#F8F0E0'>" + image + "</td>" +
+        "<td width='100%' bgcolor='#000000'>" + formattedMessage + "</td></tr></tbody></table>");
+}
+
+/**
+ * 从当前页面定位status表单，提取出id和pass
+ */
+function __common_extractIdPassFromStatusForm() {
+    var statusForm = $('form[action="status.cgi"]')
+    var id = statusForm.children('input[name="id"]').attr('value');
+    var pass = statusForm.children('input[name="pass"]').attr('value');
+    return [id, pass];
 }
 
 // ============================================================================
@@ -784,7 +830,12 @@ function __battle_checkIfShouldGoToInn(htmlText, recoverItemEndure) {
 // ============================================================================
 function postProcessCityRelatedFunctionalities(htmlText) {
     if (htmlText.indexOf("* 宠物图鉴 *") != -1) {
+        // 宠物图鉴
         __city_petMap(htmlText);
+    }
+    if (htmlText.indexOf(" Gold卖出。") != -1) {
+        // 物品卖出完成
+        __city_itemSold(htmlText);
     }
 }
 
@@ -810,6 +861,44 @@ function __city_petMap(htmlText) {
         currentText += "<BR><font color='#FFFFFF'>" + petIdText + "</font>";
         messageBox.html(currentText);
     }
+}
+
+/**
+ * 卖出物品后，自动存入银行
+ */
+function __city_itemSold(htmlText) {
+    // 最最下面添加一个player的表格
+    $('hr:last').prepend("<TABLE WIDTH='100%' bgcolor='#888888'><tbody><tr>" +
+        "<TD id='playerCell' bgcolor='#F8F0E0' height='5'></TD>" +
+        "</tr></tbody></TABLE>");
+
+    var IdPass = __common_extractIdPassFromStatusForm();
+    // 获取到卖出的金钱数
+    var messageElement = $('h2:first');
+    var price = messageElement.find('b:first').text();
+
+    if (price < 10000) {
+        // 卖的钱太少了，不值得为你做点啥
+        var lowPriceMessage = "嚯，就卖了这几个子儿，我都想不出能拿那只眼看你。赶紧麻利儿的该干嘛干嘛去，尽裹乱。";
+        __common_addPlayerMessage($("#playerCell"), "青鸟", lowPriceMessage);
+        return;
+    }
+
+    if (!enableAutoDepositWhenItemSold) {
+        // 卖的钱倒是够了，奈何自动存钱功能被禁用了
+        var noDepositMessage = "善意提醒，回去路上经过十字坡的时候，看见那颗大树的时候，自己当心点。";
+        __common_addPlayerMessage($("#playerCell"), "青鸟", noDepositMessage);
+        return;
+    }
+
+    $.post("town.cgi",
+        {azukeru: "all", id: IdPass[0], pass: IdPass[1], mode: "BANK_SELL"},
+        function () {
+            var messageHtml = messageElement.html() + "已经自动存入银行。";
+            messageElement.html(messageHtml);
+            var autoDepositMessage = "我去，还挺有钱的嘛。日行一善，我已经帮你存到银行了，不用谢，请叫我雷锋。";
+            __common_addPlayerMessage($("#playerCell"), "青鸟", autoDepositMessage);
+        });
 }
 
 // ============================================================================
