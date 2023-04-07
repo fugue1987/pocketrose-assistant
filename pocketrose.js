@@ -654,21 +654,9 @@ function __common_appendNPCMessage(message) {
     $("#npcMessage").html(currentMessage + formattedMessage);
 }
 
-function __common_generatePlayerImage(playerName) {
-    var player = playerCharacterDict[playerName];
-    return "<img src='" + player["image"] + "' width='64' height='64' alt='" + playerName + "'>";
-}
-
-function __common_addPlayerMessage(targetDOM, playerName, message) {
-    var image = __common_generatePlayerImage(playerName);
-    var formattedMessage = "<font color='#FFFFFF'>" + message + "</font>";
-    targetDOM.html("<table bgcolor='#888888' border='0'><tbody><tr>" +
-        "<td bgcolor='#F8F0E0'>" + image + "</td>" +
-        "<td width='100%' bgcolor='#000000' id='playerMessage'>" + formattedMessage + "</td></tr></tbody></table>");
-}
-
 /**
  * 从当前页面定位status表单，提取出id和pass
+ * @private
  */
 function __common_extractIdPassFromStatusForm() {
     var statusForm = $('form[action="status.cgi"]');
