@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name         pocketrose assistant
+// @name         pocketrose assistant (极速战斗版)
 // @namespace    https://pocketrose.itsns.net.cn/
 // @description  Intercepts and modifies pocketrose CGI requests
 // @icon         data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==
@@ -564,7 +564,9 @@ const pokemonDict = {
     '刺角昆(268)': '<a href="https://wiki.52poke.com/wiki/%E7%9B%BE%E7%94%B2%E8%8C%A7" target="_blank" rel="noopener noreferrer">盾甲茧(268)</a>'
 }
 
-const pokemonDictKeys = Object.keys(pokemonDict)
+const pokemonDictKeys = Object.keys(pokemonDict);
+
+const _ENABLE_FLASH_BATTLE = true;
 
 $(function () {
     replacePkm('pocketrose')
@@ -818,15 +820,24 @@ function __battle(htmlText) {
             // 住宿优先
             $("#innButton").attr('tabIndex', 1);
             $('#returnButton').parent().remove();
+            if (_ENABLE_FLASH_BATTLE) {
+                $("#innButton").trigger("click");
+            }
         }
         if (returnCode == 2) {
             // 存钱优先
             $("#bankButton").attr('tabIndex', 1);
             $('#returnButton').parent().remove();
+            if (_ENABLE_FLASH_BATTLE) {
+                $("#bankButton").trigger("click");
+            }
         }
         if (returnCode == 3) {
             // 返回优先
             $("#returnButton").attr('tabIndex', 1);
+            if (_ENABLE_FLASH_BATTLE) {
+                $("#returnButton").trigger("click");
+            }
         }
     }
 }
