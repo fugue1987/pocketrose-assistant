@@ -601,17 +601,24 @@ function __common_addPlayerMessage(targetDOM, playerName, message) {
     var formattedMessage = "<font color='#FFFFFF'>" + message + "</font>";
     targetDOM.html("<table bgcolor='#888888' border='0'><tbody><tr>" +
         "<td bgcolor='#F8F0E0'>" + image + "</td>" +
-        "<td width='100%' bgcolor='#000000'>" + formattedMessage + "</td></tr></tbody></table>");
+        "<td width='100%' bgcolor='#000000' id='playerMessage'>" + formattedMessage + "</td></tr></tbody></table>");
 }
 
 /**
  * 从当前页面定位status表单，提取出id和pass
  */
 function __common_extractIdPassFromStatusForm() {
-    var statusForm = $('form[action="status.cgi"]')
+    var statusForm = $('form[action="status.cgi"]');
     var id = statusForm.children('input[name="id"]').attr('value');
     var pass = statusForm.children('input[name="pass"]').attr('value');
     return [id, pass];
+}
+
+function __common_extractTownLocationAndProcess(id, pass, townLocationProcessor) {
+    $.post("status.cgi", {id: id, pass: pass, mode: "STATUS"}, function (data) {
+        var townLocation = $(data).find('input[name="town"]:first').attr('value');
+        townLocationProcessor(id, pass, townLocation);
+    });
 }
 
 // ============================================================================
@@ -881,6 +888,10 @@ function __city_itemSold(htmlText) {
         // 卖的钱太少了，不值得为你做点啥
         var lowPriceMessage = "嚯，就卖了这几个子儿，我都想不出能拿那只眼看你。赶紧麻利儿的该干嘛干嘛去，尽裹乱。";
         __common_addPlayerMessage($("#playerCell"), "青鸟", lowPriceMessage);
+        __common_extractTownLocationAndProcess(IdPass[0], IdPass[1], function (id, pass, town) {
+            $('form[action="status.cgi"]').attr('style', 'float:left');
+            $('form[action="status.cgi"]').append(__city_itemSold_generateReturnForm(id, pass, town));
+        });
         return;
     }
 
@@ -888,6 +899,10 @@ function __city_itemSold(htmlText) {
         // 卖的钱倒是够了，奈何自动存钱功能被禁用了
         var noDepositMessage = "善意提醒，回去路上经过十字坡的时候，看见那颗大树的时候，自己当心点。";
         __common_addPlayerMessage($("#playerCell"), "青鸟", noDepositMessage);
+        __common_extractTownLocationAndProcess(IdPass[0], IdPass[1], function (id, pass, town) {
+            $('form[action="status.cgi"]').attr('style', 'float:left');
+            $('form[action="status.cgi"]').append(__city_itemSold_generateReturnForm(id, pass, town));
+        });
         return;
     }
 
@@ -898,7 +913,44 @@ function __city_itemSold(htmlText) {
             messageElement.html(messageHtml);
             var autoDepositMessage = "我去，还挺有钱的嘛。日行一善，我已经帮你存到银行了，不用谢，请叫我雷锋。";
             __common_addPlayerMessage($("#playerCell"), "青鸟", autoDepositMessage);
+            __common_extractTownLocationAndProcess(IdPass[0], IdPass[1], function (id, pass, town) {
+                $('form[action="status.cgi"]').attr('style', 'float:left');
+                $('form[action="status.cgi"]').append(__city_itemSold_generateReturnForm(id, pass, town));
+            });
         });
+}
+
+function __city_itemSold_generateReturnForm(id, pass, town) {
+    var formHtml = "";
+    formHtml += "<form action='town.cgi' method='post' style='float:left'>" +
+        "<input type=hidden name=id value=" + id + ">" +
+        "<input type=hidden name=pass value=" + pass + ">" +
+        "<input type=hidden name=town value=" + town + ">" +
+        "<input type=hidden name=con_str value=50>" +
+        "<input type=hidden name=mode value=ARM_SHOP>" +
+        "<input type=submit value='回武器屋'>" + "</form>";
+    formHtml += "<form action='town.cgi' method='post' style='float:left'>" +
+        "<input type=hidden name=id value=" + id + ">" +
+        "<input type=hidden name=pass value=" + pass + ">" +
+        "<input type=hidden name=town value=" + town + ">" +
+        "<input type=hidden name=con_str value=50>" +
+        "<input type=hidden name=mode value=PRO_SHOP>" +
+        "<input type=submit value='回防具屋'>" + "</form>";
+    formHtml += "<form action='town.cgi' method='post' style='float:left'>" +
+        "<input type=hidden name=id value=" + id + ">" +
+        "<input type=hidden name=pass value=" + pass + ">" +
+        "<input type=hidden name=town value=" + town + ">" +
+        "<input type=hidden name=con_str value=50>" +
+        "<input type=hidden name=mode value=ACC_SHOP>" +
+        "<input type=submit value='回饰品屋'>" + "</form>";
+    formHtml += "<form action='town.cgi' method='post' style='float:left'>" +
+        "<input type=hidden name=id value=" + id + ">" +
+        "<input type=hidden name=pass value=" + pass + ">" +
+        "<input type=hidden name=town value=" + town + ">" +
+        "<input type=hidden name=con_str value=50>" +
+        "<input type=hidden name=mode value=ITEM_SHOP>" +
+        "<input type=submit value='回物品屋'>" + "</form>";
+    return formHtml;
 }
 
 // ============================================================================

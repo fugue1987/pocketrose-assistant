@@ -1,3 +1,10 @@
+主页
+POST: status.cgi
+PAYLOAD:
+  id: x
+  pass: x
+  mode: STATUS
+
 全部存入
 POST: town.cgi
 PAYLOAD:
@@ -14,3 +21,30 @@ PAYLOAD:
   town: x
   con_str: 50
   mode: ARM_SHOP
+
+防具屋
+POST: town.cgi
+PAYLOAD:
+  id: x
+  pass: x
+  town: x
+  con_str: 50
+  mode: PRO_SHOP
+
+饰品屋
+POST: town.cgi
+PAYLOAD:
+  id: x
+  pass: x
+  town: x
+  con_str: 50
+  mode: ACC_SHOP
+
+物品屋
+POST: town.cgi
+PAYLOAD:
+  id: x
+  pass: x
+  town: x
+  con_str: 50
+  mode: ITEM_SHOP
