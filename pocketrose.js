@@ -596,7 +596,25 @@ function replacePkm(page) {
 // ============================================================================
 
 /**
+ * 取斜杠前的内容，支持斜杠前带一个空格的情况。
+ * @param text
+ * @private
+ */
+function __utilities_substringBeforeSlash(text) {
+    var index = text.indexOf(" /");
+    if (index != -1) {
+        return text.substring(0, index);
+    }
+    index = text.indexOf("/");
+    if (index != -1) {
+        return text.substring(0, index);
+    }
+    return text;
+}
+
+/**
  * 取斜杠后的内容，支持斜杠后带一个空格的情况。
+ * @private
  */
 function __utilities_substringAfterSlash(text) {
     var index = text.indexOf("/ ");
@@ -612,6 +630,7 @@ function __utilities_substringAfterSlash(text) {
 
 /**
  * 判断指定的名字是否为属性重铠，支持齐心重铠的检查。
+ * @private
  */
 function __utilities_isHeavyArmor(name) {
     for (var i = 0; i < heavyArmorNameDict.length; i++) {
@@ -663,6 +682,44 @@ function __common_extractIdPassFromStatusForm() {
     var id = statusForm.children('input[name="id"]').attr('value');
     var pass = statusForm.children('input[name="pass"]').attr('value');
     return [id, pass];
+}
+
+/**
+ * 读取并解析个人状态中的基础信息，完成后回调传入的函数。
+ * @param id ID
+ * @param pass PASSWORD
+ * @param callback 回调函数
+ * @private
+ */
+function __common_fetchPersonalInformation(id, pass, callback) {
+    $.post('mydata.cgi', {id: id, pass: pass, mode: 'STATUS_PRINT'}, function (data) {
+        var statusTable = $(data).find('table').first().find('table').first();
+        var healthText = $(statusTable.find('td')[5]).text();
+        var manaText = $(statusTable.find('td')[7]).text();
+        var currentHealth = __utilities_substringBeforeSlash(healthText);
+        var maxHealth = __utilities_substringAfterSlash(healthText);
+        var currentMana = __utilities_substringBeforeSlash(manaText);
+        var maxMana = __utilities_substringAfterSlash(manaText);
+
+        var att = $(statusTable.find('td')[13]).text();
+        var def = $(statusTable.find('td')[15]).text();
+        var int = $(statusTable.find('td')[17]).text();
+        var spi = $(statusTable.find('td')[19]).text();
+        var spe = $(statusTable.find('td')[21]).text();
+
+        var info = {
+            "HP": currentHealth,
+            "MAX_HP": maxHealth,
+            "MP": currentMana,
+            "MAX_MP": maxMana,
+            "AT": att,
+            "DF": def,
+            "SA": int,
+            "SD": spi,
+            "SP": spe
+        };
+        callback(id, pass, info);
+    });
 }
 
 function __common_extractTownLocationAndProcess(id, pass, townLocationProcessor) {
