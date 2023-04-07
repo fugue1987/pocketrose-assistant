@@ -641,6 +641,25 @@ function __utilities_isHeavyArmor(name) {
     return false;
 }
 
+/**
+ * 检查装备是否已经满经验。
+ * @param name 装备名称
+ * @param power 装备威力
+ * @param experience 装备当前经验
+ * @private
+ */
+function __utilities_checkIfEquipmentFullExperience(name, power, experience) {
+    let maxExperience = 0;
+    if (__utilities_isHeavyArmor(name)) {
+        // 属性重铠满级经验为76000
+        maxExperience = 76000;
+    } else if (power != 0) {
+        power = Math.abs(power);
+        maxExperience = Math.floor(power * 0.2) * 1000;
+    }
+    return experience >= maxExperience;
+}
+
 // ============================================================================
 // 通用辅助功能函数实现
 // ============================================================================
@@ -1150,6 +1169,9 @@ function postProcessPersonalStatusRelatedFunctionalities(htmlText) {
     if (htmlText.indexOf("物品使用．装备") != -1) {
         __personalStatus_equipment(htmlText);
     }
+    if (htmlText.indexOf("物品 百宝袋 使用。") != -1) {
+        __personalStatus_treasureBag(htmlText);
+    }
     if (htmlText.indexOf("* 转职神殿 *") != -1) {
         __personalStatus_transferCareer(htmlText);
     }
@@ -1250,6 +1272,28 @@ function __personalStatus_equipment(htmlText) {
             $("option[value='CONSECRATE']").prop("selected", false);
             $("option[value='PUTINBAG']").prop("selected", true);
             $("input[value='确定']").trigger("click");
+        }
+    });
+}
+
+/**
+ * 百宝袋的界面的增强实现。
+ * @param htmlText 原始HTML文本
+ * @private
+ */
+function __personalStatus_treasureBag(htmlText) {
+    $("input[type='checkbox']").each(function (_idx, input) {
+        let td = $(input).parent();
+        let name = $(td).next().text();
+        let category = $(td).next().next().text();
+        let power = $(td).next().next().next().text();
+        let exp = $(td).next().next().next().next().next().next().next().next().next().text();
+        if (category == "武器" || category == "防具" || category == "饰品") {
+            if (__utilities_checkIfEquipmentFullExperience(name, power, exp)) {
+                let nameHtml = $(td).next().html();
+                nameHtml = "<font color='red'><b>[满]</b></font>" + nameHtml;
+                $(td).next().html(nameHtml);
+            }
         }
     });
 }
