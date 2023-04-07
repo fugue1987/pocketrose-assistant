@@ -48,3 +48,11 @@ PAYLOAD:
   town: x
   con_str: 50
   mode: ITEM_SHOP
+
+取钱
+POST: town.cgi
+PAYLOAD:
+  dasu: x
+  id:
+  pass:
+  mode: BANK_BUY

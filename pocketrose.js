@@ -64,6 +64,10 @@ const playerCharacterDict = {
     '青鸟': {
         'image': POCKETROSE_DOMAIN + '/image/head/7184.gif',
         'intro': ''
+    },
+    '末末': {
+        'image': POCKETROSE_DOMAIN + '/image/head/8173.gif',
+        'intro': ''
     }
 };
 
@@ -1049,6 +1053,9 @@ function postProcessCityRelatedFunctionalities(htmlText) {
         // 宠物图鉴
         __city_petMap(htmlText);
     }
+    if (htmlText.indexOf("* 运 送 屋 *") != -1) {
+        __town_houseForSendingItems(htmlText);
+    }
     if (htmlText.indexOf(" Gold卖出。") != -1) {
         // 物品卖出完成
         __city_itemSold(htmlText);
@@ -1076,6 +1083,45 @@ function __city_petMap(htmlText) {
         var currentText = messageBox.html();
         currentText += "<BR><font color='#FFFFFF'>" + petIdText + "</font>";
         messageBox.html(currentText);
+    }
+}
+
+/**
+ * 城市送物屋增强实现。
+ * @param htmlText HTML文本
+ * @private
+ */
+function __town_houseForSendingItems(htmlText) {
+    __common_contructNPCMessageTable("末末");
+    __common_appendNPCMessage("我来啦！");
+
+    $("input[value='发送']").attr("id", "sendItemSubmit");
+
+    // 读取当前身上的Gold数量
+    let gold = 0;
+    $("td:parent").each(function (_idx, td) {
+        if ($(td).text() == "所持金") {
+            let goldText = $(td).next().text();
+            let spaceIdx = goldText.indexOf(" ");
+            gold = goldText.substring(0, spaceIdx);
+        }
+    });
+    if (gold >= 100000) {
+        __common_appendNPCMessage("让我看看你都偷偷给人送些啥。");
+    } else {
+        let delta = Math.ceil((100000 - gold) / 10000);
+        let message = "看起来你身上的钱还差" + delta + "万呀，我可以帮你" +
+            "<a href='javascript:void(0)' id='safeSendItem'><b>取钱发送</b></a>" +
+            "。我办事，你放心！";
+        __common_appendNPCMessage(message);
+
+        let id = $("input[name='id']").first().attr("value");
+        let pass = $("input[name='pass'").first().attr("value");
+        $("#safeSendItem").click(function () {
+            $.post("town.cgi", {id: id, pass: pass, dasu: delta, mode: "BANK_BUY"}, function () {
+                $("#sendItemSubmit").trigger("click");
+            });
+        });
     }
 }
 
