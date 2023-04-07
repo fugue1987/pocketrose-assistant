@@ -1019,10 +1019,7 @@ function __city_petMap(htmlText) {
  * 卖出物品后，自动存入银行
  */
 function __city_itemSold(htmlText) {
-    // 最最下面添加一个player的表格
-    $('hr:last').prepend("<TABLE WIDTH='100%' bgcolor='#888888'><tbody><tr>" +
-        "<TD id='playerCell' bgcolor='#F8F0E0' height='5'></TD>" +
-        "</tr></tbody></TABLE>");
+    __common_contructNPCMessageTable("青鸟");
 
     var IdPass = __common_extractIdPassFromStatusForm();
     // 获取到卖出的金钱数
@@ -1032,7 +1029,7 @@ function __city_itemSold(htmlText) {
     if (price < 10000) {
         // 卖的钱太少了，不值得为你做点啥
         var lowPriceMessage = "嚯，就卖了这几个子儿，我都想不出能拿那只眼看你。赶紧麻利儿的该干嘛干嘛去，尽裹乱。";
-        __common_addPlayerMessage($("#playerCell"), "青鸟", lowPriceMessage);
+        __common_appendNPCMessage(lowPriceMessage);
         __common_extractTownLocationAndProcess(IdPass[0], IdPass[1], function (id, pass, town) {
             $('form[action="status.cgi"]').attr('style', 'float:left');
             $('form[action="status.cgi"]').append(__city_itemSold_generateReturnForm(id, pass, town));
@@ -1043,7 +1040,7 @@ function __city_itemSold(htmlText) {
     if (!enableAutoDepositWhenItemSold) {
         // 卖的钱倒是够了，奈何自动存钱功能被禁用了
         var noDepositMessage = "善意提醒，回去路上经过十字坡的时候，看见那颗大树的时候，自己当心点。";
-        __common_addPlayerMessage($("#playerCell"), "青鸟", noDepositMessage);
+        __common_appendNPCMessage(noDepositMessage);
         __common_extractTownLocationAndProcess(IdPass[0], IdPass[1], function (id, pass, town) {
             $('form[action="status.cgi"]').attr('style', 'float:left');
             $('form[action="status.cgi"]').append(__city_itemSold_generateReturnForm(id, pass, town));
@@ -1057,7 +1054,7 @@ function __city_itemSold(htmlText) {
             var messageHtml = messageElement.html() + "已经自动存入银行。";
             messageElement.html(messageHtml);
             var autoDepositMessage = "我去，还挺有钱的嘛。日行一善，我已经帮你存到银行了，不用谢，请叫我雷锋。";
-            __common_addPlayerMessage($("#playerCell"), "青鸟", autoDepositMessage);
+            __common_appendNPCMessage(autoDepositMessage);
             __common_extractTownLocationAndProcess(IdPass[0], IdPass[1], function (id, pass, town) {
                 $('form[action="status.cgi"]').attr('style', 'float:left');
                 $('form[action="status.cgi"]').append(__city_itemSold_generateReturnForm(id, pass, town));
