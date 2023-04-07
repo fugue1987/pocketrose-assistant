@@ -45,6 +45,17 @@ const transferCareerRequirementDict = {
     '吟游诗人': [900, 225, 325, 225, 325, 225]
 };
 
+// 属性重铠的名字
+const heavyArmorNameDict = [
+    "千幻碧水猿洛克奇斯",
+    "地纹玄甲龟斯特奥特斯",
+    "幽冥黑鳞蟒罗尼科斯",
+    "火睛混沌兽哈贝达",
+    "羽翅圣光虎阿基勒斯",
+    "金翅追日鹰庞塔雷斯",
+    "风翼三足凤纳托利斯"
+];
+
 const playerCharacterDict = {
     '夜苍凉': {
         'image': POCKETROSE_DOMAIN + '/image/head/1117.gif',
@@ -582,6 +593,9 @@ function replacePkm(page) {
 // 工具功能函数实现
 // ============================================================================
 
+/**
+ * 取斜杠后的内容，支持斜杠后带一个空格的情况。
+ */
 function __utilities_substringAfterSlash(text) {
     var index = text.indexOf("/ ");
     if (index != -1) {
@@ -592,6 +606,18 @@ function __utilities_substringAfterSlash(text) {
         return text.substring(index + 1);
     }
     return text;
+}
+
+/**
+ * 判断指定的名字是否为属性重铠，支持齐心重铠的检查。
+ */
+function __utilities_isHeavyArmor(name) {
+    for (var i = 0; i < heavyArmorNameDict.length; i++) {
+        if (name.indexOf(heavyArmorNameDict[i]) != -1) {
+            return true;
+        }
+    }
+    return false;
 }
 
 // ============================================================================
@@ -1027,6 +1053,36 @@ function __personalStatus_equipment(htmlText) {
         }
     });
     $("#bagCageCell").html(bagFormHtml + cageFormHtml);
+
+    $("input[type='checkbox']").each(function (_idx, inputElement) {
+        var inputTableCell = $(inputElement).parent();
+        var category = $(inputTableCell).next().next().next().text();
+        if (category == "武器" || category == "防具" || category == "饰品") {
+            // 计算装备满级所需要的最高经验
+            var name = $(inputTableCell).next().next().text();
+            var maxExp = 0;
+            if (__utilities_isHeavyArmor(name)) {
+                // 属性重铠满级经验为76000
+                maxExp = 76000;
+            } else {
+                var power = $(inputTableCell).next().next().next().next().text();
+                if (power != 0) {
+                    power = Math.abs(power);
+                    maxExp = Math.floor(power * 0.2) * 1000;
+                }
+            }
+            var currentExp = $(inputTableCell).next().next().next().next()
+                .next().next().next().next()
+                .next().next().next().next()
+                .next().next().next().next().text();
+
+            if (itemExpFull = currentExp >= maxExp) {
+                var nameHtml = $(inputTableCell).next().next().html();
+                nameHtml = "<font color='red'><b>[满]</b></font>" + nameHtml;
+                $(inputTableCell).next().next().html(nameHtml);
+            }
+        }
+    });
 }
 
 
