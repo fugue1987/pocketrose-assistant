@@ -1210,29 +1210,19 @@ function __personalStatus_equipment(htmlText) {
     $("#extMenuLocation").html(extMenu);
 
     $("input[type='checkbox']").each(function (_idx, inputElement) {
-        var inputTableCell = $(inputElement).parent();
-        var category = $(inputTableCell).next().next().next().text();
+        let inputTableCell = $(inputElement).parent();
+        let category = $(inputTableCell).next().next().next().text();
         if (category == "武器" || category == "防具" || category == "饰品") {
             // 计算装备满级所需要的最高经验
-            var name = $(inputTableCell).next().next().text();
-            var maxExp = 0;
-            if (__utilities_isHeavyArmor(name)) {
-                // 属性重铠满级经验为76000
-                maxExp = 76000;
-            } else {
-                var power = $(inputTableCell).next().next().next().next().text();
-                if (power != 0) {
-                    power = Math.abs(power);
-                    maxExp = Math.floor(power * 0.2) * 1000;
-                }
-            }
-            var currentExp = $(inputTableCell).next().next().next().next()
+            let name = $(inputTableCell).next().next().text();
+            let power = $(inputTableCell).next().next().next().next().text();
+            let currentExp = $(inputTableCell).next().next().next().next()
                 .next().next().next().next()
                 .next().next().next().next()
                 .next().next().next().next().text();
 
-            if (currentExp >= maxExp) {
-                var nameHtml = $(inputTableCell).next().next().html();
+            if (__utilities_checkIfEquipmentFullExperience(name, power, currentExp)) {
+                let nameHtml = $(inputTableCell).next().next().html();
                 nameHtml = "<font color='red'><b>[满]</b></font>" + nameHtml;
                 $(inputTableCell).next().next().html(nameHtml);
             }
