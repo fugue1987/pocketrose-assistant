@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name         pocketrose assistant (本地開發測試專用)
+// @name         pocketrose assistant
 // @namespace    https://pocketrose.itsns.net.cn/
 // @description  Intercepts and modifies pocketrose CGI requests
 // @icon         data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==
@@ -30,7 +30,7 @@ const blacksmithButtonText = "去修理下裝備吧，等爆掉的時候你就�
 const innButtonText = "你看起來很疲憊的樣子呀，媽媽喊你回去休息啦！";
 const healthLoseRestoreRatio = 0.6;                                         // 当前HP小于最大HP触发住宿的比例
 const repaireEdureThreshold = 100;                                          // 装白耐久度下降触发修理的阈值
-const depositEveryBattleTimes = 0;                                          // 定期存钱的战数，设置为0表示关闭此功能
+const depositEveryBattleTimes = 5;                                          // 定期存钱的战数，设置为0表示关闭此功能
 
 // 转职建议字典，对当前能力的需求，分别是MP，攻击，防御，智力，精神，速度
 const transferCareerRequirementDict = {
