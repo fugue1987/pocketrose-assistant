@@ -626,6 +626,34 @@ function __utilities_isHeavyArmor(name) {
 // 通用辅助功能函数实现
 // ============================================================================
 
+/**
+ * 在页面的最下方构建一个NPC的消息表格。
+ * @param npcName NPC名字，对应字典中的预定义
+ * @private
+ */
+function __common_contructNPCMessageTable(npcName) {
+    var NPC = playerCharacterDict[npcName];
+    var image = "<img src='" + NPC["image"] + "' width='64' height='64' alt='" + npcName + "'>";
+    $("hr:last").prepend("<TABLE WIDTH='100%' bgcolor='#888888' id='npcMessageTable'><tbody><tr>" +
+        "<TD id='npcMessageCell' bgcolor='#F8F0E0' height='5'>" +
+        "<table bgcolor='#888888' border='0'><tbody><tr>" +
+        "<td bgcolor='#F8F0E0'>" + image + "</td>" +
+        "<td width='100%' bgcolor='#000000' id='npcMessage'></td></tr></tbody></table>" +
+        "</TD>" +
+        "</tr></tbody></TABLE>");
+}
+
+/**
+ * 向NPC消息表格中添加消息，尾加模式。
+ * @param message 消息内容。
+ * @private
+ */
+function __common_appendNPCMessage(message) {
+    var formattedMessage = "<font color='#FFFFFF'>" + message + "</font>";
+    var currentMessage = $("#npcMessage").html();
+    $("#npcMessage").html(currentMessage + formattedMessage);
+}
+
 function __common_generatePlayerImage(playerName) {
     var player = playerCharacterDict[playerName];
     return "<img src='" + player["image"] + "' width='64' height='64' alt='" + playerName + "'>";
@@ -1187,18 +1215,16 @@ function __personalStatus_equipment(htmlText) {
 
 // 个人状态 -> 转职
 function __personalStatus_transferCareer(htmlText) {
+    __common_contructNPCMessageTable("夜苍凉");
+
     $('input[value="转职"]').attr('id', 'transferCarrerButton');
 
-    $('table:first').find('tbody:first').append('<TR><TD id="suggestion" bgcolor="#F8F0E0" height="5"></TD></TR>');
-
-    var statusForm = $('form[action="status.cgi"]')
-    var id = statusForm.children('input[name="id"]').attr('value');
-    var pass = statusForm.children('input[name="pass"]').attr('value');
+    var IdPass = __common_extractIdPassFromStatusForm();
     // 进入转职页面的时候，读取一下个人信息。把标准的HP/MP和五围读出来
     $.post('mydata.cgi',
         {
-            id: id,
-            pass: pass,
+            id: IdPass[0],
+            pass: IdPass[1],
             mode: 'STATUS_PRINT'
         },
         function (data) {
@@ -1245,6 +1271,6 @@ function __personalStatus_transferCareer(htmlText) {
             } else {
                 message += "你这战五渣一样的能力，就不要来烦我了，爱转啥转啥去，快点从正义凛然的我的眼前消失！消失！消失！";
             }
-            __common_addPlayerMessage($('#suggestion'), "夜苍凉", message);
+            __common_appendNPCMessage(message);
         });
 }
