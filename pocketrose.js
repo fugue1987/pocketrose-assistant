@@ -1,11 +1,11 @@
 // ==UserScript==
-// @name         pocketrose assistant (极速战斗版)
+// @name         pocketrose assistant
 // @namespace    https://pocketrose.itsns.net.cn/
 // @description  Intercepts and modifies pocketrose CGI requests
 // @icon         data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==
 // @license      mit
 // @author       xiaohaiz,fugue
-// @version      1.4.1
+// @version      1.4.2
 // @grant        unsafeWindow
 // @match        *://pocketrose.itsns.net.cn/*
 // @require      https://code.jquery.com/jquery-2.1.4.min.js
@@ -570,8 +570,6 @@ const pokemonDict = {
 
 const pokemonDictKeys = Object.keys(pokemonDict);
 
-const _ENABLE_FLASH_BATTLE = true;
-
 $(function () {
     replacePkm('pocketrose')
 });
@@ -916,24 +914,15 @@ function __battle(htmlText) {
             // 住宿优先
             $("#innButton").attr('tabIndex', 1);
             $('#returnButton').parent().remove();
-            if (_ENABLE_FLASH_BATTLE) {
-                $("#innButton").trigger("click");
-            }
         }
         if (returnCode == 2) {
             // 存钱优先
             $("#bankButton").attr('tabIndex', 1);
             $('#returnButton').parent().remove();
-            if (_ENABLE_FLASH_BATTLE) {
-                $("#bankButton").trigger("click");
-            }
         }
         if (returnCode == 3) {
             // 返回优先
             $("#returnButton").attr('tabIndex', 1);
-            if (_ENABLE_FLASH_BATTLE) {
-                $("#returnButton").trigger("click");
-            }
         }
     }
 }
