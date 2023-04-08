@@ -1,11 +1,11 @@
 // ==UserScript==
-// @name         pocketrose assistant
+// @name         pocketrose assistant (DEV)
 // @namespace    https://pocketrose.itsns.net.cn/
 // @description  Intercepts and modifies pocketrose CGI requests
 // @icon         data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==
 // @license      mit
 // @author       xiaohaiz,fugue
-// @version      1.4.2
+// @version      1.4.2-SNAPSHOT
 // @grant        unsafeWindow
 // @match        *://pocketrose.itsns.net.cn/*
 // @require      https://code.jquery.com/jquery-2.1.4.min.js
@@ -67,6 +67,10 @@ const playerCharacterDict = {
     },
     '末末': {
         'image': POCKETROSE_DOMAIN + '/image/head/8173.gif',
+        'intro': ''
+    },
+    '白皇': {
+        'image': POCKETROSE_DOMAIN + '/image/head/11134.gif',
         'intro': ''
     }
 };
@@ -713,33 +717,44 @@ function __common_extractIdPassFromStatusForm() {
  * @private
  */
 function __common_fetchPersonalInformation(id, pass, callback) {
-    $.post('mydata.cgi', {id: id, pass: pass, mode: 'STATUS_PRINT'}, function (data) {
-        var statusTable = $(data).find('table').first().find('table').first();
-        var healthText = $(statusTable.find('td')[5]).text();
-        var manaText = $(statusTable.find('td')[7]).text();
-        var currentHealth = __utilities_substringBeforeSlash(healthText);
-        var maxHealth = __utilities_substringAfterSlash(healthText);
-        var currentMana = __utilities_substringBeforeSlash(manaText);
-        var maxMana = __utilities_substringAfterSlash(manaText);
+    $.ajax({
+        type: "POST",
+        url: "mydata.cgi",
+        data: {id: id, pass: pass, mode: 'STATUS_PRINT'},
+        success: function (data) {
+            let statusTable = $(data).find('table').first().find('table').first();
+            let levelText = $(statusTable.find('td')[1]).text();
+            let level = "";
+            for (let i = 0; i < levelText.length; i++) {
+                if (levelText[i] >= '0' && levelText[i] <= '9') {
+                    level += levelText[i];
+                }
+            }
+            alert(level);
+            let healthText = $(statusTable.find('td')[5]).text();
+            let manaText = $(statusTable.find('td')[7]).text();
+            let currentHealth = __utilities_substringBeforeSlash(healthText);
+            let maxHealth = __utilities_substringAfterSlash(healthText);
+            let currentMana = __utilities_substringBeforeSlash(manaText);
+            let maxMana = __utilities_substringAfterSlash(manaText);
+            let att = $(statusTable.find('td')[13]).text();
+            let def = $(statusTable.find('td')[15]).text();
+            let int = $(statusTable.find('td')[17]).text();
+            let spi = $(statusTable.find('td')[19]).text();
+            let spe = $(statusTable.find('td')[21]).text();
+            let town = $(statusTable.find('td')[31]).text();        // gb2312编码的内容通过ajax请求处理是个讨厌的事情
+            let exp = $(statusTable.find('td')[58]).text();
+            let goldText = $(statusTable.find('td')[60]).text();
+            let gold = goldText.substring(0, goldText.indexOf(" G"));
 
-        var att = $(statusTable.find('td')[13]).text();
-        var def = $(statusTable.find('td')[15]).text();
-        var int = $(statusTable.find('td')[17]).text();
-        var spi = $(statusTable.find('td')[19]).text();
-        var spe = $(statusTable.find('td')[21]).text();
-
-        var info = {
-            "HP": currentHealth,
-            "MAX_HP": maxHealth,
-            "MP": currentMana,
-            "MAX_MP": maxMana,
-            "AT": att,
-            "DF": def,
-            "SA": int,
-            "SD": spi,
-            "SP": spe
-        };
-        callback(id, pass, info);
+            let info = {
+                "LV": level,
+                "HP": currentHealth, "MAX_HP": maxHealth, "MP": currentMana, "MAX_MP": maxMana,
+                "AT": att, "DF": def, "SA": int, "SD": spi, "SP": spe,
+                "EXP": exp, "GOLD": gold
+            };
+            callback(id, pass, info);
+        }
     });
 }
 
@@ -1326,7 +1341,8 @@ function __personalStatus_treasureBag(htmlText) {
 
 // 个人状态 -> 转职
 function __personalStatus_transferCareer(htmlText) {
-    __common_contructNPCMessageTable("夜苍凉");
+    __common_contructNPCMessageTable("白皇");
+    __common_appendNPCMessage("是的，你没有看错，换人了，某幕后黑手不愿意出镜。不过请放心，转职方面我是专业的，毕竟我一直制霸钉耙榜。");
 
     $('input[value="转职"]').attr('id', 'transferCarrerButton');
 
@@ -1364,13 +1380,13 @@ function __personalStatus_transferCareer(htmlText) {
 
         var message = "";
         if (recommendationCareers.length > 0) {
-            message += "年轻人，让我好好看看你，我向你推荐以下的新职业可以尝试一下：";
+            message += "我觉得你可以尝试一下这些新职业：";
             for (var ci = 0; ci < recommendationCareers.length; ci++) {
                 message += "<b>" + recommendationCareers[ci] + "</b> "
             }
-            message += "当然，并不能保证你一定能成功，毕竟大家都知道，现在是看脸的时代。正义凛然的我会在一旁祝福你好运的，加油！加油！加油！";
+            message += " 当然，看脸时代的转职成功率你应该心中有数。";
         } else {
-            message += "你这战五渣一样的能力，就不要来烦我了，爱转啥转啥去，快点从正义凛然的我的眼前消失！消失！消失！";
+            message += "不过说实话，你现在的能力，确实爱转啥就转啥吧，区别不大。";
         }
         __common_appendNPCMessage(message);
     });
