@@ -1083,6 +1083,9 @@ function postProcessCityRelatedFunctionalities(htmlText) {
     if (htmlText.indexOf("* 运 送 屋 *") != -1) {
         __town_houseForSendingItems(htmlText);
     }
+    if (htmlText.indexOf("* 宠 物 赠 送 屋 *") !== -1) {
+        __town_houseForSendingPets(htmlText);
+    }
     if (htmlText.indexOf(" Gold卖出。") != -1) {
         // 物品卖出完成
         __city_itemSold(htmlText);
@@ -1143,10 +1146,44 @@ function __town_houseForSendingItems(htmlText) {
         __common_writeNpcMessage(message);
 
         let id = $("input[name='id']").first().attr("value");
-        let pass = $("input[name='pass'").first().attr("value");
+        let pass = $("input[name='pass']").first().attr("value");
         $("#safeSendItem").click(function () {
             $.post("town.cgi", {id: id, pass: pass, dasu: delta, mode: "BANK_BUY"}, function () {
                 $("#sendItemSubmit").trigger("click");
+            });
+        });
+    }
+}
+
+/**
+ * 城市送宠屋增强实现。
+ * @param htmlText HTML文本
+ * @private
+ */
+function __town_houseForSendingPets(htmlText) {
+    __common_constructNpcMessageTable("末末");
+    __common_writeNpcMessage("哈哈，我又来啦！没想到吧？这边还是我。");
+
+    $("input[value='发送']").attr("id", "sendPetSubmit");
+
+    let gold = 0;
+    $("td:parent").each(function (_idx, td) {
+        if ($(td).text() === "所持金") {
+            let goldText = $(td).next().text();
+            gold = goldText.substring(0, goldText.indexOf(" "));
+        }
+    });
+
+    if (gold < 100000) {
+        let delta = Math.ceil((100000 - gold) / 10000);
+        let message = "差" + delta + "万，老规矩，还是<a href='javascript:void(0)' id='safeSendPet'><b>取钱发送</b></a>？";
+        __common_writeNpcMessage(message);
+
+        let id = $("input[name='id']").first().attr("value");
+        let pass = $("input[name='pass']").first().attr("value");
+        $("#safeSendPet").click(function () {
+            $.post("town.cgi", {id: id, pass: pass, dasu: delta, mode: "BANK_BUY"}, function () {
+                $("#sendPetSubmit").trigger("click");
             });
         });
     }
