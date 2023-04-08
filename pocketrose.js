@@ -59,196 +59,168 @@ const heavyArmorNameDict = [
 const _CITY_DICT = {
     "1": {
         "name": "贤者之城",
-        "escaped": "",
         "description": "精灵族的王都，在精灵语中意为山谷中的隐居之城，因数位异族出身的贤者都选择在此谢世而得名。种植着珍贵草药的山谷另一端有巨大的水坝，传说曾三次以毁灭性方式成功驱赶妄图入侵的军队。",
         "x": 0,
         "y": 0
     },
     "2": {
         "name": "翡冷翠",
-        "escaped": "",
         "description": "",
         "x": 0,
         "y": 0
     },
     "3": {
         "name": "诺曼",
-        "escaped": "",
         "description": "",
         "x": 0,
         "y": 0
     },
     "4": {
         "name": "潘帕斯",
-        "escaped": "",
         "description": "",
         "x": 0,
         "y": 0
     },
     "5": {
         "name": "卡鲁",
-        "escaped": "",
         "description": "",
         "x": 0,
         "y": 0
     },
     "6": {
         "name": "格林尼治",
-        "escaped": "",
         "description": "",
         "x": 0,
         "y": 0
     },
     "7": {
         "name": "萨拉镇",
-        "escaped": "",
         "description": "",
         "x": 0,
         "y": 0
     },
     "8": {
         "name": "海文",
-        "escaped": "",
         "description": "矮人族连接山区和草原的重要中转站，春季会在附近原野举行大型交易会，是无论什么种族也会受到平等接待的地方。",
         "x": 0,
         "y": 0
     },
     "9": {
         "name": "黄昏之都",
-        "escaped": "",
         "description": "",
         "x": 0,
         "y": 0
     },
     "10": {
         "name": "圣克鲁斯堡",
-        "escaped": "",
         "description": "",
         "x": 0,
         "y": 0
     },
     "11": {
         "name": "泰法城",
-        "escaped": "",
         "description": "",
         "x": 0,
         "y": 0
     },
     "12": {
         "name": "枫丹",
-        "escaped": "",
         "description": "原帝国冬都，又名白露城，号称四百年无战之都。大陆联合商会所在地，无数传说的源头，号称大冒险大恋爱的起点。",
         "x": 0,
         "y": 0
     },
     "13": {
         "name": "自由港_赞特",
-        "escaped": "",
         "description": "",
         "x": 0,
         "y": 0
     },
     "14": {
         "name": "火之都",
-        "escaped": "",
         "description": "",
         "x": 0,
         "y": 0
     },
     "15": {
         "name": "土之域",
-        "escaped": "",
         "description": "",
         "x": 0,
         "y": 0
     },
     "16": {
         "name": "瓦伦要塞",
-        "escaped": "",
         "description": "",
         "x": 0,
         "y": 0
     },
     "17": {
         "name": "梵",
-        "escaped": "",
         "description": "",
         "x": 0,
         "y": 0
     },
     "18": {
         "name": "日尔曼尼亚",
-        "escaped": "",
         "description": "",
         "x": 0,
         "y": 0
     },
     "19": {
         "name": "水之城",
-        "escaped": "",
         "description": "",
         "x": 0,
         "y": 0
     },
     "20": {
         "name": "埃达",
-        "escaped": "",
         "description": "",
         "x": 0,
         "y": 0
     },
     "21": {
         "name": "柯利亚",
-        "escaped": "",
         "description": "",
         "x": 0,
         "y": 0
     },
     "22": {
         "name": "格兰特",
-        "escaped": "",
         "description": "",
         "x": 0,
         "y": 0
     },
     "23": {
         "name": "斯坎",
-        "escaped": "",
         "description": "",
         "x": 0,
         "y": 0
     },
     "24": {
         "name": "龙牙堡",
-        "escaped": "",
         "description": "",
         "x": 0,
         "y": 0
     },
     "25": {
         "name": "海布里",
-        "escaped": "",
         "description": "半兽人 贝里萨利乌斯族生活的集落，是半兽人中最为勇猛、尚武的一支，如今正遭遇百年不遇的人口锐减，百年前曾和人类共同作战，据信村中仍有混血的后代，出产美酒，被誉为大陆第一的珍酿。",
         "x": 0,
         "y": 0
     },
     "26": {
         "name": "风之谷",
-        "escaped": "",
         "description": "",
         "x": 0,
         "y": 0
     },
     "27": {
         "name": "不归森林",
-        "escaped": "",
         "description": "",
         "x": 0,
         "y": 0
     },
     "28": {
         "name": "特罗尔",
-        "escaped": "",
         "description": "",
         "x": 0,
         "y": 0
