@@ -675,7 +675,7 @@ function __utilities_checkIfEquipmentFullExperience(name, power, experience) {
  * @param npcName NPC名字，对应字典中的预定义
  * @private
  */
-function __common_contructNPCMessageTable(npcName) {
+function __common_constructNpcMessageTable(npcName) {
     var NPC = playerCharacterDict[npcName];
     var image = "<img src='" + NPC["image"] + "' width='64' height='64' alt='" + npcName + "'>";
     $("hr:last").prepend("<TABLE WIDTH='100%' bgcolor='#888888' id='npcMessageTable'><tbody><tr>" +
@@ -692,7 +692,7 @@ function __common_contructNPCMessageTable(npcName) {
  * @param message 消息内容。
  * @private
  */
-function __common_appendNPCMessage(message) {
+function __common_writeNpcMessage(message) {
     var formattedMessage = "<font color='#FFFFFF'>" + message + "</font>";
     var currentMessage = $("#npcMessage").html();
     $("#npcMessage").html(currentMessage + formattedMessage);
@@ -1120,8 +1120,8 @@ function __city_petMap(htmlText) {
  * @private
  */
 function __town_houseForSendingItems(htmlText) {
-    __common_contructNPCMessageTable("末末");
-    __common_appendNPCMessage("我来啦！");
+    __common_constructNpcMessageTable("末末");
+    __common_writeNpcMessage("我来啦！");
 
     $("input[value='发送']").attr("id", "sendItemSubmit");
 
@@ -1135,13 +1135,13 @@ function __town_houseForSendingItems(htmlText) {
         }
     });
     if (gold >= 100000) {
-        __common_appendNPCMessage("让我看看你都偷偷给人送些啥。");
+        __common_writeNpcMessage("让我看看你都偷偷给人送些啥。");
     } else {
         let delta = Math.ceil((100000 - gold) / 10000);
         let message = "看起来你身上的钱还差" + delta + "万呀，我可以帮你" +
             "<a href='javascript:void(0)' id='safeSendItem'><b>取钱发送</b></a>" +
             "。我办事，你放心！";
-        __common_appendNPCMessage(message);
+        __common_writeNpcMessage(message);
 
         let id = $("input[name='id']").first().attr("value");
         let pass = $("input[name='pass'").first().attr("value");
@@ -1157,7 +1157,7 @@ function __town_houseForSendingItems(htmlText) {
  * 卖出物品后，自动存入银行
  */
 function __city_itemSold(htmlText) {
-    __common_contructNPCMessageTable("青鸟");
+    __common_constructNpcMessageTable("青鸟");
 
     var IdPass = __common_extractIdPassFromStatusForm();
     // 获取到卖出的金钱数
@@ -1167,7 +1167,7 @@ function __city_itemSold(htmlText) {
     if (price < 10000) {
         // 卖的钱太少了，不值得为你做点啥
         var lowPriceMessage = "嚯，就卖了这几个子儿，我都想不出能拿那只眼看你。赶紧麻利儿的该干嘛干嘛去，尽裹乱。";
-        __common_appendNPCMessage(lowPriceMessage);
+        __common_writeNpcMessage(lowPriceMessage);
         __common_extractTownLocationAndProcess(IdPass[0], IdPass[1], function (id, pass, town) {
             $('form[action="status.cgi"]').attr('style', 'float:left');
             $('form[action="status.cgi"]').append(__city_itemSold_generateReturnForm(id, pass, town));
@@ -1178,7 +1178,7 @@ function __city_itemSold(htmlText) {
     if (!enableAutoDepositWhenItemSold) {
         // 卖的钱倒是够了，奈何自动存钱功能被禁用了
         var noDepositMessage = "善意提醒，回去路上经过十字坡的时候，看见那颗大树的时候，自己当心点。";
-        __common_appendNPCMessage(noDepositMessage);
+        __common_writeNpcMessage(noDepositMessage);
         __common_extractTownLocationAndProcess(IdPass[0], IdPass[1], function (id, pass, town) {
             $('form[action="status.cgi"]').attr('style', 'float:left');
             $('form[action="status.cgi"]').append(__city_itemSold_generateReturnForm(id, pass, town));
@@ -1192,7 +1192,7 @@ function __city_itemSold(htmlText) {
             var messageHtml = messageElement.html() + "已经自动存入银行。";
             messageElement.html(messageHtml);
             var autoDepositMessage = "我去，还挺有钱的嘛。日行一善，我已经帮你存到银行了，不用谢，请叫我雷锋。";
-            __common_appendNPCMessage(autoDepositMessage);
+            __common_writeNpcMessage(autoDepositMessage);
             __common_extractTownLocationAndProcess(IdPass[0], IdPass[1], function (id, pass, town) {
                 $('form[action="status.cgi"]').attr('style', 'float:left');
                 $('form[action="status.cgi"]').append(__city_itemSold_generateReturnForm(id, pass, town));
@@ -1365,8 +1365,8 @@ function __personalStatus_treasureBag(htmlText) {
 
 // 个人状态 -> 转职
 function __personalStatus_transferCareer(htmlText) {
-    __common_contructNPCMessageTable("白皇");
-    __common_appendNPCMessage("是的，你没有看错，换人了，某幕后黑手不愿意出镜。不过请放心，转职方面我是专业的，毕竟我一直制霸钉耙榜。");
+    __common_constructNpcMessageTable("白皇");
+    __common_writeNpcMessage("是的，你没有看错，换人了，某幕后黑手不愿意出镜。不过请放心，转职方面我是专业的，毕竟我一直制霸钉耙榜。");
 
     $('input[value="转职"]').attr('id', 'transferCareerButton');
 
@@ -1413,6 +1413,6 @@ function __personalStatus_transferCareer(htmlText) {
         } else {
             message += "不过说实话，你现在的能力，确实爱转啥就转啥吧，区别不大。";
         }
-        __common_appendNPCMessage(message);
+        __common_writeNpcMessage(message);
     });
 }
