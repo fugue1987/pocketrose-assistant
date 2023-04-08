@@ -746,13 +746,14 @@ function __ajax_readPersonalInformation(id, pass, callback) {
             let goldText = $(statusTable.find('td')[60]).text();
             let gold = goldText.substring(0, goldText.indexOf(" G"));
 
-            let info = {
+            let information = {
+                "id": id, "pass": pass,
                 "LV": level,
                 "HP": currentHealth, "MAX_HP": maxHealth, "MP": currentMana, "MAX_MP": maxMana,
                 "AT": att, "DF": def, "SA": int, "SD": spi, "SP": spe,
                 "EXP": exp, "GOLD": gold
             };
-            callback(id, pass, info);
+            callback(information);
         }
     });
 }
@@ -765,7 +766,20 @@ function __ajax_readPersonalInformation(id, pass, callback) {
  * @private
  */
 function __ajax_readPersonalStatus(id, pass, callback) {
-
+    $.ajax({
+        type: "POST",
+        url: "status.cgi",
+        data: {id: id, pass: pass, mode: "STATUS"},
+        success: function (data) {
+            let townId = $(data).find('input[name="town"]:first').attr('value');
+            let status = {
+                "id": id, "pass": pass,
+                "TOWN_ID": townId
+            };
+            alert(townId);
+            callback(status);
+        }
+    });
 }
 
 function __common_extractTownLocationAndProcess(id, pass, townLocationProcessor) {
@@ -1354,25 +1368,26 @@ function __personalStatus_transferCareer(htmlText) {
     __common_contructNPCMessageTable("白皇");
     __common_appendNPCMessage("是的，你没有看错，换人了，某幕后黑手不愿意出镜。不过请放心，转职方面我是专业的，毕竟我一直制霸钉耙榜。");
 
-    $('input[value="转职"]').attr('id', 'transferCarrerButton');
+    $('input[value="转职"]').attr('id', 'transferCareerButton');
 
     var IdPass = __common_extractIdPassFromStatusForm();
+
     // 进入转职页面的时候，读取一下个人信息。把标准的HP/MP和五围读出来
-    __ajax_readPersonalInformation(IdPass[0], IdPass[1], function (id, pass, info) {
-        var mhp = info["MAX_HP"];
-        var mmp = info["MAX_MP"];
-        var at = info["AT"];
-        var df = info["DF"];
-        var sa = info["SA"];
-        var sd = info["SD"];
-        var sp = info["SP"];
+    __ajax_readPersonalInformation(IdPass[0], IdPass[1], function (information) {
+        var mhp = information["MAX_HP"];
+        var mmp = information["MAX_MP"];
+        var at = information["AT"];
+        var df = information["DF"];
+        var sa = information["SA"];
+        var sd = information["SD"];
+        var sp = information["SP"];
         var stableCareer = (mhp == 1999 && mmp >= 1000
             && at >= 300 && df >= 300 && sa >= 300 && sd >= 300 && sp >= 300);
 
         if (stableCareer) {
             // 看起来这能力已经可以定型了，给个警告吧，确认是否要转职！
-            var current = info["HP"] + "/" + mhp + " " + info["MP"] + "/" + mmp + " " + at + " " + df + " " + sa + " " + sd + " " + sp;
-            $('#transferCarrerButton').attr('value', '看起来你现在满足了最低的定型标准(' + current + ')，你确认要转职吗？');
+            var current = information["HP"] + "/" + mhp + " " + information["MP"] + "/" + mmp + " " + at + " " + df + " " + sa + " " + sd + " " + sp;
+            $('#transferCareerButton').attr('value', '看起来你现在满足了最低的定型标准(' + current + ')，你确认要转职吗？');
         }
 
         // 是否需要给个转职建议呢？
