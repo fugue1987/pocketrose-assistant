@@ -781,12 +781,6 @@ function __ajax_readPersonalStatus(id, pass, callback) {
     });
 }
 
-function __common_extractTownLocationAndProcess(id, pass, townLocationProcessor) {
-    $.post("status.cgi", {id: id, pass: pass, mode: "STATUS"}, function (data) {
-        var townLocation = $(data).find('input[name="town"]:first').attr('value');
-        townLocationProcessor(id, pass, townLocation);
-    });
-}
 
 function __common_item_selectBag(parentElement) {
     var checkedCount = 0;
