@@ -776,7 +776,6 @@ function __ajax_readPersonalStatus(id, pass, callback) {
                 "id": id, "pass": pass,
                 "TOWN_ID": townId
             };
-            alert(townId);
             callback(status);
         }
     });
@@ -1164,73 +1163,84 @@ function __city_itemSold(htmlText) {
     var messageElement = $('h2:first');
     var price = messageElement.find('b:first').text();
 
+    let returnMessage = "";
+    returnMessage += "要不要我带你回";
+    returnMessage += "<b><a href='javascript:void(0)' id='returnARM'>武器屋</a></b>？";
+    returnMessage += "<b><a href='javascript:void(0)' id='returnPRO'>防具屋</a></b>？";
+    returnMessage += "<b><a href='javascript:void(0)' id='returnACC'>饰品屋</a></b>？";
+    returnMessage += "<b><a href='javascript:void(0)' id='returnITM'>物品屋</a></b>？";
+
     if (price < 10000) {
         // 卖的钱太少了，不值得为你做点啥
         var lowPriceMessage = "嚯，就卖了这几个子儿，我都想不出能拿那只眼看你。赶紧麻利儿的该干嘛干嘛去，尽裹乱。";
         __common_writeNpcMessage(lowPriceMessage);
-        __common_extractTownLocationAndProcess(IdPass[0], IdPass[1], function (id, pass, town) {
-            $('form[action="status.cgi"]').attr('style', 'float:left');
-            $('form[action="status.cgi"]').append(__city_itemSold_generateReturnForm(id, pass, town));
-        });
-        return;
-    }
-
-    if (!enableAutoDepositWhenItemSold) {
+        __common_writeNpcMessage(returnMessage);
+        __city_itemSold_buildReturnFunction(IdPass[0], IdPass[1]);
+    } else if (!enableAutoDepositWhenItemSold) {
         // 卖的钱倒是够了，奈何自动存钱功能被禁用了
         var noDepositMessage = "善意提醒，回去路上经过十字坡的时候，看见那颗大树的时候，自己当心点。";
         __common_writeNpcMessage(noDepositMessage);
-        __common_extractTownLocationAndProcess(IdPass[0], IdPass[1], function (id, pass, town) {
-            $('form[action="status.cgi"]').attr('style', 'float:left');
-            $('form[action="status.cgi"]').append(__city_itemSold_generateReturnForm(id, pass, town));
-        });
-        return;
-    }
-
-    $.post("town.cgi",
-        {azukeru: "all", id: IdPass[0], pass: IdPass[1], mode: "BANK_SELL"},
-        function () {
-            var messageHtml = messageElement.html() + "已经自动存入银行。";
-            messageElement.html(messageHtml);
-            var autoDepositMessage = "我去，还挺有钱的嘛。日行一善，我已经帮你存到银行了，不用谢，请叫我雷锋。";
-            __common_writeNpcMessage(autoDepositMessage);
-            __common_extractTownLocationAndProcess(IdPass[0], IdPass[1], function (id, pass, town) {
-                $('form[action="status.cgi"]').attr('style', 'float:left');
-                $('form[action="status.cgi"]').append(__city_itemSold_generateReturnForm(id, pass, town));
+        __common_writeNpcMessage(returnMessage);
+        __city_itemSold_buildReturnFunction(IdPass[0], IdPass[1]);
+    } else {
+        $.post("town.cgi",
+            {azukeru: "all", id: IdPass[0], pass: IdPass[1], mode: "BANK_SELL"},
+            function () {
+                var messageHtml = messageElement.html() + "已经自动存入银行。";
+                messageElement.html(messageHtml);
+                var autoDepositMessage = "我去，还挺有钱的嘛。日行一善，我已经帮你存到银行了，不用谢，请叫我雷锋。";
+                __common_writeNpcMessage(autoDepositMessage);
+                __common_writeNpcMessage(returnMessage);
+                __city_itemSold_buildReturnFunction(IdPass[0], IdPass[1]);
             });
-        });
+    }
 }
 
-function __city_itemSold_generateReturnForm(id, pass, town) {
-    var formHtml = "";
-    formHtml += "<form action='town.cgi' method='post' style='float:left'>" +
-        "<input type=hidden name=id value=" + id + ">" +
-        "<input type=hidden name=pass value=" + pass + ">" +
-        "<input type=hidden name=town value=" + town + ">" +
-        "<input type=hidden name=con_str value=50>" +
-        "<input type=hidden name=mode value=ARM_SHOP>" +
-        "<input type=submit value='回武器屋'>" + "</form>";
-    formHtml += "<form action='town.cgi' method='post' style='float:left'>" +
-        "<input type=hidden name=id value=" + id + ">" +
-        "<input type=hidden name=pass value=" + pass + ">" +
-        "<input type=hidden name=town value=" + town + ">" +
-        "<input type=hidden name=con_str value=50>" +
-        "<input type=hidden name=mode value=PRO_SHOP>" +
-        "<input type=submit value='回防具屋'>" + "</form>";
-    formHtml += "<form action='town.cgi' method='post' style='float:left'>" +
-        "<input type=hidden name=id value=" + id + ">" +
-        "<input type=hidden name=pass value=" + pass + ">" +
-        "<input type=hidden name=town value=" + town + ">" +
-        "<input type=hidden name=con_str value=50>" +
-        "<input type=hidden name=mode value=ACC_SHOP>" +
-        "<input type=submit value='回饰品屋'>" + "</form>";
-    formHtml += "<form action='town.cgi' method='post' style='float:left'>" +
-        "<input type=hidden name=id value=" + id + ">" +
-        "<input type=hidden name=pass value=" + pass + ">" +
-        "<input type=hidden name=town value=" + town + ">" +
-        "<input type=hidden name=con_str value=50>" +
-        "<input type=hidden name=mode value=ITEM_SHOP>" +
-        "<input type=submit value='回物品屋'>" + "</form>";
-    return formHtml;
+function __city_itemSold_buildReturnFunction(id, pass) {
+    $("#returnARM").click(function () {
+        __ajax_readPersonalStatus(id, pass, function (status) {
+            let townId = status["TOWN_ID"];
+            $("form[action='status.cgi']").append("<input type=hidden name=town value=" + townId + ">");
+            $("form[action='status.cgi']").append("<input type=hidden name=con_str value=50>");
+            $("input[name='mode']").attr("value", "ARM_SHOP");
+            $("form[action='status.cgi']").attr("action", "town.cgi");
+            $("input[type='submit']").attr("value", "回武器屋");
+            $("input[type='submit']").trigger("click");
+        });
+    });
+    $("#returnPRO").click(function () {
+        __ajax_readPersonalStatus(id, pass, function (status) {
+            let townId = status["TOWN_ID"];
+            $("form[action='status.cgi']").append("<input type=hidden name=town value=" + townId + ">");
+            $("form[action='status.cgi']").append("<input type=hidden name=con_str value=50>");
+            $("input[name='mode']").attr("value", "PRO_SHOP");
+            $("form[action='status.cgi']").attr("action", "town.cgi");
+            $("input[type='submit']").attr("value", "回防具屋");
+            $("input[type='submit']").trigger("click");
+        });
+    });
+    $("#returnACC").click(function () {
+        __ajax_readPersonalStatus(id, pass, function (status) {
+            let townId = status["TOWN_ID"];
+            $("form[action='status.cgi']").append("<input type=hidden name=town value=" + townId + ">");
+            $("form[action='status.cgi']").append("<input type=hidden name=con_str value=50>");
+            $("input[name='mode']").attr("value", "ACC_SHOP");
+            $("form[action='status.cgi']").attr("action", "town.cgi");
+            $("input[type='submit']").attr("value", "回饰品屋");
+            $("input[type='submit']").trigger("click");
+        });
+    });
+    $("#returnITM").click(function () {
+        __ajax_readPersonalStatus(id, pass, function (status) {
+            let townId = status["TOWN_ID"];
+            $("form[action='status.cgi']").append("<input type=hidden name=town value=" + townId + ">");
+            $("form[action='status.cgi']").append("<input type=hidden name=con_str value=50>");
+            $("input[name='mode']").attr("value", "ITEM_SHOP");
+            $("form[action='status.cgi']").attr("action", "town.cgi");
+            $("input[type='submit']").attr("value", "回物品屋");
+            $("input[type='submit']").trigger("click");
+        });
+    });
 }
 
 // ============================================================================
