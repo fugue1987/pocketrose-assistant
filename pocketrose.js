@@ -1833,6 +1833,7 @@ function __personalStatus_transferCareer(htmlText) {
                     });
                     $("input[type='radio']").prop("checked", true);
                     __ajax_lodgeAtInn(information["id"], information["pass"], function (data) {
+                        // 转职前住宿，保持最佳状态
                         $("#transferCareerButton").trigger("click");
                     });
                 });
