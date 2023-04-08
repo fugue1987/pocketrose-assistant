@@ -1747,7 +1747,7 @@ function __personalStatus_transferCareer(htmlText) {
 
     let lastTargetCareer = "";
     $("option[value!='']").each(function (_idx, option) {
-        lastTargetCareer = $(option).text();
+        lastTargetCareer = $(option).attr("value");
     });
 
     if (lastTargetCareer === "") {
@@ -1794,6 +1794,7 @@ function __personalStatus_transferCareer(htmlText) {
             }
         }
 
+        let autoSuggest = false;
         let message = "";
         if (recommendationCareers.length > 0) {
             message += "我觉得你可以尝试一下这些新职业：";
@@ -1802,15 +1803,36 @@ function __personalStatus_transferCareer(htmlText) {
             }
             message += " 当然，看脸时代的转职成功率你应该心中有数。";
         } else {
+            autoSuggest = true;
             message += "不过说实话，你现在的能力，确实爱转啥就转啥吧，区别不大。";
         }
         message += "<br>"
         __page_writeNpcMessage(message);
 
-        let topCareer = __utilities_trimSpace(lastTargetCareer);
-        alert("[" + topCareer + "]");
-        if (__utilities_isRoleTopCareer(topCareer)) {
-            __page_writeNpcMessage("嗯，还有另外一种选择，继续转职<b>" + topCareer + "</b>，如何？");
+        if (autoSuggest) {
+            let targetCareer = "";
+            let careerNames = Object.keys(_CAREER_DICT);
+            for (let ci = 0; ci < careerNames.length; ci++) {
+                let careerName = careerNames[ci];
+                let career = _CAREER_DICT[careerName];
+                if (career["id"] == lastTargetCareer) {
+                    targetCareer = careerName;
+                }
+            }
+            if (targetCareer !== "") {
+                __page_writeNpcMessage("嗯，还有另外一种选择，继续转职<b><a href='javascript:void(0)' id='toTopCareer'>" + targetCareer + "</a></b>，如何？");
+                $("#toTopCareer").click(function () {
+                    $("option").each(function (_i, o) {
+                        let optionValue = $(o).attr("value");
+                        if (optionValue != lastTargetCareer) {
+                            $(o).prop("selected", false);
+                        } else {
+                            $(o).prop("selected", true);
+                        }
+                    });
+                    $("input[type='radio']").prop("checked", true);
+                });
+            }
         }
     });
 }
