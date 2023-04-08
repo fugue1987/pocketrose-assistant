@@ -710,7 +710,7 @@ function __common_extractIdPassFromStatusForm() {
 }
 
 /**
- * 读取并解析个人状态中的基础信息，完成后回调传入的函数。
+ * 异步读取并解析个人状态中的基础信息，完成后回调传入的函数。
  * @param id ID
  * @param pass PASSWORD
  * @param callback 回调函数
@@ -755,6 +755,17 @@ function __ajax_readPersonalInformation(id, pass, callback) {
             callback(id, pass, info);
         }
     });
+}
+
+/**
+ * 异步读取并解析主页的个人状态，完成后回调传入的函数。
+ * @param id ID
+ * @param pass PASS
+ * @param callback 回调函数
+ * @private
+ */
+function __ajax_readPersonalStatus(id, pass, callback) {
+
 }
 
 function __common_extractTownLocationAndProcess(id, pass, townLocationProcessor) {
