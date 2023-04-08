@@ -56,7 +56,7 @@ const heavyArmorNameDict = [
     "风翼三足凤纳托利斯"
 ];
 
-const playerCharacterDict = {
+const npcCharacterDict = {
     '夜苍凉': {
         'image': POCKETROSE_DOMAIN + '/image/head/1117.gif',
         'intro': ''
@@ -679,7 +679,7 @@ function __utilities_checkIfEquipmentFullExperience(name, power, experience) {
  * @private
  */
 function __common_constructNpcMessageTable(npcName) {
-    var NPC = playerCharacterDict[npcName];
+    var NPC = npcCharacterDict[npcName];
     var image = "<img src='" + NPC["image"] + "' width='64' height='64' alt='" + npcName + "'>";
     $("div:last").prepend("<TABLE WIDTH='100%' bgcolor='#888888' id='npcMessageTable'><tbody><tr>" +
         "<TD id='npcMessageCell' bgcolor='#F8F0E0' height='5'>" +
