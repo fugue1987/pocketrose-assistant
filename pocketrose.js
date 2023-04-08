@@ -5,7 +5,7 @@
 // @icon         data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==
 // @license      mit
 // @author       xiaohaiz,fugue
-// @version      1.4.3
+// @version      1.4.4
 // @grant        unsafeWindow
 // @match        *://pocketrose.itsns.net.cn/*
 // @require      https://code.jquery.com/jquery-2.1.4.min.js
@@ -678,7 +678,7 @@ function __utilities_checkIfEquipmentFullExperience(name, power, experience) {
 function __common_constructNpcMessageTable(npcName) {
     var NPC = playerCharacterDict[npcName];
     var image = "<img src='" + NPC["image"] + "' width='64' height='64' alt='" + npcName + "'>";
-    $("hr:last").prepend("<TABLE WIDTH='100%' bgcolor='#888888' id='npcMessageTable'><tbody><tr>" +
+    $("div:last").prepend("<TABLE WIDTH='100%' bgcolor='#888888' id='npcMessageTable'><tbody><tr>" +
         "<TD id='npcMessageCell' bgcolor='#F8F0E0' height='5'>" +
         "<table bgcolor='#888888' border='0'><tbody><tr>" +
         "<td bgcolor='#F8F0E0'>" + image + "</td>" +
