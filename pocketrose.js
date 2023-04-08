@@ -56,6 +56,19 @@ const heavyArmorNameDict = [
     "风翼三足凤纳托利斯"
 ];
 
+/**
+ * 终极隐藏职业天位系的职业名称定义。
+ * @type {string[]}
+ * @private
+ */
+const _ROLE_TOP_CAREER_DICT = [
+    "小天位",
+    "强天位",
+    "斋天位",
+    "太天位",
+    "终极"
+];
+
 const _CITY_DICT = {
     "1": {
         "name": "贤者之城",
