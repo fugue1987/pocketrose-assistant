@@ -782,6 +782,25 @@ function __ajax_readPersonalStatus(id, pass, callback) {
 }
 
 /**
+ * 在客栈住宿恢复
+ * @param id ID
+ * @param pass PASS
+ * @param callback 回调函数，参数{id:x,pass:x}
+ * @private
+ */
+function __ajax_lodgeAtInn(id, pass, callback) {
+    $.ajax({
+        type: "POST",
+        url: "town.cgi",
+        data: {id: id, pass: pass, mode: "RECOVERY"},
+        success: function (html) {
+            let data = {id: id, pass: pass};
+            callback(data);
+        }
+    });
+}
+
+/**
  * 存储所有的现金到银行
  * @param id ID
  * @param pass PASS

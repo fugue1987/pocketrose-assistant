@@ -5,6 +5,14 @@ PAYLOAD:
   pass: x
   mode: STATUS
 
+住宿
+POST: town.cgi
+PAYLOAD:
+    id
+    pass
+    inn_gold    optional
+    mode        RECOVERY
+
 全部存入
 POST: town.cgi
 PAYLOAD:
