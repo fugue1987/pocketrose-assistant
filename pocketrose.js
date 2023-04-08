@@ -853,7 +853,7 @@ function __utilities_checkIfEquipmentFullExperience(name, power, experience) {
  * @param npcName NPC名字，对应字典中的预定义
  * @private
  */
-function __common_constructNpcMessageTable(npcName) {
+function __page_constructNpcMessageTable(npcName) {
     let NPC = _NPC_DICT[npcName];
     let image = "<img src='" + NPC["image"] + "' width='64' height='64' alt='" + npcName + "'>";
     $("div:last").prepend("<TABLE WIDTH='100%' bgcolor='#888888' id='npcMessageTable'><tbody><tr>" +
@@ -870,7 +870,7 @@ function __common_constructNpcMessageTable(npcName) {
  * @param message 消息内容。
  * @private
  */
-function __common_writeNpcMessage(message) {
+function __page_writeNpcMessage(message) {
     var formattedMessage = "<font color='#FFFFFF'>" + message + "</font>";
     var currentMessage = $("#npcMessage").html();
     $("#npcMessage").html(currentMessage + formattedMessage);
@@ -1330,8 +1330,8 @@ function postProcessCityRelatedFunctionalities(htmlText) {
 
 // 城市 -> 宠物图鉴
 function __town_petMap(htmlText) {
-    __common_constructNpcMessageTable("七七");
-    __common_writeNpcMessage("我打小数学就是体育老师教的，学的特别好。数一数图鉴数量这种事，交给我完全没有问题。");
+    __page_constructNpcMessageTable("七七");
+    __page_writeNpcMessage("我打小数学就是体育老师教的，学的特别好。数一数图鉴数量这种事，交给我完全没有问题。");
 
     var petIdText = "";             // 宠物图鉴编号及数量的文本
     $("td:parent").each(function (_i, element) {
@@ -1348,8 +1348,8 @@ function __town_petMap(htmlText) {
         }
     });
     if (petIdText != "") {
-        __common_writeNpcMessage("<br>" + petIdText);
-        __common_writeNpcMessage("<br>要不要现在就去宠物进化退化那里<b><a href='javascript:void(0)' id='petBorn'>看一眼</a></b>？");
+        __page_writeNpcMessage("<br>" + petIdText);
+        __page_writeNpcMessage("<br>要不要现在就去宠物进化退化那里<b><a href='javascript:void(0)' id='petBorn'>看一眼</a></b>？");
         $("#petBorn").click(function () {
             $("input[name='mode']").attr("value", "PETBORN");
             $("form[action='status.cgi']").attr("action", "mydata.cgi");
@@ -1364,8 +1364,8 @@ function __town_petMap(htmlText) {
  * @private
  */
 function __town_houseForSendingItems(htmlText) {
-    __common_constructNpcMessageTable("末末");
-    __common_writeNpcMessage("我来啦！");
+    __page_constructNpcMessageTable("末末");
+    __page_writeNpcMessage("我来啦！");
 
     $("input[value='发送']").attr("id", "sendItemSubmit");
 
@@ -1379,13 +1379,13 @@ function __town_houseForSendingItems(htmlText) {
         }
     });
     if (gold >= 100000) {
-        __common_writeNpcMessage("让我看看你都偷偷给人送些啥。");
+        __page_writeNpcMessage("让我看看你都偷偷给人送些啥。");
     } else {
         let delta = Math.ceil((100000 - gold) / 10000);
         let message = "看起来你身上的钱还差" + delta + "万呀，我可以帮你" +
             "<a href='javascript:void(0)' id='safeSendItem'><b>取钱发送</b></a>" +
             "。我办事，你放心！";
-        __common_writeNpcMessage(message);
+        __page_writeNpcMessage(message);
 
         let id = __page_readIdFromCurrentPage();
         let pass = __page_readPassFromCurrentPage();
@@ -1403,8 +1403,8 @@ function __town_houseForSendingItems(htmlText) {
  * @private
  */
 function __town_houseForSendingPets(htmlText) {
-    __common_constructNpcMessageTable("末末");
-    __common_writeNpcMessage("哈哈，我又来啦！没想到吧？这边还是我。");
+    __page_constructNpcMessageTable("末末");
+    __page_writeNpcMessage("哈哈，我又来啦！没想到吧？这边还是我。");
 
     $("input[value='发送']").attr("id", "sendPetSubmit");
 
@@ -1419,7 +1419,7 @@ function __town_houseForSendingPets(htmlText) {
     if (gold < 100000) {
         let delta = Math.ceil((100000 - gold) / 10000);
         let message = "差" + delta + "万，老规矩，还是<a href='javascript:void(0)' id='safeSendPet'><b>取钱发送</b></a>？";
-        __common_writeNpcMessage(message);
+        __page_writeNpcMessage(message);
 
         let id = __page_readIdFromCurrentPage();
         let pass = __page_readPassFromCurrentPage();
@@ -1435,7 +1435,7 @@ function __town_houseForSendingPets(htmlText) {
  * 卖出物品后，自动存入银行
  */
 function __city_itemSold(htmlText) {
-    __common_constructNpcMessageTable("青鸟");
+    __page_constructNpcMessageTable("青鸟");
 
     let id = __page_readIdFromCurrentPage();
     let pass = __page_readPassFromCurrentPage();
@@ -1454,22 +1454,22 @@ function __city_itemSold(htmlText) {
     if (price < 10000) {
         // 卖的钱太少了，不值得为你做点啥
         var lowPriceMessage = "虫吃鼠咬,光板没毛,破面烂袄一件儿~";
-        __common_writeNpcMessage(lowPriceMessage);
-        __common_writeNpcMessage(returnMessage);
+        __page_writeNpcMessage(lowPriceMessage);
+        __page_writeNpcMessage(returnMessage);
         __city_itemSold_buildReturnFunction(id, pass);
     } else if (!enableAutoDepositWhenItemSold) {
         // 卖的钱倒是够了，奈何自动存钱功能被禁用了
         var noDepositMessage = "破家值万贯，能换多少算多少吧！";
-        __common_writeNpcMessage(noDepositMessage);
-        __common_writeNpcMessage(returnMessage);
+        __page_writeNpcMessage(noDepositMessage);
+        __page_writeNpcMessage(returnMessage);
         __city_itemSold_buildReturnFunction(id, pass);
     } else {
         __ajax_depositAllGolds(id, pass, function (data) {
             let messageHtml = messageElement.html() + "已经自动存入银行。";
             messageElement.html(messageHtml);
             let autoDepositMessage = "呦嚯嚯。。这个全口袋也只有我能收下！钱已经存到银行了，我是雷锋。";
-            __common_writeNpcMessage(autoDepositMessage);
-            __common_writeNpcMessage(returnMessage);
+            __page_writeNpcMessage(autoDepositMessage);
+            __page_writeNpcMessage(returnMessage);
             __city_itemSold_buildReturnFunction(data["id"], data["pass"]);
         });
     }
@@ -1654,8 +1654,8 @@ function __personalStatus_treasureBag(htmlText) {
 
 // 个人状态 -> 转职
 function __personalStatus_transferCareer(htmlText) {
-    __common_constructNpcMessageTable("白皇");
-    __common_writeNpcMessage("是的，你没有看错，换人了，某幕后黑手不愿意出镜。不过请放心，转职方面我是专业的，毕竟我一直制霸钉耙榜。");
+    __page_constructNpcMessageTable("白皇");
+    __page_writeNpcMessage("是的，你没有看错，换人了，某幕后黑手不愿意出镜。不过请放心，转职方面我是专业的，毕竟我一直制霸钉耙榜。");
 
     $('input[value="转职"]').attr('id', 'transferCareerButton');
 
@@ -1703,6 +1703,6 @@ function __personalStatus_transferCareer(htmlText) {
         } else {
             message += "不过说实话，你现在的能力，确实爱转啥就转啥吧，区别不大。";
         }
-        __common_writeNpcMessage(message);
+        __page_writeNpcMessage(message);
     });
 }
