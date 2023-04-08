@@ -1287,7 +1287,7 @@ function __battle_checkIfShouldGoToInn(htmlText, recoverItemEndure) {
 function postProcessCityRelatedFunctionalities(htmlText) {
     if (htmlText.indexOf("* 宠物图鉴 *") != -1) {
         // 宠物图鉴
-        __city_petMap(htmlText);
+        __town_petMap(htmlText);
     }
     if (htmlText.indexOf("* 运 送 屋 *") != -1) {
         __town_houseForSendingItems(htmlText);
@@ -1302,12 +1302,15 @@ function postProcessCityRelatedFunctionalities(htmlText) {
 }
 
 // 城市 -> 宠物图鉴
-function __city_petMap(htmlText) {
+function __town_petMap(htmlText) {
+    __common_constructNpcMessageTable("七七");
+    __common_writeNpcMessage("我打小数学就是体育老师教的，学的特别好。数一数图鉴数量这种事，交给我完全没有问题。");
+
     var petIdText = "";             // 宠物图鉴编号及数量的文本
     $("td:parent").each(function (_i, element) {
         var img = $(element).children("img");
         var src = img.attr("src");
-        if (src != undefined && src.indexOf("https://pocketrose.itsns.net.cn/pocketrose/image/386/") != -1) {
+        if (src != undefined && src.indexOf(POCKETROSE_DOMAIN + "/image/386/") != -1) {
             var code = img.attr("alt");
             var count = $(element).next();
 
@@ -1318,10 +1321,13 @@ function __city_petMap(htmlText) {
         }
     });
     if (petIdText != "") {
-        var messageBox = $('font[color="#FFFFFF"]').parent();
-        var currentText = messageBox.html();
-        currentText += "<BR><font color='#FFFFFF'>" + petIdText + "</font>";
-        messageBox.html(currentText);
+        __common_writeNpcMessage("<br>" + petIdText);
+        __common_writeNpcMessage("<br>要不要现在就去宠物进化退化那里<b><a href='javascript:void(0)' id='petBorn'>看一眼</a></b>？");
+        $("#petBorn").click(function () {
+            $("input[name='mode']").attr("value", "PETBORN");
+            $("form[action='status.cgi']").attr("action", "mydata.cgi");
+            $("input[value='返回城市']").trigger("click");
+        });
     }
 }
 

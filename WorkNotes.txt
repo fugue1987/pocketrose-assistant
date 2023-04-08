@@ -64,3 +64,12 @@ PAYLOAD:
   id:
   pass:
   mode: BANK_BUY
+
+
+宠物进化退化
+POST: mydata.cgi
+PAYLOAD:
+  id
+  pass
+  town    ?
+  mode    PETBORN
