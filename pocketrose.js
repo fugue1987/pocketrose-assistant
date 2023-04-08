@@ -1820,7 +1820,8 @@ function __personalStatus_transferCareer(htmlText) {
                 }
             }
             if (targetCareer !== "") {
-                __page_writeNpcMessage("嗯，还有另外一种选择，继续转职<b><a href='javascript:void(0)' id='toTopCareer'>" + targetCareer + "</a></b>，如何？");
+                __page_writeNpcMessage("嗯，还有另外一种选择，继续转职<b>" + targetCareer + "</b>，如何？" +
+                    "<b>[<a href='javascript:void(0)' id='toTopCareer'>我听你的就转职" + targetCareer + "</a>]</b>");
                 $("#toTopCareer").click(function () {
                     $("option").each(function (_i, o) {
                         let optionValue = $(o).attr("value");
@@ -1831,6 +1832,9 @@ function __personalStatus_transferCareer(htmlText) {
                         }
                     });
                     $("input[type='radio']").prop("checked", true);
+                    __ajax_lodgeAtInn(information["id"], information["pass"], function (data) {
+                        $("#transferCareerButton").trigger("click");
+                    });
                 });
             }
         }
