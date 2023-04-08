@@ -69,6 +69,45 @@ const _ROLE_TOP_CAREER_DICT = [
     "终极"
 ];
 
+const _CAREER_DICT = {
+    "兵士": {"id": 0},
+    "武士": {"id": 1},
+    "剑客": {"id": 2},
+    "剑侠": {"id": 3},
+    "魔法剑士": {"id": 4},
+    "暗黑剑士": {"id": 5},
+    "奥法剑士": {"id": 6},
+    "魔导剑士": {"id": 7},
+    "神圣剑士": {"id": 8},
+    "圣殿武士": {"id": 9},
+    "剑圣": {"id": 10},
+    "枪战士": {"id": 11},
+    "重战士": {"id": 12},
+    "狂战士": {"id": 13},
+    "龙战士": {"id": 14},
+    "武僧": {"id": 15},
+    "决斗家": {"id": 16},
+    "拳王": {"id": 17},
+    "术士": {"id": 18},
+    "魔法师": {"id": 19},
+    "咒灵师": {"id": 20},
+    "大魔导士": {"id": 21},
+    "牧师": {"id": 22},
+    "德鲁伊": {"id": 23},
+    "贤者": {"id": 24},
+    "弓箭士": {"id": 25},
+    "魔弓手": {"id": 26},
+    "狙击手": {"id": 27},
+    "游侠": {"id": 28},
+    "巡林客": {"id": 29},
+    "吟游诗人": {"id": 30},
+    "小天位": {"id": 31},
+    "强天位": {"id": 32},
+    "斋天位": {"id": 33},
+    "太天位": {"id": 34},
+    "终极": {"id": 35}
+};
+
 const _CITY_DICT = {
     "1": {
         "name": "贤者之城",
@@ -822,6 +861,17 @@ function __utilities_substringAfterSlash(text) {
     return text;
 }
 
+function __utilities_trimSpace(text) {
+    let result = "";
+    for (let i = 0; i < text.length; i++) {
+        let c = text[i];
+        if (c !== ' ') {
+            result += c;
+        }
+    }
+    return result;
+}
+
 /**
  * 判断指定的名字是否为属性重铠，支持齐心重铠的检查。
  * @private
@@ -833,6 +883,29 @@ function __utilities_isHeavyArmor(name) {
         }
     }
     return false;
+}
+
+/**
+ * 检查指定的职业是否为天位系隐藏职业
+ * @param career 等待检查的职业
+ * @private
+ */
+function __utilities_isRoleTopCareer(career) {
+    for (let i = 0; i < _ROLE_TOP_CAREER_DICT.length; i++) {
+        if (career === _ROLE_TOP_CAREER_DICT[i]) {
+            return true;
+        }
+    }
+    return false;
+}
+
+function __utilities_formalizeRoleTopCareer(career) {
+    for (let i = 0; i < _ROLE_TOP_CAREER_DICT.length; i++) {
+        if (career.indexOf(_ROLE_TOP_CAREER_DICT[i]) != -1) {
+            return _ROLE_TOP_CAREER_DICT[i];
+        }
+    }
+    return undefined;
 }
 
 /**
@@ -1668,13 +1741,28 @@ function __personalStatus_treasureBag(htmlText) {
 // 个人状态 -> 转职
 function __personalStatus_transferCareer(htmlText) {
     __page_constructNpcMessageTable("白皇");
-    __page_writeNpcMessage("是的，你没有看错，换人了，某幕后黑手不愿意出镜。不过请放心，转职方面我是专业的，毕竟我一直制霸钉耙榜。");
+    __page_writeNpcMessage("是的，你没有看错，换人了，某幕后黑手不愿意出镜。不过请放心，转职方面我是专业的，毕竟我一直制霸钉耙榜。<br>");
 
     $('input[value="转职"]').attr('id', 'transferCareerButton');
 
+    let lastTargetCareer = "";
+    $("option[value!='']").each(function (_idx, option) {
+        lastTargetCareer = $(option).text();
+    });
+
+    if (lastTargetCareer === "") {
+        __page_writeNpcMessage("我的天，你甚至连最基础的转职条件都没有满足，那你来这么干什么？我不愿意说粗口，所以我无话可说了，你走吧。<br>");
+        return;
+    }
+
+    let level = $($($("table")[4]).find("td")[7]).text();
+    if (level < 150) {
+        __page_writeNpcMessage("从专业的角度来说，你现在并没有满级，我并不推荐你现在就转职。当然你如果强行要这么做的话，我也不说啥。<br>");
+        return;
+    }
+
     let id = __page_readIdFromCurrentPage();
     let pass = __page_readPassFromCurrentPage();
-
     // 进入转职页面的时候，读取一下个人信息。把标准的HP/MP和五围读出来
     __ajax_readPersonalInformation(id, pass, function (information) {
         var mhp = information["MAX_HP"];
@@ -1706,16 +1794,23 @@ function __personalStatus_transferCareer(htmlText) {
             }
         }
 
-        var message = "";
+        let message = "";
         if (recommendationCareers.length > 0) {
             message += "我觉得你可以尝试一下这些新职业：";
-            for (var ci = 0; ci < recommendationCareers.length; ci++) {
+            for (let ci = 0; ci < recommendationCareers.length; ci++) {
                 message += "<b>" + recommendationCareers[ci] + "</b> "
             }
             message += " 当然，看脸时代的转职成功率你应该心中有数。";
         } else {
             message += "不过说实话，你现在的能力，确实爱转啥就转啥吧，区别不大。";
         }
+        message += "<br>"
         __page_writeNpcMessage(message);
+
+        let topCareer = __utilities_trimSpace(lastTargetCareer);
+        alert("[" + topCareer + "]");
+        if (__utilities_isRoleTopCareer(topCareer)) {
+            __page_writeNpcMessage("嗯，还有另外一种选择，继续转职<b>" + topCareer + "</b>，如何？");
+        }
     });
 }
