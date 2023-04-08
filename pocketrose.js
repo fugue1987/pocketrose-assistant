@@ -655,6 +655,9 @@ function __utilities_isHeavyArmor(name) {
  * @private
  */
 function __utilities_checkIfEquipmentFullExperience(name, power, experience) {
+    if (name == "大师球" || name == "宗师球" || name == "超力怪兽球" || name == "宠物蛋") {
+        return false;
+    }
     let maxExperience = 0;
     if (__utilities_isHeavyArmor(name)) {
         // 属性重铠满级经验为76000
