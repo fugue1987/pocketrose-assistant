@@ -877,18 +877,6 @@ function __common_writeNpcMessage(message) {
 }
 
 /**
- * 从当前页面定位status表单，提取出id和pass
- * @private
- * @deprecated
- */
-function __common_extractIdPassFromStatusForm() {
-    var statusForm = $('form[action="status.cgi"]');
-    var id = statusForm.children('input[name="id"]').attr('value');
-    var pass = statusForm.children('input[name="pass"]').attr('value');
-    return [id, pass];
-}
-
-/**
  * 从当前页面读出id
  * @returns string
  * @private
@@ -1449,7 +1437,9 @@ function __town_houseForSendingPets(htmlText) {
 function __city_itemSold(htmlText) {
     __common_constructNpcMessageTable("青鸟");
 
-    var IdPass = __common_extractIdPassFromStatusForm();
+    let id = __page_readIdFromCurrentPage();
+    let pass = __page_readPassFromCurrentPage();
+
     // 获取到卖出的金钱数
     var messageElement = $('h2:first');
     var price = messageElement.find('b:first').text();
@@ -1466,15 +1456,15 @@ function __city_itemSold(htmlText) {
         var lowPriceMessage = "虫吃鼠咬,光板没毛,破面烂袄一件儿~";
         __common_writeNpcMessage(lowPriceMessage);
         __common_writeNpcMessage(returnMessage);
-        __city_itemSold_buildReturnFunction(IdPass[0], IdPass[1]);
+        __city_itemSold_buildReturnFunction(id, pass);
     } else if (!enableAutoDepositWhenItemSold) {
         // 卖的钱倒是够了，奈何自动存钱功能被禁用了
         var noDepositMessage = "破家值万贯，能换多少算多少吧！";
         __common_writeNpcMessage(noDepositMessage);
         __common_writeNpcMessage(returnMessage);
-        __city_itemSold_buildReturnFunction(IdPass[0], IdPass[1]);
+        __city_itemSold_buildReturnFunction(id, pass);
     } else {
-        __ajax_depositAllGolds(IdPass[0], IdPass[1], function (data) {
+        __ajax_depositAllGolds(id, pass, function (data) {
             let messageHtml = messageElement.html() + "已经自动存入银行。";
             messageElement.html(messageHtml);
             let autoDepositMessage = "呦嚯嚯。。这个全口袋也只有我能收下！钱已经存到银行了，我是雷锋。";
@@ -1669,10 +1659,11 @@ function __personalStatus_transferCareer(htmlText) {
 
     $('input[value="转职"]').attr('id', 'transferCareerButton');
 
-    var IdPass = __common_extractIdPassFromStatusForm();
+    let id = __page_readIdFromCurrentPage();
+    let pass = __page_readPassFromCurrentPage();
 
     // 进入转职页面的时候，读取一下个人信息。把标准的HP/MP和五围读出来
-    __ajax_readPersonalInformation(IdPass[0], IdPass[1], function (information) {
+    __ajax_readPersonalInformation(id, pass, function (information) {
         var mhp = information["MAX_HP"];
         var mmp = information["MAX_MP"];
         var at = information["AT"];
