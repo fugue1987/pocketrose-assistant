@@ -1474,16 +1474,14 @@ function __city_itemSold(htmlText) {
         __common_writeNpcMessage(returnMessage);
         __city_itemSold_buildReturnFunction(IdPass[0], IdPass[1]);
     } else {
-        $.post("town.cgi",
-            {azukeru: "all", id: IdPass[0], pass: IdPass[1], mode: "BANK_SELL"},
-            function () {
-                var messageHtml = messageElement.html() + "已经自动存入银行。";
-                messageElement.html(messageHtml);
-                var autoDepositMessage = "呦嚯嚯。。这个全口袋也只有我能收下！钱已经存到银行了，我是雷锋。";
-                __common_writeNpcMessage(autoDepositMessage);
-                __common_writeNpcMessage(returnMessage);
-                __city_itemSold_buildReturnFunction(IdPass[0], IdPass[1]);
-            });
+        __ajax_depositAllGolds(IdPass[0], IdPass[1], function (data) {
+            let messageHtml = messageElement.html() + "已经自动存入银行。";
+            messageElement.html(messageHtml);
+            let autoDepositMessage = "呦嚯嚯。。这个全口袋也只有我能收下！钱已经存到银行了，我是雷锋。";
+            __common_writeNpcMessage(autoDepositMessage);
+            __common_writeNpcMessage(returnMessage);
+            __city_itemSold_buildReturnFunction(data["id"], data["pass"]);
+        });
     }
 }
 
