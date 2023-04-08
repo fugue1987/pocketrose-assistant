@@ -716,7 +716,7 @@ function __common_extractIdPassFromStatusForm() {
  * @param callback 回调函数
  * @private
  */
-function __common_fetchPersonalInformation(id, pass, callback) {
+function __ajax_readPersonalInformation(id, pass, callback) {
     $.ajax({
         type: "POST",
         url: "mydata.cgi",
@@ -730,7 +730,6 @@ function __common_fetchPersonalInformation(id, pass, callback) {
                     level += levelText[i];
                 }
             }
-            alert(level);
             let healthText = $(statusTable.find('td')[5]).text();
             let manaText = $(statusTable.find('td')[7]).text();
             let currentHealth = __utilities_substringBeforeSlash(healthText);
@@ -1348,7 +1347,7 @@ function __personalStatus_transferCareer(htmlText) {
 
     var IdPass = __common_extractIdPassFromStatusForm();
     // 进入转职页面的时候，读取一下个人信息。把标准的HP/MP和五围读出来
-    __common_fetchPersonalInformation(IdPass[0], IdPass[1], function (id, pass, info) {
+    __ajax_readPersonalInformation(IdPass[0], IdPass[1], function (id, pass, info) {
         var mhp = info["MAX_HP"];
         var mmp = info["MAX_MP"];
         var at = info["AT"];
