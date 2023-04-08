@@ -1,11 +1,11 @@
 // ==UserScript==
-// @name         pocketrose assistant (DEV)
+// @name         pocketrose assistant
 // @namespace    https://pocketrose.itsns.net.cn/
 // @description  Intercepts and modifies pocketrose CGI requests
 // @icon         data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==
 // @license      mit
 // @author       xiaohaiz,fugue
-// @version      1.4.2-SNAPSHOT
+// @version      1.4.3
 // @grant        unsafeWindow
 // @match        *://pocketrose.itsns.net.cn/*
 // @require      https://code.jquery.com/jquery-2.1.4.min.js
