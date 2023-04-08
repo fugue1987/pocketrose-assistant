@@ -879,12 +879,31 @@ function __common_writeNpcMessage(message) {
 /**
  * 从当前页面定位status表单，提取出id和pass
  * @private
+ * @deprecated
  */
 function __common_extractIdPassFromStatusForm() {
     var statusForm = $('form[action="status.cgi"]');
     var id = statusForm.children('input[name="id"]').attr('value');
     var pass = statusForm.children('input[name="pass"]').attr('value');
     return [id, pass];
+}
+
+/**
+ * 从当前页面读出id
+ * @returns string
+ * @private
+ */
+function __page_readIdFromCurrentPage() {
+    return $("input[name='id']").first().attr("value");
+}
+
+/**
+ * 从当前页面读出pass
+ * @returns string
+ * @private
+ */
+function __page_readPassFromCurrentPage() {
+    return $("input[name='pass']").first().attr("value");
 }
 
 /**
@@ -1380,10 +1399,10 @@ function __town_houseForSendingItems(htmlText) {
             "。我办事，你放心！";
         __common_writeNpcMessage(message);
 
-        let id = $("input[name='id']").first().attr("value");
-        let pass = $("input[name='pass']").first().attr("value");
+        let id = __page_readIdFromCurrentPage();
+        let pass = __page_readPassFromCurrentPage();
         $("#safeSendItem").click(function () {
-            $.post("town.cgi", {id: id, pass: pass, dasu: delta, mode: "BANK_BUY"}, function () {
+            __ajax_withdrawGolds(id, pass, delta, function (data) {
                 $("#sendItemSubmit").trigger("click");
             });
         });
@@ -1414,10 +1433,10 @@ function __town_houseForSendingPets(htmlText) {
         let message = "差" + delta + "万，老规矩，还是<a href='javascript:void(0)' id='safeSendPet'><b>取钱发送</b></a>？";
         __common_writeNpcMessage(message);
 
-        let id = $("input[name='id']").first().attr("value");
-        let pass = $("input[name='pass']").first().attr("value");
+        let id = __page_readIdFromCurrentPage();
+        let pass = __page_readPassFromCurrentPage();
         $("#safeSendPet").click(function () {
-            $.post("town.cgi", {id: id, pass: pass, dasu: delta, mode: "BANK_BUY"}, function () {
+            __ajax_withdrawGolds(id, pass, delta, function (data) {
                 $("#sendPetSubmit").trigger("click");
             });
         });
