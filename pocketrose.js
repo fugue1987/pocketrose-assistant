@@ -781,6 +781,24 @@ function __ajax_readPersonalStatus(id, pass, callback) {
     });
 }
 
+/**
+ * 存储所有的现金到银行
+ * @param id ID
+ * @param pass PASS
+ * @param callback 回调函数，参数{id:x,pass:x}
+ * @private
+ */
+function __ajax_depositAllGolds(id, pass, callback) {
+    $.ajax({
+        type: "POST",
+        url: "town.cgi",
+        data: {id: id, pass: pass, mode: "BANK_SELL", azukeru: "all"},
+        success: function (html) {
+            let data = {id: id, pass: pass};
+            callback(data);
+        }
+    });
+}
 
 function __common_item_selectBag(parentElement) {
     var checkedCount = 0;
