@@ -1406,7 +1406,7 @@ function __city_itemSold(htmlText) {
     var price = messageElement.find('b:first').text();
 
     let returnMessage = "";
-    returnMessage += "要不要我带你回";
+    returnMessage += "另外，要不要我带你回";
     returnMessage += "<b><a href='javascript:void(0)' id='returnARM'>武器屋</a></b>？";
     returnMessage += "<b><a href='javascript:void(0)' id='returnPRO'>防具屋</a></b>？";
     returnMessage += "<b><a href='javascript:void(0)' id='returnACC'>饰品屋</a></b>？";
@@ -1414,13 +1414,13 @@ function __city_itemSold(htmlText) {
 
     if (price < 10000) {
         // 卖的钱太少了，不值得为你做点啥
-        var lowPriceMessage = "嚯，就卖了这几个子儿，我都想不出能拿那只眼看你。赶紧麻利儿的该干嘛干嘛去，尽裹乱。";
+        var lowPriceMessage = "虫吃鼠咬,光板没毛,破面烂袄一件儿~";
         __common_writeNpcMessage(lowPriceMessage);
         __common_writeNpcMessage(returnMessage);
         __city_itemSold_buildReturnFunction(IdPass[0], IdPass[1]);
     } else if (!enableAutoDepositWhenItemSold) {
         // 卖的钱倒是够了，奈何自动存钱功能被禁用了
-        var noDepositMessage = "善意提醒，回去路上经过十字坡的时候，看见那颗大树的时候，自己当心点。";
+        var noDepositMessage = "破家值万贯，能换多少算多少吧！";
         __common_writeNpcMessage(noDepositMessage);
         __common_writeNpcMessage(returnMessage);
         __city_itemSold_buildReturnFunction(IdPass[0], IdPass[1]);
@@ -1430,7 +1430,7 @@ function __city_itemSold(htmlText) {
             function () {
                 var messageHtml = messageElement.html() + "已经自动存入银行。";
                 messageElement.html(messageHtml);
-                var autoDepositMessage = "我去，还挺有钱的嘛。日行一善，我已经帮你存到银行了，不用谢，请叫我雷锋。";
+                var autoDepositMessage = "呦嚯嚯。。这个全口袋也只有我能收下！钱已经存到银行了，我是雷锋。";
                 __common_writeNpcMessage(autoDepositMessage);
                 __common_writeNpcMessage(returnMessage);
                 __city_itemSold_buildReturnFunction(IdPass[0], IdPass[1]);
