@@ -997,6 +997,26 @@ function __ajax_depositAllGolds(id, pass, callback) {
     });
 }
 
+/**
+ * 从银行取钱
+ * @param id ID
+ * @param pass PASS
+ * @param amount 单位是万
+ * @param callback 回调
+ * @private
+ */
+function __ajax_withdrawGolds(id, pass, amount, callback) {
+    $.ajax({
+        type: "POST",
+        url: "town.cgi",
+        data: {id: id, pass: pass, mode: "BANK_BUY", dasu: amount},
+        success: function (html) {
+            let data = {id: id, pass: pass};
+            callback(data);
+        }
+    });
+}
+
 function __common_item_selectBag(parentElement) {
     var checkedCount = 0;
     parentElement.find("input[type='checkbox']").each(function (_idx, inputElement) {
