@@ -243,6 +243,10 @@ const _NPC_DICT = {
     '白皇': {
         'image': POCKETROSE_DOMAIN + '/image/head/11134.gif',
         'intro': ''
+    },
+    '七七': {
+        'image': POCKETROSE_DOMAIN + '/image/head/1368.gif',
+        'intro': ''
     }
 };
 
