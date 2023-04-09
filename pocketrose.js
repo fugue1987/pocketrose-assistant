@@ -26,7 +26,6 @@ const returnButtonText = "少年輕輕的離開，沒有帶走一片雲彩！";
 const bankButtonText = "順風不浪，逆風不慫，身上不要放太多的錢！";
 const blacksmithButtonText = "去修理下裝備吧，等爆掉的時候你就知道痛了！";
 const innButtonText = "你看起來很疲憊的樣子呀，媽媽喊你回去休息啦！";
-const depositEveryBattleTimes = 5;                                          // 定期存钱的战数，设置为0表示关闭此功能
 
 // 转职建议字典，对当前能力的需求，分别是MP，攻击，防御，智力，精神，速度
 const transferCareerRequirementDict = {
@@ -835,6 +834,14 @@ function __cookie_getRepairItemThreshold() {
     return parseInt(value);
 }
 
+function __cookie_getDepositBattleNumber() {
+    let value = Cookies.get("_POCKETROSE_ASSISTANT__DEPOSIT_BATTLE_NUMBER");
+    if (value === undefined) {
+        return 10;
+    }
+    return parseInt(value);
+}
+
 $(function () {
     replacePkm('pocketrose')
 });
@@ -1408,7 +1415,8 @@ function __battle_checkIfShouldGoToInn(htmlText, recoverItemEndure) {
         // 十二宫和秘宝之岛战斗胜利不需要住宿，直接存钱更好
         return 2;
     }
-    if (depositEveryBattleTimes > 0 && recoverItemEndure % depositEveryBattleTimes == 0) {
+    let depositBattleNumber = __cookie_getDepositBattleNumber();
+    if (depositBattleNumber > 0 && recoverItemEndure % depositBattleNumber == 0) {
         // 存钱战数到了
         return 2;
     }
@@ -1436,7 +1444,7 @@ function __battle_checkIfShouldGoToInn(htmlText, recoverItemEndure) {
     if (remaingHealth <= maxHealth * __cookie_getHealthLoseAutoLodgeRatio()) {
         return 1;
     }
-    if (depositEveryBattleTimes > 0) {
+    if (__cookie_getDepositBattleNumber() > 0) {
         // 设置了定期存钱，但是没有到战数，那么就直接返回吧
         return 3;
     } else {
@@ -1932,10 +1940,20 @@ function __personalStatus_cookieManagement(htmlText) {
     s4 += "</select>";
     __page_writeNpcMessage("<li>修理装备耐久限 " + s4 + " <a href='javascript:void(0)' id='a4'>设置</a></li>");
 
+    let b5 = __cookie_getDepositBattleNumber();
+    let s5 = "<select name='s5' id='s5'>";
+    s5 += "<option class='o5' value='0'>每战存钱</option>";
+    s5 += "<option class='o5' value='2'>2战一存</option>";
+    s5 += "<option class='o5' value='5'>5战一存</option>";
+    s5 += "<option class='o5' value='10'>10战一存</option>";
+    s5 += "</select>";
+    __page_writeNpcMessage("<li>触发存钱的战数 " + s5 + " <a href='javascript:void(0)' id='a5'>设置</a></li>");
+
     $(".o1[value='" + Number(b1) + "']").prop("selected", true);
     $(".o2[value='" + Number(b2) + "']").prop("selected", true);
     $(".o3[value='" + b3 + "']").prop("selected", true);
     $(".o4[value='" + b4 + "']").prop("selected", true);
+    $(".o5[value='" + b5 + "']").prop("selected", true);
 
     $("#a1").click(function () {
         Cookies.set("_POCKETROSE_ASSISTANT__ENABLE_POKEMON_WIKI", $("#s1").val(), {expires: 36500});
@@ -1957,6 +1975,12 @@ function __personalStatus_cookieManagement(htmlText) {
     });
     $("#a4").click(function () {
         Cookies.set("_POCKETROSE_ASSISTANT__REPAIR_ITEM_THRESHOLD", $("#s4").val(), {expires: 36500});
+        $("form[action='status.cgi']").attr("action", "mydata.cgi");
+        $("input:hidden[value='STATUS']").attr("value", "LETTER");
+        $("#returnButton").trigger("click");
+    });
+    $("#a5").click(function () {
+        Cookies.set("_POCKETROSE_ASSISTANT__DEPOSIT_BATTLE_NUMBER", $("#s5").val(), {expires: 36500});
         $("form[action='status.cgi']").attr("action", "mydata.cgi");
         $("input:hidden[value='STATUS']").attr("value", "LETTER");
         $("#returnButton").trigger("click");
