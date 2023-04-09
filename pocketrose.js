@@ -810,7 +810,7 @@ function __cookie_getEnablePokemonWiki() {
     if (value === undefined) {
         return false;
     }
-    return value === "true";
+    return value !== "0";
 }
 
 function __cookie_getEnableSoldAutoDeposit() {
@@ -819,6 +819,14 @@ function __cookie_getEnableSoldAutoDeposit() {
         return false;
     }
     return value === "true";
+}
+
+function __cookie_getHealthLoseAutoLodgeRatio() {
+    let value = Cookies.get("_POCKETROSE_ASSISTANT__HEALTH_LOSE_AUTO_LODGE_RATIO");
+    if (value === undefined) {
+        return 0.6;
+    }
+    return value;
 }
 
 $(function () {
@@ -1864,47 +1872,52 @@ function __personalStatus_cookieManagement(htmlText) {
 
     let b1 = __cookie_getEnablePokemonWiki();
     let s1 = "<select name='s1' id='s1'>";
-    if (b1) {
-        s1 += "<option value='启用' selected>启用</option>";
-        s1 += "<option value='禁用'>禁用</option>";
-    } else {
-        s1 += "<option value='启用'>启用</option>";
-        s1 += "<option value='禁用' selected>禁用</option>";
-    }
+    s1 += "<option value='1'>启用</option>";
+    s1 += "<option value='0'>禁用</option>";
     s1 += "</select>";
     __page_writeNpcMessage("<li>宝可梦百科超链 " + s1 + " <a href='javascript:void(0)' id='a1'>设置</a></li>");
+    $("#s1").find("option[value='" + Number(b1) + "']").prop("selected", true);
     $("#a1").click(function () {
-        if ($("#s1").val() === "启用") {
-            Cookies.set("_POCKETROSE_ASSISTANT__ENABLE_POKEMON_WIKI", "true", {expires: 36500});
-        } else {
-            Cookies.set("_POCKETROSE_ASSISTANT__ENABLE_POKEMON_WIKI", "false", {expires: 36500});
-        }
+        Cookies.set("_POCKETROSE_ASSISTANT__ENABLE_POKEMON_WIKI", $("#s1").val(), {expires: 36500});
         $("form[action='status.cgi']").attr("action", "mydata.cgi");
         $("input:hidden[value='STATUS']").attr("value", "LETTER");
         $("#returnButton").trigger("click");
     });
 
-    let b2 = __cookie_getEnableSoldAutoDeposit();
-    let s2 = "<select name='s2' id='s2'>";
-    if (b2) {
-        s2 += "<option value='启用' selected>启用</option>";
-        s2 += "<option value='禁用'>禁用</option>";
-    } else {
-        s2 += "<option value='启用'>启用</option>";
-        s2 += "<option value='禁用' selected>禁用</option>";
-    }
-    s2 += "</select>";
-    __page_writeNpcMessage("<li>售卖后自动存钱 " + s2 + " <a href='javascript:void(0)' id='a2'>设置</a></li>");
-    $("#a2").click(function () {
-        if ($("#s2").val() === "启用") {
-            Cookies.set("_POCKETROSE_ASSISTANT__ENABLE_SOLD_AUTO_DEPOSIT", "true", {expires: 36500});
-        } else {
-            Cookies.set("_POCKETROSE_ASSISTANT__ENABLE_SOLD_AUTO_DEPOSIT", "false", {expires: 36500});
-        }
-        $("form[action='status.cgi']").attr("action", "mydata.cgi");
-        $("input:hidden[value='STATUS']").attr("value", "LETTER");
-        $("#returnButton").trigger("click");
-    });
+    // let b2 = __cookie_getEnableSoldAutoDeposit();
+    // let s2 = "<select name='s2' id='s2'>";
+    // s2 += "<option value='true'>启用</option>";
+    // s2 += "<option value='false'>禁用</option>";
+    // s2 += "</select>";
+    // __page_writeNpcMessage("<li>售卖后自动存钱 " + s2 + " <a href='javascript:void(0)' id='a2'>设置</a></li>");
+    // $("#s2").find("option[value='"+b2+"']").prop("selected", true);
+    // $("#a2").click(function () {
+    //     Cookies.set("_POCKETROSE_ASSISTANT__ENABLE_SOLD_AUTO_DEPOSIT", $("#s2").val(), {expires: 36500});
+    //     $("form[action='status.cgi']").attr("action", "mydata.cgi");
+    //     $("input:hidden[value='STATUS']").attr("value", "LETTER");
+    //     $("#returnButton").trigger("click");
+    // });
+
+    // let b3 = __cookie_getHealthLoseAutoLodgeRatio();
+    // let s3 = "<select name='s3' id='s3'>";
+    // s3 += "<option value='0.1'>10%</option>";
+    // s3 += "<option value='0.2'>20%</option>";
+    // s3 += "<option value='0.3'>30%</option>";
+    // s3 += "<option value='0.4'>40%</option>";
+    // s3 += "<option value='0.5'>50%</option>";
+    // s3 += "<option value='0.6'>60%</option>";
+    // s3 += "<option value='0.7'>70%</option>";
+    // s3 += "<option value='0.8'>80%</option>";
+    // s3 += "<option value='0.9'>90%</option>";
+    // s3 += "</select>";
+    // __page_writeNpcMessage("<li>掉血后自动住宿 " + s3 + " <a href='javascript:void(0)' id='a3'>设置</a></li>");
+    // $("#s3").find("option[value='" + b3 + "']").prop("selected", true);
+    // $("#a3").click(function () {
+    //     Cookies.set("_POCKETROSE_ASSISTANT__HEALTH_LOSE_AUTO_LODGE_RATIO", $("#s3").val(), {expires: 36500});
+    //     $("form[action='status.cgi']").attr("action", "mydata.cgi");
+    //     $("input:hidden[value='STATUS']").attr("value", "LETTER");
+    //     $("#returnButton").trigger("click");
+    // });
 }
 
 // 个人状态 -> 状态查看
