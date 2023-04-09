@@ -23,7 +23,6 @@
 const POCKETROSE_DOMAIN = "https://pocketrose.itsns.net.cn/pocketrose";
 
 const blacksmithButtonText = "去修理下裝備吧，等爆掉的時候你就知道痛了！";
-const innButtonText = "你看起來很疲憊的樣子呀，媽媽喊你回去休息啦！";
 
 // 转职建议字典，对当前能力的需求，分别是MP，攻击，防御，智力，精神，速度
 const transferCareerRequirementDict = {
@@ -856,6 +855,14 @@ function __cookie_getDepositButtonText() {
     return unescape(value);
 }
 
+function __cookie_getLodgeButtonText() {
+    let value = Cookies.get("_POCKETROSE_ASSISTANT__LODGE_BUTTON_TEXT");
+    if (value === undefined || value === "") {
+        return "你看起來很疲憊的樣子呀，媽媽喊你回去休息啦！";
+    }
+    return unescape(value);
+}
+
 $(function () {
     replacePkm('pocketrose')
 });
@@ -1318,7 +1325,7 @@ function __battle(htmlText) {
     $('input[value="BANK"]').attr('value', 'BANK_SELL');
 
     // 修改返回住宿按钮
-    $('#innButton').attr('value', innButtonText);
+    $('#innButton').attr('value', __cookie_getLodgeButtonText());
 
     // 修改返回按钮
     $('#returnButton').attr('value', __cookie_getReturnButtonText());
@@ -1971,6 +1978,10 @@ function __personalStatus_cookieManagement(htmlText) {
     let s7 = "<input type='text' class='o7' name='s7' id='s7' size='48' placeholder='" + b7 + "'>";
     __page_writeNpcMessage("<li>战斗存钱的台词 " + s7 + " <a href='javascript:void(0)' id='a7'>设置</a></li>");
 
+    let b8 = __cookie_getLodgeButtonText();
+    let s8 = "<input type='text' class='o8' name='s8' id='s8' size='48' placeholder='" + b8 + "'>";
+    __page_writeNpcMessage("<li>战斗住宿的台词 " + s8 + " <a href='javascript:void(0)' id='a8'>设置</a></li>");
+
     $(".o1[value='" + Number(b1) + "']").prop("selected", true);
     $(".o2[value='" + Number(b2) + "']").prop("selected", true);
     $(".o3[value='" + b3 + "']").prop("selected", true);
@@ -2023,6 +2034,16 @@ function __personalStatus_cookieManagement(htmlText) {
             text = escape(text);
         }
         Cookies.set("_POCKETROSE_ASSISTANT__DEPOSIT_BUTTON_TEXT", text, {expires: 36500});
+        $("form[action='status.cgi']").attr("action", "mydata.cgi");
+        $("input:hidden[value='STATUS']").attr("value", "LETTER");
+        $("#returnButton").trigger("click");
+    });
+    $("#a8").click(function () {
+        let text = $("#s8").val();
+        if (text !== "") {
+            text = escape(text);
+        }
+        Cookies.set("_POCKETROSE_ASSISTANT__LODGE_BUTTON_TEXT", text, {expires: 36500});
         $("form[action='status.cgi']").attr("action", "mydata.cgi");
         $("input:hidden[value='STATUS']").attr("value", "LETTER");
         $("#returnButton").trigger("click");
