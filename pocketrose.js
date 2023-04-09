@@ -838,6 +838,9 @@ function replacePkm(page) {
             if (__cookie_getEnablePokemonWiki()) {
                 processPokemonWikiReplacement();
             }
+            if (location.href.includes("status.cgi")) {
+                postProcessMainStatusFunctionalities($('html').html());
+            }
             if (location.href.includes("battle.cgi")) {
                 postProcessBattleRelatedFunctionalities($('html').html());
             }
@@ -1236,6 +1239,19 @@ function processPokemonWikiReplacement() {
             }
         })
     });
+}
+
+// ============================================================================
+// 主状态页辅助功能
+// ============================================================================
+function postProcessMainStatusFunctionalities(htmlText) {
+    if (htmlText.indexOf("在网吧的用户请使用这个退出") !== -1) {
+        __status(htmlText);
+    }
+}
+
+function __status(htmlText) {
+    $("option[value='LETTER']").text("口袋助手设置");
 }
 
 // ============================================================================
