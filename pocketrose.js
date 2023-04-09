@@ -1956,6 +1956,10 @@ function __personalStatus_cookieManagement(htmlText) {
     s5 += "</select>";
     __page_writeNpcMessage("<li>触发存钱的战数 " + s5 + " <a href='javascript:void(0)' id='a5'>设置</a></li>");
 
+    let b6 = __cookie_getReturnButtonText();
+    let s6 = "<input type='text' class='o6' name='s6' id='s6' size='48' placeholder='" + b6 + "'>";
+    __page_writeNpcMessage("<li>战斗返回的台词 " + s6 + " <a href='javascript:void(0)' id='a6'>设置</a></li>");
+
     $(".o1[value='" + Number(b1) + "']").prop("selected", true);
     $(".o2[value='" + Number(b2) + "']").prop("selected", true);
     $(".o3[value='" + b3 + "']").prop("selected", true);
@@ -1988,6 +1992,16 @@ function __personalStatus_cookieManagement(htmlText) {
     });
     $("#a5").click(function () {
         Cookies.set("_POCKETROSE_ASSISTANT__DEPOSIT_BATTLE_NUMBER", $("#s5").val(), {expires: 36500});
+        $("form[action='status.cgi']").attr("action", "mydata.cgi");
+        $("input:hidden[value='STATUS']").attr("value", "LETTER");
+        $("#returnButton").trigger("click");
+    });
+    $("#a6").click(function () {
+        let text = $("#s6").val();
+        if (text !== "") {
+            text = escape(text);
+        }
+        Cookies.set("_POCKETROSE_ASSISTANT__RETURN_BUTTON_TEXT", text, {expires: 36500});
         $("form[action='status.cgi']").attr("action", "mydata.cgi");
         $("input:hidden[value='STATUS']").attr("value", "LETTER");
         $("#returnButton").trigger("click");
