@@ -1492,9 +1492,11 @@ function __battle_checkIfShouldGoToInn(htmlText, recoverItemEndure) {
         // 存钱战数到了
         return 2;
     }
-    var playerName = "";
-    var remaingHealth = 0;
-    var maxHealth = 0;
+    let playerName = "";
+    let health = 0;
+    let maxHealth = 0;
+    let mana = 0;
+    let maxMana = 0;
     $("td:parent").each(function (index, element) {
         var img = $(element).children("img");
         var src = img.attr("src");
@@ -1504,16 +1506,18 @@ function __battle_checkIfShouldGoToInn(htmlText, recoverItemEndure) {
                 playerName = img.attr("alt");
             }
         }
-        if (playerName == $(element).text()) {
-            var healthElement = $(element).next();
-            var healthText = healthElement.text();
-            var pos = healthText.indexOf("/");
-            remaingHealth = healthText.substring(0, pos - 1);
-            maxHealth = healthText.substring(pos + 1);
+        if (playerName === $(element).text()) {
+            let healthText = $(element).next().text();
+            health = __utilities_substringBeforeSlash(healthText);
+            maxHealth = __utilities_substringAfterSlash(healthText);
+
+            let manaText = $(element).next().next().text();
+            mana = __utilities_substringBeforeSlash(manaText);
+            maxMana = __utilities_substringAfterSlash(manaText);
         }
     });
     // 生命力低于最大值的60%，住宿推荐
-    if (remaingHealth <= maxHealth * __cookie_getHealthLoseAutoLodgeRatio()) {
+    if (health <= maxHealth * __cookie_getHealthLoseAutoLodgeRatio()) {
         return 1;
     }
     if (__cookie_getDepositBattleNumber() > 0) {
