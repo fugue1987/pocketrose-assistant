@@ -808,7 +808,7 @@ const pokemonDict = {
 
 const pokemonDictKeys = Object.keys(pokemonDict);
 
-function __cookie_enablePokemonWiki() {
+function __cookie_getEnablePokemonWiki() {
     let enablePokemonWiki = Cookies.get("_POCKETROSE_ASSISTANT__ENABLE_POKEMON_WIKI");
     if (enablePokemonWiki === undefined) {
         return false;
@@ -823,7 +823,7 @@ $(function () {
 function replacePkm(page) {
     if (location.href.includes(page)) {
         $(document).ready(function () {
-            if (__cookie_enablePokemonWiki()) {
+            if (__cookie_getEnablePokemonWiki()) {
                 processPokemonWikiReplacement();
             }
             if (location.href.includes("battle.cgi")) {
@@ -1855,28 +1855,29 @@ function postProcessPersonalStatusRelatedFunctionalities(htmlText) {
 function __personalStatus_cookieManagement(htmlText) {
     $("input:submit[value='返回城市']").attr("id", "returnButton");
     __page_constructNpcMessageTable("夜九年");
-    __page_writeNpcMessage("在这里我来协助各位维持本机（浏览器）的口袋相关设置：<br>");
-    let enablePokemonWiki = Cookies.get("_POCKETROSE_ASSISTANT__ENABLE_POKEMON_WIKI");
-    if (enablePokemonWiki === undefined) {
-        enablePokemonWiki = "false";
-    }
-    if (enablePokemonWiki === "true") {
-        __page_writeNpcMessage("<li>宝可梦百科[<b>启</b>] <a href='javascript:void(0)' id='disablePokemonWiki'>关闭</a></li>");
-        $("#disablePokemonWiki").click(function () {
-            Cookies.set("_POCKETROSE_ASSISTANT__ENABLE_POKEMON_WIKI", "false", {expires: 36500});
-            $("form[action='status.cgi']").attr("action", "mydata.cgi");
-            $("input:hidden[value='STATUS']").attr("value", "LETTER");
-            $("#returnButton").trigger("click");
-        });
+    __page_writeNpcMessage("在这里我来协助各位维护本机（浏览器）的口袋相关设置：<br>");
+
+    let enablePokemonWiki = __cookie_getEnablePokemonWiki();
+    let s1 = "<select name='s1' id='s1'>";
+    if (enablePokemonWiki) {
+        s1 += "<option value='启用' selected>启用</option>";
+        s1 += "<option value='禁用'>禁用</option>";
     } else {
-        __page_writeNpcMessage("<li>宝可梦百科[<b>禁</b>] <a href='javascript:void(0)' id='enablePokemonWiki'>启用</a></li>");
-        $("#enablePokemonWiki").click(function () {
-            Cookies.set("_POCKETROSE_ASSISTANT__ENABLE_POKEMON_WIKI", "true", {expires: 36500});
-            $("form[action='status.cgi']").attr("action", "mydata.cgi");
-            $("input:hidden[value='STATUS']").attr("value", "LETTER");
-            $("#returnButton").trigger("click");
-        });
+        s1 += "<option value='启用'>启用</option>";
+        s1 += "<option value='禁用' selected>禁用</option>";
     }
+    s1 += "</select>";
+    __page_writeNpcMessage("<li>宝可梦百科 " + s1 + " <a href='javascript:void(0)' id='pokemonWiki'>设置</a></li>");
+    $("#pokemonWiki").click(function () {
+        if ($("#s1").val() === "启用") {
+            Cookies.set("_POCKETROSE_ASSISTANT__ENABLE_POKEMON_WIKI", "true", {expires: 36500});
+        } else {
+            Cookies.set("_POCKETROSE_ASSISTANT__ENABLE_POKEMON_WIKI", "false", {expires: 36500});
+        }
+        $("form[action='status.cgi']").attr("action", "mydata.cgi");
+        $("input:hidden[value='STATUS']").attr("value", "LETTER");
+        $("#returnButton").trigger("click");
+    });
 }
 
 // 个人状态 -> 状态查看
