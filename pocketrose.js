@@ -22,7 +22,6 @@
 
 const POCKETROSE_DOMAIN = "https://pocketrose.itsns.net.cn/pocketrose";
 
-const enablePokemonWikiFuture = true;                                       // 改成false就不再啓用百科功能
 const enableAutoDepositWhenItemSold = true;                                 // 物品卖出后自动存钱功能
 
 const returnButtonText = "少年輕輕的離開，沒有帶走一片雲彩！";
