@@ -283,6 +283,10 @@ const _CITY_DICT = {
 };
 
 const _NPC_DICT = {
+    '夜九年': {
+        'image': POCKETROSE_DOMAIN + '/image/head/1561.gif',
+        'intro': ''
+    },
     '夜苍凉': {
         'image': POCKETROSE_DOMAIN + '/image/head/1117.gif',
         'intro': ''
@@ -804,6 +808,14 @@ const pokemonDict = {
 
 const pokemonDictKeys = Object.keys(pokemonDict);
 
+function __cookie_enablePokemonWiki() {
+    let enablePokemonWiki = Cookies.get("_POCKETROSE_ASSISTANT__ENABLE_POKEMON_WIKI");
+    if (enablePokemonWiki === undefined) {
+        return false;
+    }
+    return enablePokemonWiki === "true";
+}
+
 $(function () {
     replacePkm('pocketrose')
 });
@@ -811,7 +823,7 @@ $(function () {
 function replacePkm(page) {
     if (location.href.includes(page)) {
         $(document).ready(function () {
-            if (enablePokemonWikiFuture) {
+            if (__cookie_enablePokemonWiki()) {
                 processPokemonWikiReplacement();
             }
             if (location.href.includes("battle.cgi")) {
@@ -1822,6 +1834,10 @@ function __city_itemSold_buildReturnFunction(id, pass) {
 // 个人状态后续辅助功能
 // ============================================================================
 function postProcessPersonalStatusRelatedFunctionalities(htmlText) {
+    if (htmlText.indexOf("给其他人发送消息") !== -1) {
+        // 复用个人接收的信作为Cookie管理的页面
+        __personalStatus_cookieManagement(htmlText);
+    }
     if (htmlText.indexOf("仙人的宝物") != -1) {
         __personalStatus_view(htmlText);
     }
@@ -1833,6 +1849,33 @@ function postProcessPersonalStatusRelatedFunctionalities(htmlText) {
     }
     if (htmlText.indexOf("* 转职神殿 *") != -1) {
         __personalStatus_transferCareer(htmlText);
+    }
+}
+
+function __personalStatus_cookieManagement(htmlText) {
+    $("input:submit[value='返回城市']").attr("id", "returnButton");
+    __page_constructNpcMessageTable("夜九年");
+    __page_writeNpcMessage("在这里我来协助各位维持本机（浏览器）的口袋相关设置：<br>");
+    let enablePokemonWiki = Cookies.get("_POCKETROSE_ASSISTANT__ENABLE_POKEMON_WIKI");
+    if (enablePokemonWiki === undefined) {
+        enablePokemonWiki = "false";
+    }
+    if (enablePokemonWiki === "true") {
+        __page_writeNpcMessage("<li>宝可梦百科[<b>启</b>] <a href='javascript:void(0)' id='disablePokemonWiki'>关闭</a></li>");
+        $("#disablePokemonWiki").click(function () {
+            Cookies.set("_POCKETROSE_ASSISTANT__ENABLE_POKEMON_WIKI", "false", {expires: 36500});
+            $("form[action='status.cgi']").attr("action", "mydata.cgi");
+            $("input:hidden[value='STATUS']").attr("value", "LETTER");
+            $("#returnButton").trigger("click");
+        });
+    } else {
+        __page_writeNpcMessage("<li>宝可梦百科[<b>禁</b>] <a href='javascript:void(0)' id='enablePokemonWiki'>启用</a></li>");
+        $("#enablePokemonWiki").click(function () {
+            Cookies.set("_POCKETROSE_ASSISTANT__ENABLE_POKEMON_WIKI", "true", {expires: 36500});
+            $("form[action='status.cgi']").attr("action", "mydata.cgi");
+            $("input:hidden[value='STATUS']").attr("value", "LETTER");
+            $("#returnButton").trigger("click");
+        });
     }
 }
 
