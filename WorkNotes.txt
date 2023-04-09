@@ -73,3 +73,16 @@ PAYLOAD:
   pass
   town    ?
   mode    PETBORN
+
+
+转职完成
+POST: mydata.cgi
+PAYLOAD:
+  chara     1
+  id
+  pass
+  mode      JOB_CHANGE
+  syoku_no  30
+
+  x 已经熟练掌握了 强天位 ！
+  x 转职 吟游诗人 成功。
