@@ -56,6 +56,8 @@ const heavyArmorNameDict = [
     "风翼三足凤纳托利斯"
 ];
 
+const _PROHIBIT_SELLING_ITEM_DICT = ["千与千寻", "勿忘我", "双经斩"];
+
 /**
  * 终极隐藏职业天位系的职业名称定义。
  * @type {string[]}
@@ -1529,6 +1531,8 @@ function __town_houseForSendingPets(htmlText) {
 function __town_weaponStore(htmlText) {
     __page_constructNpcMessageTable("青鸟");
 
+    __town_common_disableProhibitSellingItems($("table")[5]);
+
     // 获取当前身上现金的数量
     let cash = 0;
     $("td:parent").each(function (idx, td) {
@@ -1574,6 +1578,28 @@ function __town_weaponStore(htmlText) {
                     // 先取差额，再买
                     $("input:submit[value='买入']").trigger("click");
                 });
+            }
+        }
+    });
+}
+
+/**
+ * 正在装备中和禁售名单上的物品不再提供选择。
+ * @param table 身上物品所在表格的DOM
+ * @private
+ */
+function __town_common_disableProhibitSellingItems(table) {
+    $(table).find("input:radio[name='select']").each(function (idx, radio) {
+        let name = $(radio).parent().next().next().text();
+        if ($(radio).parent().next().text() === "★") {
+            // 已经装备上的禁止售卖
+            $(radio).prop("disabled", true);
+        } else {
+            for (let i = 0; i < _PROHIBIT_SELLING_ITEM_DICT.length; i++) {
+                if (name === _PROHIBIT_SELLING_ITEM_DICT[i]) {
+                    // 禁售名单里面
+                    $(radio).prop("disabled", true);
+                }
             }
         }
     });
