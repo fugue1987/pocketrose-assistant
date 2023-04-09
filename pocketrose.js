@@ -1418,6 +1418,10 @@ function postProcessCityRelatedFunctionalities(htmlText) {
         htmlText.indexOf("＜＜　□　<b>防具屋</b>　□　＞＞") !== -1) {
         __town_armorStore(htmlText);
     }
+    if (htmlText.indexOf("＜＜　□　<B>饰品屋</B>　□　＞＞") !== -1 ||
+        htmlText.indexOf("＜＜　□　<b>饰品屋</b>　□　＞＞") !== -1) {
+        __town_accessoryStore(htmlText);
+    }
     if (htmlText.indexOf(" Gold卖出。") !== -1) {
         // 物品卖出完成
         __city_itemSold(htmlText);
@@ -1535,6 +1539,14 @@ function __town_houseForSendingPets(htmlText) {
 function __town_weaponStore(htmlText) {
     __page_constructNpcMessageTable("青鸟");
     __town_common_disableProhibitSellingItems($("table")[5]);
+    $("input:submit[value='买入']").attr("id", "buyButton");
+
+    // 检查是否身上还有富裕的购物空间？
+    if ($("select[name='num']").find("option:first").length === 0) {
+        $("#buyButton").prop("disabled", true);
+        __page_writeNpcMessage("咱们就是说买东西之前至少身上腾点空间出来。");
+        return;
+    }
 
     // 获取当前身上现金的数量
     let cash = 0;
@@ -1547,42 +1559,9 @@ function __town_weaponStore(htmlText) {
 
     __page_writeNpcMessage("为了回馈新老客户，本店特推出直接通过<b><a href='javascript:void(0)' id='bankBuy'>银行转账购买</a></b>的方式。");
     $("#bankBuy").click(function () {
-        let table = $("table")[7];
-        let name = "";
-        let price = 0;
-        $(table).find("input:radio[name='select']").each(function (idx, radio) {
-            if ($(radio).prop("checked")) {
-                // 读取想要购买武器的信息，名称和单价
-                name = $(radio).parent().next().text();
-                price = $(radio).parent().next().next().find("b:first").text();
-            }
-        });
-        if (name !== "") {
-            // 现在去读取想要购买的数量
-            let count = 0;
-            $("select[name='num']").find("option").each(function (idx, option) {
-                if ($(option).prop("selected")) {
-                    count = $(option).val();
-                }
-            });
-
-            let totalPrice = price * count;
-            if (totalPrice > 0) {
-                totalPrice = Math.max(10000, totalPrice);   // 如果总价不到1万，按照1万来计算
-            }
-            if (cash >= totalPrice) {
-                // 身上钱足够了，直接买就是了
-                $("input:submit[value='买入']").trigger("click");
-            } else {
-                let delta = Math.ceil((totalPrice - cash) / 10000);
-                let id = __page_readIdFromCurrentPage();
-                let pass = __page_readPassFromCurrentPage();
-                __ajax_withdrawGolds(id, pass, delta, function (data) {
-                    // 先取差额，再买
-                    $("input:submit[value='买入']").trigger("click");
-                });
-            }
-        }
+        let id = __page_readIdFromCurrentPage();
+        let pass = __page_readPassFromCurrentPage();
+        __town_common_prepareForShopping(id, pass, cash, $("table")[7], $("#buyButton"));
     });
 }
 
@@ -1594,6 +1573,14 @@ function __town_weaponStore(htmlText) {
 function __town_armorStore(htmlText) {
     __page_constructNpcMessageTable("青鸟");
     __town_common_disableProhibitSellingItems($("table")[5]);
+    $("input:submit[value='买入']").attr("id", "buyButton");
+
+    // 检查是否身上还有富裕的购物空间？
+    if ($("select[name='num']").find("option:first").length === 0) {
+        $("#buyButton").prop("disabled", true);
+        __page_writeNpcMessage("咱们就是说买东西之前至少身上腾点空间出来。");
+        return;
+    }
 
     // 获取当前身上现金的数量
     let cash = 0;
@@ -1606,42 +1593,43 @@ function __town_armorStore(htmlText) {
 
     __page_writeNpcMessage("为了回馈新老客户，本店特推出直接通过<b><a href='javascript:void(0)' id='bankBuy'>银行转账购买</a></b>的方式。");
     $("#bankBuy").click(function () {
-        let table = $("table")[7];
-        let name = "";
-        let price = 0;
-        $(table).find("input:radio[name='select']").each(function (idx, radio) {
-            if ($(radio).prop("checked")) {
-                name = $(radio).parent().next().text();
-                // 防具屋价格显示样式和武器屋不一样
-                let priceText = $(radio).parent().next().next().text();
-                price = priceText.substring(0, priceText.indexOf(" "));
-            }
-        });
-        if (name !== "") {
-            let count = 0;
-            $("select[name='num']").find("option").each(function (idx, option) {
-                if ($(option).prop("selected")) {
-                    count = $(option).val();
-                }
-            });
+        let id = __page_readIdFromCurrentPage();
+        let pass = __page_readPassFromCurrentPage();
+        __town_common_prepareForShopping(id, pass, cash, $("table")[7], $("#buyButton"));
+    });
+}
 
-            let totalPrice = price * count;
-            if (totalPrice > 0) {
-                totalPrice = Math.max(10000, totalPrice);   // 如果总价不到1万，按照1万来计算
-            }
-            if (cash >= totalPrice) {
-                // 身上钱足够了，直接买就是了
-                $("input:submit[value='买入']").trigger("click");
-            } else {
-                let delta = Math.ceil((totalPrice - cash) / 10000);
-                let id = __page_readIdFromCurrentPage();
-                let pass = __page_readPassFromCurrentPage();
-                __ajax_withdrawGolds(id, pass, delta, function (data) {
-                    // 先取差额，再买
-                    $("input:submit[value='买入']").trigger("click");
-                });
-            }
+/**
+ * 饰品屋：增强实现。
+ * @param htmlText HTML
+ * @private
+ */
+function __town_accessoryStore(htmlText) {
+    __page_constructNpcMessageTable("青鸟");
+    __town_common_disableProhibitSellingItems($("table")[5]);
+    $("input:submit[value='买入']").attr("id", "buyButton");
+
+    // 检查是否身上还有富裕的购物空间？
+    if ($("select[name='num']").find("option:first").length === 0) {
+        $("#buyButton").prop("disabled", true);
+        __page_writeNpcMessage("咱们就是说买东西之前至少身上腾点空间出来。");
+        return;
+    }
+
+    // 获取当前身上现金的数量
+    let cash = 0;
+    $("td:parent").each(function (idx, td) {
+        if ($(td).text() === "所持金") {
+            let cashText = $(td).next().text();
+            cash = cashText.substring(0, cashText.indexOf(" "));
         }
+    });
+
+    __page_writeNpcMessage("为了回馈新老客户，本店特推出直接通过<b><a href='javascript:void(0)' id='bankBuy'>银行转账购买</a></b>的方式。");
+    $("#bankBuy").click(function () {
+        let id = __page_readIdFromCurrentPage();
+        let pass = __page_readPassFromCurrentPage();
+        __town_common_prepareForShopping(id, pass, cash, $("table")[7], $("#buyButton"));
     });
 }
 
@@ -1665,6 +1653,39 @@ function __town_common_disableProhibitSellingItems(table) {
             }
         }
     });
+}
+
+function __town_common_prepareForShopping(id, pass, cash, table, submit) {
+    let name = "";
+    let price = 0;
+    $(table).find("input:radio[name='select']").each(function (idx, radio) {
+        if ($(radio).prop("checked")) {
+            name = $(radio).parent().next().text();
+            let priceText = $(radio).parent().next().next().text();
+            price = priceText.substring(0, priceText.indexOf(" "));
+        }
+    });
+    if (name !== "") {
+        let count = 0;
+        $("select[name='num']").find("option").each(function (idx, option) {
+            if ($(option).prop("selected")) {
+                count = $(option).val();
+            }
+        });
+
+        let totalPrice = price * count;
+        if (totalPrice > 0) {
+            totalPrice = Math.max(10000, totalPrice);   // 如果总价不到1万，按照1万来计算
+        }
+        if (cash >= totalPrice) {
+            $(submit).trigger("click");
+        } else {
+            let delta = Math.ceil((totalPrice - cash) / 10000);
+            __ajax_withdrawGolds(id, pass, delta, function (data) {
+                $(submit).trigger("click");
+            });
+        }
+    }
 }
 
 /**
