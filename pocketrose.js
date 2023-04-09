@@ -1422,6 +1422,10 @@ function postProcessCityRelatedFunctionalities(htmlText) {
         htmlText.indexOf("＜＜　□　<b>饰品屋</b>　□　＞＞") !== -1) {
         __town_accessoryStore(htmlText);
     }
+    if (htmlText.indexOf("＜＜　□　<B>物品屋</B>　□　＞＞") !== -1 ||
+        htmlText.indexOf("＜＜　□　<b>物品屋</b>　□　＞＞") !== -1) {
+        __town_itemStore(htmlText);
+    }
     if (htmlText.indexOf(" Gold卖出。") !== -1) {
         // 物品卖出完成
         __city_itemSold(htmlText);
@@ -1630,6 +1634,40 @@ function __town_accessoryStore(htmlText) {
         let id = __page_readIdFromCurrentPage();
         let pass = __page_readPassFromCurrentPage();
         __town_common_prepareForShopping(id, pass, cash, $("table")[7], $("#buyButton"));
+    });
+}
+
+/**
+ * 物品屋：增强实现。
+ * @param htmlText HTML
+ * @private
+ */
+function __town_itemStore(htmlText) {
+    __page_constructNpcMessageTable("青鸟");
+    __town_common_disableProhibitSellingItems($("table")[3]);
+    $("input:submit[value='买入']").attr("id", "buyButton");
+
+    // 检查是否身上还有富裕的购物空间？
+    if ($("select[name='num']").find("option:first").length === 0) {
+        $("#buyButton").prop("disabled", true);
+        __page_writeNpcMessage("咱们就是说买东西之前至少身上腾点空间出来。");
+        return;
+    }
+
+    // 获取当前身上现金的数量
+    let cash = 0;
+    $("td:parent").each(function (idx, td) {
+        if ($(td).text() === "所持金") {
+            let cashText = $(td).next().text();
+            cash = cashText.substring(0, cashText.indexOf(" "));
+        }
+    });
+
+    __page_writeNpcMessage("为了回馈新老客户，本店特推出直接通过<b><a href='javascript:void(0)' id='bankBuy'>银行转账购买</a></b>的方式。");
+    $("#bankBuy").click(function () {
+        let id = __page_readIdFromCurrentPage();
+        let pass = __page_readPassFromCurrentPage();
+        __town_common_prepareForShopping(id, pass, cash, $("table")[5], $("#buyButton"));
     });
 }
 
