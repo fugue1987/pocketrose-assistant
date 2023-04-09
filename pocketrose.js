@@ -8,7 +8,7 @@
 // @version      1.4.4
 // @grant        unsafeWindow
 // @match        *://pocketrose.itsns.net.cn/*
-// @require      https://code.jquery.com/jquery-2.1.4.min.js
+// @require      https://cdn.bootcdn.net/ajax/libs/jquery/3.6.4/jquery.min.js
 // @require      https://cdn.bootcdn.net/ajax/libs/js-cookie/3.0.1/js.cookie.min.js
 // @run-at       document-start
 // @unwrap
