@@ -22,7 +22,6 @@
 
 const POCKETROSE_DOMAIN = "https://pocketrose.itsns.net.cn/pocketrose";
 
-const bankButtonText = "順風不浪，逆風不慫，身上不要放太多的錢！";
 const blacksmithButtonText = "去修理下裝備吧，等爆掉的時候你就知道痛了！";
 const innButtonText = "你看起來很疲憊的樣子呀，媽媽喊你回去休息啦！";
 
@@ -849,6 +848,14 @@ function __cookie_getReturnButtonText() {
     return unescape(value);
 }
 
+function __cookie_getDepositButtonText() {
+    let value = Cookies.get("_POCKETROSE_ASSISTANT__DEPOSIT_BUTTON_TEXT");
+    if (value === undefined || value === "") {
+        return "順風不浪，逆風不慫，身上不要放太多的錢！";
+    }
+    return unescape(value);
+}
+
 $(function () {
     replacePkm('pocketrose')
 });
@@ -1307,7 +1314,7 @@ function __battle(htmlText) {
 
     // 修改返回银行按钮的行为，直接变成全部存入
     $('#bankButton').parent().prepend('<input type="hidden" name="azukeru" value="all">');
-    $('#bankButton').attr('value', bankButtonText);
+    $('#bankButton').attr('value', __cookie_getDepositButtonText());
     $('input[value="BANK"]').attr('value', 'BANK_SELL');
 
     // 修改返回住宿按钮
@@ -1960,6 +1967,10 @@ function __personalStatus_cookieManagement(htmlText) {
     let s6 = "<input type='text' class='o6' name='s6' id='s6' size='48' placeholder='" + b6 + "'>";
     __page_writeNpcMessage("<li>战斗返回的台词 " + s6 + " <a href='javascript:void(0)' id='a6'>设置</a></li>");
 
+    let b7 = __cookie_getDepositButtonText();
+    let s7 = "<input type='text' class='o7' name='s7' id='s7' size='48' placeholder='" + b7 + "'>";
+    __page_writeNpcMessage("<li>战斗存钱的台词 " + s7 + " <a href='javascript:void(0)' id='a7'>设置</a></li>");
+
     $(".o1[value='" + Number(b1) + "']").prop("selected", true);
     $(".o2[value='" + Number(b2) + "']").prop("selected", true);
     $(".o3[value='" + b3 + "']").prop("selected", true);
@@ -2002,6 +2013,16 @@ function __personalStatus_cookieManagement(htmlText) {
             text = escape(text);
         }
         Cookies.set("_POCKETROSE_ASSISTANT__RETURN_BUTTON_TEXT", text, {expires: 36500});
+        $("form[action='status.cgi']").attr("action", "mydata.cgi");
+        $("input:hidden[value='STATUS']").attr("value", "LETTER");
+        $("#returnButton").trigger("click");
+    });
+    $("#a7").click(function () {
+        let text = $("#s7").val();
+        if (text !== "") {
+            text = escape(text);
+        }
+        Cookies.set("_POCKETROSE_ASSISTANT__DEPOSIT_BUTTON_TEXT", text, {expires: 36500});
         $("form[action='status.cgi']").attr("action", "mydata.cgi");
         $("input:hidden[value='STATUS']").attr("value", "LETTER");
         $("#returnButton").trigger("click");
