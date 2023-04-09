@@ -22,8 +22,6 @@
 
 const POCKETROSE_DOMAIN = "https://pocketrose.itsns.net.cn/pocketrose";
 
-const enableAutoDepositWhenItemSold = true;                                 // 物品卖出后自动存钱功能
-
 const returnButtonText = "少年輕輕的離開，沒有帶走一片雲彩！";
 const bankButtonText = "順風不浪，逆風不慫，身上不要放太多的錢！";
 const blacksmithButtonText = "去修理下裝備吧，等爆掉的時候你就知道痛了！";
@@ -808,11 +806,19 @@ const pokemonDict = {
 const pokemonDictKeys = Object.keys(pokemonDict);
 
 function __cookie_getEnablePokemonWiki() {
-    let enablePokemonWiki = Cookies.get("_POCKETROSE_ASSISTANT__ENABLE_POKEMON_WIKI");
-    if (enablePokemonWiki === undefined) {
+    let value = Cookies.get("_POCKETROSE_ASSISTANT__ENABLE_POKEMON_WIKI");
+    if (value === undefined) {
         return false;
     }
-    return enablePokemonWiki === "true";
+    return value === "true";
+}
+
+function __cookie_getEnableSoldAutoDeposit() {
+    let value = Cookies.get("_POCKETROSE_ASSISTANT__ENABLE_SOLD_AUTO_DEPOSIT");
+    if (value === undefined) {
+        return false;
+    }
+    return value === "true";
 }
 
 $(function () {
@@ -1764,7 +1770,7 @@ function __city_itemSold(htmlText) {
         __page_writeNpcMessage(lowPriceMessage);
         __page_writeNpcMessage(returnMessage);
         __city_itemSold_buildReturnFunction(id, pass);
-    } else if (!enableAutoDepositWhenItemSold) {
+    } else if (!__cookie_getEnableSoldAutoDeposit()) {
         // 卖的钱倒是够了，奈何自动存钱功能被禁用了
         var noDepositMessage = "破家值万贯，能换多少算多少吧！";
         __page_writeNpcMessage(noDepositMessage);
@@ -1856,9 +1862,9 @@ function __personalStatus_cookieManagement(htmlText) {
     __page_constructNpcMessageTable("夜九年");
     __page_writeNpcMessage("在这里我来协助各位维护本机（浏览器）的口袋相关设置：<br>");
 
-    let enablePokemonWiki = __cookie_getEnablePokemonWiki();
+    let b1 = __cookie_getEnablePokemonWiki();
     let s1 = "<select name='s1' id='s1'>";
-    if (enablePokemonWiki) {
+    if (b1) {
         s1 += "<option value='启用' selected>启用</option>";
         s1 += "<option value='禁用'>禁用</option>";
     } else {
@@ -1866,12 +1872,34 @@ function __personalStatus_cookieManagement(htmlText) {
         s1 += "<option value='禁用' selected>禁用</option>";
     }
     s1 += "</select>";
-    __page_writeNpcMessage("<li>宝可梦百科 " + s1 + " <a href='javascript:void(0)' id='pokemonWiki'>设置</a></li>");
-    $("#pokemonWiki").click(function () {
+    __page_writeNpcMessage("<li>宝可梦百科超链 " + s1 + " <a href='javascript:void(0)' id='a1'>设置</a></li>");
+    $("#a1").click(function () {
         if ($("#s1").val() === "启用") {
             Cookies.set("_POCKETROSE_ASSISTANT__ENABLE_POKEMON_WIKI", "true", {expires: 36500});
         } else {
             Cookies.set("_POCKETROSE_ASSISTANT__ENABLE_POKEMON_WIKI", "false", {expires: 36500});
+        }
+        $("form[action='status.cgi']").attr("action", "mydata.cgi");
+        $("input:hidden[value='STATUS']").attr("value", "LETTER");
+        $("#returnButton").trigger("click");
+    });
+
+    let b2 = __cookie_getEnableSoldAutoDeposit();
+    let s2 = "<select name='s2' id='s2'>";
+    if (b2) {
+        s2 += "<option value='启用' selected>启用</option>";
+        s2 += "<option value='禁用'>禁用</option>";
+    } else {
+        s2 += "<option value='启用'>启用</option>";
+        s2 += "<option value='禁用' selected>禁用</option>";
+    }
+    s2 += "</select>";
+    __page_writeNpcMessage("<li>售卖后自动存钱 " + s2 + " <a href='javascript:void(0)' id='a2'>设置</a></li>");
+    $("#a2").click(function () {
+        if ($("#s2").val() === "启用") {
+            Cookies.set("_POCKETROSE_ASSISTANT__ENABLE_SOLD_AUTO_DEPOSIT", "true", {expires: 36500});
+        } else {
+            Cookies.set("_POCKETROSE_ASSISTANT__ENABLE_SOLD_AUTO_DEPOSIT", "false", {expires: 36500});
         }
         $("form[action='status.cgi']").attr("action", "mydata.cgi");
         $("input:hidden[value='STATUS']").attr("value", "LETTER");
