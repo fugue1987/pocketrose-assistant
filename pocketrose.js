@@ -26,7 +26,6 @@ const returnButtonText = "少年輕輕的離開，沒有帶走一片雲彩！";
 const bankButtonText = "順風不浪，逆風不慫，身上不要放太多的錢！";
 const blacksmithButtonText = "去修理下裝備吧，等爆掉的時候你就知道痛了！";
 const innButtonText = "你看起來很疲憊的樣子呀，媽媽喊你回去休息啦！";
-const healthLoseRestoreRatio = 0.6;                                         // 当前HP小于最大HP触发住宿的比例
 const repairEndureThreshold = 100;                                          // 装白耐久度下降触发修理的阈值
 const depositEveryBattleTimes = 5;                                          // 定期存钱的战数，设置为0表示关闭此功能
 
@@ -1410,7 +1409,7 @@ function __battle_checkIfShouldGoToInn(htmlText, recoverItemEndure) {
         }
     });
     // 生命力低于最大值的60%，住宿推荐
-    if (remaingHealth <= maxHealth * healthLoseRestoreRatio) {
+    if (remaingHealth <= maxHealth * __cookie_getHealthLoseAutoLodgeRatio()) {
         return 1;
     }
     if (depositEveryBattleTimes > 0) {
