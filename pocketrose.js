@@ -5,10 +5,11 @@
 // @icon         data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==
 // @license      mit
 // @author       xiaohaiz,fugue
-// @version      1.4.0
+// @version      1.4.4
 // @grant        unsafeWindow
 // @match        *://pocketrose.itsns.net.cn/*
-// @require      https://code.jquery.com/jquery-2.1.4.min.js
+// @require      https://cdn.bootcdn.net/ajax/libs/jquery/3.6.4/jquery.min.js
+// @require      https://cdn.bootcdn.net/ajax/libs/js-cookie/3.0.1/js.cookie.min.js
 // @run-at       document-start
 // @unwrap
 // ==/UserScript==
@@ -21,16 +22,10 @@
 
 const POCKETROSE_DOMAIN = "https://pocketrose.itsns.net.cn/pocketrose";
 
-const enablePokemonWikiFuture = true;                                       // 改成false就不再啓用百科功能
-const enableAutoDepositWhenItemSold = true;                                 // 物品卖出后自动存钱功能
-
 const returnButtonText = "少年輕輕的離開，沒有帶走一片雲彩！";
 const bankButtonText = "順風不浪，逆風不慫，身上不要放太多的錢！";
 const blacksmithButtonText = "去修理下裝備吧，等爆掉的時候你就知道痛了！";
 const innButtonText = "你看起來很疲憊的樣子呀，媽媽喊你回去休息啦！";
-const healthLoseRestoreRatio = 0.6;                                         // 当前HP小于最大HP触发住宿的比例
-const repaireEdureThreshold = 100;                                          // 装白耐久度下降触发修理的阈值
-const depositEveryBattleTimes = 5;                                          // 定期存钱的战数，设置为0表示关闭此功能
 
 // 转职建议字典，对当前能力的需求，分别是MP，攻击，防御，智力，精神，速度
 const transferCareerRequirementDict = {
@@ -56,13 +51,254 @@ const heavyArmorNameDict = [
     "风翼三足凤纳托利斯"
 ];
 
-const playerCharacterDict = {
+const _PROHIBIT_SELLING_ITEM_DICT = ["千与千寻", "勿忘我", "双经斩"];
+
+/**
+ * 终极隐藏职业天位系的职业名称定义。
+ * @type {string[]}
+ * @private
+ */
+const _ROLE_TOP_CAREER_DICT = [
+    "小天位",
+    "强天位",
+    "斋天位",
+    "太天位",
+    "终极"
+];
+
+const _CAREER_DICT = {
+    "兵士": {"id": 0},
+    "武士": {"id": 1},
+    "剑客": {"id": 2},
+    "剑侠": {"id": 3},
+    "魔法剑士": {"id": 4},
+    "暗黑剑士": {"id": 5},
+    "奥法剑士": {"id": 6},
+    "魔导剑士": {"id": 7},
+    "神圣剑士": {"id": 8},
+    "圣殿武士": {"id": 9},
+    "剑圣": {"id": 10},
+    "枪战士": {"id": 11},
+    "重战士": {"id": 12},
+    "狂战士": {"id": 13},
+    "龙战士": {"id": 14},
+    "武僧": {"id": 15},
+    "决斗家": {"id": 16},
+    "拳王": {"id": 17},
+    "术士": {"id": 18},
+    "魔法师": {"id": 19},
+    "咒灵师": {"id": 20},
+    "大魔导士": {"id": 21},
+    "牧师": {"id": 22},
+    "德鲁伊": {"id": 23},
+    "贤者": {"id": 24},
+    "弓箭士": {"id": 25},
+    "魔弓手": {"id": 26},
+    "狙击手": {"id": 27},
+    "游侠": {"id": 28},
+    "巡林客": {"id": 29},
+    "吟游诗人": {"id": 30},
+    "小天位": {"id": 31},
+    "强天位": {"id": 32},
+    "斋天位": {"id": 33},
+    "太天位": {"id": 34},
+    "终极": {"id": 35}
+};
+
+const _CITY_DICT = {
+    "1": {
+        "name": "贤者之城",
+        "description": "精灵族的王都，在精灵语中意为山谷中的隐居之城，因数位异族出身的贤者都选择在此谢世而得名。种植着珍贵草药的山谷另一端有巨大的水坝，传说曾三次以毁灭性方式成功驱赶妄图入侵的军队。",
+        "x": 0,
+        "y": 0
+    },
+    "2": {
+        "name": "翡冷翠",
+        "description": "",
+        "x": 0,
+        "y": 0
+    },
+    "3": {
+        "name": "诺曼",
+        "description": "",
+        "x": 0,
+        "y": 0
+    },
+    "4": {
+        "name": "潘帕斯",
+        "description": "",
+        "x": 0,
+        "y": 0
+    },
+    "5": {
+        "name": "卡鲁",
+        "description": "",
+        "x": 0,
+        "y": 0
+    },
+    "6": {
+        "name": "格林尼治",
+        "description": "",
+        "x": 0,
+        "y": 0
+    },
+    "7": {
+        "name": "萨拉镇",
+        "description": "",
+        "x": 0,
+        "y": 0
+    },
+    "8": {
+        "name": "海文",
+        "description": "矮人族连接山区和草原的重要中转站，春季会在附近原野举行大型交易会，是无论什么种族也会受到平等接待的地方。",
+        "x": 0,
+        "y": 0
+    },
+    "9": {
+        "name": "黄昏之都",
+        "description": "",
+        "x": 0,
+        "y": 0
+    },
+    "10": {
+        "name": "圣克鲁斯堡",
+        "description": "",
+        "x": 0,
+        "y": 0
+    },
+    "11": {
+        "name": "泰法城",
+        "description": "",
+        "x": 0,
+        "y": 0
+    },
+    "12": {
+        "name": "枫丹",
+        "description": "原帝国冬都，又名白露城，号称四百年无战之都。大陆联合商会所在地，无数传说的源头，号称大冒险大恋爱的起点。",
+        "x": 0,
+        "y": 0
+    },
+    "13": {
+        "name": "自由港_赞特",
+        "description": "",
+        "x": 0,
+        "y": 0
+    },
+    "14": {
+        "name": "火之都",
+        "description": "",
+        "x": 0,
+        "y": 0
+    },
+    "15": {
+        "name": "土之域",
+        "description": "",
+        "x": 0,
+        "y": 0
+    },
+    "16": {
+        "name": "瓦伦要塞",
+        "description": "",
+        "x": 0,
+        "y": 0
+    },
+    "17": {
+        "name": "梵",
+        "description": "",
+        "x": 0,
+        "y": 0
+    },
+    "18": {
+        "name": "日尔曼尼亚",
+        "description": "",
+        "x": 0,
+        "y": 0
+    },
+    "19": {
+        "name": "水之城",
+        "description": "",
+        "x": 0,
+        "y": 0
+    },
+    "20": {
+        "name": "埃达",
+        "description": "",
+        "x": 0,
+        "y": 0
+    },
+    "21": {
+        "name": "柯利亚",
+        "description": "",
+        "x": 0,
+        "y": 0
+    },
+    "22": {
+        "name": "格兰特",
+        "description": "",
+        "x": 0,
+        "y": 0
+    },
+    "23": {
+        "name": "斯坎",
+        "description": "",
+        "x": 0,
+        "y": 0
+    },
+    "24": {
+        "name": "龙牙堡",
+        "description": "",
+        "x": 0,
+        "y": 0
+    },
+    "25": {
+        "name": "海布里",
+        "description": "半兽人 贝里萨利乌斯族生活的集落，是半兽人中最为勇猛、尚武的一支，如今正遭遇百年不遇的人口锐减，百年前曾和人类共同作战，据信村中仍有混血的后代，出产美酒，被誉为大陆第一的珍酿。",
+        "x": 0,
+        "y": 0
+    },
+    "26": {
+        "name": "风之谷",
+        "description": "",
+        "x": 0,
+        "y": 0
+    },
+    "27": {
+        "name": "不归森林",
+        "description": "",
+        "x": 0,
+        "y": 0
+    },
+    "28": {
+        "name": "特罗尔",
+        "description": "",
+        "x": 0,
+        "y": 0
+    }
+};
+
+const _NPC_DICT = {
+    '夜九年': {
+        'image': POCKETROSE_DOMAIN + '/image/head/1561.gif',
+        'intro': ''
+    },
     '夜苍凉': {
         'image': POCKETROSE_DOMAIN + '/image/head/1117.gif',
         'intro': ''
     },
     '青鸟': {
         'image': POCKETROSE_DOMAIN + '/image/head/7184.gif',
+        'intro': ''
+    },
+    '末末': {
+        'image': POCKETROSE_DOMAIN + '/image/head/8173.gif',
+        'intro': ''
+    },
+    '白皇': {
+        'image': POCKETROSE_DOMAIN + '/image/head/11134.gif',
+        'intro': ''
+    },
+    '七七': {
+        'image': POCKETROSE_DOMAIN + '/image/head/1368.gif',
         'intro': ''
     }
 };
@@ -564,7 +800,47 @@ const pokemonDict = {
     '刺角昆(268)': '<a href="https://wiki.52poke.com/wiki/%E7%9B%BE%E7%94%B2%E8%8C%A7" target="_blank" rel="noopener noreferrer">盾甲茧(268)</a>'
 }
 
-const pokemonDictKeys = Object.keys(pokemonDict)
+const pokemonDictKeys = Object.keys(pokemonDict);
+
+function __cookie_getEnablePokemonWiki() {
+    let value = Cookies.get("_POCKETROSE_ASSISTANT__ENABLE_POKEMON_WIKI");
+    if (value === undefined) {
+        return false;
+    }
+    return value !== "0";
+}
+
+function __cookie_getEnableSoldAutoDeposit() {
+    let value = Cookies.get("_POCKETROSE_ASSISTANT__ENABLE_SOLD_AUTO_DEPOSIT");
+    if (value === undefined) {
+        return false;
+    }
+    return value !== "0";
+}
+
+function __cookie_getHealthLoseAutoLodgeRatio() {
+    let value = Cookies.get("_POCKETROSE_ASSISTANT__HEALTH_LOSE_AUTO_LODGE_RATIO");
+    if (value === undefined) {
+        return 0.6;
+    }
+    return parseFloat(value);
+}
+
+function __cookie_getRepairItemThreshold() {
+    let value = Cookies.get("_POCKETROSE_ASSISTANT__REPAIR_ITEM_THRESHOLD");
+    if (value === undefined) {
+        return 100;
+    }
+    return parseInt(value);
+}
+
+function __cookie_getDepositBattleNumber() {
+    let value = Cookies.get("_POCKETROSE_ASSISTANT__DEPOSIT_BATTLE_NUMBER");
+    if (value === undefined) {
+        return 10;
+    }
+    return parseInt(value);
+}
 
 $(function () {
     replacePkm('pocketrose')
@@ -573,8 +849,11 @@ $(function () {
 function replacePkm(page) {
     if (location.href.includes(page)) {
         $(document).ready(function () {
-            if (enablePokemonWikiFuture) {
+            if (__cookie_getEnablePokemonWiki()) {
                 processPokemonWikiReplacement();
+            }
+            if (location.href.includes("status.cgi")) {
+                postProcessMainStatusFunctionalities($('html').html());
             }
             if (location.href.includes("battle.cgi")) {
                 postProcessBattleRelatedFunctionalities($('html').html());
@@ -594,7 +873,25 @@ function replacePkm(page) {
 // ============================================================================
 
 /**
+ * 取斜杠前的内容，支持斜杠前带一个空格的情况。
+ * @param text
+ * @private
+ */
+function __utilities_substringBeforeSlash(text) {
+    var index = text.indexOf(" /");
+    if (index != -1) {
+        return text.substring(0, index);
+    }
+    index = text.indexOf("/");
+    if (index != -1) {
+        return text.substring(0, index);
+    }
+    return text;
+}
+
+/**
  * 取斜杠后的内容，支持斜杠后带一个空格的情况。
+ * @private
  */
 function __utilities_substringAfterSlash(text) {
     var index = text.indexOf("/ ");
@@ -608,8 +905,20 @@ function __utilities_substringAfterSlash(text) {
     return text;
 }
 
+function __utilities_trimSpace(text) {
+    let result = "";
+    for (let i = 0; i < text.length; i++) {
+        let c = text[i];
+        if (c !== ' ') {
+            result += c;
+        }
+    }
+    return result;
+}
+
 /**
  * 判断指定的名字是否为属性重铠，支持齐心重铠的检查。
+ * @private
  */
 function __utilities_isHeavyArmor(name) {
     for (var i = 0; i < heavyArmorNameDict.length; i++) {
@@ -620,38 +929,302 @@ function __utilities_isHeavyArmor(name) {
     return false;
 }
 
+/**
+ * 检查指定的职业是否为天位系隐藏职业
+ * @param career 等待检查的职业
+ * @private
+ */
+function __utilities_isRoleTopCareer(career) {
+    for (let i = 0; i < _ROLE_TOP_CAREER_DICT.length; i++) {
+        if (career === _ROLE_TOP_CAREER_DICT[i]) {
+            return true;
+        }
+    }
+    return false;
+}
+
+function __utilities_formalizeRoleTopCareer(career) {
+    for (let i = 0; i < _ROLE_TOP_CAREER_DICT.length; i++) {
+        if (career.indexOf(_ROLE_TOP_CAREER_DICT[i]) != -1) {
+            return _ROLE_TOP_CAREER_DICT[i];
+        }
+    }
+    return undefined;
+}
+
+/**
+ * 检查装备是否已经满经验。
+ * @param name 装备名称
+ * @param power 装备威力
+ * @param experience 装备当前经验
+ * @private
+ */
+function __utilities_checkIfEquipmentFullExperience(name, power, experience) {
+    if (name == "大师球" || name == "宗师球" || name == "超力怪兽球" || name == "宠物蛋") {
+        return false;
+    }
+    let maxExperience = 0;
+    if (__utilities_isHeavyArmor(name)) {
+        // 属性重铠满级经验为76000
+        maxExperience = 76000;
+    } else if (power != 0) {
+        power = Math.abs(power);
+        maxExperience = Math.floor(power * 0.2) * 1000;
+    }
+    return experience >= maxExperience;
+}
+
 // ============================================================================
 // 通用辅助功能函数实现
 // ============================================================================
 
-function __common_generatePlayerImage(playerName) {
-    var player = playerCharacterDict[playerName];
-    return "<img src='" + player["image"] + "' width='64' height='64' alt='" + playerName + "'>";
-}
-
-function __common_addPlayerMessage(targetDOM, playerName, message) {
-    var image = __common_generatePlayerImage(playerName);
-    var formattedMessage = "<font color='#FFFFFF'>" + message + "</font>";
-    targetDOM.html("<table bgcolor='#888888' border='0'><tbody><tr>" +
+/**
+ * 在页面的最下方构建一个NPC的消息表格。
+ * @param npcName NPC名字，对应字典中的预定义
+ * @private
+ */
+function __page_constructNpcMessageTable(npcName) {
+    let NPC = _NPC_DICT[npcName];
+    let image = "<img src='" + NPC["image"] + "' width='64' height='64' alt='" + npcName + "'>";
+    $("div:last").prepend("<TABLE WIDTH='100%' bgcolor='#888888' id='npcMessageTable'><tbody><tr>" +
+        "<TD id='npcMessageCell' bgcolor='#F8F0E0' height='5'>" +
+        "<table bgcolor='#888888' border='0'><tbody><tr>" +
         "<td bgcolor='#F8F0E0'>" + image + "</td>" +
-        "<td width='100%' bgcolor='#000000' id='playerMessage'>" + formattedMessage + "</td></tr></tbody></table>");
+        "<td width='100%' bgcolor='#000000' id='npcMessage'></td></tr></tbody></table>" +
+        "</TD>" +
+        "</tr></tbody></TABLE>");
 }
 
 /**
- * 从当前页面定位status表单，提取出id和pass
+ * 向NPC消息表格中添加消息，尾加模式。
+ * @param message 消息内容。
+ * @private
  */
-function __common_extractIdPassFromStatusForm() {
-    var statusForm = $('form[action="status.cgi"]');
-    var id = statusForm.children('input[name="id"]').attr('value');
-    var pass = statusForm.children('input[name="pass"]').attr('value');
-    return [id, pass];
+function __page_writeNpcMessage(message) {
+    var formattedMessage = "<font color='#FFFFFF'>" + message + "</font>";
+    var currentMessage = $("#npcMessage").html();
+    $("#npcMessage").html(currentMessage + formattedMessage);
 }
 
-function __common_extractTownLocationAndProcess(id, pass, townLocationProcessor) {
-    $.post("status.cgi", {id: id, pass: pass, mode: "STATUS"}, function (data) {
-        var townLocation = $(data).find('input[name="town"]:first').attr('value');
-        townLocationProcessor(id, pass, townLocation);
+/**
+ * 从当前页面读出id
+ * @returns string
+ * @private
+ */
+function __page_readIdFromCurrentPage() {
+    return $("input[name='id']").first().attr("value");
+}
+
+/**
+ * 从当前页面读出pass
+ * @returns string
+ * @private
+ */
+function __page_readPassFromCurrentPage() {
+    return $("input[name='pass']").first().attr("value");
+}
+
+/**
+ * 异步读取并解析个人状态中的基础信息，完成后回调传入的函数。
+ * @param id ID
+ * @param pass PASSWORD
+ * @param callback 回调函数
+ * @private
+ */
+function __ajax_readPersonalInformation(id, pass, callback) {
+    $.ajax({
+        type: "POST",
+        url: "mydata.cgi",
+        data: {id: id, pass: pass, mode: 'STATUS_PRINT'},
+        success: function (data) {
+            let statusTable = $(data).find('table').first().find('table').first();
+            let levelText = $(statusTable.find('td')[1]).text();
+            let level = "";
+            for (let i = 0; i < levelText.length; i++) {
+                if (levelText[i] >= '0' && levelText[i] <= '9') {
+                    level += levelText[i];
+                }
+            }
+            let healthText = $(statusTable.find('td')[5]).text();
+            let manaText = $(statusTable.find('td')[7]).text();
+            let currentHealth = __utilities_substringBeforeSlash(healthText);
+            let maxHealth = __utilities_substringAfterSlash(healthText);
+            let currentMana = __utilities_substringBeforeSlash(manaText);
+            let maxMana = __utilities_substringAfterSlash(manaText);
+            let att = $(statusTable.find('td')[13]).text();
+            let def = $(statusTable.find('td')[15]).text();
+            let int = $(statusTable.find('td')[17]).text();
+            let spi = $(statusTable.find('td')[19]).text();
+            let spe = $(statusTable.find('td')[21]).text();
+            let town = $(statusTable.find('td')[31]).text();        // gb2312编码的内容通过ajax请求处理是个讨厌的事情
+            let exp = $(statusTable.find('td')[58]).text();
+            let goldText = $(statusTable.find('td')[60]).text();
+            let gold = goldText.substring(0, goldText.indexOf(" G"));
+
+            let information = {
+                "id": id, "pass": pass,
+                "LV": level,
+                "HP": currentHealth, "MAX_HP": maxHealth, "MP": currentMana, "MAX_MP": maxMana,
+                "AT": att, "DF": def, "SA": int, "SD": spi, "SP": spe,
+                "EXP": exp, "GOLD": gold
+            };
+            callback(information);
+        }
     });
+}
+
+/**
+ * 异步读取并解析主页的个人状态，完成后回调传入的函数。
+ * @param id ID
+ * @param pass PASS
+ * @param callback 回调函数
+ * @private
+ */
+function __ajax_readPersonalStatus(id, pass, callback) {
+    $.ajax({
+        type: "POST",
+        url: "status.cgi",
+        data: {id: id, pass: pass, mode: "STATUS"},
+        success: function (data) {
+            let townId = $(data).find('input[name="town"]:first').attr('value');
+            let status = {
+                "id": id, "pass": pass,
+                "TOWN_ID": townId
+            };
+            callback(status);
+        }
+    });
+}
+
+/**
+ * 在客栈住宿恢复
+ * @param id ID
+ * @param pass PASS
+ * @param callback 回调函数，参数{id:x,pass:x}
+ * @private
+ */
+function __ajax_lodgeAtInn(id, pass, callback) {
+    $.ajax({
+        type: "POST",
+        url: "town.cgi",
+        data: {id: id, pass: pass, mode: "RECOVERY"},
+        success: function (html) {
+            let data = {id: id, pass: pass};
+            callback(data);
+        }
+    });
+}
+
+/**
+ * 存储所有的现金到银行
+ * @param id ID
+ * @param pass PASS
+ * @param callback 回调函数，参数{id:x,pass:x}
+ * @private
+ */
+function __ajax_depositAllGolds(id, pass, callback) {
+    $.ajax({
+        type: "POST",
+        url: "town.cgi",
+        data: {id: id, pass: pass, mode: "BANK_SELL", azukeru: "all"},
+        success: function (html) {
+            let data = {id: id, pass: pass};
+            callback(data);
+        }
+    });
+}
+
+/**
+ * 从银行取钱
+ * @param id ID
+ * @param pass PASS
+ * @param amount 单位是万
+ * @param callback 回调
+ * @private
+ */
+function __ajax_withdrawGolds(id, pass, amount, callback) {
+    $.ajax({
+        type: "POST",
+        url: "town.cgi",
+        data: {id: id, pass: pass, mode: "BANK_BUY", dasu: amount},
+        success: function (html) {
+            let data = {id: id, pass: pass};
+            callback(data);
+        }
+    });
+}
+
+function __common_item_selectBag(parentElement) {
+    var checkedCount = 0;
+    parentElement.find("input[type='checkbox']").each(function (_idx, inputElement) {
+        var inputTableCell = $(inputElement).parent();
+        var name = $(inputTableCell).next().next().text();
+        var category = $(inputTableCell).next().next().next().text();
+        if (category == "物品" && name == "百宝袋") {
+            $(inputElement).prop('checked', true);
+            checkedCount++;
+        } else {
+            $(inputElement).prop('checked', false);
+        }
+    });
+    return checkedCount;
+}
+
+function __common_item_selectCage(parentElement) {
+    var checkedCount = 0;
+    parentElement.find("input[type='checkbox']").each(function (_idx, inputElement) {
+        var inputTableCell = $(inputElement).parent();
+        var name = $(inputTableCell).next().next().text();
+        var category = $(inputTableCell).next().next().next().text();
+        if (category == "物品" && name == "黄金笼子") {
+            $(inputElement).prop('checked', true);
+            checkedCount++;
+        } else {
+            $(inputElement).prop('checked', false);
+        }
+    });
+    return checkedCount;
+}
+
+function __common_item_selectAllGems(parentElement) {
+    var checkedCount = 0;
+    parentElement.find("input[type='checkbox']").each(function (_idx, inputElement) {
+        var inputTableCell = $(inputElement).parent();
+        var name = $(inputTableCell).next().next().text();
+        var category = $(inputTableCell).next().next().next().text();
+        if (category == "物品" && name.indexOf("宝石") != -1) {
+            $(inputElement).prop('checked', true);
+            checkedCount++;
+        } else {
+            $(inputElement).prop('checked', false);
+        }
+    });
+    return checkedCount;
+}
+
+function __common_item_selectAllStorableItems(parentElement) {
+    var checkedCount = 0;
+    parentElement.find("input[type='checkbox']").each(function (_idx, inputElement) {
+        var inputTableCell = $(inputElement).parent();
+        var name = $(inputTableCell).next().next().text();
+        var category = $(inputTableCell).next().next().next().text();
+        if (category == "物品" && name == "百宝袋") {
+            $(inputElement).prop('checked', false);
+        } else if (category == "物品" && name == "黄金笼子") {
+            $(inputElement).prop('checked', false);
+        } else if ($(inputElement).attr('disabled') != undefined) {
+            // 无法放入袋子的物品，忽略
+        } else {
+            var using = $(inputTableCell).next().text();
+            if (using == "★") {
+                $(inputElement).prop('checked', false);
+            } else {
+                $(inputElement).prop('checked', true);
+                checkedCount++;
+            }
+        }
+    });
+    return checkedCount;
 }
 
 // ============================================================================
@@ -680,6 +1253,20 @@ function processPokemonWikiReplacement() {
             }
         })
     });
+}
+
+// ============================================================================
+// 主状态页辅助功能
+// ============================================================================
+function postProcessMainStatusFunctionalities(htmlText) {
+    if (htmlText.indexOf("在网吧的用户请使用这个退出") !== -1) {
+        __status(htmlText);
+    }
+}
+
+function __status(htmlText) {
+    $("option[value='LETTER']").text("口袋助手设置");
+    $("option[value='LETTER']").attr("style", "background:#20c0ff");
 }
 
 // ============================================================================
@@ -785,7 +1372,7 @@ function __battle_checkIfShouldGoToBlacksmith(resultText, recoverItemEndure) {
                         number += numbers[k];
                     }
                     numbers = [];
-                    if (number < repaireEdureThreshold) {
+                    if (number < __cookie_getRepairItemThreshold()) {
                         lowEndures.push(number);
                     }
                     break;
@@ -828,7 +1415,8 @@ function __battle_checkIfShouldGoToInn(htmlText, recoverItemEndure) {
         // 十二宫和秘宝之岛战斗胜利不需要住宿，直接存钱更好
         return 2;
     }
-    if (depositEveryBattleTimes > 0 && recoverItemEndure % depositEveryBattleTimes == 0) {
+    let depositBattleNumber = __cookie_getDepositBattleNumber();
+    if (depositBattleNumber > 0 && recoverItemEndure % depositBattleNumber == 0) {
         // 存钱战数到了
         return 2;
     }
@@ -853,10 +1441,10 @@ function __battle_checkIfShouldGoToInn(htmlText, recoverItemEndure) {
         }
     });
     // 生命力低于最大值的60%，住宿推荐
-    if (remaingHealth <= maxHealth * healthLoseRestoreRatio) {
+    if (remaingHealth <= maxHealth * __cookie_getHealthLoseAutoLodgeRatio()) {
         return 1;
     }
-    if (depositEveryBattleTimes > 0) {
+    if (__cookie_getDepositBattleNumber() > 0) {
         // 设置了定期存钱，但是没有到战数，那么就直接返回吧
         return 3;
     } else {
@@ -869,23 +1457,48 @@ function __battle_checkIfShouldGoToInn(htmlText, recoverItemEndure) {
 // 城市点击后续辅助功能
 // ============================================================================
 function postProcessCityRelatedFunctionalities(htmlText) {
-    if (htmlText.indexOf("* 宠物图鉴 *") != -1) {
+    if (htmlText.indexOf("* 宠物图鉴 *") !== -1) {
         // 宠物图鉴
-        __city_petMap(htmlText);
+        __town_petMap(htmlText);
     }
-    if (htmlText.indexOf(" Gold卖出。") != -1) {
+    if (htmlText.indexOf("* 运 送 屋 *") !== -1) {
+        __town_houseForSendingItems(htmlText);
+    }
+    if (htmlText.indexOf("* 宠 物 赠 送 屋 *") !== -1) {
+        __town_houseForSendingPets(htmlText);
+    }
+    if (htmlText.indexOf("＜＜　□　<B>武器屋</B>　□　＞＞") !== -1 ||
+        htmlText.indexOf("＜＜　□　<b>武器屋</b>　□　＞＞") !== -1) {
+        __town_weaponStore(htmlText);
+    }
+    if (htmlText.indexOf("＜＜　□　<B>防具屋</B>　□　＞＞") !== -1 ||
+        htmlText.indexOf("＜＜　□　<b>防具屋</b>　□　＞＞") !== -1) {
+        __town_armorStore(htmlText);
+    }
+    if (htmlText.indexOf("＜＜　□　<B>饰品屋</B>　□　＞＞") !== -1 ||
+        htmlText.indexOf("＜＜　□　<b>饰品屋</b>　□　＞＞") !== -1) {
+        __town_accessoryStore(htmlText);
+    }
+    if (htmlText.indexOf("＜＜　□　<B>物品屋</B>　□　＞＞") !== -1 ||
+        htmlText.indexOf("＜＜　□　<b>物品屋</b>　□　＞＞") !== -1) {
+        __town_itemStore(htmlText);
+    }
+    if (htmlText.indexOf(" Gold卖出。") !== -1) {
         // 物品卖出完成
         __city_itemSold(htmlText);
     }
 }
 
 // 城市 -> 宠物图鉴
-function __city_petMap(htmlText) {
+function __town_petMap(htmlText) {
+    __page_constructNpcMessageTable("七七");
+    __page_writeNpcMessage("我打小数学就是体育老师教的，学的特别好。数一数图鉴数量这种事，交给我完全没有问题。");
+
     var petIdText = "";             // 宠物图鉴编号及数量的文本
     $("td:parent").each(function (_i, element) {
         var img = $(element).children("img");
         var src = img.attr("src");
-        if (src != undefined && src.indexOf("https://pocketrose.itsns.net.cn/pocketrose/image/386/") != -1) {
+        if (src != undefined && src.indexOf(POCKETROSE_DOMAIN + "/image/386/") != -1) {
             var code = img.attr("alt");
             var count = $(element).next();
 
@@ -896,10 +1509,277 @@ function __city_petMap(htmlText) {
         }
     });
     if (petIdText != "") {
-        var messageBox = $('font[color="#FFFFFF"]').parent();
-        var currentText = messageBox.html();
-        currentText += "<BR><font color='#FFFFFF'>" + petIdText + "</font>";
-        messageBox.html(currentText);
+        __page_writeNpcMessage("<br>" + petIdText);
+        __page_writeNpcMessage("<br>要不要现在就去宠物进化退化那里<b><a href='javascript:void(0)' id='petBorn'>看一眼</a></b>？");
+        $("#petBorn").click(function () {
+            $("input[name='mode']").attr("value", "PETBORN");
+            $("form[action='status.cgi']").attr("action", "mydata.cgi");
+            $("input[value='返回城市']").trigger("click");
+        });
+    }
+}
+
+/**
+ * 城市送物屋增强实现。
+ * @param htmlText HTML文本
+ * @private
+ */
+function __town_houseForSendingItems(htmlText) {
+    __page_constructNpcMessageTable("末末");
+    __page_writeNpcMessage("我来啦！");
+
+    $("input[value='发送']").attr("id", "sendItemSubmit");
+
+    // 读取当前身上的Gold数量
+    let gold = 0;
+    $("td:parent").each(function (_idx, td) {
+        if ($(td).text() == "所持金") {
+            let goldText = $(td).next().text();
+            let spaceIdx = goldText.indexOf(" ");
+            gold = goldText.substring(0, spaceIdx);
+        }
+    });
+    if (gold >= 100000) {
+        __page_writeNpcMessage("让我看看你都偷偷给人送些啥。");
+    } else {
+        let delta = Math.ceil((100000 - gold) / 10000);
+        let message = "看起来你身上的钱还差" + delta + "万呀，我可以帮你" +
+            "<a href='javascript:void(0)' id='safeSendItem'><b>取钱发送</b></a>" +
+            "。我办事，你放心！";
+        __page_writeNpcMessage(message);
+
+        let id = __page_readIdFromCurrentPage();
+        let pass = __page_readPassFromCurrentPage();
+        $("#safeSendItem").click(function () {
+            __ajax_withdrawGolds(id, pass, delta, function (data) {
+                $("#sendItemSubmit").trigger("click");
+            });
+        });
+    }
+}
+
+/**
+ * 城市送宠屋增强实现。
+ * @param htmlText HTML文本
+ * @private
+ */
+function __town_houseForSendingPets(htmlText) {
+    __page_constructNpcMessageTable("末末");
+    __page_writeNpcMessage("哈哈，我又来啦！没想到吧？这边还是我。");
+
+    $("input[value='发送']").attr("id", "sendPetSubmit");
+
+    let gold = 0;
+    $("td:parent").each(function (_idx, td) {
+        if ($(td).text() === "所持金") {
+            let goldText = $(td).next().text();
+            gold = goldText.substring(0, goldText.indexOf(" "));
+        }
+    });
+
+    if (gold < 100000) {
+        let delta = Math.ceil((100000 - gold) / 10000);
+        let message = "差" + delta + "万，老规矩，还是<a href='javascript:void(0)' id='safeSendPet'><b>取钱发送</b></a>？";
+        __page_writeNpcMessage(message);
+
+        let id = __page_readIdFromCurrentPage();
+        let pass = __page_readPassFromCurrentPage();
+        $("#safeSendPet").click(function () {
+            __ajax_withdrawGolds(id, pass, delta, function (data) {
+                $("#sendPetSubmit").trigger("click");
+            });
+        });
+    }
+}
+
+/**
+ * 武器屋：增强实现。
+ * @param htmlText HTML
+ * @private
+ */
+function __town_weaponStore(htmlText) {
+    __page_constructNpcMessageTable("青鸟");
+    __town_common_disableProhibitSellingItems($("table")[5]);
+    $("input:submit[value='买入']").attr("id", "buyButton");
+
+    // 检查是否身上还有富裕的购物空间？
+    if ($("select[name='num']").find("option:first").length === 0) {
+        $("#buyButton").prop("disabled", true);
+        __page_writeNpcMessage("咱们就是说买东西之前至少身上腾点空间出来。");
+        return;
+    }
+
+    // 获取当前身上现金的数量
+    let cash = 0;
+    $("td:parent").each(function (idx, td) {
+        if ($(td).text() === "所持金") {
+            let cashText = $(td).next().text();
+            cash = cashText.substring(0, cashText.indexOf(" "));
+        }
+    });
+
+    __page_writeNpcMessage("为了回馈新老客户，本店特推出直接通过<b><a href='javascript:void(0)' id='bankBuy'>银行转账购买</a></b>的方式。");
+    $("#bankBuy").click(function () {
+        let id = __page_readIdFromCurrentPage();
+        let pass = __page_readPassFromCurrentPage();
+        __town_common_prepareForShopping(id, pass, cash, $("table")[7], $("#buyButton"));
+    });
+}
+
+/**
+ * 防具屋：增强实现。
+ * @param htmlText HTML
+ * @private
+ */
+function __town_armorStore(htmlText) {
+    __page_constructNpcMessageTable("青鸟");
+    __town_common_disableProhibitSellingItems($("table")[5]);
+    $("input:submit[value='买入']").attr("id", "buyButton");
+
+    // 检查是否身上还有富裕的购物空间？
+    if ($("select[name='num']").find("option:first").length === 0) {
+        $("#buyButton").prop("disabled", true);
+        __page_writeNpcMessage("咱们就是说买东西之前至少身上腾点空间出来。");
+        return;
+    }
+
+    // 获取当前身上现金的数量
+    let cash = 0;
+    $("td:parent").each(function (idx, td) {
+        if ($(td).text() === "所持金") {
+            let cashText = $(td).next().text();
+            cash = cashText.substring(0, cashText.indexOf(" "));
+        }
+    });
+
+    __page_writeNpcMessage("为了回馈新老客户，本店特推出直接通过<b><a href='javascript:void(0)' id='bankBuy'>银行转账购买</a></b>的方式。");
+    $("#bankBuy").click(function () {
+        let id = __page_readIdFromCurrentPage();
+        let pass = __page_readPassFromCurrentPage();
+        __town_common_prepareForShopping(id, pass, cash, $("table")[7], $("#buyButton"));
+    });
+}
+
+/**
+ * 饰品屋：增强实现。
+ * @param htmlText HTML
+ * @private
+ */
+function __town_accessoryStore(htmlText) {
+    __page_constructNpcMessageTable("青鸟");
+    __town_common_disableProhibitSellingItems($("table")[5]);
+    $("input:submit[value='买入']").attr("id", "buyButton");
+
+    // 检查是否身上还有富裕的购物空间？
+    if ($("select[name='num']").find("option:first").length === 0) {
+        $("#buyButton").prop("disabled", true);
+        __page_writeNpcMessage("咱们就是说买东西之前至少身上腾点空间出来。");
+        return;
+    }
+
+    // 获取当前身上现金的数量
+    let cash = 0;
+    $("td:parent").each(function (idx, td) {
+        if ($(td).text() === "所持金") {
+            let cashText = $(td).next().text();
+            cash = cashText.substring(0, cashText.indexOf(" "));
+        }
+    });
+
+    __page_writeNpcMessage("为了回馈新老客户，本店特推出直接通过<b><a href='javascript:void(0)' id='bankBuy'>银行转账购买</a></b>的方式。");
+    $("#bankBuy").click(function () {
+        let id = __page_readIdFromCurrentPage();
+        let pass = __page_readPassFromCurrentPage();
+        __town_common_prepareForShopping(id, pass, cash, $("table")[7], $("#buyButton"));
+    });
+}
+
+/**
+ * 物品屋：增强实现。
+ * @param htmlText HTML
+ * @private
+ */
+function __town_itemStore(htmlText) {
+    __page_constructNpcMessageTable("青鸟");
+    __town_common_disableProhibitSellingItems($("table")[3]);
+    $("input:submit[value='买入']").attr("id", "buyButton");
+
+    // 检查是否身上还有富裕的购物空间？
+    if ($("select[name='num']").find("option:first").length === 0) {
+        $("#buyButton").prop("disabled", true);
+        __page_writeNpcMessage("咱们就是说买东西之前至少身上腾点空间出来。");
+        return;
+    }
+
+    // 获取当前身上现金的数量
+    let cash = 0;
+    $("td:parent").each(function (idx, td) {
+        if ($(td).text() === "所持金") {
+            let cashText = $(td).next().text();
+            cash = cashText.substring(0, cashText.indexOf(" "));
+        }
+    });
+
+    __page_writeNpcMessage("为了回馈新老客户，本店特推出直接通过<b><a href='javascript:void(0)' id='bankBuy'>银行转账购买</a></b>的方式。");
+    $("#bankBuy").click(function () {
+        let id = __page_readIdFromCurrentPage();
+        let pass = __page_readPassFromCurrentPage();
+        __town_common_prepareForShopping(id, pass, cash, $("table")[5], $("#buyButton"));
+    });
+}
+
+/**
+ * 正在装备中和禁售名单上的物品不再提供选择。
+ * @param table 身上物品所在表格的DOM
+ * @private
+ */
+function __town_common_disableProhibitSellingItems(table) {
+    $(table).find("input:radio[name='select']").each(function (idx, radio) {
+        let name = $(radio).parent().next().next().text();
+        if ($(radio).parent().next().text() === "★") {
+            // 已经装备上的禁止售卖
+            $(radio).prop("disabled", true);
+        } else {
+            for (let i = 0; i < _PROHIBIT_SELLING_ITEM_DICT.length; i++) {
+                if (name === _PROHIBIT_SELLING_ITEM_DICT[i]) {
+                    // 禁售名单里面
+                    $(radio).prop("disabled", true);
+                }
+            }
+        }
+    });
+}
+
+function __town_common_prepareForShopping(id, pass, cash, table, submit) {
+    let name = "";
+    let price = 0;
+    $(table).find("input:radio[name='select']").each(function (idx, radio) {
+        if ($(radio).prop("checked")) {
+            name = $(radio).parent().next().text();
+            let priceText = $(radio).parent().next().next().text();
+            price = priceText.substring(0, priceText.indexOf(" "));
+        }
+    });
+    if (name !== "") {
+        let count = 0;
+        $("select[name='num']").find("option").each(function (idx, option) {
+            if ($(option).prop("selected")) {
+                count = $(option).val();
+            }
+        });
+
+        let totalPrice = price * count;
+        if (totalPrice > 0) {
+            totalPrice = Math.max(10000, totalPrice);   // 如果总价不到1万，按照1万来计算
+        }
+        if (cash >= totalPrice) {
+            $(submit).trigger("click");
+        } else {
+            let delta = Math.ceil((totalPrice - cash) / 10000);
+            __ajax_withdrawGolds(id, pass, delta, function (data) {
+                $(submit).trigger("click");
+            });
+        }
     }
 }
 
@@ -907,98 +1787,204 @@ function __city_petMap(htmlText) {
  * 卖出物品后，自动存入银行
  */
 function __city_itemSold(htmlText) {
-    // 最最下面添加一个player的表格
-    $('hr:last').prepend("<TABLE WIDTH='100%' bgcolor='#888888'><tbody><tr>" +
-        "<TD id='playerCell' bgcolor='#F8F0E0' height='5'></TD>" +
-        "</tr></tbody></TABLE>");
+    __page_constructNpcMessageTable("青鸟");
 
-    var IdPass = __common_extractIdPassFromStatusForm();
+    let id = __page_readIdFromCurrentPage();
+    let pass = __page_readPassFromCurrentPage();
+
     // 获取到卖出的金钱数
     var messageElement = $('h2:first');
     var price = messageElement.find('b:first').text();
 
+    let returnMessage = "";
+    returnMessage += "另外，要不要我带你回";
+    returnMessage += "<b><a href='javascript:void(0)' id='returnARM'>武器屋</a></b>？";
+    returnMessage += "<b><a href='javascript:void(0)' id='returnPRO'>防具屋</a></b>？";
+    returnMessage += "<b><a href='javascript:void(0)' id='returnACC'>饰品屋</a></b>？";
+    returnMessage += "<b><a href='javascript:void(0)' id='returnITM'>物品屋</a></b>？";
+
     if (price < 10000) {
         // 卖的钱太少了，不值得为你做点啥
-        var lowPriceMessage = "嚯，就卖了这几个子儿，我都想不出能拿那只眼看你。赶紧麻利儿的该干嘛干嘛去，尽裹乱。";
-        __common_addPlayerMessage($("#playerCell"), "青鸟", lowPriceMessage);
-        __common_extractTownLocationAndProcess(IdPass[0], IdPass[1], function (id, pass, town) {
-            $('form[action="status.cgi"]').attr('style', 'float:left');
-            $('form[action="status.cgi"]').append(__city_itemSold_generateReturnForm(id, pass, town));
-        });
-        return;
-    }
-
-    if (!enableAutoDepositWhenItemSold) {
+        var lowPriceMessage = "虫吃鼠咬,光板没毛,破面烂袄一件儿~";
+        __page_writeNpcMessage(lowPriceMessage);
+        __page_writeNpcMessage(returnMessage);
+        __city_itemSold_buildReturnFunction(id, pass);
+    } else if (!__cookie_getEnableSoldAutoDeposit()) {
         // 卖的钱倒是够了，奈何自动存钱功能被禁用了
-        var noDepositMessage = "善意提醒，回去路上经过十字坡的时候，看见那颗大树的时候，自己当心点。";
-        __common_addPlayerMessage($("#playerCell"), "青鸟", noDepositMessage);
-        __common_extractTownLocationAndProcess(IdPass[0], IdPass[1], function (id, pass, town) {
-            $('form[action="status.cgi"]').attr('style', 'float:left');
-            $('form[action="status.cgi"]').append(__city_itemSold_generateReturnForm(id, pass, town));
-        });
-        return;
-    }
-
-    $.post("town.cgi",
-        {azukeru: "all", id: IdPass[0], pass: IdPass[1], mode: "BANK_SELL"},
-        function () {
-            var messageHtml = messageElement.html() + "已经自动存入银行。";
+        var noDepositMessage = "破家值万贯，能换多少算多少吧！";
+        __page_writeNpcMessage(noDepositMessage);
+        __page_writeNpcMessage(returnMessage);
+        __city_itemSold_buildReturnFunction(id, pass);
+    } else {
+        __ajax_depositAllGolds(id, pass, function (data) {
+            let messageHtml = messageElement.html() + "已经自动存入银行。";
             messageElement.html(messageHtml);
-            var autoDepositMessage = "我去，还挺有钱的嘛。日行一善，我已经帮你存到银行了，不用谢，请叫我雷锋。";
-            __common_addPlayerMessage($("#playerCell"), "青鸟", autoDepositMessage);
-            __common_extractTownLocationAndProcess(IdPass[0], IdPass[1], function (id, pass, town) {
-                $('form[action="status.cgi"]').attr('style', 'float:left');
-                $('form[action="status.cgi"]').append(__city_itemSold_generateReturnForm(id, pass, town));
-            });
+            let autoDepositMessage = "呦嚯嚯。。这个全口袋也只有我能收下！钱已经存到银行了，我是雷锋。";
+            __page_writeNpcMessage(autoDepositMessage);
+            __page_writeNpcMessage(returnMessage);
+            __city_itemSold_buildReturnFunction(data["id"], data["pass"]);
         });
+    }
 }
 
-function __city_itemSold_generateReturnForm(id, pass, town) {
-    var formHtml = "";
-    formHtml += "<form action='town.cgi' method='post' style='float:left'>" +
-        "<input type=hidden name=id value=" + id + ">" +
-        "<input type=hidden name=pass value=" + pass + ">" +
-        "<input type=hidden name=town value=" + town + ">" +
-        "<input type=hidden name=con_str value=50>" +
-        "<input type=hidden name=mode value=ARM_SHOP>" +
-        "<input type=submit value='回武器屋'>" + "</form>";
-    formHtml += "<form action='town.cgi' method='post' style='float:left'>" +
-        "<input type=hidden name=id value=" + id + ">" +
-        "<input type=hidden name=pass value=" + pass + ">" +
-        "<input type=hidden name=town value=" + town + ">" +
-        "<input type=hidden name=con_str value=50>" +
-        "<input type=hidden name=mode value=PRO_SHOP>" +
-        "<input type=submit value='回防具屋'>" + "</form>";
-    formHtml += "<form action='town.cgi' method='post' style='float:left'>" +
-        "<input type=hidden name=id value=" + id + ">" +
-        "<input type=hidden name=pass value=" + pass + ">" +
-        "<input type=hidden name=town value=" + town + ">" +
-        "<input type=hidden name=con_str value=50>" +
-        "<input type=hidden name=mode value=ACC_SHOP>" +
-        "<input type=submit value='回饰品屋'>" + "</form>";
-    formHtml += "<form action='town.cgi' method='post' style='float:left'>" +
-        "<input type=hidden name=id value=" + id + ">" +
-        "<input type=hidden name=pass value=" + pass + ">" +
-        "<input type=hidden name=town value=" + town + ">" +
-        "<input type=hidden name=con_str value=50>" +
-        "<input type=hidden name=mode value=ITEM_SHOP>" +
-        "<input type=submit value='回物品屋'>" + "</form>";
-    return formHtml;
+function __city_itemSold_buildReturnFunction(id, pass) {
+    $("#returnARM").click(function () {
+        __ajax_readPersonalStatus(id, pass, function (status) {
+            let townId = status["TOWN_ID"];
+            $("form[action='status.cgi']").append("<input type=hidden name=town value=" + townId + ">");
+            $("form[action='status.cgi']").append("<input type=hidden name=con_str value=50>");
+            $("input[name='mode']").attr("value", "ARM_SHOP");
+            $("form[action='status.cgi']").attr("action", "town.cgi");
+            $("input[type='submit']").attr("value", "回武器屋");
+            $("input[type='submit']").trigger("click");
+        });
+    });
+    $("#returnPRO").click(function () {
+        __ajax_readPersonalStatus(id, pass, function (status) {
+            let townId = status["TOWN_ID"];
+            $("form[action='status.cgi']").append("<input type=hidden name=town value=" + townId + ">");
+            $("form[action='status.cgi']").append("<input type=hidden name=con_str value=50>");
+            $("input[name='mode']").attr("value", "PRO_SHOP");
+            $("form[action='status.cgi']").attr("action", "town.cgi");
+            $("input[type='submit']").attr("value", "回防具屋");
+            $("input[type='submit']").trigger("click");
+        });
+    });
+    $("#returnACC").click(function () {
+        __ajax_readPersonalStatus(id, pass, function (status) {
+            let townId = status["TOWN_ID"];
+            $("form[action='status.cgi']").append("<input type=hidden name=town value=" + townId + ">");
+            $("form[action='status.cgi']").append("<input type=hidden name=con_str value=50>");
+            $("input[name='mode']").attr("value", "ACC_SHOP");
+            $("form[action='status.cgi']").attr("action", "town.cgi");
+            $("input[type='submit']").attr("value", "回饰品屋");
+            $("input[type='submit']").trigger("click");
+        });
+    });
+    $("#returnITM").click(function () {
+        __ajax_readPersonalStatus(id, pass, function (status) {
+            let townId = status["TOWN_ID"];
+            $("form[action='status.cgi']").append("<input type=hidden name=town value=" + townId + ">");
+            $("form[action='status.cgi']").append("<input type=hidden name=con_str value=50>");
+            $("input[name='mode']").attr("value", "ITEM_SHOP");
+            $("form[action='status.cgi']").attr("action", "town.cgi");
+            $("input[type='submit']").attr("value", "回物品屋");
+            $("input[type='submit']").trigger("click");
+        });
+    });
 }
 
 // ============================================================================
 // 个人状态后续辅助功能
 // ============================================================================
 function postProcessPersonalStatusRelatedFunctionalities(htmlText) {
+    if (htmlText.indexOf("给其他人发送消息") !== -1) {
+        // 复用个人接收的信作为Cookie管理的页面
+        __personalStatus_cookieManagement(htmlText);
+    }
     if (htmlText.indexOf("仙人的宝物") != -1) {
         __personalStatus_view(htmlText);
     }
     if (htmlText.indexOf("物品使用．装备") != -1) {
         __personalStatus_equipment(htmlText);
     }
+    if (htmlText.indexOf("物品 百宝袋 使用。") != -1) {
+        __personalStatus_treasureBag(htmlText);
+    }
     if (htmlText.indexOf("* 转职神殿 *") != -1) {
         __personalStatus_transferCareer(htmlText);
     }
+}
+
+function __personalStatus_cookieManagement(htmlText) {
+    $("input:submit[value='返回城市']").attr("id", "returnButton");
+    __page_constructNpcMessageTable("夜九年");
+    __page_writeNpcMessage("在这里我来协助各位维护本机（浏览器）的口袋相关设置：<br>");
+
+    let b1 = __cookie_getEnablePokemonWiki();
+    let s1 = "<select name='s1' id='s1'>";
+    s1 += "<option class='o1' value='1'>启用</option>";
+    s1 += "<option class='o1' value='0'>禁用</option>";
+    s1 += "</select>";
+    __page_writeNpcMessage("<li>宝可梦百科超链 " + s1 + " <a href='javascript:void(0)' id='a1'>设置</a></li>");
+
+
+    let b2 = __cookie_getEnableSoldAutoDeposit();
+    let s2 = "<select name='s2' id='s2'>";
+    s2 += "<option class='o2' value='1'>启用</option>";
+    s2 += "<option class='o2' value='0'>禁用</option>";
+    s2 += "</select>";
+    __page_writeNpcMessage("<li>售卖后自动存钱 " + s2 + " <a href='javascript:void(0)' id='a2'>设置</a></li>");
+
+
+    let b3 = __cookie_getHealthLoseAutoLodgeRatio();
+    let s3 = "<select name='s3' id='s3'>";
+    s3 += "<option class='o3' value='0.1'>10%</option>";
+    s3 += "<option class='o3' value='0.2'>20%</option>";
+    s3 += "<option class='o3' value='0.3'>30%</option>";
+    s3 += "<option class='o3' value='0.4'>40%</option>";
+    s3 += "<option class='o3' value='0.5'>50%</option>";
+    s3 += "<option class='o3' value='0.6'>60%</option>";
+    s3 += "<option class='o3' value='0.7'>70%</option>";
+    s3 += "<option class='o3' value='0.8'>80%</option>";
+    s3 += "<option class='o3' value='0.9'>90%</option>";
+    s3 += "</select>";
+    __page_writeNpcMessage("<li>掉血后自动住宿 " + s3 + " <a href='javascript:void(0)' id='a3'>设置</a></li>");
+
+    let b4 = __cookie_getRepairItemThreshold();
+    let s4 = "<select name='s4' id='s4'>";
+    s4 += "<option class='o4' value='10'>耐久10</option>";
+    s4 += "<option class='o4' value='20'>耐久20</option>";
+    s4 += "<option class='o4' value='50'>耐久50</option>";
+    s4 += "<option class='o4' value='100'>耐久100</option>";
+    s4 += "</select>";
+    __page_writeNpcMessage("<li>修理装备耐久限 " + s4 + " <a href='javascript:void(0)' id='a4'>设置</a></li>");
+
+    let b5 = __cookie_getDepositBattleNumber();
+    let s5 = "<select name='s5' id='s5'>";
+    s5 += "<option class='o5' value='0'>每战存钱</option>";
+    s5 += "<option class='o5' value='2'>2战一存</option>";
+    s5 += "<option class='o5' value='5'>5战一存</option>";
+    s5 += "<option class='o5' value='10'>10战一存</option>";
+    s5 += "</select>";
+    __page_writeNpcMessage("<li>触发存钱的战数 " + s5 + " <a href='javascript:void(0)' id='a5'>设置</a></li>");
+
+    $(".o1[value='" + Number(b1) + "']").prop("selected", true);
+    $(".o2[value='" + Number(b2) + "']").prop("selected", true);
+    $(".o3[value='" + b3 + "']").prop("selected", true);
+    $(".o4[value='" + b4 + "']").prop("selected", true);
+    $(".o5[value='" + b5 + "']").prop("selected", true);
+
+    $("#a1").click(function () {
+        Cookies.set("_POCKETROSE_ASSISTANT__ENABLE_POKEMON_WIKI", $("#s1").val(), {expires: 36500});
+        $("form[action='status.cgi']").attr("action", "mydata.cgi");
+        $("input:hidden[value='STATUS']").attr("value", "LETTER");
+        $("#returnButton").trigger("click");
+    });
+    $("#a2").click(function () {
+        Cookies.set("_POCKETROSE_ASSISTANT__ENABLE_SOLD_AUTO_DEPOSIT", $("#s2").val(), {expires: 36500});
+        $("form[action='status.cgi']").attr("action", "mydata.cgi");
+        $("input:hidden[value='STATUS']").attr("value", "LETTER");
+        $("#returnButton").trigger("click");
+    });
+    $("#a3").click(function () {
+        Cookies.set("_POCKETROSE_ASSISTANT__HEALTH_LOSE_AUTO_LODGE_RATIO", $("#s3").val(), {expires: 36500});
+        $("form[action='status.cgi']").attr("action", "mydata.cgi");
+        $("input:hidden[value='STATUS']").attr("value", "LETTER");
+        $("#returnButton").trigger("click");
+    });
+    $("#a4").click(function () {
+        Cookies.set("_POCKETROSE_ASSISTANT__REPAIR_ITEM_THRESHOLD", $("#s4").val(), {expires: 36500});
+        $("form[action='status.cgi']").attr("action", "mydata.cgi");
+        $("input:hidden[value='STATUS']").attr("value", "LETTER");
+        $("#returnButton").trigger("click");
+    });
+    $("#a5").click(function () {
+        Cookies.set("_POCKETROSE_ASSISTANT__DEPOSIT_BATTLE_NUMBER", $("#s5").val(), {expires: 36500});
+        $("form[action='status.cgi']").attr("action", "mydata.cgi");
+        $("input:hidden[value='STATUS']").attr("value", "LETTER");
+        $("#returnButton").trigger("click");
+    });
 }
 
 // 个人状态 -> 状态查看
@@ -1021,65 +2007,92 @@ function __personalStatus_view(htmlText) {
 
 // 个人状态 -> 物品使用．装备
 function __personalStatus_equipment(htmlText) {
-    // 查找物品栏中有百宝袋和黄金笼子
-    var bagLocation = -1;
-    var cageLocation = -1;
-    $("td:parent").each(function (_i, e) {
-        if ($(e).text() == "百宝袋") {
-            // 百宝袋对应的checkbox
-            var bagCheckboxElement = $(e).prev().prev().children("input");
-            if (bagCheckboxElement != undefined) {
-                bagLocation = bagCheckboxElement.attr("value");
-            }
-        }
-        if ($(e).text() == "黄金笼子") {
-            // 黄金笼子对应的checkbox
-            var cageCheckboxElement = $(e).prev().prev().children("input");
-            if (cageCheckboxElement != undefined) {
-                cageLocation = cageCheckboxElement.attr("value");
-            }
-        }
-    });
-
-    var statusForm = $('form[action="status.cgi"]')
-    var id = statusForm.children('input[name="id"]').attr('value');
-    var pass = statusForm.children('input[name="pass"]').attr('value');
-    var bagFormHtml = "<form action='mydata.cgi' method='post'><input type='hidden' name='id' value='" + id + "'><input type='hidden' name='pass' value='" + pass + "'><input type='hidden' name='mode' value='USE'><input type='hidden' name='chara' value='1'><input type='hidden' name='item" + bagLocation + "' value='" + bagLocation + "'><input type='submit' value='直接进入百宝袋'></form>";
-    var cageFormHtml = "<form action='mydata.cgi' method='post'><input type='hidden' name='id' value='" + id + "'><input type='hidden' name='pass' value='" + pass + "'><input type='hidden' name='mode' value='USE'><input type='hidden' name='chara' value='1'><input type='hidden' name='item" + cageLocation + "' value='" + cageLocation + "'><input type='submit' value='直接进入黄金笼子'></form>";
-
     $("td:parent").each(function (_i, e) {
         if ($(e).text() == "所持金") {
-            $(e).parent().parent().prepend("<tr><td colspan='6' bgcolor='#E8E8D0' id='bagCageCell'></td></tr>");
+            $(e).parent().parent().append("<tr><td colspan='6' bgcolor='#E8E8D0' id='extMenuLocation'></td></tr>");
         }
     });
-    $("#bagCageCell").html(bagFormHtml + cageFormHtml);
+    var extMenu = "";
+    extMenu += "<li><a href='javascript:void(0)' id='goIntoBag'>进入百宝袋</a></li>"
+    extMenu += "<li><a href='javascript:void(0)' id='goIntoCage'>进入黄金笼子</a></li>"
+    extMenu += "<li><a href='javascript:void(0)' id='putAllGemsIntoBag'>所有的宝石放入百宝袋</a></li>"
+    extMenu += "<li><a href='javascript:void(0)' id='putAllItemsIntoBag'>所有非必要装备/物品放入百宝袋</a></li>"
+    $("#extMenuLocation").html(extMenu);
 
     $("input[type='checkbox']").each(function (_idx, inputElement) {
-        var inputTableCell = $(inputElement).parent();
-        var category = $(inputTableCell).next().next().next().text();
+        let inputTableCell = $(inputElement).parent();
+        let category = $(inputTableCell).next().next().next().text();
         if (category == "武器" || category == "防具" || category == "饰品") {
             // 计算装备满级所需要的最高经验
-            var name = $(inputTableCell).next().next().text();
-            var maxExp = 0;
-            if (__utilities_isHeavyArmor(name)) {
-                // 属性重铠满级经验为76000
-                maxExp = 76000;
-            } else {
-                var power = $(inputTableCell).next().next().next().next().text();
-                if (power != 0) {
-                    power = Math.abs(power);
-                    maxExp = Math.floor(power * 0.2) * 1000;
-                }
-            }
-            var currentExp = $(inputTableCell).next().next().next().next()
+            let name = $(inputTableCell).next().next().text();
+            let power = $(inputTableCell).next().next().next().next().text();
+            let currentExp = $(inputTableCell).next().next().next().next()
                 .next().next().next().next()
                 .next().next().next().next()
                 .next().next().next().next().text();
 
-            if (itemExpFull = currentExp >= maxExp) {
-                var nameHtml = $(inputTableCell).next().next().html();
+            if (__utilities_checkIfEquipmentFullExperience(name, power, currentExp)) {
+                let nameHtml = $(inputTableCell).next().next().html();
                 nameHtml = "<font color='red'><b>[满]</b></font>" + nameHtml;
                 $(inputTableCell).next().next().html(nameHtml);
+            }
+        }
+    });
+
+    $("#goIntoBag").click(function () {
+        if (__common_item_selectBag($("html")) > 0) {
+            $("option[value='USE']").prop("selected", true);
+            $("option[value='CONSECRATE']").prop("selected", false);
+            $("option[value='PUTINBAG']").prop("selected", false);
+            $("input[value='确定']").trigger("click");
+        }
+    });
+
+    $("#goIntoCage").click(function () {
+        if (__common_item_selectCage($("html")) > 0) {
+            $("option[value='USE']").prop("selected", true);
+            $("option[value='CONSECRATE']").prop("selected", false);
+            $("option[value='PUTINBAG']").prop("selected", false);
+            $("input[value='确定']").trigger("click");
+        }
+    });
+
+    $("#putAllGemsIntoBag").click(function () {
+        if (__common_item_selectAllGems($("html")) > 0) {
+            $("option[value='USE']").prop("selected", false);
+            $("option[value='CONSECRATE']").prop("selected", false);
+            $("option[value='PUTINBAG']").prop("selected", true);
+            $("input[value='确定']").trigger("click");
+        }
+    });
+
+    $("#putAllItemsIntoBag").click(function () {
+        if (__common_item_selectAllStorableItems($("html")) > 0) {
+            $("option[value='USE']").prop("selected", false);
+            $("option[value='CONSECRATE']").prop("selected", false);
+            $("option[value='PUTINBAG']").prop("selected", true);
+            $("input[value='确定']").trigger("click");
+        }
+    });
+}
+
+/**
+ * 百宝袋的界面的增强实现。
+ * @param htmlText 原始HTML文本
+ * @private
+ */
+function __personalStatus_treasureBag(htmlText) {
+    $("input[type='checkbox']").each(function (_idx, input) {
+        let td = $(input).parent();
+        let name = $(td).next().text();
+        let category = $(td).next().next().text();
+        let power = $(td).next().next().next().text();
+        let exp = $(td).next().next().next().next().next().next().next().next().next().text();
+        if (category == "武器" || category == "防具" || category == "饰品") {
+            if (__utilities_checkIfEquipmentFullExperience(name, power, exp)) {
+                let nameHtml = $(td).next().html();
+                nameHtml = "<font color='red'><b>[满]</b></font>" + nameHtml;
+                $(td).next().html(nameHtml);
             }
         }
     });
@@ -1088,64 +2101,104 @@ function __personalStatus_equipment(htmlText) {
 
 // 个人状态 -> 转职
 function __personalStatus_transferCareer(htmlText) {
-    $('input[value="转职"]').attr('id', 'transferCarrerButton');
+    __page_constructNpcMessageTable("白皇");
+    __page_writeNpcMessage("是的，你没有看错，换人了，某幕后黑手不愿意出镜。不过请放心，转职方面我是专业的，毕竟我一直制霸钉耙榜。<br>");
 
-    $('table:first').find('tbody:first').append('<TR><TD id="suggestion" bgcolor="#F8F0E0" height="5"></TD></TR>');
+    $('input[value="转职"]').attr('id', 'transferCareerButton');
 
-    var statusForm = $('form[action="status.cgi"]')
-    var id = statusForm.children('input[name="id"]').attr('value');
-    var pass = statusForm.children('input[name="pass"]').attr('value');
+    let lastTargetCareer = "";
+    $("option[value!='']").each(function (_idx, option) {
+        lastTargetCareer = $(option).attr("value");
+    });
+
+    if (lastTargetCareer === "") {
+        __page_writeNpcMessage("我的天，你甚至连最基础的转职条件都没有满足，那你来这么干什么？我不愿意说粗口，所以我无话可说了，你走吧。<br>");
+        return;
+    }
+
+    let level = $($($("table")[4]).find("td")[7]).text();
+    if (level < 150) {
+        __page_writeNpcMessage("从专业的角度来说，你现在并没有满级，我并不推荐你现在就转职。当然你如果强行要这么做的话，我也不说啥。<br>");
+        return;
+    }
+
+    let id = __page_readIdFromCurrentPage();
+    let pass = __page_readPassFromCurrentPage();
     // 进入转职页面的时候，读取一下个人信息。把标准的HP/MP和五围读出来
-    $.post('mydata.cgi',
-        {
-            id: id,
-            pass: pass,
-            mode: 'STATUS_PRINT'
-        },
-        function (data) {
-            var statusTable = $(data).find('table').first().find('table').first();
-            var healthText = $(statusTable.find('td')[5]).text();
-            var manaText = $(statusTable.find('td')[7]).text();
-            var maxHealth = __utilities_substringAfterSlash(healthText);
-            var maxMana = __utilities_substringAfterSlash(manaText);
+    __ajax_readPersonalInformation(id, pass, function (information) {
+        var mhp = information["MAX_HP"];
+        var mmp = information["MAX_MP"];
+        var at = information["AT"];
+        var df = information["DF"];
+        var sa = information["SA"];
+        var sd = information["SD"];
+        var sp = information["SP"];
+        var stableCareer = (mhp == 1999 && mmp >= 1000
+            && at >= 300 && df >= 300 && sa >= 300 && sd >= 300 && sp >= 300);
 
-            var att = $(statusTable.find('td')[13]).text();
-            var def = $(statusTable.find('td')[15]).text();
-            var int = $(statusTable.find('td')[17]).text();
-            var spi = $(statusTable.find('td')[19]).text();
-            var spe = $(statusTable.find('td')[21]).text();
+        if (stableCareer) {
+            // 看起来这能力已经可以定型了，给个警告吧，确认是否要转职！
+            var current = information["HP"] + "/" + mhp + " " + information["MP"] + "/" + mmp + " " + at + " " + df + " " + sa + " " + sd + " " + sp;
+            $('#transferCareerButton').attr('value', '看起来你现在满足了最低的定型标准(' + current + ')，你确认要转职吗？');
+        }
 
-            var stableCareer = (maxHealth == 1999 && maxMana >= 1000
-                && att >= 300 && def >= 300 && int >= 300 && spi >= 300 && spe >= 300);
-            if (stableCareer) {
-                // 看起来这能力已经可以定型了，给个警告吧，确认是否要转职！
-                var current = maxHealth + "/" + maxHealth + " " + maxMana + "/" + maxMana + " " + att + " " + def + " " + int + " " + spi + " " + spe;
-                $('#transferCarrerButton').attr('value', '看起来你现在满足了最低的定型标准(' + current + ')，你确认要转职吗？');
+        // 是否需要给个转职建议呢？
+        var recommendationCareers = [];
+        var careers = Object.keys(transferCareerRequirementDict);
+        for (var careerIndex = 0; careerIndex < careers.length; careerIndex++) {
+            var career = careers[careerIndex];
+            var requirement = transferCareerRequirementDict[career];
+            if (mmp >= requirement[0] && at >= requirement[1] && df >= requirement[2] &&
+                sa >= requirement[3] && sd >= requirement[4] && sp >= requirement[5]) {
+                // 发现了可以推荐的职业
+                recommendationCareers.push(career);
             }
+        }
 
-            // 是否需要给个转职建议呢？
-            var recommendationCareers = [];
-            var careers = Object.keys(transferCareerRequirementDict);
-            for (var careerIndex = 0; careerIndex < careers.length; careerIndex++) {
-                var career = careers[careerIndex];
-                var requirement = transferCareerRequirementDict[career];
-                if (maxMana >= requirement[0] && att >= requirement[1] && def >= requirement[2] &&
-                    int >= requirement[3] && spi >= requirement[4] && spe >= requirement[5]) {
-                    // 发现了可以推荐的职业
-                    recommendationCareers.push(career);
+        let autoSuggest = false;
+        let message = "";
+        if (recommendationCareers.length > 0) {
+            message += "我觉得你可以尝试一下这些新职业：";
+            for (let ci = 0; ci < recommendationCareers.length; ci++) {
+                message += "<b>" + recommendationCareers[ci] + "</b> "
+            }
+            message += " 当然，看脸时代的转职成功率你应该心中有数。";
+        } else {
+            autoSuggest = true;
+            message += "不过说实话，你现在的能力，确实爱转啥就转啥吧，区别不大。";
+        }
+        message += "<br>"
+        __page_writeNpcMessage(message);
+
+        if (autoSuggest) {
+            let targetCareer = "";
+            let careerNames = Object.keys(_CAREER_DICT);
+            for (let ci = 0; ci < careerNames.length; ci++) {
+                let careerName = careerNames[ci];
+                let career = _CAREER_DICT[careerName];
+                if (career["id"] == lastTargetCareer) {
+                    targetCareer = careerName;
                 }
             }
-
-            var message = "";
-            if (recommendationCareers.length > 0) {
-                message += "年轻人，让我好好看看你，我向你推荐以下的新职业可以尝试一下：";
-                for (var ci = 0; ci < recommendationCareers.length; ci++) {
-                    message += "<b>" + recommendationCareers[ci] + "</b> "
-                }
-                message += "当然，并不能保证你一定能成功，毕竟大家都知道，现在是看脸的时代。正义凛然的我会在一旁祝福你好运的，加油！加油！加油！";
-            } else {
-                message += "你这战五渣一样的能力，就不要来烦我了，爱转啥转啥去，快点从正义凛然的我的眼前消失！消失！消失！";
+            if (targetCareer !== "") {
+                __page_writeNpcMessage("嗯，还有另外一种选择，继续转职<b>" + targetCareer + "</b>，如何？" +
+                    "<b>[<a href='javascript:void(0)' id='toTopCareer'>我听你的就转职" + targetCareer + "</a>]</b>");
+                $("#toTopCareer").click(function () {
+                    $("option").each(function (_i, o) {
+                        let optionValue = $(o).attr("value");
+                        if (optionValue != lastTargetCareer) {
+                            $(o).prop("selected", false);
+                        } else {
+                            $(o).prop("selected", true);
+                        }
+                    });
+                    $("input[type='radio']").prop("checked", true);
+                    __ajax_lodgeAtInn(information["id"], information["pass"], function (data) {
+                        // 转职前住宿，保持最佳状态
+                        $("#transferCareerButton").trigger("click");
+                    });
+                });
             }
-            __common_addPlayerMessage($('#suggestion'), "夜苍凉", message);
-        });
+        }
+    });
 }

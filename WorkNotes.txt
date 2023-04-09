@@ -5,6 +5,14 @@ PAYLOAD:
   pass: x
   mode: STATUS
 
+住宿
+POST: town.cgi
+PAYLOAD:
+    id
+    pass
+    inn_gold    optional
+    mode        RECOVERY
+
 全部存入
 POST: town.cgi
 PAYLOAD:
@@ -48,3 +56,20 @@ PAYLOAD:
   town: x
   con_str: 50
   mode: ITEM_SHOP
+
+取钱
+POST: town.cgi
+PAYLOAD:
+  dasu: x
+  id:
+  pass:
+  mode: BANK_BUY
+
+
+宠物进化退化
+POST: mydata.cgi
+PAYLOAD:
+  id
+  pass
+  town    ?
+  mode    PETBORN
