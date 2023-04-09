@@ -1062,6 +1062,17 @@ function __page_readPassFromCurrentPage() {
     return $("input[name='pass']").first().attr("value");
 }
 
+function convertEncodingToUtf8(response, fromEncoding) {
+    const decoder = new TextDecoder(fromEncoding);
+    const uint8Array = new Uint8Array(response.length);
+
+    for (let i = 0; i < response.length; i++) {
+        uint8Array[i] = response.charCodeAt(i);
+    }
+
+    return decoder.decode(uint8Array);
+}
+
 /**
  * 异步读取并解析个人状态中的基础信息，完成后回调传入的函数。
  * @param id ID
@@ -1070,6 +1081,29 @@ function __page_readPassFromCurrentPage() {
  * @private
  */
 function __ajax_readPersonalInformation(id, pass, callback) {
+    // fetch("mydata.cgi", {
+    //     method: "POST",
+    //     headers: {
+    //         "Content-Type": "application/x-www-form-urlencoded",
+    //     },
+    //     body: new URLSearchParams({id: id, pass: pass, mode: "STATUS_PRINT"}),
+    // })
+    //     .then((response) => {
+    //         if (!response.ok) {
+    //             throw new Error("Network response was not ok");
+    //         }
+    //         return response.arrayBuffer();
+    //     })
+    //     .then((arrayBuffer) => {
+    //         const fromEncoding = "gb2312";
+    //         const decoder = new TextDecoder(fromEncoding);
+    //         const utf8Response = decoder.decode(new Uint8Array(arrayBuffer));
+    //         // 现在 utf8Response 应该是正确编码的 HTML，继续处理它
+    //     })
+    //     .catch((error) => {
+    //         console.error("Fetch error:", error);
+    //     });
+
     $.ajax({
         type: "POST",
         url: "mydata.cgi",
