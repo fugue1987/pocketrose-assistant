@@ -22,7 +22,6 @@
 
 const POCKETROSE_DOMAIN = "https://pocketrose.itsns.net.cn/pocketrose";
 
-const returnButtonText = "少年輕輕的離開，沒有帶走一片雲彩！";
 const bankButtonText = "順風不浪，逆風不慫，身上不要放太多的錢！";
 const blacksmithButtonText = "去修理下裝備吧，等爆掉的時候你就知道痛了！";
 const innButtonText = "你看起來很疲憊的樣子呀，媽媽喊你回去休息啦！";
@@ -1315,7 +1314,7 @@ function __battle(htmlText) {
     $('#innButton').attr('value', innButtonText);
 
     // 修改返回按钮
-    $('#returnButton').attr('value', returnButtonText);
+    $('#returnButton').attr('value', __cookie_getReturnButtonText());
 
     var resultText = $('#ueqtweixin').text();
     // 耐久度初始值10000以下的最大的质数，表示没有发现回血道具
