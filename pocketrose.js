@@ -5,7 +5,7 @@
 // @icon         data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==
 // @license      mit
 // @author       xiaohaiz,fugue
-// @version      1.4.4
+// @version      1.5.0.RC1
 // @grant        unsafeWindow
 // @match        *://pocketrose.itsns.net.cn/*
 // @require      https://cdn.bootcdn.net/ajax/libs/jquery/3.6.4/jquery.min.js
@@ -840,6 +840,14 @@ function __cookie_getDepositBattleNumber() {
         return 10;
     }
     return parseInt(value);
+}
+
+function __cookie_getReturnButtonText() {
+    let value = Cookies.get("_POCKETROSE_ASSISTANT__RETURN_BUTTON_TEXT");
+    if (value === undefined || value === "") {
+        return "少年輕輕的離開，沒有帶走一片雲彩！";
+    }
+    return unescape(value);
 }
 
 $(function () {
