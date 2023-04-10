@@ -2114,7 +2114,7 @@ function __personalStatus_cookieManagement(htmlText) {
     s11 += "<option class='o11' value='1'>启用</option>";
     s11 += "<option class='o11' value='0'>禁用</option>";
     s11 += "</select>";
-    __page_writeNpcMessage("<li>战斗页自动触底 " + s2 + " <a href='javascript:void(0)' id='a11'>设置</a></li>");
+    __page_writeNpcMessage("<li>战斗页自动触底 " + s11 + " <a href='javascript:void(0)' id='a11'>设置</a></li>");
 
     $(".o1[value='" + Number(b1) + "']").prop("selected", true);
     $(".o2[value='" + Number(b2) + "']").prop("selected", true);
