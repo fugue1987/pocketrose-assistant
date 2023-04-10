@@ -2347,6 +2347,7 @@ function __personalStatus_equipment(htmlText) {
     if (treasureMapLocatedAtCity.length > 0) {
         __page_writeNpcMessage("<li><a href='javascript:void(0)' id='exchangeTreasureMaps'><b>一键更换所有的城市藏宝图</b></a></li>");
     }
+    __page_writeNpcMessage("<li><a href='javascript:void(0)' id='unloadAllEquipments'><b>一键卸下所有装备</b></a></li>");
 
     if (treasureMapLocatedAtCity.length > 0) {
         $("#exchangeTreasureMaps").click(function () {
@@ -2370,6 +2371,34 @@ function __personalStatus_equipment(htmlText) {
             });
         });
     }
+    // 一键卸下所有装备
+    $("#unloadAllEquipments").click(function () {
+        let candidates = [];
+        $("input[type='checkbox']").each(function (_idx, checkbox) {
+            let using = $(checkbox).parent().next().text();
+            if (using === "★") {
+                $(checkbox).prop("checked", true);
+                candidates.push([$(checkbox).attr("name"), $(checkbox).val()]);
+            } else {
+                $(checkbox).prop("checked", false);
+            }
+        });
+        if (candidates.length > 0) {
+            let request = {};
+            request["id"] = id;
+            request["pass"] = pass;
+            request["mode"] = "USE";
+            request["chara"] = "1";
+            for (let i = 0; i < candidates.length; i++) {
+                request[candidates[i][0]] = candidates[i][1];
+            }
+            $.post("mydata.cgi", request, function (html) {
+                $("input:hidden[value='STATUS']").attr("value", "USE_ITEM");
+                $("form[action='status.cgi']").attr("action", "mydata.cgi");
+                $("#returnButton").trigger("click");
+            });
+        }
+    });
 }
 
 /**
