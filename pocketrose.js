@@ -1614,6 +1614,10 @@ function __battle_checkIfShouldGoToInn(htmlText, recoverItemEndure) {
 // 城市点击后续辅助功能
 // ============================================================================
 function postProcessCityRelatedFunctionalities(htmlText) {
+    if (htmlText.indexOf("在网吧的用户请使用这个退出") !== -1) {
+        // 战斗后的主页是通过town.cgi返回的
+        __status(htmlText);
+    }
     if (htmlText.indexOf("* 宠物图鉴 *") !== -1) {
         // 宠物图鉴
         __town_petMap(htmlText);
