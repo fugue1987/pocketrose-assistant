@@ -920,6 +920,16 @@ function __cookie_getEnableBattleForceRecommendation() {
     return value !== "0";
 }
 
+function __cookie_getEquipmentSet(no, id) {
+    let key = "_POCKETROSE_ASSISTANT__EQUIPMENT_SET_" + no + "_" + id;
+    let value = Cookies.get(key);
+    if (value === undefined || value === "") {
+        return ["NONE", "0", "NONE", "0", "NONE", "0"];
+    }
+    let text = unescape(value);
+    return text.split("_");
+}
+
 $(function () {
     replacePkm('pocketrose')
 });
