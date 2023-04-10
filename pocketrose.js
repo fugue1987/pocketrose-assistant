@@ -5,7 +5,7 @@
 // @icon         data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==
 // @license      mit
 // @author       xiaohaiz,fugue
-// @version      1.5.0.RC3
+// @version      1.5.0.RC4
 // @grant        unsafeWindow
 // @match        *://pocketrose.itsns.net.cn/*
 // @require      https://cdn.bootcdn.net/ajax/libs/jquery/3.6.4/jquery.min.js
@@ -1445,6 +1445,9 @@ function __battle(htmlText) {
         $('#innButton').parent().remove();
         $('#bankButton').parent().remove();
         $('#returnButton').parent().remove();
+        if (__cookie_getEnableBattleForceRecommendation()) {
+            $("#blacksmithButton").focus();
+        }
         if (__cookie_getEnableBattleAutoScroll()) {
             document.getElementById("blacksmithButton").scrollIntoView();
         }
@@ -1458,6 +1461,7 @@ function __battle(htmlText) {
             $('#returnButton').parent().remove();
             if (__cookie_getEnableBattleForceRecommendation()) {
                 $('#bankButton').parent().remove();
+                $("#innButton").focus();
             }
             if (__cookie_getEnableBattleAutoScroll()) {
                 document.getElementById("innButton").scrollIntoView();
@@ -1469,6 +1473,7 @@ function __battle(htmlText) {
             $('#returnButton').parent().remove();
             if (__cookie_getEnableBattleForceRecommendation()) {
                 $('#innButton').parent().remove();
+                $("#bankButton").focus();
             }
             if (__cookie_getEnableBattleAutoScroll()) {
                 document.getElementById("bankButton").scrollIntoView();
@@ -1480,6 +1485,7 @@ function __battle(htmlText) {
             if (__cookie_getEnableBattleForceRecommendation()) {
                 $('#innButton').parent().remove();
                 $('#bankButton').parent().remove();
+                $("#returnButton").focus();
             }
             if (__cookie_getEnableBattleAutoScroll()) {
                 document.getElementById("returnButton").scrollIntoView();
