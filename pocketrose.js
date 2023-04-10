@@ -2742,23 +2742,28 @@ function __personalStatus_equipment(htmlText) {
         "</li>");
     __page_writeNpcMessage("<li>" +
         "<a href='javascript:void(0)' id='prepareSetA' style='color:yellow'><b>一键准备套装A</b></a>   " +
-        "<a href='javascript:void(0)' id='useSetA' style='color:yellow'><b>一键装备套装A</b></a>" +
+        "<a href='javascript:void(0)' id='useSetA' style='color:yellow'><b>一键装备套装A</b></a>   " +
+        ____format_set_text("A", id) +
         "</li>");
     __page_writeNpcMessage("<li>" +
         "<a href='javascript:void(0)' id='prepareSetB' style='color:yellow'><b>一键准备套装B</b></a>   " +
-        "<a href='javascript:void(0)' id='useSetB' style='color:yellow'><b>一键装备套装B</b></a>" +
+        "<a href='javascript:void(0)' id='useSetB' style='color:yellow'><b>一键装备套装B</b></a>   " +
+        ____format_set_text("B", id) +
         "</li>");
     __page_writeNpcMessage("<li>" +
         "<a href='javascript:void(0)' id='prepareSetC' style='color:yellow'><b>一键准备套装C</b></a>   " +
-        "<a href='javascript:void(0)' id='useSetC' style='color:yellow'><b>一键装备套装C</b></a>" +
+        "<a href='javascript:void(0)' id='useSetC' style='color:yellow'><b>一键装备套装C</b></a>   " +
+        ____format_set_text("C", id) +
         "</li>");
     __page_writeNpcMessage("<li>" +
         "<a href='javascript:void(0)' id='prepareSetD' style='color:yellow'><b>一键准备套装D</b></a>   " +
-        "<a href='javascript:void(0)' id='useSetD' style='color:yellow'><b>一键装备套装D</b></a>" +
+        "<a href='javascript:void(0)' id='useSetD' style='color:yellow'><b>一键装备套装D</b></a>   " +
+        ____format_set_text("D", id) +
         "</li>");
     __page_writeNpcMessage("<li>" +
         "<a href='javascript:void(0)' id='prepareSetE' style='color:yellow'><b>一键准备套装E</b></a>   " +
-        "<a href='javascript:void(0)' id='useSetE' style='color:yellow'><b>一键装备套装E</b></a>" +
+        "<a href='javascript:void(0)' id='useSetE' style='color:yellow'><b>一键装备套装E</b></a>   " +
+        ____format_set_text("E", id) +
         "</li>");
 
     if (treasureMapLocatedAtCity.length > 0) {
@@ -2904,6 +2909,38 @@ function __personalStatus_equipment(htmlText) {
             set[2], set[3] !== "0",
             set[4], set[5] !== "0");
     });
+}
+
+function ____format_set_text(no, id) {
+    let set = __cookie_getEquipmentSet(no, id);
+    let text = "";
+    if (set[0] === "NONE") {
+        text += "无";
+    } else {
+        if (set[1] !== "0") {
+            text += "齐心★";
+        }
+        text += set[0];
+    }
+    text += "/";
+    if (set[2] === "NONE") {
+        text += "无";
+    } else {
+        if (set[3] !== "0") {
+            text += "齐心★";
+        }
+        text += set[2];
+    }
+    text += "/";
+    if (set[4] === "NONE") {
+        text += "无";
+    } else {
+        if (set[5] !== "0") {
+            text += "齐心★";
+        }
+        text += set[4];
+    }
+    return "[" + text + "]";
 }
 
 function __personalStatus_equipment_prepareItems(id, pass, treasureBagIndex,
