@@ -1437,7 +1437,9 @@ function __battle(htmlText) {
         $('#innButton').parent().remove();
         $('#bankButton').parent().remove();
         $('#returnButton').parent().remove();
-        document.getElementById("blacksmithButton").scrollIntoView();
+        if (__cookie_getEnableBattleAutoScroll()) {
+            document.getElementById("blacksmithButton").scrollIntoView();
+        }
     } else {
         // 不需要修理按钮
         $('#blacksmithButton').parent().remove();
@@ -1446,18 +1448,24 @@ function __battle(htmlText) {
             // 住宿优先
             $("#innButton").attr('tabIndex', 1);
             $('#returnButton').parent().remove();
-            document.getElementById("innButton").scrollIntoView();
+            if (__cookie_getEnableBattleAutoScroll()) {
+                document.getElementById("innButton").scrollIntoView();
+            }
         }
         if (returnCode === 2) {
             // 存钱优先
             $("#bankButton").attr('tabIndex', 1);
             $('#returnButton').parent().remove();
-            document.getElementById("bankButton").scrollIntoView();
+            if (__cookie_getEnableBattleAutoScroll()) {
+                document.getElementById("bankButton").scrollIntoView();
+            }
         }
         if (returnCode === 3) {
             // 返回优先
             $("#returnButton").attr('tabIndex', 1);
-            document.getElementById("returnButton").scrollIntoView();
+            if (__cookie_getEnableBattleAutoScroll()) {
+                document.getElementById("returnButton").scrollIntoView();
+            }
         }
     }
 }
