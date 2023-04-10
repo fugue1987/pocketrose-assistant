@@ -2458,7 +2458,6 @@ function __personalStatus_equipment_prepareItems(id, pass, treasureBagIndex,
                                                  weaponName, weaponStar,
                                                  armorName, armorStar,
                                                  accessoryName, accessoryStar) {
-    // 准备装备的名称（根据是否有齐心来生成）
     let weaponNameForUse = weaponName;
     if (weaponStar) {
         weaponNameForUse = "齐心★" + weaponNameForUse;
@@ -2529,6 +2528,73 @@ function __personalStatus_equipment_prepareItems(id, pass, treasureBagIndex,
                     $("#returnButton").trigger("click");
                 });
             }
+        });
+    }
+}
+
+/**
+ * 装备指定的套装
+ * @param id ID
+ * @param pass PASS
+ * @param weaponName 武器名
+ * @param weaponStar 是否齐心武器
+ * @param armorName 防具名
+ * @param armorStar 是否齐心防具
+ * @param accessoryName 饰品名
+ * @param accessoryStar 是否齐心饰品
+ * @private
+ */
+function ____use_equipment_set(id, pass,
+                               weaponName, weaponStar,
+                               armorName, armorStar,
+                               accessoryName, accessoryStar) {
+    let weaponNameForUse = weaponName;
+    if (weaponStar) {
+        weaponNameForUse = "齐心★" + weaponNameForUse;
+    }
+    let armorNameForUse = armorName;
+    if (armorStar) {
+        armorNameForUse = "齐心★" + armorNameForUse;
+    }
+    let accessoryNameForUse = accessoryName;
+    if (accessoryStar) {
+        accessoryNameForUse = "齐心★" + accessoryNameForUse;
+    }
+    let weaponIndex = -1;
+    let armorIndex = -1;
+    let accessoryIndex = -1;
+    $("input:checkbox").each(function (_idx, checkbox) {
+        let name = $(checkbox).parent().next().next().text();
+        let category = $(checkbox).parent().next().next().next().text();
+        if (category === "武器" && (weaponNameForUse === name || weaponNameForUse === "[满]" + name)) {
+            weaponIndex = $(checkbox).val();
+        }
+        if (category === "防具" && (armorNameForUse === name || armorNameForUse === "[满]" + name)) {
+            armorIndex = $(checkbox).val();
+        }
+        if (category === "饰品" && (accessoryNameForUse === name || accessoryNameForUse === "[满]" + name)) {
+            accessoryIndex = $(checkbox).val();
+        }
+    });
+    if (weaponIndex >= 0 || armorIndex >= 0 || accessoryIndex >= 0) {
+        let request = {};
+        request["id"] = id;
+        request["pass"] = pass;
+        request["chara"] = "1";
+        request["mode"] = "USE"
+        if (weaponIndex >= 0) {
+            request["item" + weaponIndex] = weaponIndex;
+        }
+        if (armorIndex >= 0) {
+            request["item" + armorIndex] = armorIndex;
+        }
+        if (accessoryIndex >= 0) {
+            request["item" + accessoryIndex] = accessoryIndex;
+        }
+        $.post("mydata.cgi", request, function (html) {
+            $("input:hidden[value='STATUS']").attr("value", "USE_ITEM");
+            $("form[action='status.cgi']").attr("action", "mydata.cgi");
+            $("#returnButton").trigger("click");
         });
     }
 }
