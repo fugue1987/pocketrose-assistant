@@ -2206,7 +2206,7 @@ function __personalStatus_cookieManagement(htmlText) {
     h1 += "<option class='set1_weapon_star_class' value='1'>齐心</option>";
     h1 += "</select>";
     h1 += "<select name='set1_weapon' id='set1_weapon'>";
-    h1 += "<option class='set1_weapon_class' value='NONE'>---</option>";
+    h1 += "<option class='set1_weapon_class' value='NONE'>★ 选择武器 ★</option>";
     for (let i = 0; i < _WEAPON_DICT.length; i++) {
         let weapon = _WEAPON_DICT[i];
         h1 += "<option class='set1_weapon_class' value='" + weapon + "'>" + weapon + "</option>";
@@ -2217,7 +2217,7 @@ function __personalStatus_cookieManagement(htmlText) {
     h1 += "<option class='set1_armor_star_class' value='1'>齐心</option>";
     h1 += "</select>";
     h1 += "<select name='set1_armor' id='set1_armor'>";
-    h1 += "<option class='set1_armor_class' value='NONE'>---</option>";
+    h1 += "<option class='set1_armor_class' value='NONE'>★ 选择防具 ★</option>";
     for (let i = 0; i < _ARMOR_DICT.length; i++) {
         let armor = _ARMOR_DICT[i];
         h1 += "<option class='set1_armor_class' value='" + armor + "'>" + armor + "</option>";
@@ -2228,7 +2228,7 @@ function __personalStatus_cookieManagement(htmlText) {
     h1 += "<option class='set1_accessory_star_class' value='1'>齐心</option>";
     h1 += "</select>";
     h1 += "<select name='set1_accessory' id='set1_accessory'>";
-    h1 += "<option class='set1_accessory_class' value='NONE'>---</option>";
+    h1 += "<option class='set1_accessory_class' value='NONE'>★ 选择饰品 ★</option>";
     for (let i = 0; i < _ACCESSORY_DICT.length; i++) {
         let accessory = _ACCESSORY_DICT[i];
         h1 += "<option class='set1_accessory_class' value='" + accessory + "'>" + accessory + "</option>";
