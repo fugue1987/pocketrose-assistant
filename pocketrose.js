@@ -2015,6 +2015,17 @@ function __personalStatus_cookieManagement(htmlText) {
     s3 += "</select>";
     __page_writeNpcMessage("<li>掉血后自动住宿 " + s3 + " <a href='javascript:void(0)' id='a3'>设置</a></li>");
 
+    let b10 = __cookie_getManaLoseAutoLodgePoint();
+    let s10 = "<select name='s10' id='s10'>";
+    s10 += "<option class='o10' value='10'>10PP</option>";
+    s10 += "<option class='o10' value='20'>20PP</option>";
+    s10 += "<option class='o10' value='50'>50PP</option>";
+    s10 += "<option class='o10' value='100'>100PP</option>";
+    s10 += "<option class='o10' value='200'>200PP</option>";
+    s10 += "<option class='o10' value='500'>500PP</option>";
+    s10 += "</select>";
+    __page_writeNpcMessage("<li>掉魔后自动住宿 " + s10 + " <a href='javascript:void(0)' id='a10'>设置</a></li>");
+
     let b4 = __cookie_getRepairItemThreshold();
     let s4 = "<select name='s4' id='s4'>";
     s4 += "<option class='o4' value='10'>耐久10</option>";
@@ -2052,6 +2063,7 @@ function __personalStatus_cookieManagement(htmlText) {
     $(".o1[value='" + Number(b1) + "']").prop("selected", true);
     $(".o2[value='" + Number(b2) + "']").prop("selected", true);
     $(".o3[value='" + b3 + "']").prop("selected", true);
+    $(".o10[value='" + b10 + "']").prop("selected", true);
     $(".o4[value='" + b4 + "']").prop("selected", true);
     $(".o5[value='" + b5 + "']").prop("selected", true);
 
@@ -2069,6 +2081,12 @@ function __personalStatus_cookieManagement(htmlText) {
     });
     $("#a3").click(function () {
         Cookies.set("_POCKETROSE_ASSISTANT__HEALTH_LOSE_AUTO_LODGE_RATIO", $("#s3").val(), {expires: 36500});
+        $("form[action='status.cgi']").attr("action", "mydata.cgi");
+        $("input:hidden[value='STATUS']").attr("value", "LETTER");
+        $("#returnButton").trigger("click");
+    });
+    $("#a10").click(function () {
+        Cookies.set("_POCKETROSE_ASSISTANT__MANA_LOSE_AUTO_LODGE_POINT", $("#s10").val(), {expires: 36500});
         $("form[action='status.cgi']").attr("action", "mydata.cgi");
         $("input:hidden[value='STATUS']").attr("value", "LETTER");
         $("#returnButton").trigger("click");
