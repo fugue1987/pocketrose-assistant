@@ -2245,6 +2245,13 @@ function __personalStatus_cookieManagement(htmlText) {
     $(".o11[value='" + Number(b11) + "']").prop("selected", true);
     $(".o12[value='" + Number(b12) + "']").prop("selected", true);
 
+    $(".set1_weapon_star_class[value='" + set1[1] + "']").prop("selected", true);
+    $(".set1_weapon_class[value='" + set1[0] + "']").prop("selected", true);
+    $(".set1_armor_star_class[value='" + set1[3] + "']").prop("selected", true);
+    $(".set1_armor_class[value='" + set1[2] + "']").prop("selected", true);
+    $(".set1_accessory_star_class[value='" + set1[5] + "']").prop("selected", true);
+    $(".set1_accessory_class[value='" + set1[4] + "']").prop("selected", true);
+
     $("#a1").click(function () {
         Cookies.set("_POCKETROSE_ASSISTANT__ENABLE_POKEMON_WIKI", $("#s1").val(), {expires: 36500});
         $("form[action='status.cgi']").attr("action", "mydata.cgi");
@@ -2339,8 +2346,8 @@ function __personalStatus_cookieManagement(htmlText) {
         let p2 = $("#set1_weapon_star").val();
         let p3 = $("#set1_armor").val();
         let p4 = $("#set1_armor_star").val();
-        let p5 = $("#set1_armor").val();
-        let p6 = $("#set1_armor_star").val();
+        let p5 = $("#set1_accessory").val();
+        let p6 = $("#set1_accessory_star").val();
 
         let value = p1 + "_" + p2 + "_" + p3 + "_" + p4 + "_" + p5 + "_" + p6;
         value = escape(value);
