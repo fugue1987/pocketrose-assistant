@@ -2393,7 +2393,8 @@ function __personalStatus_equipment(htmlText) {
         __page_writeNpcMessage("<li><a href='javascript:void(0)' id='exchangeTreasureMaps' style='color:yellow'><b>一键更换所有的城市藏宝图</b></a></li>");
     }
     __page_writeNpcMessage("<li><a href='javascript:void(0)' id='unloadAllEquipments' style='color:yellow'><b>一键卸下所有装备</b></a></li>");
-    __page_writeNpcMessage("<li><a href='javascript:void(0)' id='prepareChocolateSet' style='color:yellow'><b>一键准备巧克力套装</b></a></li>");
+    __page_writeNpcMessage("<li><a href='javascript:void(0)' id='prepareChocolateSet' style='color:yellow'><b>一键准备巧克力套装</b></a> " +
+        "<a href='javascript:void(0)' id='useChocolateSet' style='color:yellow'><b>一键装备巧克力套装</b></a></li>");
 
     if (treasureMapLocatedAtCity.length > 0) {
         $("#exchangeTreasureMaps").click(function () {
@@ -2452,6 +2453,12 @@ function __personalStatus_equipment(htmlText) {
             "2015.01.29十周年纪念", false,
             "2015.02.14情人节玫瑰", false);
     });
+    $("#useChocolateSet").click(function () {
+        ____use_equipment_set(id, pass,
+            "2015.02.14情人节巧克力", false,
+            "2015.01.29十周年纪念", false,
+            "2015.02.14情人节玫瑰", false);
+    });
 }
 
 function __personalStatus_equipment_prepareItems(id, pass, treasureBagIndex,
@@ -2477,13 +2484,13 @@ function __personalStatus_equipment_prepareItems(id, pass, treasureBagIndex,
     $("input:checkbox").each(function (_idx, checkbox) {
         let name = $(checkbox).parent().next().next().text();
         let category = $(checkbox).parent().next().next().next().text();
-        if (category === "武器" && (weaponNameForUse === name || weaponNameForUse === "[满]" + name)) {
+        if (category === "武器" && (weaponNameForUse === name || "[满]" + weaponNameForUse === name)) {
             weaponFound = true;
         }
-        if (category === "防具" && (armorNameForUse === name || armorNameForUse === "[满]" + name)) {
+        if (category === "防具" && (armorNameForUse === name || "[满]" + armorNameForUse === name)) {
             armorFound = true;
         }
-        if (category === "饰品" && (accessoryNameForUse === name || accessoryNameForUse === "[满]" + name)) {
+        if (category === "饰品" && (accessoryNameForUse === name || "[满]" + accessoryNameForUse === name)) {
             accessoryFound = true;
         }
     });
@@ -2495,15 +2502,15 @@ function __personalStatus_equipment_prepareItems(id, pass, treasureBagIndex,
             $(html).find("input:checkbox").each(function (_idx, checkbox) {
                 let name = $(checkbox).parent().next().text();
                 let category = $(checkbox).parent().next().next().text();
-                if (!weaponFound && category === "武器" && (weaponNameForUse === name || weaponNameForUse === "[满]" + name)) {
+                if (!weaponFound && category === "武器" && (weaponNameForUse === name || "[满]" + weaponNameForUse === name)) {
                     weaponIndex = $(checkbox).val();
                     weaponFound = true;
                 }
-                if (!armorFound && category === "防具" && (armorNameForUse === name || armorNameForUse === "[满]" + name)) {
+                if (!armorFound && category === "防具" && (armorNameForUse === name || "[满]" + armorNameForUse === name)) {
                     armorIndex = $(checkbox).val();
                     armorFound = true;
                 }
-                if (!accessoryFound && category === "饰品" && (accessoryNameForUse === name || accessoryNameForUse === "[满]" + name)) {
+                if (!accessoryFound && category === "饰品" && (accessoryNameForUse === name || "[满]" + accessoryNameForUse === name)) {
                     accessoryIndex = $(checkbox).val();
                     accessoryFound = true;
                 }
@@ -2566,13 +2573,13 @@ function ____use_equipment_set(id, pass,
     $("input:checkbox").each(function (_idx, checkbox) {
         let name = $(checkbox).parent().next().next().text();
         let category = $(checkbox).parent().next().next().next().text();
-        if (category === "武器" && (weaponNameForUse === name || weaponNameForUse === "[满]" + name)) {
+        if (category === "武器" && (weaponNameForUse === name || "[满]" + weaponNameForUse === name)) {
             weaponIndex = $(checkbox).val();
         }
-        if (category === "防具" && (armorNameForUse === name || armorNameForUse === "[满]" + name)) {
+        if (category === "防具" && (armorNameForUse === name || "[满]" + armorNameForUse === name)) {
             armorIndex = $(checkbox).val();
         }
-        if (category === "饰品" && (accessoryNameForUse === name || accessoryNameForUse === "[满]" + name)) {
+        if (category === "饰品" && (accessoryNameForUse === name || "[满]" + accessoryNameForUse === name)) {
             accessoryIndex = $(checkbox).val();
         }
     });
