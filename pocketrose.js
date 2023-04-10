@@ -821,6 +821,14 @@ function __cookie_getHealthLoseAutoLodgeRatio() {
     return parseFloat(value);
 }
 
+function __cookie_getManaLoseAutoLodgePoint() {
+    let value = Cookies.get("_POCKETROSE_ASSISTANT__MANA_LOSE_AUTO_LODGE_POINT");
+    if (value === undefined) {
+        return 100;
+    }
+    return parseInt(value);
+}
+
 function __cookie_getRepairItemThreshold() {
     let value = Cookies.get("_POCKETROSE_ASSISTANT__REPAIR_ITEM_THRESHOLD");
     if (value === undefined) {
