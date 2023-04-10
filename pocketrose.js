@@ -2325,11 +2325,21 @@ function __personalStatus_treasureBag(htmlText) {
         let category = $(td).next().next().text();
         let power = $(td).next().next().next().text();
         let exp = $(td).next().next().next().next().next().next().next().next().next().text();
-        if (category == "武器" || category == "防具" || category == "饰品") {
+        if (category === "武器" || category === "防具" || category === "饰品") {
             if (__utilities_checkIfEquipmentFullExperience(name, power, exp)) {
                 let nameHtml = $(td).next().html();
                 nameHtml = "<font color='red'><b>[满]</b></font>" + nameHtml;
                 $(td).next().html(nameHtml);
+            }
+        }
+        if (category === "物品" && name.indexOf("藏宝图") !== -1) {
+            let x = power;
+            let y = $(td).next().next().next().next().text();
+            if (__isCityCoordinate(parseInt(x), parseInt(y))) {
+                let nameHtml = $(inputTableCell).next().next().html();
+                nameHtml = "<font color='red'><b>[城]</b></font>" + nameHtml;
+                $(inputTableCell).next().next().html(nameHtml);
+                treasureMapLocatedAtCity.push([$(inputElement).attr("name"), $(inputElement).val()]);
             }
         }
     });
