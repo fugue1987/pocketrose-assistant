@@ -1,11 +1,11 @@
 // ==UserScript==
-// @name         pocketrose assistant (DEV)
+// @name         pocketrose assistant
 // @namespace    https://pocketrose.itsns.net.cn/
 // @description  Intercepts and modifies pocketrose CGI requests
 // @icon         data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==
 // @license      mit
 // @author       xiaohaiz,fugue
-// @version      1.5.0.RC2
+// @version      1.5.0.RC3
 // @grant        unsafeWindow
 // @match        *://pocketrose.itsns.net.cn/*
 // @require      https://cdn.bootcdn.net/ajax/libs/jquery/3.6.4/jquery.min.js
@@ -889,6 +889,14 @@ function __cookie_getEnableBattleAutoScroll() {
     return value !== "0";
 }
 
+function __cookie_getEnableBattleForceRecommendation() {
+    let value = Cookies.get("_POCKETROSE_ASSISTANT__ENABLE_BATTLE_FORCE_RECOMMENDATION");
+    if (value === undefined) {
+        return false;
+    }
+    return value !== "0";
+}
+
 $(function () {
     replacePkm('pocketrose')
 });
@@ -1448,6 +1456,9 @@ function __battle(htmlText) {
             // 住宿优先
             $("#innButton").attr('tabIndex', 1);
             $('#returnButton').parent().remove();
+            if (__cookie_getEnableBattleForceRecommendation()) {
+                $('#bankButton').parent().remove();
+            }
             if (__cookie_getEnableBattleAutoScroll()) {
                 document.getElementById("innButton").scrollIntoView();
             }
@@ -1456,6 +1467,9 @@ function __battle(htmlText) {
             // 存钱优先
             $("#bankButton").attr('tabIndex', 1);
             $('#returnButton').parent().remove();
+            if (__cookie_getEnableBattleForceRecommendation()) {
+                $('#innButton').parent().remove();
+            }
             if (__cookie_getEnableBattleAutoScroll()) {
                 document.getElementById("bankButton").scrollIntoView();
             }
@@ -1463,6 +1477,10 @@ function __battle(htmlText) {
         if (returnCode === 3) {
             // 返回优先
             $("#returnButton").attr('tabIndex', 1);
+            if (__cookie_getEnableBattleForceRecommendation()) {
+                $('#innButton').parent().remove();
+                $('#bankButton').parent().remove();
+            }
             if (__cookie_getEnableBattleAutoScroll()) {
                 document.getElementById("returnButton").scrollIntoView();
             }
@@ -2116,6 +2134,13 @@ function __personalStatus_cookieManagement(htmlText) {
     s11 += "</select>";
     __page_writeNpcMessage("<li>战斗页自动触底 " + s11 + " <a href='javascript:void(0)' id='a11'>设置</a></li>");
 
+    let b12 = __cookie_getEnableBattleForceRecommendation();
+    let s12 = "<select name='s12' id='s12'>";
+    s12 += "<option class='o12' value='1'>启用</option>";
+    s12 += "<option class='o12' value='0'>禁用</option>";
+    s12 += "</select>";
+    __page_writeNpcMessage("<li>战斗后强制推荐 " + s12 + " <a href='javascript:void(0)' id='a12'>设置</a></li>");
+
     $(".o1[value='" + Number(b1) + "']").prop("selected", true);
     $(".o2[value='" + Number(b2) + "']").prop("selected", true);
     $(".o3[value='" + b3 + "']").prop("selected", true);
@@ -2123,6 +2148,7 @@ function __personalStatus_cookieManagement(htmlText) {
     $(".o4[value='" + b4 + "']").prop("selected", true);
     $(".o5[value='" + b5 + "']").prop("selected", true);
     $(".o11[value='" + Number(b11) + "']").prop("selected", true);
+    $(".o12[value='" + Number(b12) + "']").prop("selected", true);
 
     $("#a1").click(function () {
         Cookies.set("_POCKETROSE_ASSISTANT__ENABLE_POKEMON_WIKI", $("#s1").val(), {expires: 36500});
@@ -2202,6 +2228,12 @@ function __personalStatus_cookieManagement(htmlText) {
     });
     $("#a11").click(function () {
         Cookies.set("_POCKETROSE_ASSISTANT__ENABLE_BATTLE_AUTO_SCROLL", $("#s11").val(), {expires: 36500});
+        $("form[action='status.cgi']").attr("action", "mydata.cgi");
+        $("input:hidden[value='STATUS']").attr("value", "LETTER");
+        $("#returnButton").trigger("click");
+    });
+    $("#a12").click(function () {
+        Cookies.set("_POCKETROSE_ASSISTANT__ENABLE_BATTLE_FORCE_RECOMMENDATION", $("#s12").val(), {expires: 36500});
         $("form[action='status.cgi']").attr("action", "mydata.cgi");
         $("input:hidden[value='STATUS']").attr("value", "LETTER");
         $("#returnButton").trigger("click");
