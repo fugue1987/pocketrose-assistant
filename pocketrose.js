@@ -1044,8 +1044,21 @@ function __utilities_checkIfEquipmentFullExperience(name, power, experience) {
 // 通用辅助功能函数实现
 // ============================================================================
 
+function __lookupTownIdByName(townName) {
+    let cityIds = Object.keys(_CITY_DICT);
+    for (let i = 0; i < cityIds.length; i++) {
+        let id = cityIds[i];
+        let city = _CITY_DICT[id];
+        let cityName = city["name"];
+        if (cityName.indexOf(townName) !== -1) {
+            return id;
+        }
+    }
+    return undefined;
+}
+
 function __isCityCoordinate(x, y) {
-    let cityIds = Object.keys(_CITY_DICT)
+    let cityIds = Object.keys(_CITY_DICT);
     for (let i = 0; i < cityIds.length; i++) {
         let id = cityIds[i];
         let city = _CITY_DICT[id];
@@ -1125,35 +1138,24 @@ function convertEncodingToUtf8(response, fromEncoding) {
  * @private
  */
 function __ajax_readPersonalInformation(id, pass, callback) {
-    // fetch("mydata.cgi", {
-    //     method: "POST",
-    //     headers: {
-    //         "Content-Type": "application/x-www-form-urlencoded",
-    //     },
-    //     body: new URLSearchParams({id: id, pass: pass, mode: "STATUS_PRINT"}),
-    // })
-    //     .then((response) => {
-    //         if (!response.ok) {
-    //             throw new Error("Network response was not ok");
-    //         }
-    //         return response.arrayBuffer();
-    //     })
-    //     .then((arrayBuffer) => {
-    //         const fromEncoding = "gb2312";
-    //         const decoder = new TextDecoder(fromEncoding);
-    //         const utf8Response = decoder.decode(new Uint8Array(arrayBuffer));
-    //         // 现在 utf8Response 应该是正确编码的 HTML，继续处理它
-    //     })
-    //     .catch((error) => {
-    //         console.error("Fetch error:", error);
-    //     });
+    fetch("mydata.cgi", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: new URLSearchParams({id: id, pass: pass, mode: "STATUS_PRINT"}),
+    })
+        .then((response) => {
+            if (!response.ok) {
+                throw new Error("Posting STATUS_PRINT was not ok");
+            }
+            return response.arrayBuffer();
+        })
+        .then((arrayBuffer) => {
+            const decoder = new TextDecoder("gb2312");
+            const html = decoder.decode(new Uint8Array(arrayBuffer));
 
-    $.ajax({
-        type: "POST",
-        url: "mydata.cgi",
-        data: {id: id, pass: pass, mode: 'STATUS_PRINT'},
-        success: function (data) {
-            let statusTable = $(data).find('table').first().find('table').first();
+            let statusTable = $(html).find('table').first().find('table').first();
             let levelText = $(statusTable.find('td')[1]).text();
             let level = "";
             for (let i = 0; i < levelText.length; i++) {
@@ -1172,21 +1174,25 @@ function __ajax_readPersonalInformation(id, pass, callback) {
             let int = $(statusTable.find('td')[17]).text();
             let spi = $(statusTable.find('td')[19]).text();
             let spe = $(statusTable.find('td')[21]).text();
-            let town = $(statusTable.find('td')[31]).text();        // gb2312编码的内容通过ajax请求处理是个讨厌的事情
+            let town = $(statusTable.find('td')[31]).text();
+            let townId = __lookupTownIdByName(town);
             let exp = $(statusTable.find('td')[58]).text();
             let goldText = $(statusTable.find('td')[60]).text();
             let gold = goldText.substring(0, goldText.indexOf(" G"));
 
-            let information = {
+            let data = {
                 "id": id, "pass": pass,
                 "LV": level,
                 "HP": currentHealth, "MAX_HP": maxHealth, "MP": currentMana, "MAX_MP": maxMana,
                 "AT": att, "DF": def, "SA": int, "SD": spi, "SP": spe,
+                "TOWN": town, "TOWN_ID": townId,
                 "EXP": exp, "GOLD": gold
             };
-            callback(information);
-        }
-    });
+            callback(data);
+        })
+        .catch((error) => {
+            console.error("Error raised when posting STATUS_PRINT:", error);
+        });
 }
 
 /**
