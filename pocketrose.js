@@ -2336,10 +2336,9 @@ function __personalStatus_treasureBag(htmlText) {
             let x = power;
             let y = $(td).next().next().next().next().text();
             if (__isCityCoordinate(parseInt(x), parseInt(y))) {
-                let nameHtml = $(inputTableCell).next().next().html();
+                let nameHtml = $(td).next().html();
                 nameHtml = "<font color='red'><b>[城]</b></font>" + nameHtml;
-                $(inputTableCell).next().next().html(nameHtml);
-                treasureMapLocatedAtCity.push([$(inputElement).attr("name"), $(inputElement).val()]);
+                $(td).next().html(nameHtml);
             }
         }
     });
