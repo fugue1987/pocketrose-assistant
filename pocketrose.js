@@ -295,6 +295,10 @@ const _NPC_DICT = {
     '七七': {
         'image': POCKETROSE_DOMAIN + '/image/head/1368.gif',
         'intro': ''
+    },
+    '妮可': {
+        'image': POCKETROSE_DOMAIN + '/image/head/4237.gif',
+        'intro': ''
     }
 };
 
@@ -1239,15 +1243,20 @@ function __ajax_depositAllGolds(id, pass, callback) {
  * @private
  */
 function __ajax_withdrawGolds(id, pass, amount, callback) {
-    $.ajax({
-        type: "POST",
-        url: "town.cgi",
-        data: {id: id, pass: pass, mode: "BANK_BUY", dasu: amount},
-        success: function (html) {
-            let data = {id: id, pass: pass};
-            callback(data);
-        }
-    });
+    if (amount <= 0) {
+        let data = {id: id, pass: pass};
+        callback(data);
+    } else {
+        $.ajax({
+            type: "POST",
+            url: "town.cgi",
+            data: {id: id, pass: pass, mode: "BANK_BUY", dasu: amount},
+            success: function (html) {
+                let data = {id: id, pass: pass};
+                callback(data);
+            }
+        });
+    }
 }
 
 function __common_item_selectBag(parentElement) {
@@ -2185,24 +2194,36 @@ function __personalStatus_view(htmlText) {
 
 // 个人状态 -> 物品使用．装备
 function __personalStatus_equipment(htmlText) {
+    __page_constructNpcMessageTable("妮可");
+    __page_writeNpcMessage("快捷简单的操作谁又会不喜欢呢？");
+
+    $("input:submit[value='返回上个画面']").attr("id", "returnButton");
+    let id = __page_readIdFromCurrentPage();
+    let pass = __page_readPassFromCurrentPage();
+
+    let cash = 0;
     $("td:parent").each(function (_i, e) {
-        if ($(e).text() == "所持金") {
+        if ($(e).text() === "所持金") {
+            let cashText = $(e).next().text();
+            cash = cashText.substring(0, cashText.indexOf(" "));
             $(e).parent().parent().append("<tr><td colspan='6' bgcolor='#E8E8D0' id='extMenuLocation'></td></tr>");
         }
     });
-    var extMenu = "";
+
+    let extMenu = "";
     extMenu += "<li><a href='javascript:void(0)' id='goIntoBag'>进入百宝袋</a></li>"
     extMenu += "<li><a href='javascript:void(0)' id='goIntoCage'>进入黄金笼子</a></li>"
     extMenu += "<li><a href='javascript:void(0)' id='putAllGemsIntoBag'>所有的宝石放入百宝袋</a></li>"
     extMenu += "<li><a href='javascript:void(0)' id='putAllItemsIntoBag'>所有非必要装备/物品放入百宝袋</a></li>"
     $("#extMenuLocation").html(extMenu);
 
+    let treasureMapLocatedAtCity = [];
     $("input[type='checkbox']").each(function (_idx, inputElement) {
         let inputTableCell = $(inputElement).parent();
+        let name = $(inputTableCell).next().next().text();
         let category = $(inputTableCell).next().next().next().text();
-        if (category == "武器" || category == "防具" || category == "饰品") {
+        if (category === "武器" || category === "防具" || category === "饰品") {
             // 计算装备满级所需要的最高经验
-            let name = $(inputTableCell).next().next().text();
             let power = $(inputTableCell).next().next().next().next().text();
             let currentExp = $(inputTableCell).next().next().next().next()
                 .next().next().next().next()
@@ -2213,6 +2234,17 @@ function __personalStatus_equipment(htmlText) {
                 let nameHtml = $(inputTableCell).next().next().html();
                 nameHtml = "<font color='red'><b>[满]</b></font>" + nameHtml;
                 $(inputTableCell).next().next().html(nameHtml);
+            }
+        }
+        if (category === "物品" && name.indexOf("藏宝图") !== -1) {
+            // Process 藏宝图 related enhancement.
+            let x = $(inputTableCell).next().next().next().next().text();
+            let y = $(inputTableCell).next().next().next().next().next().text();
+            if (__isCityCoordinate(parseInt(x), parseInt(y))) {
+                let nameHtml = $(inputTableCell).next().next().html();
+                nameHtml = "<font color='red'><b>[城]</b></font>" + nameHtml;
+                $(inputTableCell).next().next().html(nameHtml);
+                treasureMapLocatedAtCity.push([$(inputElement).attr("name"), $(inputElement).val()]);
             }
         }
     });
@@ -2252,6 +2284,33 @@ function __personalStatus_equipment(htmlText) {
             $("input[value='确定']").trigger("click");
         }
     });
+
+    if (treasureMapLocatedAtCity.length > 0) {
+        __page_writeNpcMessage("<li><a href='javascript:void(0)' id='exchangeTreasureMaps'><b>一键更换所有的城市藏宝图</b></a></li>");
+    }
+
+    if (treasureMapLocatedAtCity.length > 0) {
+        $("#exchangeTreasureMaps").click(function () {
+            let amount = 0;
+            if (cash < 100000) {
+                amount = Math.ceil((100000 - cash) / 10000);
+            }
+            __ajax_withdrawGolds(id, pass, amount, function (data) {
+                let request = {};
+                request["id"] = data["id"];
+                request["pass"] = data["pass"];
+                request["mode"] = "CHANGEMAP2";
+                for (let i = 0; i < treasureMapLocatedAtCity.length; i++) {
+                    request[treasureMapLocatedAtCity[i][0]] = treasureMapLocatedAtCity[i][1];
+                }
+                $.post("town.cgi", request, function (html) {
+                    $("input:hidden[value='STATUS']").attr("value", "USE_ITEM");
+                    $("form[action='status.cgi']").attr("action", "mydata.cgi");
+                    $("#returnButton").trigger("click");
+                });
+            });
+        });
+    }
 }
 
 /**

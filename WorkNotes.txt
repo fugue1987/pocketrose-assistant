@@ -74,6 +74,13 @@ PAYLOAD:
   town    ?
   mode    PETBORN
 
+ITEM/EQUIPMENT
+POST: mydata.cgi
+PAYLOAD:
+    id
+    pass
+    town        ?
+    mode        USE_ITEM
 
 转职完成
 POST: mydata.cgi
