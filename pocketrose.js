@@ -2393,7 +2393,7 @@ function __personalStatus_equipment(htmlText) {
         __page_writeNpcMessage("<li><a href='javascript:void(0)' id='exchangeTreasureMaps' style='color:yellow'><b>一键更换所有的城市藏宝图</b></a></li>");
     }
     __page_writeNpcMessage("<li><a href='javascript:void(0)' id='unloadAllEquipments' style='color:yellow'><b>一键卸下所有装备</b></a></li>");
-    __page_writeNpcMessage("<li><a href='javascript:void(0)' id='prepareChocolateSet' style='color:yellow'><b>一键准备巧克力套装</b></a> " +
+    __page_writeNpcMessage("<li><a href='javascript:void(0)' id='prepareChocolateSet' style='color:yellow'><b>一键准备巧克力套装</b></a>   " +
         "<a href='javascript:void(0)' id='useChocolateSet' style='color:yellow'><b>一键装备巧克力套装</b></a></li>");
 
     if (treasureMapLocatedAtCity.length > 0) {
