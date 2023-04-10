@@ -271,6 +271,29 @@ const _CITY_DICT = {
     }
 };
 
+const _WEAPON_DICT = [
+    "魔神器 幻空",
+    "真·圣剑 苍白的正义",
+    "炙雷之斧",
+    "霸邪斧 天煌"
+];
+
+const _ARMOR_DICT = [
+    "地纹玄甲龟斯特奥特斯",
+    "枭之甲",
+    "圣皇铠甲 天威"
+];
+
+const _ACCESSORY_DICT = [
+    "天马",
+    "鬼面",
+    "魔盔 虚无",
+    "神冠 灵通",
+    "龙",
+    "千与千寻",
+    "勿忘我"
+];
+
 const _NPC_DICT = {
     '夜九年': {
         'image': POCKETROSE_DOMAIN + '/image/head/1561.gif',
@@ -2573,13 +2596,14 @@ function ____use_equipment_set(id, pass,
     $("input:checkbox").each(function (_idx, checkbox) {
         let name = $(checkbox).parent().next().next().text();
         let category = $(checkbox).parent().next().next().next().text();
-        if (category === "武器" && (weaponNameForUse === name || "[满]" + weaponNameForUse === name)) {
+        let using = $(checkbox).parent().next().text();
+        if (category === "武器" && using !== "★" && (weaponNameForUse === name || "[满]" + weaponNameForUse === name)) {
             weaponIndex = $(checkbox).val();
         }
-        if (category === "防具" && (armorNameForUse === name || "[满]" + armorNameForUse === name)) {
+        if (category === "防具" && using !== "★" && (armorNameForUse === name || "[满]" + armorNameForUse === name)) {
             armorIndex = $(checkbox).val();
         }
-        if (category === "饰品" && (accessoryNameForUse === name || "[满]" + accessoryNameForUse === name)) {
+        if (category === "饰品" && using !== "★" && (accessoryNameForUse === name || "[满]" + accessoryNameForUse === name)) {
             accessoryIndex = $(checkbox).val();
         }
     });
