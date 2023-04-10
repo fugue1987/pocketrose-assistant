@@ -1524,8 +1524,12 @@ function __battle_checkIfShouldGoToInn(htmlText, recoverItemEndure) {
             maxMana = __utilities_substringAfterSlash(manaText);
         }
     });
-    // 生命力低于最大值的60%，住宿推荐
+    // 生命力低于最大值的配置比例，住宿推荐
     if (health <= maxHealth * __cookie_getHealthLoseAutoLodgeRatio()) {
+        return 1;
+    }
+    // 如果MANA小于50%并且小于配置点数，住宿推荐
+    if (mana <= maxMana * 0.5 && mana <= __cookie_getManaLoseAutoLodgePoint()) {
         return 1;
     }
     if (__cookie_getDepositBattleNumber() > 0) {
