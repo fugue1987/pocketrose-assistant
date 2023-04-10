@@ -2101,12 +2101,20 @@ function __personalStatus_cookieManagement(htmlText) {
     let s9 = "<input type='text' class='o9' name='s9' id='s9' size='48' placeholder='" + b9 + "'>";
     __page_writeNpcMessage("<li>战斗修理的台词 " + s9 + " <a href='javascript:void(0)' id='a9'>设置</a></li>");
 
+    let b11 = __cookie_getEnableBattleAutoScroll();
+    let s11 = "<select name='s11' id='s11'>";
+    s11 += "<option class='o11' value='1'>启用</option>";
+    s11 += "<option class='o11' value='0'>禁用</option>";
+    s11 += "</select>";
+    __page_writeNpcMessage("<li>战斗页自动触底 " + s2 + " <a href='javascript:void(0)' id='a11'>设置</a></li>");
+
     $(".o1[value='" + Number(b1) + "']").prop("selected", true);
     $(".o2[value='" + Number(b2) + "']").prop("selected", true);
     $(".o3[value='" + b3 + "']").prop("selected", true);
     $(".o10[value='" + b10 + "']").prop("selected", true);
     $(".o4[value='" + b4 + "']").prop("selected", true);
     $(".o5[value='" + b5 + "']").prop("selected", true);
+    $(".o11[value='" + Number(b11) + "']").prop("selected", true);
 
     $("#a1").click(function () {
         Cookies.set("_POCKETROSE_ASSISTANT__ENABLE_POKEMON_WIKI", $("#s1").val(), {expires: 36500});
@@ -2180,6 +2188,12 @@ function __personalStatus_cookieManagement(htmlText) {
             text = escape(text);
         }
         Cookies.set("_POCKETROSE_ASSISTANT__REPAIR_BUTTON_TEXT", text, {expires: 36500});
+        $("form[action='status.cgi']").attr("action", "mydata.cgi");
+        $("input:hidden[value='STATUS']").attr("value", "LETTER");
+        $("#returnButton").trigger("click");
+    });
+    $("#a11").click(function () {
+        Cookies.set("_POCKETROSE_ASSISTANT__ENABLE_BATTLE_AUTO_SCROLL", $("#s11").val(), {expires: 36500});
         $("form[action='status.cgi']").attr("action", "mydata.cgi");
         $("input:hidden[value='STATUS']").attr("value", "LETTER");
         $("#returnButton").trigger("click");
