@@ -944,13 +944,26 @@ function __cookie_getEnableBattleForceRecommendation() {
 }
 
 function __cookie_getEquipmentSet(no, id) {
-    let key = "_POCKETROSE_ASSISTANT__EQUIPMENT_SET_" + no + "_" + id;
-    let value = Cookies.get(key);
+    const cookieKey = "_POCKETROSE_ASSISTANT__EQUIPMENT_SET_" + no + "_" + id;
+    return getAndParseCookie(cookieKey, ["NONE", "0", "NONE", "0", "NONE", "0"], function (value) {
+        const text = unescape(value);
+        return text.split("_");
+    });
+}
+
+/**
+ * 读取指定键值的Cookie内容并调用回调函数解析。
+ * @param cookieKey Cookie键值
+ * @param defaultValue 如果没有设置此Cookie时的默认返回值
+ * @param callback 回调函数用于解析Cookie值
+ * @returns {*}
+ */
+function getAndParseCookie(cookieKey, defaultValue, callback) {
+    let value = Cookies.get(cookieKey);
     if (value === undefined || value === "") {
-        return ["NONE", "0", "NONE", "0", "NONE", "0"];
+        return defaultValue;
     }
-    let text = unescape(value);
-    return text.split("_");
+    return callback(value);
 }
 
 $(function () {
