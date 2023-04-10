@@ -2299,6 +2299,21 @@ function __personalStatus_equipment(htmlText) {
         }
     });
 
+    let treasureBagIndex = -1;
+    let goldenCageIndex = -1;
+    $("input[type='checkbox']").each(function (_idx, checkbox) {
+        let name = $(checkbox).parent().next().next().text();
+        let category = $(checkbox).parent().next().next().next().text();
+        if (category === "物品") {
+            if (name === "百宝袋") {
+                treasureBagIndex = $(checkbox).val();
+            }
+            if (name === "黄金笼子") {
+                goldenCageIndex = $(checkbox).val();
+            }
+        }
+    });
+
     let extMenu = "";
     extMenu += "<li><a href='javascript:void(0)' id='goIntoBag'>进入百宝袋</a></li>"
     extMenu += "<li><a href='javascript:void(0)' id='goIntoCage'>进入黄金笼子</a></li>"
@@ -2378,6 +2393,7 @@ function __personalStatus_equipment(htmlText) {
         __page_writeNpcMessage("<li><a href='javascript:void(0)' id='exchangeTreasureMaps' style='color:yellow'><b>一键更换所有的城市藏宝图</b></a></li>");
     }
     __page_writeNpcMessage("<li><a href='javascript:void(0)' id='unloadAllEquipments' style='color:yellow'><b>一键卸下所有装备</b></a></li>");
+    __page_writeNpcMessage("<li><a href='javascript:void(0)' id='prepareChocolateSet' style='color:yellow'><b>一键准备巧克力套装</b></a></li>");
 
     if (treasureMapLocatedAtCity.length > 0) {
         $("#exchangeTreasureMaps").click(function () {
@@ -2429,6 +2445,74 @@ function __personalStatus_equipment(htmlText) {
             });
         }
     });
+    $("#prepareChocolateSet").click(function () {
+        __personalStatus_equipment_prepareItems(
+            id, pass, treasureBagIndex,
+            "2015.02.14情人节巧克力", "2015.01.29十周年纪念", "2015.02.14情人节玫瑰");
+    });
+}
+
+function __personalStatus_equipment_prepareItems(id, pass, treasureBagIndex,
+                                                 weaName, armName, accName) {
+    let weaFound = false;
+    let armFound = false;
+    let accFound = false;
+    $("input:checkbox").each(function (_idx, checkbox) {
+        let name = $(checkbox).parent().next().next().text();
+        let category = $(checkbox).parent().next().next().next().text();
+        if (category === "武器" && name.indexOf(weaName) !== -1) {
+            weaFound = true;
+        }
+        if (category === "防具" && name.indexOf(armName) !== -1) {
+            armFound = true;
+        }
+        if (category === "饰品" && name.indexOf(accName) !== -1) {
+            accFound = true;
+        }
+    });
+    if ((!weaFound || !armFound || !accFound) && treasureBagIndex >= 0) {
+        __ajax_openTreasureBag(id, pass, treasureBagIndex, function (id, pass, html) {
+            let weaIndex = -1;
+            let armIndex = -1;
+            let accIndex = -1;
+            $(html).find("input:checkbox").each(function (_idx, checkbox) {
+                let name = $(checkbox).parent().next().text();
+                let category = $(checkbox).parent().next().next().text();
+                if (!weaFound && category === "武器" && name.indexOf(weaName) !== -1) {
+                    weaIndex = $(checkbox).val();
+                    weaFound = true;
+                }
+                if (!armFound && category === "防具" && name.indexOf(armName) !== -1) {
+                    armIndex = $(checkbox).val();
+                    armFound = true;
+                }
+                if (!accFound && category === "饰品" && name.indexOf(accName) !== -1) {
+                    accIndex = $(checkbox).val();
+                    accFound = true;
+                }
+            });
+            if (weaIndex >= 0 || armIndex >= 0 || accIndex >= 0) {
+                let takeFromBagRequest = {};
+                takeFromBagRequest["id"] = id;
+                takeFromBagRequest["pass"] = pass;
+                takeFromBagRequest["mode"] = "GETOUTBAG";
+                if (weaIndex >= 0) {
+                    takeFromBagRequest["item" + weaIndex] = weaIndex;
+                }
+                if (armIndex >= 0) {
+                    takeFromBagRequest["item" + armIndex] = armIndex;
+                }
+                if (accIndex >= 0) {
+                    takeFromBagRequest["item" + accIndex] = accIndex;
+                }
+                $.post("mydata.cgi", takeFromBagRequest, function (html) {
+                    $("input:hidden[value='STATUS']").attr("value", "USE_ITEM");
+                    $("form[action='status.cgi']").attr("action", "mydata.cgi");
+                    $("#returnButton").trigger("click");
+                });
+            }
+        });
+    }
 }
 
 /**
