@@ -1196,29 +1196,6 @@ function __ajax_readPersonalInformation(id, pass, callback) {
 }
 
 /**
- * 异步读取并解析主页的个人状态，完成后回调传入的函数。
- * @param id ID
- * @param pass PASS
- * @param callback 回调函数
- * @private
- */
-function __ajax_readPersonalStatus(id, pass, callback) {
-    $.ajax({
-        type: "POST",
-        url: "status.cgi",
-        data: {id: id, pass: pass, mode: "STATUS"},
-        success: function (data) {
-            let townId = $(data).find('input[name="town"]:first').attr('value');
-            let status = {
-                "id": id, "pass": pass,
-                "TOWN_ID": townId
-            };
-            callback(status);
-        }
-    });
-}
-
-/**
  * 在客栈住宿恢复
  * @param id ID
  * @param pass PASS
@@ -1996,8 +1973,8 @@ function __city_itemSold(htmlText) {
 
 function __city_itemSold_buildReturnFunction(id, pass) {
     $("#returnARM").click(function () {
-        __ajax_readPersonalStatus(id, pass, function (status) {
-            let townId = status["TOWN_ID"];
+        __ajax_readPersonalInformation(id, pass, function (data) {
+            let townId = data["TOWN_ID"];
             $("form[action='status.cgi']").append("<input type=hidden name=town value=" + townId + ">");
             $("form[action='status.cgi']").append("<input type=hidden name=con_str value=50>");
             $("input[name='mode']").attr("value", "ARM_SHOP");
@@ -2007,8 +1984,8 @@ function __city_itemSold_buildReturnFunction(id, pass) {
         });
     });
     $("#returnPRO").click(function () {
-        __ajax_readPersonalStatus(id, pass, function (status) {
-            let townId = status["TOWN_ID"];
+        __ajax_readPersonalInformation(id, pass, function (data) {
+            let townId = data["TOWN_ID"];
             $("form[action='status.cgi']").append("<input type=hidden name=town value=" + townId + ">");
             $("form[action='status.cgi']").append("<input type=hidden name=con_str value=50>");
             $("input[name='mode']").attr("value", "PRO_SHOP");
@@ -2018,8 +1995,8 @@ function __city_itemSold_buildReturnFunction(id, pass) {
         });
     });
     $("#returnACC").click(function () {
-        __ajax_readPersonalStatus(id, pass, function (status) {
-            let townId = status["TOWN_ID"];
+        __ajax_readPersonalInformation(id, pass, function (data) {
+            let townId = data["TOWN_ID"];
             $("form[action='status.cgi']").append("<input type=hidden name=town value=" + townId + ">");
             $("form[action='status.cgi']").append("<input type=hidden name=con_str value=50>");
             $("input[name='mode']").attr("value", "ACC_SHOP");
@@ -2029,8 +2006,8 @@ function __city_itemSold_buildReturnFunction(id, pass) {
         });
     });
     $("#returnITM").click(function () {
-        __ajax_readPersonalStatus(id, pass, function (status) {
-            let townId = status["TOWN_ID"];
+        __ajax_readPersonalInformation(id, pass, function (data) {
+            let townId = data["TOWN_ID"];
             $("form[action='status.cgi']").append("<input type=hidden name=town value=" + townId + ">");
             $("form[action='status.cgi']").append("<input type=hidden name=con_str value=50>");
             $("input[name='mode']").attr("value", "ITEM_SHOP");
