@@ -1195,6 +1195,36 @@ function __ajax_readPersonalInformation(id, pass, callback) {
         });
 }
 
+function __ajax_openTreasureBag(id, pass, treasureBagIndex, callback) {
+    let openTreasureBagRequest = {};
+    openTreasureBagRequest["id"] = id;
+    openTreasureBagRequest["pass"] = pass;
+    openTreasureBagRequest["chara"] = "1";
+    openTreasureBagRequest["mode"] = "USE";
+    openTreasureBagRequest["item" + treasureBagIndex] = treasureBagIndex;
+    fetch("mydata.cgi", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: new URLSearchParams(openTreasureBagRequest),
+    })
+        .then((response) => {
+            if (!response.ok) {
+                throw new Error("Opening treasure bag was not ok");
+            }
+            return response.arrayBuffer();
+        })
+        .then((arrayBuffer) => {
+            const decoder = new TextDecoder("gb2312");
+            const html = decoder.decode(new Uint8Array(arrayBuffer));
+            callback(id, pass, html);
+        })
+        .catch((error) => {
+            console.error("Error raised when opening treasure bag:", error);
+        });
+}
+
 /**
  * 在客栈住宿恢复
  * @param id ID
