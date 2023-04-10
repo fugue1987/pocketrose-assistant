@@ -1024,6 +1024,22 @@ function __utilities_checkIfEquipmentFullExperience(name, power, experience) {
 // 通用辅助功能函数实现
 // ============================================================================
 
+function __isCityCoordinate(x, y) {
+    let cityIds = Object.keys(_CITY_DICT)
+    for (let i = 0; i < cityIds.length; i++) {
+        let id = cityIds[i];
+        let city = _CITY_DICT[id];
+        if (x === city["x"] && y === city["y"]) {
+            return true;
+        }
+    }
+    return false;
+}
+
+// ============================================================================
+// 通用辅助功能函数实现
+// ============================================================================
+
 /**
  * 在页面的最下方构建一个NPC的消息表格。
  * @param npcName NPC名字，对应字典中的预定义
