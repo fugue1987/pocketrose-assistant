@@ -881,6 +881,14 @@ function __cookie_getRepairButtonText() {
     return unescape(value);
 }
 
+function __cookie_getEnableBattleAutoScroll() {
+    let value = Cookies.get("_POCKETROSE_ASSISTANT__ENABLE_BATTLE_AUTO_SCROLL");
+    if (value === undefined) {
+        return false;
+    }
+    return value !== "0";
+}
+
 $(function () {
     replacePkm('pocketrose')
 });
