@@ -1429,23 +1429,27 @@ function __battle(htmlText) {
         $('#innButton').parent().remove();
         $('#bankButton').parent().remove();
         $('#returnButton').parent().remove();
+        document.getElementById("blacksmithButton").scrollIntoView();
     } else {
         // 不需要修理按钮
         $('#blacksmithButton').parent().remove();
-        var returnCode = __battle_checkIfShouldGoToInn(htmlText, endure);
-        if (returnCode == 1) {
+        let returnCode = __battle_checkIfShouldGoToInn(htmlText, endure);
+        if (returnCode === 1) {
             // 住宿优先
             $("#innButton").attr('tabIndex', 1);
             $('#returnButton').parent().remove();
+            document.getElementById("innButton").scrollIntoView();
         }
-        if (returnCode == 2) {
+        if (returnCode === 2) {
             // 存钱优先
             $("#bankButton").attr('tabIndex', 1);
             $('#returnButton').parent().remove();
+            document.getElementById("bankButton").scrollIntoView();
         }
-        if (returnCode == 3) {
+        if (returnCode === 3) {
             // 返回优先
             $("#returnButton").attr('tabIndex', 1);
+            document.getElementById("returnButton").scrollIntoView();
         }
     }
 }
