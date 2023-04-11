@@ -93,3 +93,23 @@ PAYLOAD:
 
   x 已经熟练掌握了 强天位 ！
   x 转职 吟游诗人 成功。
+
+id
+pass
+unit
+con 2
+navi on
+mode	CHARA_MOVE
+direct	%u2190
+chara_m	10
+
+
+
+%u2190		←
+%u2191    ↑
+%u2192 		→
+%u2193		↓
+%u2196    ↖
+%u2197		↗
+%u2198		↘
+%u2199    ↙

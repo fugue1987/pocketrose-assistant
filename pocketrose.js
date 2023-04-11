@@ -291,19 +291,60 @@ const _WEAPON_DICT = [
     "沉默之剑",
     "破云弓",
     "光之剑",
-    "刺馈剑",
-    "双刃",
+    "巨魔弓 世界",
+    "邪骇灵杖",
+    "战魔刀",
+    "闪刺枪",
+    "妖枪 影",
+    "传说之剑",
+    "魔杖 霜雪",
+    "生存之刀",
+    "月牙型剑",
+    "白金枪",
     "炙雷之斧",
+    "圣纹剑",
+    "铭刀长刀",
+    "水晶刀",
+    "龙鳞铠胄",
+    "恶魔锁甲",
     "圣枪 隆基诺斯",
     "飞凤枪",
     "雨之村云",
     "影忍者刀",
     "鸣雷剑",
     "铳剑",
+    "刺馈剑",
+    "双刃",
+    "秘剑 天下",
+    "赎罪镇魂剑",
+    "虚空之枪",
+    "封魔弓",
+    "霸枪 龙息",
+    "光阴之剑",
+    "大马士革钢刀",
+    "秘银长剑",
+    "流星闪爪",
+    "奥利哈钢剑",
+    "月牙法杖",
+    "冰之拳套",
+    "鬼灵之弓",
+    "邪双华",
+    "震雷匕首",
+    "财富之军刀"
+    "空斩短刃",
+    "白银弓",
+    "圣杖 天问",
+    "绿玉投枪",
+    "世界树之枝",
+    "精灵之弓矢",
     "夺魂冰钩",
     "圣使之刺剑",
-    "魔杖 霜雪",
-    "生存之刀"
+    "秘刀 走雪",
+    "血之剑",
+    "寡妇制造器",
+    "瓦谕剑",
+    "封神剑 天劫",
+    "奥利哈钢匕首"
 ];
 
 const _ARMOR_DICT = [
@@ -1008,7 +1049,7 @@ function __cookie_getEquipmentSet(no, id) {
 function __cookie_getEnableZodiacFlashBattle() {
     const cookieKey = "_POCKETROSE_ASSISTANT__ENABLE_ZODIAC_FLASH_BATTLE";
     return getAndParseCookie(cookieKey, false, function (value) {
-       return value !== "0";
+        return value !== "0";
     });
 }
 
@@ -1825,6 +1866,7 @@ function postProcessCityRelatedFunctionalities(htmlText) {
 function __town_inn(htmlText) {
 
 }
+
 
 // 城市 -> 宠物图鉴
 function __town_petMap(htmlText) {
