@@ -997,6 +997,18 @@ function __cookie_getEquipmentSet(no, id) {
 }
 
 /**
+ * 检查是否启用十二宫战斗时的极速模式
+ * @returns boolean 默认禁用
+ * @private
+ */
+function __cookie_getEnableZodiacFlashBattle() {
+    const cookieKey = "_POCKETROSE_ASSISTANT__ENABLE_ZODIAC_FLASH_BATTLE";
+    return getAndParseCookie(cookieKey, false, function (value) {
+       return value !== "0";
+    });
+}
+
+/**
  * 读取指定键值的Cookie内容并调用回调函数解析。
  * @param cookieKey Cookie键值
  * @param defaultValue 如果没有设置此Cookie时的默认返回值
@@ -1595,6 +1607,8 @@ function __battle(htmlText) {
     } else {
         // 不需要修理按钮
         $('#blacksmithButton').parent().remove();
+        const zodiacBattle = htmlText.indexOf("＜＜ - 十二神殿 - ＞＞") !== -1;
+
         let returnCode = __battle_checkIfShouldGoToInn(htmlText, endure);
         if (returnCode === 1) {
             // 住宿优先
@@ -1606,6 +1620,9 @@ function __battle(htmlText) {
             }
             if (__cookie_getEnableBattleAutoScroll()) {
                 document.getElementById("innButton").scrollIntoView();
+            }
+            if (zodiacBattle && __cookie_getEnableZodiacFlashBattle()) {
+                $("#innButton").trigger("click");
             }
         }
         if (returnCode === 2) {
@@ -1619,6 +1636,9 @@ function __battle(htmlText) {
             if (__cookie_getEnableBattleAutoScroll()) {
                 document.getElementById("bankButton").scrollIntoView();
             }
+            if (zodiacBattle && __cookie_getEnableZodiacFlashBattle()) {
+                $("#bankButton").trigger("click");
+            }
         }
         if (returnCode === 3) {
             // 返回优先
@@ -1630,6 +1650,9 @@ function __battle(htmlText) {
             }
             if (__cookie_getEnableBattleAutoScroll()) {
                 document.getElementById("returnButton").scrollIntoView();
+            }
+            if (zodiacBattle && __cookie_getEnableZodiacFlashBattle()) {
+                $("#returnButton").trigger("click");
             }
         }
     }
