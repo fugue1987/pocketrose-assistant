@@ -2239,7 +2239,7 @@ function __personalStatus_cookieManagement(htmlText) {
     s1 += "<option class='o1' value='1'>启用</option>";
     s1 += "<option class='o1' value='0'>禁用</option>";
     s1 += "</select>";
-    __page_writeNpcMessage("<li>宝可梦百科超链 " + s1 + " <a href='javascript:void(0)' id='a1'>设置</a></li>");
+    __page_writeNpcMessage("<li>宝可梦百科超链 " + s1 + " <a href='javascript:void(0)' id='a1' style='color: yellow'>设置</a></li>");
 
 
     let b2 = __cookie_getEnableSoldAutoDeposit();
@@ -2247,7 +2247,7 @@ function __personalStatus_cookieManagement(htmlText) {
     s2 += "<option class='o2' value='1'>启用</option>";
     s2 += "<option class='o2' value='0'>禁用</option>";
     s2 += "</select>";
-    __page_writeNpcMessage("<li>售卖后自动存钱 " + s2 + " <a href='javascript:void(0)' id='a2'>设置</a></li>");
+    __page_writeNpcMessage("<li>售卖后自动存钱 " + s2 + " <a href='javascript:void(0)' id='a2' style='color: yellow'>设置</a></li>");
 
 
     let b3 = __cookie_getHealthLoseAutoLodgeRatio();
@@ -2262,7 +2262,7 @@ function __personalStatus_cookieManagement(htmlText) {
     s3 += "<option class='o3' value='0.8'>80%</option>";
     s3 += "<option class='o3' value='0.9'>90%</option>";
     s3 += "</select>";
-    __page_writeNpcMessage("<li>掉血后自动住宿 " + s3 + " <a href='javascript:void(0)' id='a3'>设置</a></li>");
+    __page_writeNpcMessage("<li>掉血后自动住宿 " + s3 + " <a href='javascript:void(0)' id='a3' style='color: yellow'>设置</a></li>");
 
     let b10 = __cookie_getManaLoseAutoLodgePoint();
     let s10 = "<select name='s10' id='s10'>";
@@ -2273,7 +2273,7 @@ function __personalStatus_cookieManagement(htmlText) {
     s10 += "<option class='o10' value='200'>200PP</option>";
     s10 += "<option class='o10' value='500'>500PP</option>";
     s10 += "</select>";
-    __page_writeNpcMessage("<li>掉魔后自动住宿 " + s10 + " <a href='javascript:void(0)' id='a10'>设置</a></li>");
+    __page_writeNpcMessage("<li>掉魔后自动住宿 " + s10 + " <a href='javascript:void(0)' id='a10' style='color: yellow'>设置</a></li>");
 
     let b4 = __cookie_getRepairItemThreshold();
     let s4 = "<select name='s4' id='s4'>";
@@ -2282,7 +2282,7 @@ function __personalStatus_cookieManagement(htmlText) {
     s4 += "<option class='o4' value='50'>耐久50</option>";
     s4 += "<option class='o4' value='100'>耐久100</option>";
     s4 += "</select>";
-    __page_writeNpcMessage("<li>修理装备耐久限 " + s4 + " <a href='javascript:void(0)' id='a4'>设置</a></li>");
+    __page_writeNpcMessage("<li>修理装备耐久限 " + s4 + " <a href='javascript:void(0)' id='a4' style='color: yellow'>设置</a></li>");
 
     let b5 = __cookie_getDepositBattleNumber();
     let s5 = "<select name='s5' id='s5'>";
@@ -2291,37 +2291,37 @@ function __personalStatus_cookieManagement(htmlText) {
     s5 += "<option class='o5' value='5'>5战一存</option>";
     s5 += "<option class='o5' value='10'>10战一存</option>";
     s5 += "</select>";
-    __page_writeNpcMessage("<li>触发存钱的战数 " + s5 + " <a href='javascript:void(0)' id='a5'>设置</a></li>");
+    __page_writeNpcMessage("<li>触发存钱的战数 " + s5 + " <a href='javascript:void(0)' id='a5' style='color: yellow'>设置</a></li>");
 
     let b6 = __cookie_getReturnButtonText();
     let s6 = "<input type='text' class='o6' name='s6' id='s6' size='48' placeholder='" + b6 + "'>";
-    __page_writeNpcMessage("<li>战斗返回的台词 " + s6 + " <a href='javascript:void(0)' id='a6'>设置</a></li>");
+    __page_writeNpcMessage("<li>战斗返回的台词 " + s6 + " <a href='javascript:void(0)' id='a6' style='color: yellow'>设置</a></li>");
 
     let b7 = __cookie_getDepositButtonText();
     let s7 = "<input type='text' class='o7' name='s7' id='s7' size='48' placeholder='" + b7 + "'>";
-    __page_writeNpcMessage("<li>战斗存钱的台词 " + s7 + " <a href='javascript:void(0)' id='a7'>设置</a></li>");
+    __page_writeNpcMessage("<li>战斗存钱的台词 " + s7 + " <a href='javascript:void(0)' id='a7' style='color: yellow'>设置</a></li>");
 
     let b8 = __cookie_getLodgeButtonText();
     let s8 = "<input type='text' class='o8' name='s8' id='s8' size='48' placeholder='" + b8 + "'>";
-    __page_writeNpcMessage("<li>战斗住宿的台词 " + s8 + " <a href='javascript:void(0)' id='a8'>设置</a></li>");
+    __page_writeNpcMessage("<li>战斗住宿的台词 " + s8 + " <a href='javascript:void(0)' id='a8' style='color: yellow'>设置</a></li>");
 
     let b9 = __cookie_getRepairButtonText();
     let s9 = "<input type='text' class='o9' name='s9' id='s9' size='48' placeholder='" + b9 + "'>";
-    __page_writeNpcMessage("<li>战斗修理的台词 " + s9 + " <a href='javascript:void(0)' id='a9'>设置</a></li>");
+    __page_writeNpcMessage("<li>战斗修理的台词 " + s9 + " <a href='javascript:void(0)' id='a9' style='color: yellow'>设置</a></li>");
 
     let b11 = __cookie_getEnableBattleAutoScroll();
     let s11 = "<select name='s11' id='s11'>";
     s11 += "<option class='o11' value='1'>启用</option>";
     s11 += "<option class='o11' value='0'>禁用</option>";
     s11 += "</select>";
-    __page_writeNpcMessage("<li>战斗页自动触底 " + s11 + " <a href='javascript:void(0)' id='a11'>设置</a></li>");
+    __page_writeNpcMessage("<li>战斗页自动触底 " + s11 + " <a href='javascript:void(0)' id='a11' style='color: yellow'>设置</a></li>");
 
     let b12 = __cookie_getEnableBattleForceRecommendation();
     let s12 = "<select name='s12' id='s12'>";
     s12 += "<option class='o12' value='1'>启用</option>";
     s12 += "<option class='o12' value='0'>禁用</option>";
     s12 += "</select>";
-    __page_writeNpcMessage("<li>战斗后强制推荐 " + s12 + " <a href='javascript:void(0)' id='a12'>设置</a></li>");
+    __page_writeNpcMessage("<li>战斗后强制推荐 " + s12 + " <a href='javascript:void(0)' id='a12' style='color: yellow'>设置</a></li>");
 
     let set1 = __cookie_getEquipmentSet("A", id);
     let h1 = "";
@@ -2358,7 +2358,7 @@ function __personalStatus_cookieManagement(htmlText) {
         h1 += "<option class='set1_accessory_class' value='" + accessory + "'>" + accessory + "</option>";
     }
     h1 += "</select>";
-    __page_writeNpcMessage("<li>第一类自定套装 " + h1 + " <a href='javascript:void(0)' id='set1'>设置</a></li>");
+    __page_writeNpcMessage("<li>第一类自定套装 " + h1 + " <a href='javascript:void(0)' id='set1' style='color: yellow'>设置</a></li>");
 
     let set2 = __cookie_getEquipmentSet("B", id);
     let h2 = "";
@@ -2395,7 +2395,7 @@ function __personalStatus_cookieManagement(htmlText) {
         h2 += "<option class='set2_accessory_class' value='" + accessory + "'>" + accessory + "</option>";
     }
     h2 += "</select>";
-    __page_writeNpcMessage("<li>第二类自定套装 " + h2 + " <a href='javascript:void(0)' id='set2'>设置</a></li>");
+    __page_writeNpcMessage("<li>第二类自定套装 " + h2 + " <a href='javascript:void(0)' id='set2' style='color: yellow'>设置</a></li>");
 
     let set3 = __cookie_getEquipmentSet("C", id);
     let h3 = "";
@@ -2432,7 +2432,7 @@ function __personalStatus_cookieManagement(htmlText) {
         h3 += "<option class='set3_accessory_class' value='" + accessory + "'>" + accessory + "</option>";
     }
     h3 += "</select>";
-    __page_writeNpcMessage("<li>第三类自定套装 " + h3 + " <a href='javascript:void(0)' id='set3'>设置</a></li>");
+    __page_writeNpcMessage("<li>第三类自定套装 " + h3 + " <a href='javascript:void(0)' id='set3' style='color: yellow'>设置</a></li>");
 
     let set4 = __cookie_getEquipmentSet("D", id);
     let h4 = "";
@@ -2469,7 +2469,7 @@ function __personalStatus_cookieManagement(htmlText) {
         h4 += "<option class='set4_accessory_class' value='" + accessory + "'>" + accessory + "</option>";
     }
     h4 += "</select>";
-    __page_writeNpcMessage("<li>第四类自定套装 " + h4 + " <a href='javascript:void(0)' id='set4'>设置</a></li>");
+    __page_writeNpcMessage("<li>第四类自定套装 " + h4 + " <a href='javascript:void(0)' id='set4' style='color: yellow'>设置</a></li>");
 
     let set5 = __cookie_getEquipmentSet("E", id);
     let h5 = "";
@@ -2506,7 +2506,14 @@ function __personalStatus_cookieManagement(htmlText) {
         h5 += "<option class='set5_accessory_class' value='" + accessory + "'>" + accessory + "</option>";
     }
     h5 += "</select>";
-    __page_writeNpcMessage("<li>第五类自定套装 " + h5 + " <a href='javascript:void(0)' id='set5'>设置</a></li>");
+    __page_writeNpcMessage("<li>第五类自定套装 " + h5 + " <a href='javascript:void(0)' id='set5' style='color: yellow'>设置</a></li>");
+
+    let zodiac = __cookie_getEnableZodiacFlashBattle();
+    let zodiacSelect = "<select name='zodiacSelect' id='zodiacSelect'>";
+    zodiacSelect += "<option class='zodiacSelect_class' value='1'>启用</option>";
+    zodiacSelect += "<option class='zodiacSelect_class' value='0'>禁用</option>";
+    zodiacSelect += "</select>";
+    __page_writeNpcMessage("<li>十二宫极速战斗 " + zodiacSelect + " <a href='javascript:void(0)' id='zodiac' style='color: yellow'>设置</a></li>");
 
     $(".o1[value='" + Number(b1) + "']").prop("selected", true);
     $(".o2[value='" + Number(b2) + "']").prop("selected", true);
@@ -2551,6 +2558,8 @@ function __personalStatus_cookieManagement(htmlText) {
     $(".set5_armor_class[value='" + set5[2] + "']").prop("selected", true);
     $(".set5_accessory_star_class[value='" + set5[5] + "']").prop("selected", true);
     $(".set5_accessory_class[value='" + set5[4] + "']").prop("selected", true);
+
+    $(".zodiacSelect_class[value='" + Number(zodiac) + "']").prop("selected", true);
 
     $("#a1").click(function () {
         Cookies.set("_POCKETROSE_ASSISTANT__ENABLE_POKEMON_WIKI", $("#s1").val(), {expires: 36500});
@@ -2722,6 +2731,12 @@ function __personalStatus_cookieManagement(htmlText) {
 
         let key = "_POCKETROSE_ASSISTANT__EQUIPMENT_SET_E_" + id;
         Cookies.set(key, value, {expires: 36500});
+        $("form[action='status.cgi']").attr("action", "mydata.cgi");
+        $("input:hidden[value='STATUS']").attr("value", "LETTER");
+        $("#returnButton").trigger("click");
+    });
+    $("#zodiac").click(function () {
+        Cookies.set("_POCKETROSE_ASSISTANT__ENABLE_ZODIAC_FLASH_BATTLE", $("#zodiacSelect").val(), {expires: 36500});
         $("form[action='status.cgi']").attr("action", "mydata.cgi");
         $("input:hidden[value='STATUS']").attr("value", "LETTER");
         $("#returnButton").trigger("click");
