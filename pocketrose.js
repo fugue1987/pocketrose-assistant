@@ -2215,7 +2215,7 @@ function postProcessPersonalStatusRelatedFunctionalities(htmlText) {
     if (htmlText.indexOf("仙人的宝物") != -1) {
         __personalStatus_view(htmlText);
     }
-    if (htmlText.indexOf("") !== -1) {
+    if (htmlText.indexOf("领取了") !== -1) {
         __personalStatus_salary(htmlText);
     }
     if (htmlText.indexOf("物品使用．装备") != -1) {
