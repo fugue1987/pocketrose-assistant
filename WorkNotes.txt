@@ -131,6 +131,7 @@ townid
 mode      MOVE
 
 进城时支付金钱
+status.cgi
 id
 pass
 townid

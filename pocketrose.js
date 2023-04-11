@@ -2104,10 +2104,25 @@ function __town_inn(htmlText) {
                     // 到达目的地了，准备执行进城操作
                     __update_travel_message_board(playerName + "准备进城，等待行动冷却中...... (约55秒)");
                     setTimeout(function () {
-                        __travel_enter_city(id, pass, destinationTownId, function (id, pass, html) {
-                            $("#returnButton").attr("value", destinationTown["name"] + "欢迎您的到来");
-                            __update_travel_message_board(playerName + "成功到达" + destinationTown["name"] + "。");
-                            __update_travel_message_board("期待下次旅途与您再见。");
+                        __travel_enter_city(id, pass, destinationTownId, function (id, pass, townId, html) {
+                            if ($(html).text().indexOf("战胜门卫。") !== -1) {
+                                // 到达了其他国家的城市，并且没有仙人宝物。。无法直接进入，选择交钱吧。。打打杀杀挺不好的
+                                const request = {};
+                                request["id"] = id;
+                                request["pass"] = pass;
+                                request["townid"] = townId;
+                                request["givemoney"] = "1";
+                                request["mode"] = "MOVE";
+                                $.post("status.cgi", request, function (html) {
+                                    $("#returnButton").attr("value", destinationTown["name"] + "欢迎您的到来");
+                                    __update_travel_message_board(playerName + "成功到达" + destinationTown["name"] + "。");
+                                    __update_travel_message_board("期待下次旅途与您再见。");
+                                });
+                            } else {
+                                $("#returnButton").attr("value", destinationTown["name"] + "欢迎您的到来");
+                                __update_travel_message_board(playerName + "成功到达" + destinationTown["name"] + "。");
+                                __update_travel_message_board("期待下次旅途与您再见。");
+                            }
                         });
                     }, 55000);
                 });
@@ -2217,7 +2232,7 @@ function __travel_enter_city(id, pass, townId, callback) {
         .then((arrayBuffer) => {
             const decoder = new TextDecoder("gb2312");
             const html = decoder.decode(new Uint8Array(arrayBuffer));
-            callback(id, pass, html);
+            callback(id, pass, townId, html);
         })
         .catch((error) => {
             console.error("Error raised:", error);
