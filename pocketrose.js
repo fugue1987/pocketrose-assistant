@@ -2013,9 +2013,15 @@ function __town_inn(htmlText) {
         $("#travel").prop("disabled", true);
         const currentTownId = $("#currentLocation").text();
         const destinationTownId = $("input:radio[name='cityId']:checked").val();
-        alert(destinationTownId);
         if (destinationTownId !== undefined) {
-            console.log(currentTownId + " -> " + destinationTownId);
+            const sourceTown = _CITY_DICT[currentTownId];
+            const destinationTown = _CITY_DICT[destinationTownId];
+
+            const sourceLocation = [parseInt(sourceTown["x"]), parseInt(sourceTown["y"])];
+            const destinationLocation = [parseInt(destinationTown["x"]), parseInt(destinationTown["y"])];
+
+            const nodeList = __travel_calculate_path_locations(sourceLocation, destinationLocation, 3, "QUEUE");
+            //console.log(nodeList);
         }
     });
 
@@ -2025,6 +2031,108 @@ function __town_inn(htmlText) {
         $("#currentLocation").text(currentTownId);
         $("#travel").prop("disabled", false);
     });
+}
+
+function __travel_calculate_path_locations(sourceLocation, destinationLocation, moveScope, moveMode) {
+    const nodeList = [];
+    nodeList.push(sourceLocation);
+
+    if (sourceLocation[0] === destinationLocation[0] && sourceLocation[1] === destinationLocation[1]) {
+        return nodeList;
+    }
+
+    let from = sourceLocation;
+    let done = false;
+    // while (!done) {
+        let nodeMap = {};
+        let moveCandidates = __travel_calculate_move_scopes(from, moveScope, moveMode);
+        for (let i = 0; i < moveCandidates.length; i++) {
+            let to = moveCandidates[i];
+            let distance = __travel_calculate_distance(to, destinationLocation);
+            if (nodeMap[distance] === undefined) {
+                nodeMap[distance] = [];
+            }
+            nodeMap[distance].push(to);
+        }
+
+        const distanceSet = [];
+        const nodeMapKeys = Object.keys(nodeMap);
+        for(let i=0; i<nodeMapKeys.length; i++) {
+            distanceSet.push(parseInt(nodeMapKeys[i]));
+        }
+        let minDistance = Math.min(...distanceSet);
+        done = (minDistance === 0);
+    // }
+
+
+    return nodeList;
+}
+
+function __travel_calculate_move_scopes(node, moveScope, moveMode) {
+    const candidates = [];
+    for (let i = 1; i <= moveScope; i++) {
+        let x = node[0];
+        let y = node[1] + i;
+        if (y >= 0 && y <= 15) {
+            candidates.push([x, y]);
+        }
+    }
+    for (let i = 1; i <= moveScope; i++) {
+        let x = node[0];
+        let y = node[1] - i;
+        if (y >= 0 && y <= 15) {
+            candidates.push([x, y]);
+        }
+    }
+    for (let i = 1; i <= moveScope; i++) {
+        let x = node[0] - i;
+        let y = node[1];
+        if (x >= 0 && x <= 15) {
+            candidates.push([x, y]);
+        }
+    }
+    for (let i = 1; i <= moveScope; i++) {
+        let x = node[0] + i;
+        let y = node[1];
+        if (x >= 0 && x <= 15) {
+            candidates.push([x, y]);
+        }
+    }
+    if (moveMode === "QUEUE") {
+        for (let i = 1; i <= moveScope; i++) {
+            let x = node[0] - i;
+            let y = node[1] + i;
+            if (x >= 0 && x <= 15 && y >= 0 && y <= 15) {
+                candidates.push([x, y]);
+            }
+        }
+        for (let i = 1; i <= moveScope; i++) {
+            let x = node[0] + i;
+            let y = node[1] + i;
+            if (x >= 0 && x <= 15 && y >= 0 && y <= 15) {
+                candidates.push([x, y]);
+            }
+        }
+        for (let i = 1; i <= moveScope; i++) {
+            let x = node[0] - i;
+            let y = node[1] - i;
+            if (x >= 0 && x <= 15 && y >= 0 && y <= 15) {
+                candidates.push([x, y]);
+            }
+        }
+        for (let i = 1; i <= moveScope; i++) {
+            let x = node[0] + i;
+            let y = node[1] - i;
+            if (x >= 0 && x <= 15 && y >= 0 && y <= 15) {
+                candidates.push([x, y]);
+            }
+        }
+    }
+    return candidates;
+}
+
+function __travel_calculate_distance(source, destination) {
+    return Math.abs(source[0] - destination[0]) + Math.abs(source[1] - destination[1]);
 }
 
 
