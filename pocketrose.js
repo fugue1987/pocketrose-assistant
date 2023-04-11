@@ -2020,8 +2020,9 @@ function __town_inn(htmlText) {
             const sourceLocation = [parseInt(sourceTown["x"]), parseInt(sourceTown["y"])];
             const destinationLocation = [parseInt(destinationTown["x"]), parseInt(destinationTown["y"])];
 
-            const nodeList = __travel_calculate_path_locations(sourceLocation, destinationLocation, 3, "QUEUE");
-            //console.log(nodeList);
+            // 计算出整个路上需要走过的节点
+            const path = __travel_calculate_path_locations(sourceLocation, destinationLocation, 3, "QUEUE");
+
         }
     });
 
@@ -2115,9 +2116,9 @@ function __travel_move_from_to(from, to, moveScope) {
         const step = Math.ceil(Math.abs(from[1] - to[1]) / moveScope);
         for (let i = 1; i <= step - 1; i++) {
             if (to[1] > from[1]) {
-                nodeList.push([from[0], from[1] + (i * step)]);
+                nodeList.push([from[0], from[1] + (i * moveScope)]);
             } else {
-                nodeList.push([from[0], from[1] - (i * step)]);
+                nodeList.push([from[0], from[1] - (i * moveScope)]);
             }
         }
     } else if (from[1] === to[1]) {
@@ -2125,9 +2126,9 @@ function __travel_move_from_to(from, to, moveScope) {
         const step = Math.ceil(Math.abs(from[0] - to[0]) / moveScope);
         for (let i = 1; i <= step - 1; i++) {
             if (to[0] > from[0]) {
-                nodeList.push([from[0] + (i * step), from[1]]);
+                nodeList.push([from[0] + (i * moveScope), from[1]]);
             } else {
-                nodeList.push([from[0] - (i * step), from[1]]);
+                nodeList.push([from[0] - (i * moveScope), from[1]]);
             }
         }
     } else {
@@ -2136,15 +2137,15 @@ function __travel_move_from_to(from, to, moveScope) {
         for (let i = 1; i <= step - 1; i++) {
             let x = from[0];
             if (to[0] > from[0]) {
-                x = x + (i * step);
+                x = x + (i * moveScope);
             } else {
-                x = x - (i * step);
+                x = x - (i * moveScope);
             }
             let y = from[1];
             if (to[1] > from[1]) {
-                y = y + (i * step);
+                y = y + (i * moveScope);
             } else {
-                y = y - (i * step);
+                y = y - (i * moveScope);
             }
             nodeList.push([x, y]);
         }
