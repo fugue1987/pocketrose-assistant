@@ -2107,6 +2107,7 @@ function __town_inn(htmlText) {
                         __travel_enter_city(id, pass, destinationTownId, function (id, pass, townId, html) {
                             if ($(html).text().indexOf("战胜门卫。") !== -1) {
                                 // 到达了其他国家的城市，并且没有仙人宝物。。无法直接进入，选择交钱吧。。打打杀杀挺不好的
+                                __update_travel_message_board("与门卫交涉中......");
                                 const request = {};
                                 request["id"] = id;
                                 request["pass"] = pass;
@@ -2114,6 +2115,7 @@ function __town_inn(htmlText) {
                                 request["givemoney"] = "1";
                                 request["mode"] = "MOVE";
                                 $.post("status.cgi", request, function (html) {
+                                    __update_travel_message_board("门卫通情达理的收取了合理的入城税。");
                                     $("#returnButton").attr("value", destinationTown["name"] + "欢迎您的到来");
                                     __update_travel_message_board(playerName + "成功到达" + destinationTown["name"] + "。");
                                     __update_travel_message_board("期待下次旅途与您再见。");
