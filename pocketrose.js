@@ -1470,6 +1470,20 @@ function postProcessMainStatusFunctionalities(htmlText) {
 function __status(htmlText) {
     $("option[value='LETTER']").text("口袋助手设置");
     $("option[value='LETTER']").attr("style", "background:#20c0ff");
+
+    // 主页面如果角色满级则经验(大于等于14900)显示为红色
+    $("td:parent").each(function (_idx, td) {
+        const text = $(td).text();
+        if (text === "经验值") {
+            const expText = $(td).next().text();
+            const exp = expText.substring(0, expText.indexOf(" EX"));
+            if (exp >= 14900) {
+                let expHtml = $(td).next().html();
+                expHtml = "<font color='red'>" + expHtml + "</font>";
+                $(td).next().html(expHtml);
+            }
+        }
+    });
 }
 
 // ============================================================================
