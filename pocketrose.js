@@ -279,10 +279,23 @@ const _WEAPON_DICT = [
     "魔神器 幻空",
     "真·圣剑 苍白的正义",
     "双经斩",
-    "炙雷之斧",
+    "1.5倍界王拳套",
     "九齿钉耙",
     "降魔杖",
-    "1.5倍界王拳套"
+    "2015.02.14情人节巧克力",
+    "波斯弯刀",
+    "女神之剑",
+    "炙雷之斧",
+    "圣枪 隆基诺斯",
+    "飞凤枪",
+    "雨之村云",
+    "影忍者刀",
+    "鸣雷剑",
+    "铳剑",
+    "夺魂冰钩",
+    "圣使之刺剑",
+    "魔杖 霜雪",
+    "生存之刀"
 ];
 
 const _ARMOR_DICT = [
@@ -295,16 +308,34 @@ const _ARMOR_DICT = [
     "风翼三足凤纳托利斯",
     "圣皇铠甲 天威",
     "薄翼甲",
+    "2015.01.29十周年纪念",
+    "背德魔铠",
+    "月冰石之头巾",
     "枭之甲",
     "圣衣 苍羽",
     "怨灵邪衣",
-    "幻衣 夕雾"
+    "幻衣 夕雾",
+    "战士铠甲",
+    "塔盾",
+    "忍者头巾",
+    "武者之铠",
+    "镜盾",
+    "守鹤之盾",
+    "龙铠 牙刃",
+    "冰之法袍",
+    "霜雪长袍",
+    "古代头盔"
 ];
 
 const _ACCESSORY_DICT = [
     "魔盔 虚无",
     "神冠 灵通",
     "龙",
+    "千与千寻",
+    "勿忘我",
+    "魔法使的闪光弹",
+    "2015.02.14情人节玫瑰",
+    "圣王玉坠",
     "王者之靴 圣踏",
     "天马",
     "独角兽",
@@ -312,9 +343,15 @@ const _ACCESSORY_DICT = [
     "晶之冠",
     "魔炎战盔",
     "极光之翼",
-    "千与千寻",
-    "勿忘我",
-    "魔法使的闪光弹"
+    "龙鳞护腕",
+    "猫眼",
+    "月之水滴",
+    "雷鸣指环",
+    "黑核晶",
+    "速风之羽",
+    "攻击之护符",
+    "魔法头带",
+    "雾之项链",
 ];
 
 const _NPC_DICT = {
@@ -2157,7 +2194,7 @@ function __personalStatus_cookieManagement(htmlText) {
     const originalBodyHtml = $("body:first").html();
     const startLocation = originalBodyHtml.indexOf("<form action=\"status.cgi\" method=\"post\">");
     let reformatBodyHtml = originalBodyHtml.substring(startLocation);
-    reformatBodyHtml = "<hr size=0><h2>口袋助手设置<BR></h2><hr size=0><CENTER>"+reformatBodyHtml;
+    reformatBodyHtml = "<hr size=0><h2>口袋助手设置<BR></h2><hr size=0><CENTER>" + reformatBodyHtml;
     $("body:first").html(reformatBodyHtml);
 
     $("input:submit[value='返回城市']").attr("id", "returnButton");
