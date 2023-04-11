@@ -1180,7 +1180,8 @@ function __lookupTownIdByName(townName) {
             return id;
         }
     }
-    return undefined;
+    // 人在野外的情况
+    return "-1";
 }
 
 function __isCityCoordinate(x, y) {
