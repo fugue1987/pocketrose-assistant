@@ -1453,6 +1453,34 @@ function __ajax_readPersonalInformation(id, pass, callback) {
         });
 }
 
+function __ajax_checkOwnItems(id, pass, callback) {
+    const request = {};
+    request["id"] = id;
+    request["pass"] = pass;
+    request["mode"] = "USE_ITEM";
+    fetch("mydata.cgi", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: new URLSearchParams(request),
+    })
+        .then((response) => {
+            if (!response.ok) {
+                throw new Error("RESPONSE was not ok");
+            }
+            return response.arrayBuffer();
+        })
+        .then((arrayBuffer) => {
+            const decoder = new TextDecoder("gb2312");
+            const html = decoder.decode(new Uint8Array(arrayBuffer));
+            callback(id, pass, html);
+        })
+        .catch((error) => {
+            console.error("Error raised:", error);
+        });
+}
+
 function __ajax_openTreasureBag(id, pass, treasureBagIndex, callback) {
     let openTreasureBagRequest = {};
     openTreasureBagRequest["id"] = id;
@@ -2374,9 +2402,13 @@ function __personalStatus_cookieManagement(htmlText) {
 
     $("input:submit[value='返回城市']").attr("id", "returnButton");
     __page_constructNpcMessageTable("夜九年");
-    __page_writeNpcMessage("在这里我来协助各位维护本机（浏览器）的口袋相关设置：<br>");
+    __page_writeNpcMessage("在这里我来协助各位维护本机（浏览器）的口袋相关设置：&nbsp;" +
+        "<a href='javascript:void(0)' id='listAllEquipment' style='color: gold'><b>选择所有装备</b></a>&nbsp;&nbsp;&nbsp;" +
+        "<a href='javascript:void(0)' id='listOwnEquipment' style='color: gold'><b>选择自有装备</b></a>" +
+        "<br>");
 
     const id = __page_readIdFromCurrentPage();
+    const pass = __page_readPassFromCurrentPage();
 
     let b1 = __cookie_getEnablePokemonWiki();
     let s1 = "<select name='s1' id='s1'>";
@@ -2474,33 +2506,18 @@ function __personalStatus_cookieManagement(htmlText) {
     h1 += "<option class='set1_weapon_star_class' value='1'>齐心</option>";
     h1 += "</select>";
     h1 += "<select name='set1_weapon' id='set1_weapon'>";
-    h1 += "<option class='set1_weapon_class' value='NONE'>★ 选择武器 ★</option>";
-    for (let i = 0; i < _WEAPON_DICT.length; i++) {
-        let weapon = _WEAPON_DICT[i];
-        h1 += "<option class='set1_weapon_class' value='" + weapon + "'>" + weapon + "</option>";
-    }
     h1 += "</select>";
     h1 += "<select name='set1_armor_star' id='set1_armor_star'>";
     h1 += "<option class='set1_armor_star_class' value='0'>正常</option>";
     h1 += "<option class='set1_armor_star_class' value='1'>齐心</option>";
     h1 += "</select>";
     h1 += "<select name='set1_armor' id='set1_armor'>";
-    h1 += "<option class='set1_armor_class' value='NONE'>★ 选择防具 ★</option>";
-    for (let i = 0; i < _ARMOR_DICT.length; i++) {
-        let armor = _ARMOR_DICT[i];
-        h1 += "<option class='set1_armor_class' value='" + armor + "'>" + armor + "</option>";
-    }
     h1 += "</select>";
     h1 += "<select name='set1_accessory_star' id='set1_accessory_star'>";
     h1 += "<option class='set1_accessory_star_class' value='0'>正常</option>";
     h1 += "<option class='set1_accessory_star_class' value='1'>齐心</option>";
     h1 += "</select>";
     h1 += "<select name='set1_accessory' id='set1_accessory'>";
-    h1 += "<option class='set1_accessory_class' value='NONE'>★ 选择饰品 ★</option>";
-    for (let i = 0; i < _ACCESSORY_DICT.length; i++) {
-        let accessory = _ACCESSORY_DICT[i];
-        h1 += "<option class='set1_accessory_class' value='" + accessory + "'>" + accessory + "</option>";
-    }
     h1 += "</select>";
     __page_writeNpcMessage("<li>第一类自定套装 " + h1 + " <a href='javascript:void(0)' id='set1' style='color: yellow'>设置</a></li>");
 
@@ -2511,33 +2528,18 @@ function __personalStatus_cookieManagement(htmlText) {
     h2 += "<option class='set2_weapon_star_class' value='1'>齐心</option>";
     h2 += "</select>";
     h2 += "<select name='set2_weapon' id='set2_weapon'>";
-    h2 += "<option class='set2_weapon_class' value='NONE'>★ 选择武器 ★</option>";
-    for (let i = 0; i < _WEAPON_DICT.length; i++) {
-        let weapon = _WEAPON_DICT[i];
-        h2 += "<option class='set2_weapon_class' value='" + weapon + "'>" + weapon + "</option>";
-    }
     h2 += "</select>";
     h2 += "<select name='set2_armor_star' id='set2_armor_star'>";
     h2 += "<option class='set2_armor_star_class' value='0'>正常</option>";
     h2 += "<option class='set2_armor_star_class' value='1'>齐心</option>";
     h2 += "</select>";
     h2 += "<select name='set2_armor' id='set2_armor'>";
-    h2 += "<option class='set2_armor_class' value='NONE'>★ 选择防具 ★</option>";
-    for (let i = 0; i < _ARMOR_DICT.length; i++) {
-        let armor = _ARMOR_DICT[i];
-        h2 += "<option class='set2_armor_class' value='" + armor + "'>" + armor + "</option>";
-    }
     h2 += "</select>";
     h2 += "<select name='set2_accessory_star' id='set2_accessory_star'>";
     h2 += "<option class='set2_accessory_star_class' value='0'>正常</option>";
     h2 += "<option class='set2_accessory_star_class' value='1'>齐心</option>";
     h2 += "</select>";
     h2 += "<select name='set2_accessory' id='set2_accessory'>";
-    h2 += "<option class='set2_accessory_class' value='NONE'>★ 选择饰品 ★</option>";
-    for (let i = 0; i < _ACCESSORY_DICT.length; i++) {
-        let accessory = _ACCESSORY_DICT[i];
-        h2 += "<option class='set2_accessory_class' value='" + accessory + "'>" + accessory + "</option>";
-    }
     h2 += "</select>";
     __page_writeNpcMessage("<li>第二类自定套装 " + h2 + " <a href='javascript:void(0)' id='set2' style='color: yellow'>设置</a></li>");
 
@@ -2548,33 +2550,18 @@ function __personalStatus_cookieManagement(htmlText) {
     h3 += "<option class='set3_weapon_star_class' value='1'>齐心</option>";
     h3 += "</select>";
     h3 += "<select name='set3_weapon' id='set3_weapon'>";
-    h3 += "<option class='set3_weapon_class' value='NONE'>★ 选择武器 ★</option>";
-    for (let i = 0; i < _WEAPON_DICT.length; i++) {
-        let weapon = _WEAPON_DICT[i];
-        h3 += "<option class='set3_weapon_class' value='" + weapon + "'>" + weapon + "</option>";
-    }
     h3 += "</select>";
     h3 += "<select name='set3_armor_star' id='set3_armor_star'>";
     h3 += "<option class='set3_armor_star_class' value='0'>正常</option>";
     h3 += "<option class='set3_armor_star_class' value='1'>齐心</option>";
     h3 += "</select>";
     h3 += "<select name='set3_armor' id='set3_armor'>";
-    h3 += "<option class='set3_armor_class' value='NONE'>★ 选择防具 ★</option>";
-    for (let i = 0; i < _ARMOR_DICT.length; i++) {
-        let armor = _ARMOR_DICT[i];
-        h3 += "<option class='set3_armor_class' value='" + armor + "'>" + armor + "</option>";
-    }
     h3 += "</select>";
     h3 += "<select name='set3_accessory_star' id='set3_accessory_star'>";
     h3 += "<option class='set3_accessory_star_class' value='0'>正常</option>";
     h3 += "<option class='set3_accessory_star_class' value='1'>齐心</option>";
     h3 += "</select>";
     h3 += "<select name='set3_accessory' id='set3_accessory'>";
-    h3 += "<option class='set3_accessory_class' value='NONE'>★ 选择饰品 ★</option>";
-    for (let i = 0; i < _ACCESSORY_DICT.length; i++) {
-        let accessory = _ACCESSORY_DICT[i];
-        h3 += "<option class='set3_accessory_class' value='" + accessory + "'>" + accessory + "</option>";
-    }
     h3 += "</select>";
     __page_writeNpcMessage("<li>第三类自定套装 " + h3 + " <a href='javascript:void(0)' id='set3' style='color: yellow'>设置</a></li>");
 
@@ -2585,33 +2572,18 @@ function __personalStatus_cookieManagement(htmlText) {
     h4 += "<option class='set4_weapon_star_class' value='1'>齐心</option>";
     h4 += "</select>";
     h4 += "<select name='set4_weapon' id='set4_weapon'>";
-    h4 += "<option class='set4_weapon_class' value='NONE'>★ 选择武器 ★</option>";
-    for (let i = 0; i < _WEAPON_DICT.length; i++) {
-        let weapon = _WEAPON_DICT[i];
-        h4 += "<option class='set4_weapon_class' value='" + weapon + "'>" + weapon + "</option>";
-    }
     h4 += "</select>";
     h4 += "<select name='set4_armor_star' id='set4_armor_star'>";
     h4 += "<option class='set4_armor_star_class' value='0'>正常</option>";
     h4 += "<option class='set4_armor_star_class' value='1'>齐心</option>";
     h4 += "</select>";
     h4 += "<select name='set4_armor' id='set4_armor'>";
-    h4 += "<option class='set4_armor_class' value='NONE'>★ 选择防具 ★</option>";
-    for (let i = 0; i < _ARMOR_DICT.length; i++) {
-        let armor = _ARMOR_DICT[i];
-        h4 += "<option class='set4_armor_class' value='" + armor + "'>" + armor + "</option>";
-    }
     h4 += "</select>";
     h4 += "<select name='set4_accessory_star' id='set4_accessory_star'>";
     h4 += "<option class='set4_accessory_star_class' value='0'>正常</option>";
     h4 += "<option class='set4_accessory_star_class' value='1'>齐心</option>";
     h4 += "</select>";
     h4 += "<select name='set4_accessory' id='set4_accessory'>";
-    h4 += "<option class='set4_accessory_class' value='NONE'>★ 选择饰品 ★</option>";
-    for (let i = 0; i < _ACCESSORY_DICT.length; i++) {
-        let accessory = _ACCESSORY_DICT[i];
-        h4 += "<option class='set4_accessory_class' value='" + accessory + "'>" + accessory + "</option>";
-    }
     h4 += "</select>";
     __page_writeNpcMessage("<li>第四类自定套装 " + h4 + " <a href='javascript:void(0)' id='set4' style='color: yellow'>设置</a></li>");
 
@@ -2622,33 +2594,18 @@ function __personalStatus_cookieManagement(htmlText) {
     h5 += "<option class='set5_weapon_star_class' value='1'>齐心</option>";
     h5 += "</select>";
     h5 += "<select name='set5_weapon' id='set5_weapon'>";
-    h5 += "<option class='set5_weapon_class' value='NONE'>★ 选择武器 ★</option>";
-    for (let i = 0; i < _WEAPON_DICT.length; i++) {
-        let weapon = _WEAPON_DICT[i];
-        h5 += "<option class='set5_weapon_class' value='" + weapon + "'>" + weapon + "</option>";
-    }
     h5 += "</select>";
     h5 += "<select name='set5_armor_star' id='set5_armor_star'>";
     h5 += "<option class='set5_armor_star_class' value='0'>正常</option>";
     h5 += "<option class='set5_armor_star_class' value='1'>齐心</option>";
     h5 += "</select>";
     h5 += "<select name='set5_armor' id='set5_armor'>";
-    h5 += "<option class='set5_armor_class' value='NONE'>★ 选择防具 ★</option>";
-    for (let i = 0; i < _ARMOR_DICT.length; i++) {
-        let armor = _ARMOR_DICT[i];
-        h5 += "<option class='set5_armor_class' value='" + armor + "'>" + armor + "</option>";
-    }
     h5 += "</select>";
     h5 += "<select name='set5_accessory_star' id='set5_accessory_star'>";
     h5 += "<option class='set5_accessory_star_class' value='0'>正常</option>";
     h5 += "<option class='set5_accessory_star_class' value='1'>齐心</option>";
     h5 += "</select>";
     h5 += "<select name='set5_accessory' id='set5_accessory'>";
-    h5 += "<option class='set5_accessory_class' value='NONE'>★ 选择饰品 ★</option>";
-    for (let i = 0; i < _ACCESSORY_DICT.length; i++) {
-        let accessory = _ACCESSORY_DICT[i];
-        h5 += "<option class='set5_accessory_class' value='" + accessory + "'>" + accessory + "</option>";
-    }
     h5 += "</select>";
     __page_writeNpcMessage("<li>第五类自定套装 " + h5 + " <a href='javascript:void(0)' id='set5' style='color: yellow'>设置</a></li>");
 
@@ -2667,43 +2624,17 @@ function __personalStatus_cookieManagement(htmlText) {
     $(".o5[value='" + b5 + "']").prop("selected", true);
     $(".o11[value='" + Number(b11) + "']").prop("selected", true);
     $(".o12[value='" + Number(b12) + "']").prop("selected", true);
-
-    $(".set1_weapon_star_class[value='" + set1[1] + "']").prop("selected", true);
-    $(".set1_weapon_class[value='" + set1[0] + "']").prop("selected", true);
-    $(".set1_armor_star_class[value='" + set1[3] + "']").prop("selected", true);
-    $(".set1_armor_class[value='" + set1[2] + "']").prop("selected", true);
-    $(".set1_accessory_star_class[value='" + set1[5] + "']").prop("selected", true);
-    $(".set1_accessory_class[value='" + set1[4] + "']").prop("selected", true);
-
-    $(".set2_weapon_star_class[value='" + set2[1] + "']").prop("selected", true);
-    $(".set2_weapon_class[value='" + set2[0] + "']").prop("selected", true);
-    $(".set2_armor_star_class[value='" + set2[3] + "']").prop("selected", true);
-    $(".set2_armor_class[value='" + set2[2] + "']").prop("selected", true);
-    $(".set2_accessory_star_class[value='" + set2[5] + "']").prop("selected", true);
-    $(".set2_accessory_class[value='" + set2[4] + "']").prop("selected", true);
-
-    $(".set3_weapon_star_class[value='" + set3[1] + "']").prop("selected", true);
-    $(".set3_weapon_class[value='" + set3[0] + "']").prop("selected", true);
-    $(".set3_armor_star_class[value='" + set3[3] + "']").prop("selected", true);
-    $(".set3_armor_class[value='" + set3[2] + "']").prop("selected", true);
-    $(".set3_accessory_star_class[value='" + set3[5] + "']").prop("selected", true);
-    $(".set3_accessory_class[value='" + set3[4] + "']").prop("selected", true);
-
-    $(".set4_weapon_star_class[value='" + set4[1] + "']").prop("selected", true);
-    $(".set4_weapon_class[value='" + set4[0] + "']").prop("selected", true);
-    $(".set4_armor_star_class[value='" + set4[3] + "']").prop("selected", true);
-    $(".set4_armor_class[value='" + set4[2] + "']").prop("selected", true);
-    $(".set4_accessory_star_class[value='" + set4[5] + "']").prop("selected", true);
-    $(".set4_accessory_class[value='" + set4[4] + "']").prop("selected", true);
-
-    $(".set5_weapon_star_class[value='" + set5[1] + "']").prop("selected", true);
-    $(".set5_weapon_class[value='" + set5[0] + "']").prop("selected", true);
-    $(".set5_armor_star_class[value='" + set5[3] + "']").prop("selected", true);
-    $(".set5_armor_class[value='" + set5[2] + "']").prop("selected", true);
-    $(".set5_accessory_star_class[value='" + set5[5] + "']").prop("selected", true);
-    $(".set5_accessory_class[value='" + set5[4] + "']").prop("selected", true);
-
     $(".zodiacSelect_class[value='" + Number(zodiac) + "']").prop("selected", true);
+
+    __generateOwnEquipmentSelectOptions(id, pass);
+
+    $("#listAllEquipment").click(function () {
+        __generateAllEquipmentSelectOptions(id);
+    });
+
+    $("#listOwnEquipment").click(function () {
+        __generateOwnEquipmentSelectOptions(id, pass);
+    });
 
     $("#a1").click(function () {
         Cookies.set("_POCKETROSE_ASSISTANT__ENABLE_POKEMON_WIKI", $("#s1").val(), {expires: 36500});
@@ -2885,6 +2816,162 @@ function __personalStatus_cookieManagement(htmlText) {
         $("input:hidden[value='STATUS']").attr("value", "LETTER");
         $("#returnButton").trigger("click");
     });
+}
+
+function __generateAllEquipmentSelectOptions(id) {
+    for (let idx = 1; idx <= 5; idx++) {
+        let weaponOptions = "<option class='set" + idx + "_weapon_class' value='NONE'>★ 选择武器 ★</option>";
+        for (let i = 0; i < _WEAPON_DICT.length; i++) {
+            const weapon = _WEAPON_DICT[i];
+            weaponOptions += "<option class='set" + idx + "_weapon_class' value='" + weapon + "'>" + weapon + "</option>";
+        }
+        $("#set" + idx + "_weapon").html(weaponOptions);
+
+        let armorOptions = "<option class='set" + idx + "_armor_class' value='NONE'>★ 选择防具 ★</option>";
+        for (let i = 0; i < _ARMOR_DICT.length; i++) {
+            const armor = _ARMOR_DICT[i];
+            armorOptions += "<option class='set" + idx + "_armor_class' value='" + armor + "'>" + armor + "</option>";
+        }
+        $("#set" + idx + "_armor").html(armorOptions);
+
+        let accessoryOptions = "<option class='set" + idx + "_accessory_class' value='NONE'>★ 选择饰品 ★</option>";
+        for (let i = 0; i < _ACCESSORY_DICT.length; i++) {
+            const accessory = _ACCESSORY_DICT[i];
+            accessoryOptions += "<option class='set" + idx + "_accessory_class' value='" + accessory + "'>" + accessory + "</option>";
+        }
+        $("#set" + idx + "_accessory").html(accessoryOptions);
+    }
+
+    for (let idx = 1; idx <= 5; idx++) {
+        let no = "";
+        if (idx === 1) {
+            no = "A";
+        } else if (idx === 2) {
+            no = "B";
+        } else if (idx === 3) {
+            no = "C";
+        } else if (idx === 4) {
+            no = "D";
+        } else {
+            no = "E";
+        }
+        const set = __cookie_getEquipmentSet(no, id);
+
+        $(".set" + idx + "_weapon_star_class[value='" + set[1] + "']").prop("selected", true);
+        $(".set" + idx + "_weapon_class[value='" + set[0] + "']").prop("selected", true);
+        $(".set" + idx + "_armor_star_class[value='" + set[3] + "']").prop("selected", true);
+        $(".set" + idx + "_armor_class[value='" + set[2] + "']").prop("selected", true);
+        $(".set" + idx + "_accessory_star_class[value='" + set[5] + "']").prop("selected", true);
+        $(".set" + idx + "_accessory_class[value='" + set[4] + "']").prop("selected", true);
+    }
+}
+
+function __generateOwnEquipmentSelectOptions(id, pass) {
+    const ownWeapons = {};
+    const ownArmors = {};
+    const ownAccessories = {};
+    __ajax_checkOwnItems(id, pass, function (id, pass, html) {
+        let bagIndex = -1;
+        $(html).find("input:checkbox").each(function (_idx, checkbox) {
+            const name = $(checkbox).parent().next().next().text();
+            const category = $(checkbox).parent().next().next().next().text();
+            let nameForUse = name;
+            if (nameForUse.indexOf("齐心★") !== -1) {
+                nameForUse = nameForUse.substring(3);
+            }
+            if (category === "武器") {
+                ownWeapons[nameForUse] = true;
+            }
+            if (category === "防具") {
+                ownArmors[nameForUse] = true;
+            }
+            if (category === "饰品") {
+                ownAccessories[nameForUse] = true;
+            }
+            if (category === "物品" && name === "百宝袋") {
+                bagIndex = $(checkbox).val();
+            }
+        });
+
+        if (bagIndex >= 0) {
+            __ajax_openTreasureBag(id, pass, bagIndex, function (id, pass, html) {
+                $(html).find("input:checkbox").each(function (_idx, checkbox) {
+                    const name = $(checkbox).parent().next().text();
+                    const category = $(checkbox).parent().next().next().text();
+                    let nameForUse = name;
+                    if (nameForUse.indexOf("齐心★") !== -1) {
+                        nameForUse = nameForUse.substring(3);
+                    }
+                    if (category === "武器") {
+                        ownWeapons[nameForUse] = true;
+                    }
+                    if (category === "防具") {
+                        ownArmors[nameForUse] = true;
+                    }
+                    if (category === "饰品") {
+                        ownAccessories[nameForUse] = true;
+                    }
+                    __doGenerateOwnEquipmentSelectOptions(id, ownWeapons, ownArmors, ownAccessories);
+                });
+            });
+        } else {
+            __doGenerateOwnEquipmentSelectOptions(id, ownWeapons, ownArmors, ownAccessories);
+        }
+    });
+}
+
+function __doGenerateOwnEquipmentSelectOptions(id, ownWeapons, ownArmors, ownAccessories) {
+    for (let idx = 1; idx <= 5; idx++) {
+        let weaponOptions = "<option class='set" + idx + "_weapon_class' value='NONE'>★ 选择武器 ★</option>";
+        for (let i = 0; i < _WEAPON_DICT.length; i++) {
+            const weapon = _WEAPON_DICT[i];
+            if (ownWeapons[weapon] !== undefined) {
+                weaponOptions += "<option class='set" + idx + "_weapon_class' value='" + weapon + "'>" + weapon + "</option>";
+            }
+        }
+        $("#set" + idx + "_weapon").html(weaponOptions);
+
+        let armorOptions = "<option class='set" + idx + "_armor_class' value='NONE'>★ 选择防具 ★</option>";
+        for (let i = 0; i < _ARMOR_DICT.length; i++) {
+            const armor = _ARMOR_DICT[i];
+            if (ownArmors[armor]!==undefined) {
+                armorOptions += "<option class='set" + idx + "_armor_class' value='" + armor + "'>" + armor + "</option>";
+            }
+        }
+        $("#set" + idx + "_armor").html(armorOptions);
+
+        let accessoryOptions = "<option class='set" + idx + "_accessory_class' value='NONE'>★ 选择饰品 ★</option>";
+        for (let i = 0; i < _ACCESSORY_DICT.length; i++) {
+            const accessory = _ACCESSORY_DICT[i];
+            if (ownAccessories[accessory]!==undefined) {
+                accessoryOptions += "<option class='set" + idx + "_accessory_class' value='" + accessory + "'>" + accessory + "</option>";
+            }
+        }
+        $("#set" + idx + "_accessory").html(accessoryOptions);
+    }
+
+    for (let idx = 1; idx <= 5; idx++) {
+        let no = "";
+        if (idx === 1) {
+            no = "A";
+        } else if (idx === 2) {
+            no = "B";
+        } else if (idx === 3) {
+            no = "C";
+        } else if (idx === 4) {
+            no = "D";
+        } else {
+            no = "E";
+        }
+        const set = __cookie_getEquipmentSet(no, id);
+
+        $(".set" + idx + "_weapon_star_class[value='" + set[1] + "']").prop("selected", true);
+        $(".set" + idx + "_weapon_class[value='" + set[0] + "']").prop("selected", true);
+        $(".set" + idx + "_armor_star_class[value='" + set[3] + "']").prop("selected", true);
+        $(".set" + idx + "_armor_class[value='" + set[2] + "']").prop("selected", true);
+        $(".set" + idx + "_accessory_star_class[value='" + set[5] + "']").prop("selected", true);
+        $(".set" + idx + "_accessory_class[value='" + set[4] + "']").prop("selected", true);
+    }
 }
 
 // 个人状态 -> 状态查看
