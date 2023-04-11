@@ -390,6 +390,10 @@ const _NPC_DICT = {
     '妮可': {
         'image': POCKETROSE_DOMAIN + '/image/head/4237.gif',
         'intro': ''
+    },
+    '花子': {
+        'image': POCKETROSE_DOMAIN + '/image/head/1126.gif',
+        'intro': ''
     }
 };
 
@@ -2211,6 +2215,9 @@ function postProcessPersonalStatusRelatedFunctionalities(htmlText) {
     if (htmlText.indexOf("仙人的宝物") != -1) {
         __personalStatus_view(htmlText);
     }
+    if (htmlText.indexOf("") !== -1) {
+        __personalStatus_salary(htmlText);
+    }
     if (htmlText.indexOf("物品使用．装备") != -1) {
         __personalStatus_equipment(htmlText);
     }
@@ -2760,6 +2767,24 @@ function __personalStatus_view(htmlText) {
         honor.attr('style', 'word-break:break-all');
         honor.html(noBR);
     }
+}
+
+/**
+ * 领取俸禄后增强，添加存钱返回的功能。
+ * @param htmlText HTML
+ * @private
+ */
+function __personalStatus_salary(htmlText) {
+    __page_constructNpcMessageTable("花子");
+    __page_writeNpcMessage("打、打、打劫。不许笑，我跟这儿打劫呢。IC、IP、IQ卡，通通告诉我密码！");
+    __page_writeNpcMessage("<a href='javascript:void(0)' id='runaway' style='color: yellow'><b>[溜了溜了]</b></a>");
+    const id = __page_readIdFromCurrentPage();
+    const pass = __page_readPassFromCurrentPage();
+    $("#runaway").click(function () {
+        __ajax_depositAllGolds(id, pass, function (data) {
+            $("input:submit[value='返回城市']").trigger("click");
+        });
+    });
 }
 
 // 个人状态 -> 物品使用．装备
