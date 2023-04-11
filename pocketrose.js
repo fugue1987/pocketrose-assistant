@@ -1979,7 +1979,33 @@ function postProcessCityRelatedFunctionalities(htmlText) {
 
 function __town_inn(htmlText) {
     __page_constructNpcMessageTable("夜九年");
-    __page_writeNpcMessage("客栈体系正在升级改造中，敬请期待！");
+    __page_writeNpcMessage("客栈体系正在升级改造中，敬请期待！<br>");
+
+    const cityIds = Object.keys(_CITY_DICT);
+    let html = "";
+    html += "<table border='1'><tbody>";
+    html += "<thead><tr><td style='color: white'>选择</td><td style='color: white'>目的地</td><td colspan='2' style='color: white'>坐标</td></tr></thead>";
+
+    for (let i = 0; i < cityIds.length; i++) {
+        const cityId = cityIds[i];
+        const city = _CITY_DICT[cityId];
+        html += "<tr>";
+        html += "<td><input type='checkbox' class='cityClass' name='cityId' value='" + cityId + "'></td>";
+        html += "<td style='color: white'>" + city["name"] + "</td>";
+        html += "<td style='color: white'>" + city["x"] + "</td>";
+        html += "<td style='color: white'>" + city["y"] + "</td>";
+        html += "</tr>";
+    }
+
+    html += "</tbody></table>";
+    __page_writeNpcMessage(html);
+
+    const id = __page_readIdFromCurrentPage();
+    const pass = __page_readPassFromCurrentPage();
+    __ajax_readPersonalInformation(id, pass, function (data) {
+        const currentTownId = data["TOWN_ID"];
+        $(".cityClass[value='" + currentTownId + "']").prop("disabled", true);
+    });
 }
 
 
@@ -2934,7 +2960,7 @@ function __doGenerateOwnEquipmentSelectOptions(id, ownWeapons, ownArmors, ownAcc
         let armorOptions = "<option class='set" + idx + "_armor_class' value='NONE'>★ 选择防具 ★</option>";
         for (let i = 0; i < _ARMOR_DICT.length; i++) {
             const armor = _ARMOR_DICT[i];
-            if (ownArmors[armor]!==undefined) {
+            if (ownArmors[armor] !== undefined) {
                 armorOptions += "<option class='set" + idx + "_armor_class' value='" + armor + "'>" + armor + "</option>";
             }
         }
@@ -2943,7 +2969,7 @@ function __doGenerateOwnEquipmentSelectOptions(id, ownWeapons, ownArmors, ownAcc
         let accessoryOptions = "<option class='set" + idx + "_accessory_class' value='NONE'>★ 选择饰品 ★</option>";
         for (let i = 0; i < _ACCESSORY_DICT.length; i++) {
             const accessory = _ACCESSORY_DICT[i];
-            if (ownAccessories[accessory]!==undefined) {
+            if (ownAccessories[accessory] !== undefined) {
                 accessoryOptions += "<option class='set" + idx + "_accessory_class' value='" + accessory + "'>" + accessory + "</option>";
             }
         }
