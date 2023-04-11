@@ -1787,6 +1787,9 @@ function postProcessCityRelatedFunctionalities(htmlText) {
         // 战斗后的主页是通过town.cgi返回的
         __status(htmlText);
     }
+    if (htmlText.indexOf("* 宿 屋 *") !== -1) {
+        __town_inn(htmlText);
+    }
     if (htmlText.indexOf("* 宠物图鉴 *") !== -1) {
         // 宠物图鉴
         __town_petMap(htmlText);
@@ -1817,6 +1820,10 @@ function postProcessCityRelatedFunctionalities(htmlText) {
         // 物品卖出完成
         __city_itemSold(htmlText);
     }
+}
+
+function __town_inn(htmlText) {
+
 }
 
 // 城市 -> 宠物图鉴
