@@ -2035,14 +2035,24 @@ function __town_inn(htmlText) {
 
 function __travel_calculate_path_locations(sourceLocation, destinationLocation, moveScope, moveMode) {
     const nodeList = [];
-    nodeList.push(sourceLocation);
 
     if (sourceLocation[0] === destinationLocation[0] && sourceLocation[1] === destinationLocation[1]) {
+        nodeList.push(sourceLocation);
         return nodeList;
     }
 
     const milestone = __travel_lookup_milestone_node(sourceLocation, destinationLocation, moveMode);
-
+    if (milestone !== undefined) {
+        const p1 = __travel_move_from_to(sourceLocation, milestone, moveScope);
+        const p2 = __travel_move_from_to(milestone, destinationLocation, moveScope);
+        nodeList.push(...p1);
+        nodeList.push(...p2);
+        nodeList.push(destinationLocation);
+    } else {
+        const p = __travel_move_from_to(sourceLocation, destinationLocation, moveScope);
+        nodeList.push(...p);
+        nodeList.push(destinationLocation);
+    }
 
     return nodeList;
 }
