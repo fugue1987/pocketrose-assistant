@@ -2041,7 +2041,7 @@ function __travel_calculate_path_locations(sourceLocation, destinationLocation, 
         return nodeList;
     }
 
-    let from = sourceLocation;
+    const milestone = __travel_lookup_milestone_node(sourceLocation, destinationLocation, moveMode);
 
 
     return nodeList;
@@ -2087,6 +2087,59 @@ function __travel_lookup_milestone_node(from, to, moveMode) {
         return [x, y];
     }
     return undefined;
+}
+
+/**
+ * 根据移动范围计算两个坐标之间的移动节点，已经确保两个坐标在同一条线上
+ * @param from 源坐标
+ * @param to 目的坐标
+ * @param moveScope 移动范围
+ * @returns {*[]} [from, ..., to)
+ * @private
+ */
+function __travel_move_from_to(from, to, moveScope) {
+    const nodeList = [];
+    nodeList.push(from);
+    if (from[0] === to[0]) {
+        // 一条竖线上
+        const step = Math.ceil(Math.abs(from[1] - to[1]) / moveScope);
+        for (let i = 1; i <= step - 1; i++) {
+            if (to[1] > from[1]) {
+                nodeList.push([from[0], from[1] + (i * step)]);
+            } else {
+                nodeList.push([from[0], from[1] - (i * step)]);
+            }
+        }
+    } else if (from[1] === to[1]) {
+        // 一条横线上
+        const step = Math.ceil(Math.abs(from[0] - to[0]) / moveScope);
+        for (let i = 1; i <= step - 1; i++) {
+            if (to[0] > from[0]) {
+                nodeList.push([from[0] + (i * step), from[1]]);
+            } else {
+                nodeList.push([from[0] - (i * step), from[1]]);
+            }
+        }
+    } else {
+        // 一条斜线上
+        const step = Math.ceil(Math.abs(from[0] - to[0]) / moveScope);
+        for (let i = 1; i <= step - 1; i++) {
+            let x = from[0];
+            if (to[0] > from[0]) {
+                x = x + (i * step);
+            } else {
+                x = x - (i * step);
+            }
+            let y = from[1];
+            if (to[1] > from[1]) {
+                y = y + (i * step);
+            } else {
+                y = y - (i * step);
+            }
+            nodeList.push([x, y]);
+        }
+    }
+    return nodeList;
 }
 
 // 城市 -> 宠物图鉴
