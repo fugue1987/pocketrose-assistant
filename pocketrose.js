@@ -2042,99 +2042,52 @@ function __travel_calculate_path_locations(sourceLocation, destinationLocation, 
     }
 
     let from = sourceLocation;
-    let done = false;
-    // while (!done) {
-        let nodeMap = {};
-        let moveCandidates = __travel_calculate_move_scopes(from, moveScope, moveMode);
-        for (let i = 0; i < moveCandidates.length; i++) {
-            let to = moveCandidates[i];
-            let distance = __travel_calculate_distance(to, destinationLocation);
-            if (nodeMap[distance] === undefined) {
-                nodeMap[distance] = [];
-            }
-            nodeMap[distance].push(to);
-        }
-
-        const distanceSet = [];
-        const nodeMapKeys = Object.keys(nodeMap);
-        for(let i=0; i<nodeMapKeys.length; i++) {
-            distanceSet.push(parseInt(nodeMapKeys[i]));
-        }
-        let minDistance = Math.min(...distanceSet);
-        done = (minDistance === 0);
-    // }
 
 
     return nodeList;
 }
 
-function __travel_calculate_move_scopes(node, moveScope, moveMode) {
-    const candidates = [];
-    for (let i = 1; i <= moveScope; i++) {
-        let x = node[0];
-        let y = node[1] + i;
-        if (y >= 0 && y <= 15) {
-            candidates.push([x, y]);
+/**
+ * 根据移动模式寻找两个坐标之间的里程碑坐标，返回undefined表示源和目的地在一条线上
+ * @param from 源坐标
+ * @param to 目的坐标
+ * @param moveMode 移动模式，CASTLE或者QUEUE
+ * @returns {number[]|undefined|*[]}
+ * @private
+ */
+function __travel_lookup_milestone_node(from, to, moveMode) {
+    if (moveMode === "CASTLE") {
+        if (from[0] === to[0] || from[1] === to[1]) {
+            return undefined;
         }
-    }
-    for (let i = 1; i <= moveScope; i++) {
-        let x = node[0];
-        let y = node[1] - i;
-        if (y >= 0 && y <= 15) {
-            candidates.push([x, y]);
-        }
-    }
-    for (let i = 1; i <= moveScope; i++) {
-        let x = node[0] - i;
-        let y = node[1];
-        if (x >= 0 && x <= 15) {
-            candidates.push([x, y]);
-        }
-    }
-    for (let i = 1; i <= moveScope; i++) {
-        let x = node[0] + i;
-        let y = node[1];
-        if (x >= 0 && x <= 15) {
-            candidates.push([x, y]);
-        }
+        return [from[0], to[1]];
     }
     if (moveMode === "QUEUE") {
-        for (let i = 1; i <= moveScope; i++) {
-            let x = node[0] - i;
-            let y = node[1] + i;
-            if (x >= 0 && x <= 15 && y >= 0 && y <= 15) {
-                candidates.push([x, y]);
-            }
+        if (from[0] === to[0] || from[1] === to[1]) {
+            return undefined;
         }
-        for (let i = 1; i <= moveScope; i++) {
-            let x = node[0] + i;
-            let y = node[1] + i;
-            if (x >= 0 && x <= 15 && y >= 0 && y <= 15) {
-                candidates.push([x, y]);
-            }
+        const xDelta = Math.abs(from[0] - to[0]);
+        const yDelta = Math.abs(from[1] - to[1]);
+        if (xDelta === yDelta) {
+            return undefined;
         }
-        for (let i = 1; i <= moveScope; i++) {
-            let x = node[0] - i;
-            let y = node[1] - i;
-            if (x >= 0 && x <= 15 && y >= 0 && y <= 15) {
-                candidates.push([x, y]);
-            }
+        const delta = Math.min(xDelta, yDelta);
+        let x = from[0];
+        let y = from[1];
+        if (to[0] > from[0]) {
+            x = x + delta;
+        } else {
+            x = x - delta;
         }
-        for (let i = 1; i <= moveScope; i++) {
-            let x = node[0] + i;
-            let y = node[1] - i;
-            if (x >= 0 && x <= 15 && y >= 0 && y <= 15) {
-                candidates.push([x, y]);
-            }
+        if (to[1] > from[1]) {
+            y = y + delta;
+        } else {
+            y = y - delta;
         }
+        return [x, y];
     }
-    return candidates;
+    return undefined;
 }
-
-function __travel_calculate_distance(source, destination) {
-    return Math.abs(source[0] - destination[0]) + Math.abs(source[1] - destination[1]);
-}
-
 
 // 城市 -> 宠物图鉴
 function __town_petMap(htmlText) {
