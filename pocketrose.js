@@ -1979,7 +1979,10 @@ function postProcessCityRelatedFunctionalities(htmlText) {
 
 function __town_inn(htmlText) {
     __page_constructNpcMessageTable("夜九年");
-    __page_writeNpcMessage("客栈体系正在升级改造中，敬请期待！<br>");
+    __page_writeNpcMessage("客栈体系正在升级改造中，敬请期待！");
+    __page_writeNpcMessage("<input type='button' id='travel' style='color: blue' value='开始旅途'>");
+    __page_writeNpcMessage("<div id='currentLocation' style='display: none'></div>");
+    __page_writeNpcMessage("<br>");
 
     const cityIds = Object.keys(_CITY_DICT);
     let html = "";
@@ -1990,7 +1993,7 @@ function __town_inn(htmlText) {
         const cityId = cityIds[i];
         const city = _CITY_DICT[cityId];
         html += "<tr>";
-        html += "<td><input type='checkbox' class='cityClass' name='cityId' value='" + cityId + "'></td>";
+        html += "<td><input type='radio' class='cityClass' name='cityId' value='" + cityId + "'></td>";
         html += "<td style='color: white'>" + city["name"] + "</td>";
         html += "<td style='color: white'>" + city["x"] + "</td>";
         html += "<td style='color: white'>" + city["y"] + "</td>";
@@ -1998,13 +2001,29 @@ function __town_inn(htmlText) {
     }
 
     html += "</tbody></table>";
+    html += "<br>";
     __page_writeNpcMessage(html);
+
+    $("#travel").prop("disabled", true);
 
     const id = __page_readIdFromCurrentPage();
     const pass = __page_readPassFromCurrentPage();
+
+    $("#travel").click(function () {
+        $("#travel").prop("disabled", true);
+        const currentTownId = $("#currentLocation").text();
+        const destinationTownId = $("input:radio[name='cityId']:checked").val();
+        alert(destinationTownId);
+        if (destinationTownId !== undefined) {
+            console.log(currentTownId + " -> " + destinationTownId);
+        }
+    });
+
     __ajax_readPersonalInformation(id, pass, function (data) {
         const currentTownId = data["TOWN_ID"];
         $(".cityClass[value='" + currentTownId + "']").prop("disabled", true);
+        $("#currentLocation").text(currentTownId);
+        $("#travel").prop("disabled", false);
     });
 }
 
