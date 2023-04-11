@@ -115,9 +115,17 @@ chara_m	10
 %u2199    ↙
 
 出城
+map.cgi
 id
 pass
 unit ?
 navi      on
 out       1
 mode      MAP_MOVE
+
+进城
+status.cgi
+id
+pass
+townid
+mode      MOVE
