@@ -1,0 +1,95 @@
+主页
+POST: status.cgi
+PAYLOAD:
+  id: x
+  pass: x
+  mode: STATUS
+
+住宿
+POST: town.cgi
+PAYLOAD:
+    id
+    pass
+    inn_gold    optional
+    mode        RECOVERY
+
+全部存入
+POST: town.cgi
+PAYLOAD:
+  azukeru: all
+  id: x
+  pass: x
+  mode: BANK_SELL
+
+武器屋
+POST: town.cgi
+PAYLOAD:
+  id: x
+  pass: x
+  town: x
+  con_str: 50
+  mode: ARM_SHOP
+
+防具屋
+POST: town.cgi
+PAYLOAD:
+  id: x
+  pass: x
+  town: x
+  con_str: 50
+  mode: PRO_SHOP
+
+饰品屋
+POST: town.cgi
+PAYLOAD:
+  id: x
+  pass: x
+  town: x
+  con_str: 50
+  mode: ACC_SHOP
+
+物品屋
+POST: town.cgi
+PAYLOAD:
+  id: x
+  pass: x
+  town: x
+  con_str: 50
+  mode: ITEM_SHOP
+
+取钱
+POST: town.cgi
+PAYLOAD:
+  dasu: x
+  id:
+  pass:
+  mode: BANK_BUY
+
+
+宠物进化退化
+POST: mydata.cgi
+PAYLOAD:
+  id
+  pass
+  town    ?
+  mode    PETBORN
+
+ITEM/EQUIPMENT
+POST: mydata.cgi
+PAYLOAD:
+    id
+    pass
+    town        ?
+    mode        USE_ITEM
+
+转职完成
+POST: mydata.cgi
+PAYLOAD:
+  chara     1
+  id
+  pass
+  mode      JOB_CHANGE
+  syoku_no  30
+
+  x 已经熟练掌握了 强天位 ！
+  x 转职 吟游诗人 成功。
