@@ -1950,7 +1950,8 @@ function postProcessCityRelatedFunctionalities(htmlText) {
 }
 
 function __town_inn(htmlText) {
-
+    __page_constructNpcMessageTable("夜九年");
+    __page_writeNpcMessage("客栈体系正在升级改造中，敬请期待！");
 }
 
 
