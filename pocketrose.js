@@ -1438,13 +1438,29 @@ function __ajax_readPersonalInformation(id, pass, callback) {
             let goldText = $(statusTable.find('td')[60]).text();
             let gold = goldText.substring(0, goldText.indexOf(" G"));
 
+            // 寻找仙人的宝物那一栏的数据
+            let faeryTreasureCount = 0;
+            $(html).find("td:parent").each(function (_idx, td) {
+                const text = $(td).text();
+                if (text.startsWith("仙人的宝物：")) {
+                    let faeryTreasureText;
+                    if (text.endsWith(" ")) {
+                        faeryTreasureText = text.substring(6, text.length - 1);
+                    } else {
+                        faeryTreasureText = text.substring(6);
+                    }
+                    faeryTreasureCount = faeryTreasureText.split(" ").length;
+                }
+            });
+
             let data = {
                 "id": id, "pass": pass,
                 "LV": level,
                 "HP": currentHealth, "MAX_HP": maxHealth, "MP": currentMana, "MAX_MP": maxMana,
                 "AT": att, "DF": def, "SA": int, "SD": spi, "SP": spe,
                 "TOWN": town, "TOWN_ID": townId,
-                "EXP": exp, "GOLD": gold
+                "EXP": exp, "GOLD": gold,
+                "FTC": faeryTreasureCount
             };
             callback(data);
         })

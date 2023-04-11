@@ -129,3 +129,10 @@ id
 pass
 townid
 mode      MOVE
+
+进城时支付金钱
+id
+pass
+townid
+givemoney   1
+mode        MOVE
