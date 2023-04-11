@@ -1978,6 +1978,29 @@ function postProcessCityRelatedFunctionalities(htmlText) {
 }
 
 function __town_inn(htmlText) {
+    $("td:parent").each(function (_idx, td) {
+        const text = $(td).text();
+        if (text.indexOf("每天的战斗让你疲倦了吧? 来休息一下吧") !== -1) {
+            if (_idx === 17) {
+                $(td).attr("id", "messageBoard");
+                $(td).attr("style", "color: white");
+            }
+        }
+    });
+
+    let playerName = "";
+    let cash = 0;
+    $("td:parent").each(function (_idx, td) {
+        const text = $(td).text();
+        if (text === "姓名") {
+            playerName = $(td).parent().next().find("td:first").text();
+        }
+        if (text === "所持金") {
+            const cashText = $(td).next().text();
+            cash = cashText.substring(0, cashText.indexOf(" "));
+        }
+    });
+
     __page_constructNpcMessageTable("夜九年");
     __page_writeNpcMessage("客栈体系正在升级改造中，敬请期待！");
     __page_writeNpcMessage("<input type='button' id='travel' style='color: blue' value='开始旅途'>");
@@ -2014,14 +2037,52 @@ function __town_inn(htmlText) {
         const currentTownId = $("#currentLocation").text();
         const destinationTownId = $("input:radio[name='cityId']:checked").val();
         if (destinationTownId !== undefined) {
+            $("#messageBoard").html("我们将实时为你播报旅途的动态：<br>");
             const sourceTown = _CITY_DICT[currentTownId];
             const destinationTown = _CITY_DICT[destinationTownId];
 
             const sourceLocation = [parseInt(sourceTown["x"]), parseInt(sourceTown["y"])];
             const destinationLocation = [parseInt(destinationTown["x"]), parseInt(destinationTown["y"])];
 
-            // 计算出整个路上需要走过的节点
-            const path = __travel_calculate_path_locations(sourceLocation, destinationLocation, 3, "QUEUE");
+            let msg = playerName + "的起点位于'" + sourceTown["name"] + "'，坐标（" + sourceTown["x"] + "," + sourceTown["y"] + "）。";
+            __update_travel_message_board(msg);
+            msg = playerName + "的目标设定为'" + destinationTown["name"] + "'，坐标位于(" + destinationTown["x"] + "," + destinationTown["y"] + ")。";
+            __update_travel_message_board(msg);
+
+            __travel_leave_city(id, pass, function (id, pass, html) {
+                let msg = playerName + "已经离开了" + sourceTown["name"] + "。";
+                __update_travel_message_board(msg);
+
+                const moveScope = $(html).find("select[name='chara_m']").find("option:last").attr("value");
+                let moveMode = "CASTLE";
+                $(html).find("input:submit").each(function (_idx, input) {
+                    const v = $(input).attr("value");
+                    const d = $(input).attr("disabled");
+                    if (v === "↖" && d === undefined) {
+                        moveMode = "QUEUE";
+                    }
+                });
+
+                msg = playerName + "已经确认最大行动力" + moveScope + "，行动采用" + moveMode + "模式。";
+                __update_travel_message_board(msg);
+
+                // 已经确认了行动范围和行动的模式（CASTLE | QUEUE）
+                // 接着需要计算出整个路上需要走过的节点
+                const path = __travel_calculate_path_locations(sourceLocation, destinationLocation, moveScope, moveMode);
+                msg = playerName + "的旅途路径已经计算完毕，总共需要次移动" + (path.length - 1) + "次。";
+                __update_travel_message_board(msg);
+
+                msg = "旅途路径规划：";
+                for (let i = 0; i < path.length; i++) {
+                    let node = path[i];
+                    msg += "(" + node[0] + "," + node[1] + ")";
+                    if (i !== path.length - 1) {
+                        msg += " -> ";
+                    }
+                }
+                __update_travel_message_board(msg);
+            });
+
 
         }
     });
@@ -2032,6 +2093,41 @@ function __town_inn(htmlText) {
         $("#currentLocation").text(currentTownId);
         $("#travel").prop("disabled", false);
     });
+}
+
+function __update_travel_message_board(message) {
+    const messageBoard = $("#messageBoard").html();
+    $("#messageBoard").html(messageBoard + "<li>" + message + "</li>");
+}
+
+function __travel_leave_city(id, pass, callback) {
+    const request = {};
+    request["id"] = id;
+    request["pass"] = pass;
+    request["navi"] = "on";
+    request["out"] = "1";
+    request["mode"] = "MAP_MOVE";
+    fetch("map.cgi", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: new URLSearchParams(request),
+    })
+        .then((response) => {
+            if (!response.ok) {
+                throw new Error("RESPONSE was not ok");
+            }
+            return response.arrayBuffer();
+        })
+        .then((arrayBuffer) => {
+            const decoder = new TextDecoder("gb2312");
+            const html = decoder.decode(new Uint8Array(arrayBuffer));
+            callback(id, pass, html);
+        })
+        .catch((error) => {
+            console.error("Error raised:", error);
+        });
 }
 
 function __travel_calculate_path_locations(sourceLocation, destinationLocation, moveScope, moveMode) {

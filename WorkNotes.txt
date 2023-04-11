@@ -113,3 +113,11 @@ chara_m	10
 %u2197		↗
 %u2198		↘
 %u2199    ↙
+
+出城
+id
+pass
+unit ?
+navi      on
+out       1
+mode      MAP_MOVE
