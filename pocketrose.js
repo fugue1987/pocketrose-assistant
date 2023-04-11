@@ -2154,6 +2154,12 @@ function postProcessPersonalStatusRelatedFunctionalities(htmlText) {
 }
 
 function __personalStatus_cookieManagement(htmlText) {
+    const originalBodyHtml = $("body:first").html();
+    const startLocation = originalBodyHtml.indexOf("<form action=\"status.cgi\" method=\"post\">");
+    let reformatBodyHtml = originalBodyHtml.substring(startLocation);
+    reformatBodyHtml = "<hr size=0><h2>口袋助手设置<BR></h2><hr size=0><CENTER>"+reformatBodyHtml;
+    $("body:first").html(reformatBodyHtml);
+
     $("input:submit[value='返回城市']").attr("id", "returnButton");
     __page_constructNpcMessageTable("夜九年");
     __page_writeNpcMessage("在这里我来协助各位维护本机（浏览器）的口袋相关设置：<br>");
