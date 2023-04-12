@@ -2082,7 +2082,7 @@ function __town_inn(htmlText) {
                 __update_travel_message_board(msg);
 
                 const moveScope = $(html).find("select[name='chara_m']").find("option:last").attr("value");
-                let moveMode = "CASTLE";
+                let moveMode = "ROOK";
                 $(html).find("input:submit").each(function (_idx, input) {
                     const v = $(input).attr("value");
                     const d = $(input).attr("disabled");
@@ -2094,7 +2094,7 @@ function __town_inn(htmlText) {
                 msg = playerName + "已经确认最大行动力" + moveScope + "，行动采用" + moveMode + "模式。";
                 __update_travel_message_board(msg);
 
-                // 已经确认了行动范围和行动的模式（CASTLE | QUEEN）
+                // 已经确认了行动范围和行动的模式（ROOK | QUEEN）
                 // 接着需要计算出整个路上需要走过的节点
                 const path = __travel_calculate_path_locations(sourceLocation, destinationLocation, moveScope, moveMode);
                 msg = playerName + "的旅途路径已经计算完毕，总共需要次移动" + (path.length - 1) + "次。";
@@ -2322,12 +2322,12 @@ function __travel_calculate_path_locations(sourceLocation, destinationLocation, 
  * 根据移动模式寻找两个坐标之间的里程碑坐标，返回undefined表示源和目的地在一条线上
  * @param from 源坐标
  * @param to 目的坐标
- * @param moveMode 移动模式，CASTLE或者QUEEN
+ * @param moveMode 移动模式，ROOK或者QUEEN
  * @returns {number[]|undefined|*[]}
  * @private
  */
 function __travel_lookup_milestone_node(from, to, moveMode) {
-    if (moveMode === "CASTLE") {
+    if (moveMode === "ROOK") {
         if (from[0] === to[0] || from[1] === to[1]) {
             return undefined;
         }
