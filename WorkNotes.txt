@@ -149,3 +149,23 @@ castlestatus.cgi
 id
 pass
 mode  CASTLESTATUS
+
+拜访
+map.cgi
+id
+pass
+mode    MAP_VISIT
+＜＜<B>住所</B>＞＞
+
+探险
+map.cgi
+id
+pass
+mode    MAP_SEARCH
+
+<CENTER><hr size=0><h2><BR>发现<FONT COLOR=red>9537670</font>G！</h2><p>
+<CENTER><hr size=0><h2><BR>发现<FONT COLOR=red><SPAN TITLE="升级时经验1.7倍">九齿钉耙</SPAN></font>！</h2><p>
+<CENTER><hr size=0><h2><BR>发现<FONT COLOR=red><img src="https://pocketrose.itsns.net.cn/pocketrose/image/item/3StarsDragonBall.gif" alt="三星龙珠"><span title="三星龙珠">三星龙珠</span></font>！</h2><p>
+<CENTER><hr size=0><h2><BR>发现<FONT COLOR=red><img src="https://pocketrose.itsns.net.cn/pocketrose/image/item/PowerStone.gif" alt="威力宝石"><span title="威力宝石">威力宝石</span></font>！</h2><p>
+<P><font color=red><B>所持金超过1000000。请先存入银行。</B></font>
+<CENTER><hr size=0><h2><BR>发现<FONT COLOR=red>双尾猴(424)</font>的 宠物蛋！</h2><p>
