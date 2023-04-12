@@ -2069,13 +2069,15 @@ function __town_inn(htmlText) {
             msg = playerName + "的目标设定为'" + destinationTown["name"] + "'，坐标位于(" + destinationTown["x"] + "," + destinationTown["y"] + ")。";
             __update_travel_message_board(msg);
 
+            let amount = 0;
             if (faeryTreasureCount === 28) {
                 __update_travel_message_board(playerName + "拥有完整的仙人宝物。");
             } else {
-                let amount = Math.ceil((100000 - cash) / 10000);
+                // 为了确保能安全进入目的地，需要提前为你取钱
+                amount = Math.ceil((100000 - cash) / 10000);
             }
 
-            __travel_leave_city(id, pass, function (id, pass, html) {
+            prepareMoneyAndTakeOff(id, pass, amount, function (id, pass, html) {
                 let msg = playerName + "已经离开了" + sourceTown["name"] + "。";
                 __update_travel_message_board(msg);
 
@@ -2249,6 +2251,17 @@ function __travel_enter_city(id, pass, townId, callback) {
         .catch((error) => {
             console.error("Error raised:", error);
         });
+}
+
+function prepareMoneyAndTakeOff(id, pass, amount, callback) {
+    if (amount > 0) {
+        __ajax_withdrawGolds(id, pass, amount, function (data) {
+            __update_travel_message_board("提前支取了" + amount + "万的现金作为可能的入城保障。");
+            __travel_leave_city(id, pass, callback);
+        });
+    } else {
+        __travel_leave_city(id, pass, callback);
+    }
 }
 
 function __travel_leave_city(id, pass, callback) {
