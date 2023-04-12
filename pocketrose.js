@@ -2373,73 +2373,6 @@ function moveThePathList(id, pass, player, pathList, index, callback) {
     }, 55000);
 }
 
-function __travel_perform_move(id, pass, playerName, path, index, reachDestination) {
-    __update_travel_message_board(playerName + "等待行动冷却中...... (约55秒)");
-    setTimeout(function () {
-        const from = path[index];
-        const to = path[index + 1];
-
-        const x1 = from[0];
-        const y1 = from[1];
-        const x2 = to[0];
-        const y2 = to[1];
-
-        let direction;
-        if (x1 === x2) {
-            // 上或者下
-            if (y2 > y1) {
-                direction = ["%u2191", "↑"];
-            } else {
-                direction = ["%u2193", "↓"];
-            }
-        } else if (y1 === y2) {
-            // 左或者右
-            if (x2 > x1) {
-                direction = ["%u2192", "→"];
-            } else {
-                direction = ["%u2190", "←"];
-            }
-        } else {
-            // 4种斜向移动
-            if (x2 > x1 && y2 > y1) {
-                direction = ["%u2197", "↗"];
-            }
-            if (x2 > x1 && y2 < y1) {
-                direction = ["%u2198", "↘"];
-            }
-            if (x2 < x1 && y2 > y1) {
-                direction = ["%u2196", "↖"];
-            }
-            if (x2 < x1 && y2 < y1) {
-                direction = ["%u2199", "↙"];
-            }
-        }
-
-        const distance = Math.max(Math.abs(x1 - x2), Math.abs(y1 - y2));
-        __update_travel_message_board("准备" + direction[1] + "移动" + distance + "格。");
-
-        const request = {};
-        request["id"] = id;
-        request["pass"] = pass;
-        request["con"] = "2";
-        request["navi"] = "on";
-        request["mode"] = "CHARA_MOVE";
-        request["direct"] = direction[0];
-        request["chara_m"] = distance;
-        $.post("map.cgi", request, function (html) {
-            const nextIndex = index + 1;
-            if (nextIndex === path.length - 1) {
-                __update_travel_message_board(playerName + "到达目的地(" + to[0] + "," + to[1] + ")。");
-                reachDestination(id, pass, playerName);
-            } else {
-                __update_travel_message_board(playerName + "到达坐标(" + to[0] + "," + to[1] + ")。");
-                __travel_perform_move(id, pass, playerName, path, nextIndex, reachDestination);
-            }
-        });
-
-    }, 55000);
-}
-
 function enterTown(id, pass, townId, callback) {
     const request = {};
     request["id"] = id;
@@ -2472,46 +2405,6 @@ function enterTown(id, pass, townId, callback) {
         .catch((error) => {
             console.error("Error raised:", error);
         });
-}
-
-function __travel_enter_city(id, pass, townId, callback) {
-    const request = {};
-    request["id"] = id;
-    request["pass"] = pass;
-    request["townid"] = townId;
-    request["mode"] = "MOVE";
-    fetch("status.cgi", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-        },
-        body: new URLSearchParams(request),
-    })
-        .then((response) => {
-            if (!response.ok) {
-                throw new Error("RESPONSE was not ok");
-            }
-            return response.arrayBuffer();
-        })
-        .then((arrayBuffer) => {
-            const decoder = new TextDecoder("gb2312");
-            const html = decoder.decode(new Uint8Array(arrayBuffer));
-            callback(id, pass, townId, html);
-        })
-        .catch((error) => {
-            console.error("Error raised:", error);
-        });
-}
-
-function prepareMoneyAndTakeOff(id, pass, amount, callback) {
-    if (amount > 0) {
-        __ajax_withdrawGolds(id, pass, amount, function (data) {
-            __update_travel_message_board("提前支取了" + amount + "万的现金作为可能的入城保障。");
-            __travel_leave_city(id, pass, callback);
-        });
-    } else {
-        __travel_leave_city(id, pass, callback);
-    }
 }
 
 /**
@@ -2571,36 +2464,6 @@ function leaveTown(id, pass, player, townId, callback) {
             data["moveMode"] = moveMode;
 
             callback(data);
-        })
-        .catch((error) => {
-            console.error("Error raised:", error);
-        });
-}
-
-function __travel_leave_city(id, pass, callback) {
-    const request = {};
-    request["id"] = id;
-    request["pass"] = pass;
-    request["navi"] = "on";
-    request["out"] = "1";
-    request["mode"] = "MAP_MOVE";
-    fetch("map.cgi", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-        },
-        body: new URLSearchParams(request),
-    })
-        .then((response) => {
-            if (!response.ok) {
-                throw new Error("RESPONSE was not ok");
-            }
-            return response.arrayBuffer();
-        })
-        .then((arrayBuffer) => {
-            const decoder = new TextDecoder("gb2312");
-            const html = decoder.decode(new Uint8Array(arrayBuffer));
-            callback(id, pass, html);
         })
         .catch((error) => {
             console.error("Error raised:", error);
