@@ -2176,64 +2176,15 @@ function __town_inn(htmlText) {
                 amount = Math.ceil((100000 - cash) / 10000);
             }
 
-            prepareMoneyAndTakeOff(id, pass, amount, function (id, pass, html) {
-                let msg = playerName + "已经离开了" + sourceTown["name"] + "。";
-                __update_travel_message_board(msg);
-
-                const moveScope = $(html).find("select[name='chara_m']").find("option:last").attr("value");
-                let moveMode = "ROOK";
-                $(html).find("input:submit").each(function (_idx, input) {
-                    const v = $(input).attr("value");
-                    const d = $(input).attr("disabled");
-                    if (v === "↖" && d === undefined) {
-                        moveMode = "QUEEN";
-                    }
+            if (amount > 0) {
+                __ajax_withdrawGolds(id, pass, amount, function (data) {
+                    __update_travel_message_board("我们替你从银行取款10万以备可能需要的入城税。");
+                    __update_travel_message_board("别担心，如果不需要的话到达目的地后会帮你存起来。");
+                    moveToTown(id, pass, playerName, currentTownId, destinationTownId);
                 });
-
-                msg = playerName + "已经确认最大行动力" + moveScope + "，行动采用" + moveMode + "模式。";
-                __update_travel_message_board(msg);
-
-                // 已经确认了行动范围和行动的模式（ROOK | QUEEN）
-                // 接着需要计算出整个路上需要走过的节点
-                const path = __travel_calculate_path_locations(sourceLocation, destinationLocation, moveScope, moveMode);
-
-                __travel_perform_move(id, pass, playerName, path, 0, function (id, pass, playerName) {
-                    // 到达目的地了，准备执行进城操作
-                    __update_travel_message_board(playerName + "准备进城，等待行动冷却中...... (约55秒)");
-                    setTimeout(function () {
-                        __travel_enter_city(id, pass, destinationTownId, function (id, pass, townId, html) {
-                            if ($(html).text().indexOf("战胜门卫。") !== -1) {
-                                // 到达了其他国家的城市，并且没有仙人宝物。。无法直接进入，选择交钱吧。。打打杀杀挺不好的
-                                __update_travel_message_board("与门卫交涉中......");
-                                const request = {};
-                                request["id"] = id;
-                                request["pass"] = pass;
-                                request["townid"] = townId;
-                                request["givemoney"] = "1";
-                                request["mode"] = "MOVE";
-                                $.post("status.cgi", request, function (html) {
-                                    __update_travel_message_board("门卫通情达理的收取了合理的入城税。");
-                                    __ajax_depositAllGolds(id, pass, function (data) {
-                                        __update_travel_message_board("我们贴心为您把剩余的现金存入了银行。");
-                                        $("#returnButton").prop("disabled", false);
-                                        $("#returnButton").attr("value", destinationTown["name"] + "欢迎您的到来");
-                                        __update_travel_message_board(playerName + "成功到达" + destinationTown["name"] + "。");
-                                        __update_travel_message_board("期待下次旅途与您再见。");
-                                    });
-                                });
-                            } else {
-                                __ajax_depositAllGolds(id, pass, function (data) {
-                                    __update_travel_message_board("我们贴心为您把剩余的现金存入了银行。");
-                                    $("#returnButton").prop("disabled", false);
-                                    $("#returnButton").attr("value", destinationTown["name"] + "欢迎您的到来");
-                                    __update_travel_message_board(playerName + "成功到达" + destinationTown["name"] + "。");
-                                    __update_travel_message_board("期待下次旅途与您再见。");
-                                });
-                            }
-                        });
-                    }, 55000);
-                });
-            });
+            } else {
+                moveToTown(id, pass, playerName, currentTownId, destinationTownId);
+            }
         }
     });
 
@@ -2300,6 +2251,54 @@ function __update_travel_message_board(message) {
     const messageBoard = $("#messageBoard").html();
     const now = new Date();
     $("#messageBoard").html(messageBoard + "<li>(" + now.toLocaleString() + ") " + message + "</li>");
+}
+
+function moveToTown(id, pass, player, sourceTownId, destinationTownId) {
+    leaveTown(id, pass, player, sourceTownId, function (data) {
+        const sourceLocation = data["location"];
+        const moveScope = data["moveScope"];
+        const moveMode = data["moveMode"];
+        const destinationTown = _CITY_DICT[destinationTownId];
+        const destinationLocation = [parseInt(destinationTown["x"]), parseInt(destinationTown["y"])];
+
+        moveFromTo(id, pass, player, sourceLocation, destinationLocation, moveScope, moveMode, function (data) {
+            // 到达目的地了，准备执行进城操作
+            __update_travel_message_board(player + "准备进城，等待行动冷却中...... (约55秒)");
+            setTimeout(function () {
+                enterTown(id, pass, destinationTownId, function (data) {
+                    const html = data["html"];
+                    if ($(html).text().indexOf("战胜门卫。") !== -1) {
+                        // 到达了其他国家的城市，并且没有仙人宝物。。无法直接进入，选择交钱吧。。打打杀杀挺不好的
+                        __update_travel_message_board("与门卫交涉中......");
+                        const request = {};
+                        request["id"] = id;
+                        request["pass"] = pass;
+                        request["townid"] = destinationTownId;
+                        request["givemoney"] = "1";
+                        request["mode"] = "MOVE";
+                        $.post("status.cgi", request, function (html) {
+                            __update_travel_message_board("门卫通情达理的收取了合理的入城税。");
+                            __ajax_depositAllGolds(id, pass, function () {
+                                __update_travel_message_board("我们贴心为您把剩余的现金存入了银行。");
+                                $("#returnButton").prop("disabled", false);
+                                $("#returnButton").attr("value", destinationTown["name"] + "欢迎您的到来");
+                                __update_travel_message_board(player + "成功到达" + destinationTown["name"] + "。");
+                                __update_travel_message_board("期待下次旅途与您再见。");
+                            });
+                        });
+                    } else {
+                        __ajax_depositAllGolds(id, pass, function () {
+                            __update_travel_message_board("我们贴心为您把剩余的现金存入了银行。");
+                            $("#returnButton").prop("disabled", false);
+                            $("#returnButton").attr("value", destinationTown["name"] + "欢迎您的到来");
+                            __update_travel_message_board(player + "成功到达" + destinationTown["name"] + "。");
+                            __update_travel_message_board("期待下次旅途与您再见。");
+                        });
+                    }
+                });
+            }, 55000);
+        });
+    });
 }
 
 function moveFromTo(id, pass, player, from, to, scope, mode, callback) {
@@ -2439,6 +2438,40 @@ function __travel_perform_move(id, pass, playerName, path, index, reachDestinati
         });
 
     }, 55000);
+}
+
+function enterTown(id, pass, townId, callback) {
+    const request = {};
+    request["id"] = id;
+    request["pass"] = pass;
+    request["townid"] = townId;
+    request["mode"] = "MOVE";
+    fetch("status.cgi", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: new URLSearchParams(request),
+    })
+        .then((response) => {
+            if (!response.ok) {
+                throw new Error("RESPONSE was not ok");
+            }
+            return response.arrayBuffer();
+        })
+        .then((arrayBuffer) => {
+            const decoder = new TextDecoder("gb2312");
+            const html = decoder.decode(new Uint8Array(arrayBuffer));
+            const data = {};
+            data["id"] = id;
+            data["pass"] = pass;
+            data["townId"] = townId;
+            data["html"] = html;
+            callback(data);
+        })
+        .catch((error) => {
+            console.error("Error raised:", error);
+        });
 }
 
 function __travel_enter_city(id, pass, townId, callback) {
