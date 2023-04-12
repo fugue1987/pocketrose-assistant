@@ -3081,7 +3081,7 @@ function enhanceTownAdventurerGuild(htmlText) {
             $("#coach_2").prop("disabled", true);
             $("#coach_3").prop("disabled", true);
 
-            $("#messageBoard").html("放心，实时播报动态我们是专业的，绝对不比隔离新开张的驿站差：<br>");
+            $("#messageBoard").html("放心，实时播报动态我们是专业的，绝对不比隔壁新开张的驿站差：<br>");
             __update_travel_message_board(player + "登上了车身斑驳的马车，一股说不出的味道扑鼻而来。");
             __update_travel_message_board(player + "皱了皱眉头，很不舒服的感觉。");
             __update_travel_message_board("嘎吱嘎吱声中，马车出发了。");
