@@ -1766,7 +1766,7 @@ function __status(htmlText) {
     $("option[value='LETTER']").text("口袋助手设置");
     $("option[value='LETTER']").attr("style", "background:#20c0ff");
 
-    // 主页面如果角色满级则经验(大于等于14900)显示为红色
+    // 主页面如果角色满级则经验(大于等于14900)显示为蓝色
     $("td:parent").each(function (_idx, td) {
         const text = $(td).text();
         if (text === "经验值") {
@@ -1810,6 +1810,20 @@ function __status(htmlText) {
             }
         });
     }
+
+    // 主页面如果角色现金超过100万显示为红色
+    $("td:parent").each(function (_idx, td) {
+        const text = $(td).text();
+        if (text === "资金") {
+            const cashText = $(td).next().text();
+            const cash = cashText.substring(0, cashText.indexOf(" Gold"));
+            if (cash >= 1000000) {
+                let cashHtml = $(td).next().html();
+                cashHtml = "<font color='red'>" + cashHtml + "</font>";
+                $(td).next().html(cashHtml);
+            }
+        }
+    });
 }
 
 // ============================================================================
