@@ -2164,7 +2164,8 @@ function __town_inn(htmlText) {
 
 function __update_travel_message_board(message) {
     const messageBoard = $("#messageBoard").html();
-    $("#messageBoard").html(messageBoard + "<li>" + message + "</li>");
+    const now = new Date();
+    $("#messageBoard").html(messageBoard + "<li>(" + now.toLocaleString() + ") " + message + "</li>");
 }
 
 function __travel_perform_move(id, pass, playerName, path, index, reachDestination) {
