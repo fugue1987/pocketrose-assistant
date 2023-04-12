@@ -3080,7 +3080,16 @@ function enhanceTownAdventurerGuild(htmlText) {
             $("#coach_2").prop("disabled", true);
             $("#coach_3").prop("disabled", true);
 
-
+            leaveTown(id, pass, player, townId, function (data) {
+                const moveScope = data["moveScope"];
+                const moveMode = data["moveMode"];
+                moveFromTo(id, pass, player, townLocation, [x, y], moveScope, moveMode, function (data) {
+                    __update_travel_message_board("在不断嘎吱声中马车终于到目的地了。");
+                    __update_travel_message_board(player + "暗暗发誓再也不乘坐这架马车了！");
+                    $("#returnButton").attr("value", "摇摇晃晃走下马车");
+                    $("#returnButton").prop("disabled", false);
+                });
+            });
         }
     });
 
