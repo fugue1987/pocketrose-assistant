@@ -1774,7 +1774,7 @@ function __status(htmlText) {
             const exp = expText.substring(0, expText.indexOf(" EX"));
             if (exp >= 14900) {
                 let expHtml = $(td).next().html();
-                expHtml = "<font color='red'>" + expHtml + "</font>";
+                expHtml = "<font color='blue'>" + expHtml + "</font>";
                 $(td).next().html(expHtml);
             }
         }
