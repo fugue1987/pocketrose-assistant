@@ -3010,6 +3010,20 @@ function enhanceTownAdventurerGuild(htmlText) {
     $("input:submit[value='交换']").attr("id", "exchangeButton");
     $("input:submit[value='返回城市']").attr("id", "returnButton");
 
+    let player = "";
+    $("td:parent").each(function (_idx, td) {
+        const text = $(td).text();
+        if (text.indexOf("因为手持城市图不能使用而烦恼吗？") !== -1) {
+            if (_idx === 16) {
+                $(td).attr("id", "messageBoard");
+                $(td).attr("style", "color: white");
+            }
+        }
+        if (text === "姓名") {
+            player = $(td).parent().next().find("td:first").text();
+        }
+    });
+
     __page_constructNpcMessageTable("花子");
     __page_writeNpcMessage("欢、欢、欢迎光临冒险家公会，等等，你这、这是什么表情？你肯定是认错人了，前几天你领薪水后碰、碰到的绝对" +
         "不、不、不是我！[漫长的沉默中] 你、你怎么不相信我的话，人与人之间基本的信、信任呢？[再次漫长的沉默] 算了，你这次要去哪里？" +
@@ -3065,6 +3079,8 @@ function enhanceTownAdventurerGuild(htmlText) {
             $("#coach_1").prop("disabled", true);
             $("#coach_2").prop("disabled", true);
             $("#coach_3").prop("disabled", true);
+
+
         }
     });
 
