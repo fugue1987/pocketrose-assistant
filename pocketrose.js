@@ -2257,7 +2257,7 @@ function __town_inn(htmlText) {
             const moveMode = data["moveMode"];
             const pathList = __travel_calculate_path_locations(sourceLocation, castleLocation, moveScope, moveMode);
 
-            move(data["id"], data["pass"], data["player"], pathList, 0, function (data) {
+            moveThePathList(data["id"], data["pass"], data["player"], pathList, 0, function (data) {
                 const id = data["id"];
                 const pass = data["pass"];
                 const player = data["player"];
@@ -2302,7 +2302,7 @@ function __update_travel_message_board(message) {
     $("#messageBoard").html(messageBoard + "<li>(" + now.toLocaleString() + ") " + message + "</li>");
 }
 
-function move(id, pass, player, pathList, index, callback) {
+function moveThePathList(id, pass, player, pathList, index, callback) {
     __update_travel_message_board(player + "等待行动冷却中...... (约55秒)");
     setTimeout(function () {
         const from = pathList[index];
@@ -2362,7 +2362,7 @@ function move(id, pass, player, pathList, index, callback) {
                 callback({"id": id, "pass": pass, "player": player, "html": html});
             } else {
                 __update_travel_message_board(player + "到达坐标(" + to[0] + "," + to[1] + ")。");
-                move(id, pass, player, pathList, nextIndex, callback);
+                moveThePathList(id, pass, player, pathList, nextIndex, callback);
             }
         });
 
