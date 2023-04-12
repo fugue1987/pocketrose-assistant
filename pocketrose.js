@@ -2023,6 +2023,7 @@ function __town_inn(htmlText) {
     __page_writeNpcMessage("客栈体系正在升级改造中，敬请期待！");
     __page_writeNpcMessage("<input type='button' id='travel' style='color: blue' value='开始旅途'>");
     __page_writeNpcMessage("<div id='currentLocation' style='display: none'></div>");
+    __page_writeNpcMessage("<div id='faeryTreasureCount' style='display: none'></div>");
     __page_writeNpcMessage("<br>");
 
     const cityIds = Object.keys(_CITY_DICT);
@@ -2053,6 +2054,7 @@ function __town_inn(htmlText) {
     $("#travel").click(function () {
         $("#travel").prop("disabled", true);
         const currentTownId = $("#currentLocation").text();
+        const faeryTreasureCount = $("#faeryTreasureCount").text();
         const destinationTownId = $("input:radio[name='cityId']:checked").val();
         if (destinationTownId !== undefined) {
             $("#messageBoard").html("我们将实时为你播报旅途的动态：<br>");
@@ -2067,6 +2069,12 @@ function __town_inn(htmlText) {
             msg = playerName + "的目标设定为'" + destinationTown["name"] + "'，坐标位于(" + destinationTown["x"] + "," + destinationTown["y"] + ")。";
             __update_travel_message_board(msg);
 
+            if (faeryTreasureCount === 28) {
+                __update_travel_message_board(playerName + "拥有完整的仙人宝物。");
+            } else {
+                let amount = Math.ceil((100000 - cash) / 10000);
+            }
+
             __travel_leave_city(id, pass, function (id, pass, html) {
                 let msg = playerName + "已经离开了" + sourceTown["name"] + "。";
                 __update_travel_message_board(msg);
@@ -2077,14 +2085,14 @@ function __town_inn(htmlText) {
                     const v = $(input).attr("value");
                     const d = $(input).attr("disabled");
                     if (v === "↖" && d === undefined) {
-                        moveMode = "QUEUE";
+                        moveMode = "QUEEN";
                     }
                 });
 
                 msg = playerName + "已经确认最大行动力" + moveScope + "，行动采用" + moveMode + "模式。";
                 __update_travel_message_board(msg);
 
-                // 已经确认了行动范围和行动的模式（CASTLE | QUEUE）
+                // 已经确认了行动范围和行动的模式（CASTLE | QUEEN）
                 // 接着需要计算出整个路上需要走过的节点
                 const path = __travel_calculate_path_locations(sourceLocation, destinationLocation, moveScope, moveMode);
                 msg = playerName + "的旅途路径已经计算完毕，总共需要次移动" + (path.length - 1) + "次。";
@@ -2134,8 +2142,10 @@ function __town_inn(htmlText) {
 
     __ajax_readPersonalInformation(id, pass, function (data) {
         const currentTownId = data["TOWN_ID"];
+        const faeryTreasureCount = data["FTC"];
         $(".cityClass[value='" + currentTownId + "']").prop("disabled", true);
         $("#currentLocation").text(currentTownId);
+        $("#faeryTreasureCount").text(faeryTreasureCount);
         $("#travel").prop("disabled", false);
     });
 }
@@ -2299,7 +2309,7 @@ function __travel_calculate_path_locations(sourceLocation, destinationLocation, 
  * 根据移动模式寻找两个坐标之间的里程碑坐标，返回undefined表示源和目的地在一条线上
  * @param from 源坐标
  * @param to 目的坐标
- * @param moveMode 移动模式，CASTLE或者QUEUE
+ * @param moveMode 移动模式，CASTLE或者QUEEN
  * @returns {number[]|undefined|*[]}
  * @private
  */
@@ -2310,7 +2320,7 @@ function __travel_lookup_milestone_node(from, to, moveMode) {
         }
         return [from[0], to[1]];
     }
-    if (moveMode === "QUEUE") {
+    if (moveMode === "QUEEN") {
         if (from[0] === to[0] || from[1] === to[1]) {
             return undefined;
         }
