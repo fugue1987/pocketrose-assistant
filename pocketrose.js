@@ -5,7 +5,7 @@
 // @icon         data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==
 // @license      mit
 // @author       xiaohaiz,fugue
-// @version      1.6.0.RC2
+// @version      1.6.0.RC3
 // @grant        unsafeWindow
 // @match        *://pocketrose.itsns.net.cn/*
 // @require      https://cdn.bootcdn.net/ajax/libs/jquery/3.6.4/jquery.min.js
@@ -1765,6 +1765,7 @@ function __status(htmlText) {
     $("option[value='INN']").text("客栈·驿站");
     $("option[value='LETTER']").text("口袋助手设置");
     $("option[value='LETTER']").attr("style", "background:#20c0ff");
+    $("option[value='CHANGEMAP']").text("冒险家公会");
 
     // 主页面如果角色满级则经验(大于等于14900)显示为蓝色
     $("td:parent").each(function (_idx, td) {
@@ -3080,11 +3081,16 @@ function enhanceTownAdventurerGuild(htmlText) {
             $("#coach_2").prop("disabled", true);
             $("#coach_3").prop("disabled", true);
 
+            $("#messageBoard").html("放心，实时播报动态我们是专业的，绝对不比隔离新开张的驿站差：<br>");
+            __update_travel_message_board(player + "登上了车身斑驳的马车，一股说不出的味道扑鼻而来。");
+            __update_travel_message_board(player + "皱了皱眉头，很不舒服的感觉。");
+            __update_travel_message_board("嘎吱嘎吱声中，马车出发了。");
+
             leaveTown(id, pass, player, townId, function (data) {
                 const moveScope = data["moveScope"];
                 const moveMode = data["moveMode"];
                 moveFromTo(id, pass, player, townLocation, [x, y], moveScope, moveMode, function (data) {
-                    __update_travel_message_board("在不断嘎吱声中马车终于到目的地了。");
+                    __update_travel_message_board("\"我们到了\"，车夫粗鲁的喊声惊醒了昏昏欲睡的" + player + "。");
                     __update_travel_message_board(player + "暗暗发誓再也不乘坐这架马车了！");
                     $("#returnButton").attr("value", "摇摇晃晃走下马车");
                     $("#returnButton").prop("disabled", false);
