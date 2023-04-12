@@ -1779,6 +1779,34 @@ function __status(htmlText) {
             }
         }
     });
+
+    // 读取角色当前的能力值
+    const text = $("#c_001").find("table:last").find("td:first").text();
+    let idx = text.indexOf("攻击力：");
+    let s = text.substring(idx);
+    const attack = parseInt(s.substring(4, s.indexOf(" ")));
+    idx = s.indexOf("防御力：");
+    s = s.substring(idx);
+    const defense = parseInt(s.substring(4, s.indexOf(" ")));
+    idx = s.indexOf("智力：");
+    s = s.substring(idx);
+    const specialAttack = parseInt(s.substring(3, s.indexOf(" ")));
+    idx = s.indexOf("精神力：");
+    s = s.substring(idx);
+    const specialDefense = parseInt(s.substring(4, s.indexOf(" ")));
+    idx = s.indexOf("速度：");
+    s = s.substring(idx);
+    const speed = parseInt(s.substring(3));
+    if (attack === 375 || defense === 375 || specialAttack === 375 || specialDefense === 375 || speed === 375) {
+        $("td:parent").each(function (_idx, td) {
+            const text = $(td).text();
+            if (text === "资金") {
+                let expHtml = $(td).next().html();
+                expHtml = "<font color='red'>" + expHtml + "</font>";
+                $(td).next().html(expHtml);
+            }
+        });
+    }
 }
 
 // ============================================================================
