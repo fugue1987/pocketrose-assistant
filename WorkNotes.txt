@@ -137,3 +137,15 @@ pass
 townid
 givemoney   1
 mode        MOVE
+
+
+进入城堡
+map.cgi
+id
+pass
+mode    CASTLE_ENTRY
+
+castlestatus.cgi
+id
+pass
+mode  CASTLESTATUS

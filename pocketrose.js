@@ -2168,18 +2168,6 @@ function __town_inn(htmlText) {
                 // 已经确认了行动范围和行动的模式（ROOK | QUEEN）
                 // 接着需要计算出整个路上需要走过的节点
                 const path = __travel_calculate_path_locations(sourceLocation, destinationLocation, moveScope, moveMode);
-                msg = playerName + "的旅途路径已经计算完毕，总共需要次移动" + (path.length - 1) + "次。";
-                __update_travel_message_board(msg);
-
-                msg = "旅途路径规划：";
-                for (let i = 0; i < path.length; i++) {
-                    let node = path[i];
-                    msg += "(" + node[0] + "," + node[1] + ")";
-                    if (i !== path.length - 1) {
-                        msg += " -> ";
-                    }
-                }
-                __update_travel_message_board(msg);
 
                 __travel_perform_move(id, pass, playerName, path, 0, function (id, pass, playerName) {
                     // 到达目的地了，准备执行进城操作
@@ -2236,7 +2224,25 @@ function __town_inn(htmlText) {
         __update_travel_message_board(playerName + "的目标设定为城堡'" + castleName + "'，坐标位于(" + castleLocation[0] + "," + castleLocation[1] + ")。");
 
         leaveTown(id, pass, playerName, currentTownId, function (data) {
+            const sourceLocation = data["location"];
+            const moveScope = data["moveScope"];
+            const moveMode = data["moveMode"];
+            const pathList = __travel_calculate_path_locations(sourceLocation, castleLocation, moveScope, moveMode);
 
+            move(data["id"], data["pass"], data["player"], pathList, 0, function (data) {
+                const id = data["id"];
+                const pass = data["pass"];
+                const player = data["player"];
+                $.post("map.cgi", {"id": id, "pass": pass, "mode": "CASTLE_ENTRY"}, function (html) {
+                    __update_travel_message_board(player + "成功到达城堡'" + castleName + "'。");
+                    __update_travel_message_board("期待下次旅途与您再见。");
+
+                    $("form[action='status.cgi']").attr("action", "castlestatus.cgi");
+                    $("input:hidden[value='STATUS']").attr("value", "CASTLESTATUS");
+                    $("#returnButton").attr("value", castleName + "欢迎您的到来");
+                    $("#returnButton").prop("disabled", false);
+                });
+            });
         });
     });
 
@@ -2266,6 +2272,73 @@ function __update_travel_message_board(message) {
     const messageBoard = $("#messageBoard").html();
     const now = new Date();
     $("#messageBoard").html(messageBoard + "<li>(" + now.toLocaleString() + ") " + message + "</li>");
+}
+
+function move(id, pass, player, pathList, index, callback) {
+    __update_travel_message_board(player + "等待行动冷却中...... (约55秒)");
+    setTimeout(function () {
+        const from = pathList[index];
+        const to = pathList[index + 1];
+
+        const x1 = from[0];
+        const y1 = from[1];
+        const x2 = to[0];
+        const y2 = to[1];
+
+        let direction;
+        if (x1 === x2) {
+            // 上或者下
+            if (y2 > y1) {
+                direction = ["%u2191", "↑"];
+            } else {
+                direction = ["%u2193", "↓"];
+            }
+        } else if (y1 === y2) {
+            // 左或者右
+            if (x2 > x1) {
+                direction = ["%u2192", "→"];
+            } else {
+                direction = ["%u2190", "←"];
+            }
+        } else {
+            // 4种斜向移动
+            if (x2 > x1 && y2 > y1) {
+                direction = ["%u2197", "↗"];
+            }
+            if (x2 > x1 && y2 < y1) {
+                direction = ["%u2198", "↘"];
+            }
+            if (x2 < x1 && y2 > y1) {
+                direction = ["%u2196", "↖"];
+            }
+            if (x2 < x1 && y2 < y1) {
+                direction = ["%u2199", "↙"];
+            }
+        }
+
+        const distance = Math.max(Math.abs(x1 - x2), Math.abs(y1 - y2));
+        __update_travel_message_board("准备" + direction[1] + "移动" + distance + "格。");
+
+        const request = {};
+        request["id"] = id;
+        request["pass"] = pass;
+        request["con"] = "2";
+        request["navi"] = "on";
+        request["mode"] = "CHARA_MOVE";
+        request["direct"] = direction[0];
+        request["chara_m"] = distance;
+        $.post("map.cgi", request, function (html) {
+            const nextIndex = index + 1;
+            if (nextIndex === pathList.length - 1) {
+                __update_travel_message_board(player + "到达目的地(" + to[0] + "," + to[1] + ")。");
+                callback({"id": id, "pass": pass, "player": player, "html": html});
+            } else {
+                __update_travel_message_board(player + "到达坐标(" + to[0] + "," + to[1] + ")。");
+                move(id, pass, player, pathList, nextIndex, callback);
+            }
+        });
+
+    }, 55000);
 }
 
 function __travel_perform_move(id, pass, playerName, path, index, reachDestination) {
@@ -2488,6 +2561,18 @@ function __travel_calculate_path_locations(sourceLocation, destinationLocation, 
         nodeList.push(...p);
         nodeList.push(destinationLocation);
     }
+
+    __update_travel_message_board("旅途路径已经计算完毕，总共需要次移动" + (nodeList.length - 1) + "次。");
+
+    let msg = "旅途路径规划：";
+    for (let i = 0; i < nodeList.length; i++) {
+        let node = nodeList[i];
+        msg += "(" + node[0] + "," + node[1] + ")";
+        if (i !== nodeList.length - 1) {
+            msg += " -> ";
+        }
+    }
+    __update_travel_message_board(msg);
 
     return nodeList;
 }
