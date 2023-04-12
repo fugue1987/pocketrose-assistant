@@ -5,7 +5,7 @@
 // @icon         data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==
 // @license      mit
 // @author       xiaohaiz,fugue
-// @version      1.5.0
+// @version      1.6.0.RC1
 // @grant        unsafeWindow
 // @match        *://pocketrose.itsns.net.cn/*
 // @require      https://cdn.bootcdn.net/ajax/libs/jquery/3.6.4/jquery.min.js
@@ -1701,6 +1701,7 @@ function postProcessMainStatusFunctionalities(htmlText) {
 }
 
 function __status(htmlText) {
+    $("option[value='INN']").text("客栈·驿站");
     $("option[value='LETTER']").text("口袋助手设置");
     $("option[value='LETTER']").attr("style", "background:#20c0ff");
 
@@ -2020,7 +2021,10 @@ function __town_inn(htmlText) {
     });
 
     __page_constructNpcMessageTable("夜九年");
-    __page_writeNpcMessage("客栈体系正在升级改造中，敬请期待！");
+    __page_writeNpcMessage("驿站试运营中，先把丑话说在前面。<br>");
+    __page_writeNpcMessage("你选择我们家驿站服务，我们家免费带你飞。开始旅途后切勿关闭当前页面，这样我们才可以一起浪。<br>" +
+        "如果你关闭当前页面则意味着你方毁约，你会处于什么样的位置和状态我们家不会负责。开始旅途后<br>" +
+        "请耐心等待，到达目的地后欢迎按钮会自动亮起，点击即可进城。<br>");
     __page_writeNpcMessage("<input type='button' id='travel' style='color: blue' value='开始旅途'>");
     __page_writeNpcMessage("<div id='currentLocation' style='display: none'></div>");
     __page_writeNpcMessage("<div id='faeryTreasureCount' style='display: none'></div>");
