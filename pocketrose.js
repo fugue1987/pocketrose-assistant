@@ -2087,8 +2087,10 @@ function __town_inn(htmlText) {
         "如果你关闭当前页面则意味着你方毁约，你会处于什么样的位置和状态我们家不会负责。开始旅途后<br>" +
         "请耐心等待，到达目的地后欢迎按钮会自动亮起，点击即可进城。<br>");
     __page_writeNpcMessage("<input type='button' id='travel' style='color: blue' value='开始旅途'>");
+    __page_writeNpcMessage("<input type='button' id='moveToCastle' style='color: red' value='移动到城堡'>");
     __page_writeNpcMessage("<div id='currentLocation' style='display: none'></div>");
     __page_writeNpcMessage("<div id='faeryTreasureCount' style='display: none'></div>");
+    __page_writeNpcMessage("<div id='castleInformation' style='display: none'></div>");
     __page_writeNpcMessage("<br>");
 
     const cityIds = Object.keys(_CITY_DICT);
@@ -2112,16 +2114,14 @@ function __town_inn(htmlText) {
     __page_writeNpcMessage(html);
 
     $("#travel").prop("disabled", true);
+    $("#moveToCastle").prop("disabled", true);
 
     const id = __page_readIdFromCurrentPage();
     const pass = __page_readPassFromCurrentPage();
 
-    readCastleInformation(id, pass, function (id, pass, html) {
-
-    });
-
     $("#travel").click(function () {
         $("#travel").prop("disabled", true);
+        $("#moveToCastle").prop("disabled", true);
         $("#returnButton").prop("disabled", true);
         $("input:submit[value='宿泊']").prop("disabled", true);
         const currentTownId = $("#currentLocation").text();
@@ -2221,13 +2221,44 @@ function __town_inn(htmlText) {
         }
     });
 
-    __ajax_readPersonalInformation(id, pass, function (data) {
-        const currentTownId = data["TOWN_ID"];
-        const faeryTreasureCount = data["FTC"];
-        $(".cityClass[value='" + currentTownId + "']").prop("disabled", true);
-        $("#currentLocation").text(currentTownId);
-        $("#faeryTreasureCount").text(faeryTreasureCount);
-        $("#travel").prop("disabled", false);
+    $("#moveToCastle").click(function () {
+        $("#travel").prop("disabled", true);
+        $("#moveToCastle").prop("disabled", true);
+        $("#returnButton").prop("disabled", true);
+        $("input:submit[value='宿泊']").prop("disabled", true);
+
+        $("#messageBoard").html("我们将实时为你播报旅途的动态：<br>");
+        const ss = $("#castleInformation").text().split("_");
+        const castleName = ss[0];
+        const castleLocation = [parseInt(ss[1]), parseInt(ss[2])];
+        const currentTownId = $("#currentLocation").text();
+
+        __update_travel_message_board(playerName + "的目标设定为城堡'" + castleName + "'，坐标位于(" + castleLocation[0] + "," + castleLocation[1] + ")。");
+
+        leaveTown(id, pass, playerName, currentTownId, function (data) {
+
+        });
+    });
+
+    readCastleInformation(id, pass, function (ctx, castles) {
+        const castle = castles[playerName];
+        if (castle !== undefined) {
+            const s1 = castle["name"];
+            const s2 = castle["coordinate"][0];
+            const s3 = castle["coordinate"][1];
+            $("#castleInformation").text(s1 + "_" + s2 + "_" + s3);
+            $("#moveToCastle").attr("value", "移动到" + s1);
+            $("#moveToCastle").prop("disabled", false);
+        }
+
+        __ajax_readPersonalInformation(ctx["id"], ctx["pass"], function (data) {
+            const currentTownId = data["TOWN_ID"];
+            const faeryTreasureCount = data["FTC"];
+            $(".cityClass[value='" + currentTownId + "']").prop("disabled", true);
+            $("#currentLocation").text(currentTownId);
+            $("#faeryTreasureCount").text(faeryTreasureCount);
+            $("#travel").prop("disabled", false);
+        });
     });
 }
 
@@ -2342,6 +2373,69 @@ function prepareMoneyAndTakeOff(id, pass, amount, callback) {
     } else {
         __travel_leave_city(id, pass, callback);
     }
+}
+
+/**
+ * 出城，离开当前所在的城市。
+ * @param id ID
+ * @param pass PASS
+ @param player PLAYER NAME
+ * @param townId TOWN ID
+ * @param callback 后续动作
+ */
+function leaveTown(id, pass, player, townId, callback) {
+    const request = {};
+    request["id"] = id;
+    request["pass"] = pass;
+    request["navi"] = "on";
+    request["out"] = "1";
+    request["mode"] = "MAP_MOVE";
+    fetch("map.cgi", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: new URLSearchParams(request),
+    })
+        .then((response) => {
+            if (!response.ok) {
+                throw new Error("RESPONSE was not ok");
+            }
+            return response.arrayBuffer();
+        })
+        .then((arrayBuffer) => {
+            const decoder = new TextDecoder("gb2312");
+            const html = decoder.decode(new Uint8Array(arrayBuffer));
+
+            const moveScope = $(html).find("select[name='chara_m']").find("option:last").attr("value");
+            let moveMode = "ROOK";
+            $(html).find("input:submit").each(function (_idx, input) {
+                const v = $(input).attr("value");
+                const d = $(input).attr("disabled");
+                if (v === "↖" && d === undefined) {
+                    moveMode = "QUEEN";
+                }
+            });
+
+            const town = _CITY_DICT[townId];
+            __update_travel_message_board(player + "已经离开了" + town["name"] + "。");
+            __update_travel_message_board(player + "已经确认最大行动力" + moveScope + "，行动采用" + moveMode + "模式。");
+
+            const data = {};
+            data["id"] = id;
+            data["pass"] = pass;
+            data["html"] = html;
+            data["player"] = player;
+            data["townId"] = townId;
+            data["location"] = [town["x"], town["y"]];
+            data["moveScope"] = moveScope;
+            data["moveMode"] = moveMode;
+
+            callback(data);
+        })
+        .catch((error) => {
+            console.error("Error raised:", error);
+        });
 }
 
 function __travel_leave_city(id, pass, callback) {
