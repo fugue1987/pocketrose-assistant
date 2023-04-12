@@ -1411,6 +1411,44 @@ function convertEncodingToUtf8(response, fromEncoding) {
     return decoder.decode(uint8Array);
 }
 
+
+function readCastleInformation(id, pass, callback) {
+    fetch("castle_print.cgi", {
+        method: "GET"
+    })
+        .then((response) => {
+            if (!response.ok) {
+                throw new Error("RESPONSE was not ok");
+            }
+            return response.arrayBuffer();
+        })
+        .then((arrayBuffer) => {
+            const decoder = new TextDecoder("gb2312");
+            const html = decoder.decode(new Uint8Array(arrayBuffer));
+
+            const castles = {};
+            $(html).find("td").each(function (_idx, td) {
+                const tdText = $(td).text();
+                if (tdText.endsWith(" (自购)")) {
+                    const castleName = $(td).prev().text();
+                    const castleOwner = tdText.substring(0, tdText.indexOf(" (自购)"));
+                    const castleLocationText = $(td).next().text();
+                    const coordinate = castleLocationText.substring(1, castleLocationText.length - 1).split(",");
+                    const castleLocation = [parseInt(coordinate[0]), parseInt(coordinate[1])];
+                    castles[castleOwner] = {
+                        "name": castleName,
+                        "owner": castleOwner,
+                        "coordinate": castleLocation
+                    };
+                }
+            });
+            callback({"id": id, "pass": pass, "html": html}, castles);
+        })
+        .catch((error) => {
+            console.error("Error raised:", error);
+        });
+}
+
 /**
  * 异步读取并解析个人状态中的基础信息，完成后回调传入的函数。
  * @param id ID
@@ -2077,6 +2115,10 @@ function __town_inn(htmlText) {
 
     const id = __page_readIdFromCurrentPage();
     const pass = __page_readPassFromCurrentPage();
+
+    readCastleInformation(id, pass, function (id, pass, html) {
+
+    });
 
     $("#travel").click(function () {
         $("#travel").prop("disabled", true);
