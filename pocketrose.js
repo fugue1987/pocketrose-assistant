@@ -2126,14 +2126,20 @@ function __town_inn(htmlText) {
                                 request["mode"] = "MOVE";
                                 $.post("status.cgi", request, function (html) {
                                     __update_travel_message_board("门卫通情达理的收取了合理的入城税。");
+                                    __ajax_depositAllGolds(id, pass, function (data) {
+                                        __update_travel_message_board("我们贴心为您把剩余的现金存入了银行。");
+                                        $("#returnButton").attr("value", destinationTown["name"] + "欢迎您的到来");
+                                        __update_travel_message_board(playerName + "成功到达" + destinationTown["name"] + "。");
+                                        __update_travel_message_board("期待下次旅途与您再见。");
+                                    });
+                                });
+                            } else {
+                                __ajax_depositAllGolds(id, pass, function (data) {
+                                    __update_travel_message_board("我们贴心为您把剩余的现金存入了银行。");
                                     $("#returnButton").attr("value", destinationTown["name"] + "欢迎您的到来");
                                     __update_travel_message_board(playerName + "成功到达" + destinationTown["name"] + "。");
                                     __update_travel_message_board("期待下次旅途与您再见。");
                                 });
-                            } else {
-                                $("#returnButton").attr("value", destinationTown["name"] + "欢迎您的到来");
-                                __update_travel_message_board(playerName + "成功到达" + destinationTown["name"] + "。");
-                                __update_travel_message_board("期待下次旅途与您再见。");
                             }
                         });
                     }, 55000);
