@@ -2248,16 +2248,16 @@ function __town_inn(htmlText) {
         const castleName = ss[0];
         const castleLocation = [parseInt(ss[1]), parseInt(ss[2])];
         const currentTownId = $("#currentLocation").text();
-
         __update_travel_message_board(playerName + "的目标设定为城堡'" + castleName + "'，坐标位于(" + castleLocation[0] + "," + castleLocation[1] + ")。");
 
         leaveTown(id, pass, playerName, currentTownId, function (data) {
+            const id = data["id"];
+            const pass = data["pass"];
+            const player = data["player"];
             const sourceLocation = data["location"];
             const moveScope = data["moveScope"];
             const moveMode = data["moveMode"];
-            const pathList = __travel_calculate_path_locations(sourceLocation, castleLocation, moveScope, moveMode);
-
-            moveThePathList(data["id"], data["pass"], data["player"], pathList, 0, function (data) {
+            moveFromTo(id, pass, player, sourceLocation, castleLocation, moveScope, moveMode, function (data) {
                 const id = data["id"];
                 const pass = data["pass"];
                 const player = data["player"];
@@ -2300,6 +2300,11 @@ function __update_travel_message_board(message) {
     const messageBoard = $("#messageBoard").html();
     const now = new Date();
     $("#messageBoard").html(messageBoard + "<li>(" + now.toLocaleString() + ") " + message + "</li>");
+}
+
+function moveFromTo(id, pass, player, from, to, scope, mode, callback) {
+    const pathList = __travel_calculate_path_locations(from, to, scope, mode);
+    moveThePathList(id, pass, player, pathList, 0, callback);
 }
 
 function moveThePathList(id, pass, player, pathList, index, callback) {
