@@ -2070,7 +2070,7 @@ function __town_inn(htmlText) {
             __update_travel_message_board(msg);
 
             let amount = 0;
-            if (faeryTreasureCount === 28) {
+            if (parseInt(faeryTreasureCount) === 28) {
                 __update_travel_message_board(playerName + "拥有完整的仙人宝物。");
             } else {
                 // 为了确保能安全进入目的地，需要提前为你取钱
