@@ -2098,6 +2098,9 @@ function postProcessCityRelatedFunctionalities(htmlText) {
         // 物品卖出完成
         __city_itemSold(htmlText);
     }
+    if (htmlText.indexOf("*  藏宝图以旧换新业务 *") !== -1) {
+        enhanceTownAdventurerGuild(htmlText);
+    }
 }
 
 function __town_inn(htmlText) {
@@ -3000,6 +3003,77 @@ function __city_itemSold_buildReturnFunction(id, pass) {
             $("input[type='submit']").attr("value", "回物品屋");
             $("input[type='submit']").trigger("click");
         });
+    });
+}
+
+function enhanceTownAdventurerGuild(htmlText) {
+    $("input:submit[value='交换']").attr("id", "exchangeButton");
+    $("input:submit[value='返回城市']").attr("id", "returnButton");
+
+    __page_constructNpcMessageTable("花子");
+    __page_writeNpcMessage("欢、欢、欢迎光临冒险家公会，等等，你这、这是什么表情？你肯定是认错人了，前几天你领薪水后碰、碰到的绝对" +
+        "不、不、不是我！[漫长的沉默中] 你、你怎么不相信我的话，人与人之间基本的信、信任呢？[再次漫长的沉默] 算了，你这次要去哪里？" +
+        "我免费让人带你过去。你出门去上、上、上马车吧。<br>");
+    let select = "";
+    select += "<select name='x' id='x'>";
+    for (let i = 0; i <= 15; i++) {
+        select += "<option value='" + i + "'>" + i + "</option>";
+    }
+    select += "</select>";
+    select += "<select name='y' id='y'>";
+    for (let i = 0; i <= 15; i++) {
+        select += "<option value='" + i + "'>" + i + "</option>";
+    }
+    select += "</select>";
+    __page_writeNpcMessage(select);
+    __page_writeNpcMessage("<input type='button' id='coach_1' style='color: blue' value='车门上鸢尾兰的纹章熠熠生辉'>");
+    __page_writeNpcMessage("<input type='button' id='coach_2' style='color: red' value='车身上剑与盾透露出铁血的气息'>");
+    __page_writeNpcMessage("<input type='button' id='coach_3' style='color: black' value='斑驳的车身上隐约可见半拉兔子骷髅的形状'>");
+
+    __page_writeNpcMessage("<div id='townId' style='display: none'></div>");
+
+    $("#coach_1").prop("disabled", true);
+    $("#coach_2").prop("disabled", true);
+    $("#coach_3").prop("disabled", true);
+
+    const id = __page_readIdFromCurrentPage();
+    const pass = __page_readPassFromCurrentPage();
+
+    $("#coach_1").click(function () {
+        alert("滚开，也不看看，什么马车都敢随便上！");
+        $("#coach_1").prop("disabled", true);
+    });
+    $("#coach_2").click(function () {
+        alert("下去，你要找的马车在隔壁。");
+        $("#coach_2").prop("disabled", true);
+    });
+    $("#coach_3").click(function () {
+        const x = parseInt($("#x").val());
+        const y = parseInt($("#y").val());
+
+        const townId = $("#townId").text();
+        const town = _CITY_DICT[townId];
+        const townLocation = [parseInt(town["x"]), parseInt(town["y"])];
+
+        if (x === townLocation[0] && y === townLocation[1]) {
+            alert("有没有一种可能你现在就在这里？坐标(" + x + "," + y + ")");
+        } else {
+            $("#x").prop("disabled", true);
+            $("#y").prop("disabled", true);
+            $("#exchangeButton").prop("disabled", true);
+            $("#returnButton").prop("disabled", true);
+            $("#coach_1").prop("disabled", true);
+            $("#coach_2").prop("disabled", true);
+            $("#coach_3").prop("disabled", true);
+        }
+    });
+
+    __ajax_readPersonalInformation(id, pass, function (data) {
+        const townId = data["TOWN_ID"];
+        $("#townId").text(townId);
+        $("#coach_1").prop("disabled", false);
+        $("#coach_2").prop("disabled", false);
+        $("#coach_3").prop("disabled", false);
     });
 }
 
