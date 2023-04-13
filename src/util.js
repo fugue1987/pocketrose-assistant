@@ -6,6 +6,10 @@
  * ============================================================================
  */
 
+export function contains(text, searchString) {
+    return text.indexOf(searchString) !== -1;
+}
+
 export function substringBefore(text, searchString) {
     let idx = text.indexOf(searchString);
     if (idx === -1) {
