@@ -20,7 +20,9 @@
 // 所有验证码破解的相关领域都设立为禁区，我们绝对不触碰验证码破解！
 // ============================================================================
 
+import * as castle from "./castle";
 import * as constant from "./constant";
+import * as map from "./map";
 import * as network from "./network";
 import * as npc from "./npc";
 import * as pokemon from "./pokemon";
