@@ -20,13 +20,10 @@
 // 所有验证码破解的相关领域都设立为禁区，我们绝对不触碰验证码破解！
 // ============================================================================
 
-import * as castle from "./castle";
-import * as map from "./map";
 import * as network from "./network";
 import * as npc from "./npc";
 import * as pocket from "./pocket";
 import * as pokemon from "./pokemon";
-import * as user from "./user";
 import * as util from "./util";
 
 // 转职建议字典，对当前能力的需求，分别是MP，攻击，防御，智力，精神，速度
@@ -645,7 +642,7 @@ function replacePkm(page) {
     if (location.href.includes(page)) {
         $(document).ready(function () {
             if (__cookie_getEnablePokemonWiki()) {
-                processPokemonWikiReplacement();
+                pokemon.processPokemonWikiReplacement();
             }
             if (location.href.includes("status.cgi")) {
                 postProcessMainStatusFunctionalities($('html').html());
@@ -1117,34 +1114,6 @@ function __common_item_selectAllStorableItems(parentElement) {
         }
     });
     return checkedCount;
-}
-
-// ============================================================================
-// 宝可梦百科扩展功能
-// ============================================================================
-function processPokemonWikiReplacement() {
-    $('body *').each(function () {
-        $(this).contents().filter(function () {
-            return this.nodeType === 3;
-        }).each(function (idx, text) {
-            let newText = this.textContent;
-            for (let i = 0; i < pokemon.pokemonDictKeys.length; i++) {
-                if (newText.includes(pokemon.pokemonDictKeys[i])) {
-                    newText = newText.replace(pokemon.pokemonDictKeys[i], pokemon.pokemonDict[pokemon.pokemonDictKeys[i]]);
-                }
-            }
-            if (newText !== this.textContent) {
-                const $newContent = $('<span>').html(newText);
-                const parentElement = this.parentElement;
-                $(this).replaceWith($newContent);
-                $(parentElement).children().each(function () {
-                    if (this.nodeType === 3) {
-                        $(this).replaceWith(this.textContent);
-                    }
-                });
-            }
-        })
-    });
 }
 
 // ============================================================================
