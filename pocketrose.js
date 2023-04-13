@@ -3266,16 +3266,17 @@ function moveToAndSearch(id, pass, player, townId, scope, mode, locationList, lo
     if (locationIndex !== locationList.length - 2) {
         if (from[0] === to[0] && from[1] === to[1]) {
             // 下一张图在原地
+            __update_travel_message_board("兔子骷髅说：运气真好，原地可以继续探险。");
             __update_travel_message_board("等待探险冷却中......(约55秒)");
             setTimeout(function () {
                 const request = {"id": id, "pass": pass, "mode": "MAP_SEARCH"};
                 sendPostRequest("map.cgi", request, function (html) {
                     __update_travel_message_board(player + "在(" + to[0] + "," + to[1] + ")完成探险！");
                     if (html.indexOf("所持金超过1000000。请先存入银行。") !== -1) {
-                        __update_travel_message_board(player + "惨被3BT袭击，兔子骷髅开心看着完全没有搭把手的意思。");
+                        __update_travel_message_board("<font color='yellow'>" + player + "惨被3BT袭击，兔子骷髅开心看着完全没有搭把手的意思。</font>");
                     } else {
                         const found = $(html).find("h2:first").text();
-                        __update_travel_message_board(player + found);
+                        __update_travel_message_board("<font color='red'>" + player + found + "</font>");
                     }
                     moveToAndSearch(id, pass, player, townId, scope, mode, locationList, locationIndex + 1);
                 });
@@ -3328,7 +3329,7 @@ function moveToAndSearch(id, pass, player, townId, scope, mode, locationList, lo
                             __update_travel_message_board(player + "吧剩余的现金存入了银行。");
                             $("#returnButton").prop("disabled", false);
                             $("#returnButton").attr("value", "欢迎回来");
-                            __update_travel_message_board("探险完成。");
+                            __update_travel_message_board("探险完成，在兔子骷髅不怀好意的挥手注视下，" + player + "快速离开了。");
                         });
                     }
                 })
