@@ -1543,6 +1543,30 @@ function __ajax_readPersonalInformation(id, pass, callback) {
         });
 }
 
+function sendPostRequest(url, request, callback) {
+    fetch(url, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: new URLSearchParams(request),
+    })
+        .then((response) => {
+            if (!response.ok) {
+                throw new Error("RESPONSE was not ok");
+            }
+            return response.arrayBuffer();
+        })
+        .then((arrayBuffer) => {
+            const decoder = new TextDecoder("gb2312");
+            const html = decoder.decode(new Uint8Array(arrayBuffer));
+            callback(html);
+        })
+        .catch((error) => {
+            console.error("Error raised:", error);
+        });
+}
+
 function __ajax_checkOwnItems(id, pass, callback) {
     const request = {};
     request["id"] = id;
@@ -3025,6 +3049,7 @@ function enhanceTownAdventurerGuild(htmlText) {
     $("input:submit[value='返回城市']").attr("id", "returnButton");
 
     let player = "";
+    let cash = 0;
     $("td:parent").each(function (_idx, td) {
         const text = $(td).text();
         if (text.indexOf("因为手持城市图不能使用而烦恼吗？") !== -1) {
@@ -3035,6 +3060,10 @@ function enhanceTownAdventurerGuild(htmlText) {
         }
         if (text === "姓名") {
             player = $(td).parent().next().find("td:first").text();
+        }
+        if (text === "所持金") {
+            const cashText = $(td).next().text();
+            cash = parseInt(cashText.substring(0, cashText.indexOf(" GOLD")));
         }
     });
 
@@ -3084,6 +3113,9 @@ function enhanceTownAdventurerGuild(htmlText) {
     $("#coach_1").prop("disabled", true);
     $("#coach_2").prop("disabled", true);
     $("#coach_3").prop("disabled", true);
+    if (treasureHintMapCount > 0) {
+        $("#treasure").prop("disabled", true);
+    }
 
     const id = __page_readIdFromCurrentPage();
     const pass = __page_readPassFromCurrentPage();
@@ -3160,6 +3192,26 @@ function enhanceTownAdventurerGuild(htmlText) {
                 $("#coach_2").prop("disabled", true);
                 $("#coach_3").prop("disabled", true);
                 $("#treasure").prop("disabled", true);
+
+                const townId = $("#townId").text();
+                const town = _CITY_DICT[townId];
+                const townLocation = [parseInt(town["x"]), parseInt(town["y"])];
+
+
+                $("#messageBoard").html("冒险家公会之探险播报：<br>");
+
+                let amount = 0;
+                if (cash < 1100000) {
+                    amount = Math.ceil((1100000 - cash) / 10000);
+                }
+                if (amount > 0) {
+                    __ajax_withdrawGolds(id, pass, amount, function () {
+                        __update_travel_message_board(player + "取出了" + amount + "万探险保证金。");
+                        startTreasureHintMapSearchJournal(id, pass, player, townId, townLocation, candidates);
+                    });
+                } else {
+                    startTreasureHintMapSearchJournal(id, pass, player, townId, townLocation, candidates);
+                }
             }
         });
     }
@@ -3170,7 +3222,119 @@ function enhanceTownAdventurerGuild(htmlText) {
         $("#coach_1").prop("disabled", false);
         $("#coach_2").prop("disabled", false);
         $("#coach_3").prop("disabled", false);
+        $("#treasure").prop("disabled", false);
     });
+}
+
+function startTreasureHintMapSearchJournal(id, pass, player, townId, townLocation, candidates) {
+    candidates.sort((a, b) => {
+        let ret = a[0] - b[0];
+        if (ret === 0) {
+            ret = a[1] - b[1];
+        }
+        return ret;
+    });
+
+    const locationList = [];
+    locationList.push(townLocation);
+    locationList.push(...candidates);
+    locationList.push(townLocation);
+
+    __update_travel_message_board("兔子骷髅帮忙整理了" + player + "手中的藏宝图，说道：");
+    let msg = "就按这个顺序走：";
+    for (let i = 0; i < candidates.length; i++) {
+        const it = candidates[i];
+        msg += "(" + it[0] + "," + it[1] + ")";
+        if (i !== candidates.length - 1) {
+            msg += "=>";
+        }
+    }
+    __update_travel_message_board(msg);
+    __update_travel_message_board("完事儿后最后我们还回这儿来。");
+
+    leaveTown(id, pass, player, townId, function (data) {
+        const scope = data["moveScope"];
+        const mode = data["moveMode"];
+        moveToAndSearch(id, pass, player, townId, scope, mode, locationList, 0);
+    });
+}
+
+function moveToAndSearch(id, pass, player, townId, scope, mode, locationList, locationIndex) {
+    const from = locationList[locationIndex];
+    const to = locationList[locationIndex + 1];
+
+    if (locationIndex !== locationList.length - 2) {
+        if (from[0] === to[0] && from[1] === to[1]) {
+            // 下一张图在原地
+            __update_travel_message_board("等待探险冷却中......(约55秒)");
+            setTimeout(function () {
+                const request = {"id": id, "pass": pass, "mode": "MAP_SEARCH"};
+                sendPostRequest("map.cgi", request, function (html) {
+                    __update_travel_message_board(player + "在(" + to[0] + "," + to[1] + ")完成探险！");
+                    if (html.indexOf("所持金超过1000000。请先存入银行。") !== -1) {
+                        __update_travel_message_board(player + "惨被3BT袭击，兔子骷髅开心看着完全没有搭把手的意思。");
+                    } else {
+                        const found = $(html).find("h2:first").text();
+                        __update_travel_message_board(player + found);
+                    }
+                    moveToAndSearch(id, pass, player, townId, scope, mode, locationList, locationIndex + 1);
+                });
+            }, 55000);
+        } else {
+            moveFromTo(id, pass, player, from, to, scope, mode, function (data) {
+                __update_travel_message_board("等待探险冷却中......(约55秒)");
+                setTimeout(function () {
+                    const request = {"id": id, "pass": pass, "mode": "MAP_SEARCH"};
+                    sendPostRequest("map.cgi", request, function (html) {
+                        __update_travel_message_board(player + "在(" + to[0] + "," + to[1] + ")完成探险！");
+                        if (html.indexOf("所持金超过1000000。请先存入银行。") !== -1) {
+                            __update_travel_message_board(player + "惨被3BT袭击，兔子骷髅开心看着完全没有搭把手的意思。");
+                        } else {
+                            const found = $(html).find("h2:first").text();
+                            __update_travel_message_board(player + found);
+                        }
+                        moveToAndSearch(id, pass, player, townId, scope, mode, locationList, locationIndex + 1);
+                    });
+                }, 55000);
+            });
+        }
+    } else {
+        // 最后一个坐标已经完成了探险。现在可以回城了
+        __update_travel_message_board("藏宝图都用完了，回城吧。");
+        moveFromTo(id, pass, player, from, to, scope, mode, function (data) {
+            __update_travel_message_board("等待进城冷却中......(约55秒)");
+            setTimeout(function () {
+                enterTown(id, pass, townId, function (data) {
+                    const html = data["html"];
+                    if ($(html).text().indexOf("战胜门卫。") !== -1) {
+                        __update_travel_message_board("与门卫交涉中......");
+                        const request = {};
+                        request["id"] = id;
+                        request["pass"] = pass;
+                        request["townid"] = townId;
+                        request["givemoney"] = "1";
+                        request["mode"] = "MOVE";
+                        $.post("status.cgi", request, function (html) {
+                            __update_travel_message_board("门卫通情达理的收取了合理的入城税。");
+                            __ajax_depositAllGolds(id, pass, function () {
+                                __update_travel_message_board(player + "吧剩余的现金存入了银行。");
+                                $("#returnButton").prop("disabled", false);
+                                $("#returnButton").attr("value", "欢迎回来");
+                                __update_travel_message_board("探险完成。");
+                            });
+                        });
+                    } else {
+                        __ajax_depositAllGolds(id, pass, function () {
+                            __update_travel_message_board(player + "吧剩余的现金存入了银行。");
+                            $("#returnButton").prop("disabled", false);
+                            $("#returnButton").attr("value", "欢迎回来");
+                            __update_travel_message_board("探险完成。");
+                        });
+                    }
+                })
+            }, 55000);
+        });
+    }
 }
 
 // ============================================================================
