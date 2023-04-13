@@ -5,7 +5,7 @@
 // @icon         data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==
 // @license      mit
 // @author       xiaohaiz,fugue
-// @version      1.6.0.RC3
+// @version      1.6.0.RC4
 // @grant        unsafeWindow
 // @match        *://pocketrose.itsns.net.cn/*
 // @require      https://cdn.bootcdn.net/ajax/libs/jquery/3.6.4/jquery.min.js
@@ -3252,14 +3252,16 @@ function startTreasureHintMapSearchJournal(id, pass, player, townId, townLocatio
     __update_travel_message_board(msg);
     __update_travel_message_board("完事儿后最后我们还回这儿来。");
 
+    const foundList = [];
+
     leaveTown(id, pass, player, townId, function (data) {
         const scope = data["moveScope"];
         const mode = data["moveMode"];
-        moveToAndSearch(id, pass, player, townId, scope, mode, locationList, 0);
+        moveToAndSearch(id, pass, player, townId, scope, mode, locationList, 0, foundList);
     });
 }
 
-function moveToAndSearch(id, pass, player, townId, scope, mode, locationList, locationIndex) {
+function moveToAndSearch(id, pass, player, townId, scope, mode, locationList, locationIndex, foundList) {
     const from = locationList[locationIndex];
     const to = locationList[locationIndex + 1];
 
@@ -3278,7 +3280,7 @@ function moveToAndSearch(id, pass, player, townId, scope, mode, locationList, lo
                         const found = $(html).find("h2:first").text();
                         __update_travel_message_board("<font color='red'>" + player + found + "</font>");
                     }
-                    moveToAndSearch(id, pass, player, townId, scope, mode, locationList, locationIndex + 1);
+                    moveToAndSearch(id, pass, player, townId, scope, mode, locationList, locationIndex + 1, foundList);
                 });
             }, 55000);
         } else {
@@ -3292,9 +3294,10 @@ function moveToAndSearch(id, pass, player, townId, scope, mode, locationList, lo
                             __update_travel_message_board(player + "惨被3BT袭击，兔子骷髅开心看着完全没有搭把手的意思。");
                         } else {
                             const found = $(html).find("h2:first").text();
+                            foundList.push(found);
                             __update_travel_message_board(player + found);
                         }
-                        moveToAndSearch(id, pass, player, townId, scope, mode, locationList, locationIndex + 1);
+                        moveToAndSearch(id, pass, player, townId, scope, mode, locationList, locationIndex + 1, foundList);
                     });
                 }, 55000);
             });
@@ -3321,7 +3324,13 @@ function moveToAndSearch(id, pass, player, townId, scope, mode, locationList, lo
                                 __update_travel_message_board(player + "吧剩余的现金存入了银行。");
                                 $("#returnButton").prop("disabled", false);
                                 $("#returnButton").attr("value", "欢迎回来");
-                                __update_travel_message_board("探险完成。");
+                                __update_travel_message_board("探险完成，在兔子骷髅不怀好意的挥手注视下，" + player + "快速离开了。");
+                                if (foundList.length > 0) {
+                                    __update_travel_message_board(player + "回到无人处，悄悄检视了下探险的收入：");
+                                    for (let i = 0; i < foundList.length; i++) {
+                                        __update_travel_message_board("<font color='red'>" + foundList[i] + "</font>");
+                                    }
+                                }
                             });
                         });
                     } else {
@@ -3330,6 +3339,12 @@ function moveToAndSearch(id, pass, player, townId, scope, mode, locationList, lo
                             $("#returnButton").prop("disabled", false);
                             $("#returnButton").attr("value", "欢迎回来");
                             __update_travel_message_board("探险完成，在兔子骷髅不怀好意的挥手注视下，" + player + "快速离开了。");
+                            if (foundList.length > 0) {
+                                __update_travel_message_board(player + "回到无人处，悄悄检视了下探险的收入：");
+                                for (let i = 0; i < foundList.length; i++) {
+                                    __update_travel_message_board("<font color='red'>" + foundList[i] + "</font>");
+                                }
+                            }
                         });
                     }
                 })
