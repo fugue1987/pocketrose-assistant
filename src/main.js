@@ -1591,19 +1591,18 @@ function __town_inn(htmlText) {
     __page_writeNpcMessage("<div id='castleInformation' style='display: none'></div>");
     __page_writeNpcMessage("<br>");
 
-    const cityIds = Object.keys(_CITY_DICT);
     let html = "";
     html += "<table border='1'><tbody>";
     html += "<thead><tr><td style='color: white'>选择</td><td style='color: white'>目的地</td><td colspan='2' style='color: white'>坐标</td></tr></thead>";
 
-    for (let i = 0; i < cityIds.length; i++) {
-        const cityId = cityIds[i];
-        const city = _CITY_DICT[cityId];
+    const townList = pocket.getTownsAsList();
+    for (let i = 0; i < townList.length; i++) {
+        const town = townList[i];
         html += "<tr>";
-        html += "<td><input type='radio' class='cityClass' name='cityId' value='" + cityId + "'></td>";
-        html += "<td style='color: white'>" + city["name"] + "</td>";
-        html += "<td style='color: white'>" + city["x"] + "</td>";
-        html += "<td style='color: white'>" + city["y"] + "</td>";
+        html += "<td><input type='radio' class='cityClass' name='cityId' value='" + town.id + "'></td>";
+        html += "<td style='color: white'>" + town.name + "</td>";
+        html += "<td style='color: white'>" + town.coordinate.x + "</td>";
+        html += "<td style='color: white'>" + town.coordinate.y + "</td>";
         html += "</tr>";
     }
 
