@@ -6,6 +6,7 @@
 
 import * as map from "./map";
 import * as network from "./network";
+import * as util from "./util";
 
 /**
  * 城堡的数据结构
@@ -66,10 +67,13 @@ export function getAllCastles(callback) {
             if (text.endsWith(" (自购)")) {
                 const name = $(td).prev().text();
                 const owner = text.substring(0, text.indexOf(" (自购)"));
-                const location = $(td).next().text();
-                const parsedLocation = location.substring(1, location.length - 1).split(",");
-                const coordinate = new map.Coordinate(parseInt(parsedLocation[0]), parseInt(parsedLocation[1]));
+                let location = $(td).next().text();
+                location = util.substringBetween(location, "(", ")");
+                let x = util.substringBefore(location, ",");
+                let y = util.substringAfter(location, ",");
+                const coordinate = new map.Coordinate(parseInt(x), parseInt(y));
                 castles[owner] = new Castle(name, owner, coordinate);
+                console.log(castles[owner].longText());
             }
         });
 
