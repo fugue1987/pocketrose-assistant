@@ -33,4 +33,7 @@ export class Coordinate {
         return this.#y;
     }
 
+    longText() {
+        return "(" + this.#x + "," + this.#y + ")";
+    }
 }

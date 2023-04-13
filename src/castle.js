@@ -40,10 +40,14 @@ export class Castle {
 
     /**
      * Get castle _coordinate
-     * @returns {Coordinate}
+     * @returns {map.Coordinate}
      */
     get coordinate() {
         return this.#coordinate;
+    }
+
+    longText() {
+        return this.#name + "/" + this.#owner + "/" + this.#coordinate.longText();
     }
 }
 
@@ -53,7 +57,7 @@ export class Castle {
  */
 export function getAllCastles(callback) {
 
-    network.sendGetRequest("", function (html) {
+    network.sendGetRequest("castle_print.cgi", function (html) {
 
         const castles = {};
 
@@ -65,7 +69,7 @@ export function getAllCastles(callback) {
                 const location = $(td).next().text();
                 const parsedLocation = location.substring(1, location.length - 1).split(",");
                 const coordinate = new map.Coordinate(parseInt(parsedLocation[0]), parseInt(parsedLocation[1]));
-                castles[owner] = new Castle(name, owner, location);
+                castles[owner] = new Castle(name, owner, coordinate);
             }
         });
 
