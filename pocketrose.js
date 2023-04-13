@@ -3038,6 +3038,7 @@ function enhanceTownAdventurerGuild(htmlText) {
         }
     });
 
+    let treasureHintMapCount = 0;
     $("input:checkbox").each(function (_idx, checkbox) {
         const checkboxName = $(checkbox).attr("name");
         if (checkboxName.startsWith("item")) {
@@ -3047,6 +3048,8 @@ function enhanceTownAdventurerGuild(htmlText) {
                 let html = $(checkbox).parent().next().next().html();
                 html = "<font color='red'><b>[城]</b></font>" + html;
                 $(checkbox).parent().next().next().html(html);
+            } else {
+                treasureHintMapCount++;
             }
         }
     });
@@ -3070,6 +3073,11 @@ function enhanceTownAdventurerGuild(htmlText) {
     __page_writeNpcMessage("<input type='button' id='coach_1' style='color: blue' value='车门上鸢尾兰的纹章熠熠生辉'>");
     __page_writeNpcMessage("<input type='button' id='coach_2' style='color: red' value='车身上剑与盾透露出铁血的气息'>");
     __page_writeNpcMessage("<input type='button' id='coach_3' style='color: black' value='斑驳的车身上隐约可见半拉兔子骷髅的形状'>");
+    if (treasureHintMapCount > 0) {
+        __page_writeNpcMessage("<br>");
+        __page_writeNpcMessage("什、什、什么？？你有藏宝图！要不要去试试手气？在上面选好你想探险的藏宝图。<br>");
+        __page_writeNpcMessage("<input type='button' id='treasure' style='color: red' value='带上藏宝图跟上兔子骷髅的脚步'>");
+    }
 
     __page_writeNpcMessage("<div id='townId' style='display: none'></div>");
 
@@ -3106,6 +3114,9 @@ function enhanceTownAdventurerGuild(htmlText) {
             $("#coach_1").prop("disabled", true);
             $("#coach_2").prop("disabled", true);
             $("#coach_3").prop("disabled", true);
+            if (treasureHintMapCount > 0) {
+                $("#treasure").prop("disabled", true);
+            }
 
             $("#messageBoard").html("放心，实时播报动态我们是专业的，绝对不比隔壁新开张的驿站差：<br>");
             __update_travel_message_board(player + "登上了车身斑驳的马车，一股说不出的味道扑鼻而来。");
@@ -3124,6 +3135,34 @@ function enhanceTownAdventurerGuild(htmlText) {
             });
         }
     });
+
+    if (treasureHintMapCount > 0) {
+        $("#treasure").click(function () {
+            const candidates = [];
+            $("input:checkbox:checked").each(function (_idx, checkbox) {
+                const checkboxName = $(checkbox).attr("name");
+                if (checkboxName.startsWith("item")) {
+                    const mapX = parseInt($(checkbox).parent().next().next().next().next().text());
+                    const mapY = parseInt($(checkbox).parent().next().next().next().next().next().text());
+                    if (!isUnavailableTreasureHintMap(mapX, mapY)) {
+                        candidates.push([mapX, mapY]);
+                    }
+                }
+            });
+            if (candidates.length === 0) {
+                alert("咱们就是说你好歹带上一张能用的藏宝图？");
+            } else {
+                $("#x").prop("disabled", true);
+                $("#y").prop("disabled", true);
+                $("#exchangeButton").prop("disabled", true);
+                $("#returnButton").prop("disabled", true);
+                $("#coach_1").prop("disabled", true);
+                $("#coach_2").prop("disabled", true);
+                $("#coach_3").prop("disabled", true);
+                $("#treasure").prop("disabled", true);
+            }
+        });
+    }
 
     __ajax_readPersonalInformation(id, pass, function (data) {
         const townId = data["TOWN_ID"];
