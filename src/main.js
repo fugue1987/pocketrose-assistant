@@ -27,6 +27,7 @@ import * as npc from "./npc";
 import * as pocket from "./pocket";
 import * as pokemon from "./pokemon";
 import * as user from "./user";
+import * as util from "./util";
 
 // 转职建议字典，对当前能力的需求，分别是MP，攻击，防御，智力，精神，速度
 const transferCareerRequirementDict = {
@@ -667,39 +668,6 @@ function replacePkm(page) {
 // ============================================================================
 
 /**
- * 取斜杠前的内容，支持斜杠前带一个空格的情况。
- * @param text
- * @private
- */
-function __utilities_substringBeforeSlash(text) {
-    var index = text.indexOf(" /");
-    if (index != -1) {
-        return text.substring(0, index);
-    }
-    index = text.indexOf("/");
-    if (index != -1) {
-        return text.substring(0, index);
-    }
-    return text;
-}
-
-/**
- * 取斜杠后的内容，支持斜杠后带一个空格的情况。
- * @private
- */
-function __utilities_substringAfterSlash(text) {
-    var index = text.indexOf("/ ");
-    if (index != -1) {
-        return text.substring(index + 2);
-    }
-    index = text.indexOf("/");
-    if (index != -1) {
-        return text.substring(index + 1);
-    }
-    return text;
-}
-
-/**
  * 判断指定的名字是否为属性重铠，支持齐心重铠的检查。
  * @private
  */
@@ -911,10 +879,10 @@ function __ajax_readPersonalInformation(id, pass, callback) {
             }
             let healthText = $(statusTable.find('td')[5]).text();
             let manaText = $(statusTable.find('td')[7]).text();
-            let currentHealth = __utilities_substringBeforeSlash(healthText);
-            let maxHealth = __utilities_substringAfterSlash(healthText);
-            let currentMana = __utilities_substringBeforeSlash(manaText);
-            let maxMana = __utilities_substringAfterSlash(manaText);
+            let currentHealth = util.substringBeforeSlash(healthText);
+            let maxHealth = util.substringAfterSlash(healthText);
+            let currentMana = util.substringBeforeSlash(manaText);
+            let maxMana = util.substringAfterSlash(manaText);
             let att = $(statusTable.find('td')[13]).text();
             let def = $(statusTable.find('td')[15]).text();
             let int = $(statusTable.find('td')[17]).text();
@@ -1460,12 +1428,12 @@ function __battle_checkIfShouldGoToInn(htmlText, recoverItemEndure) {
         }
         if (playerName === $(element).text()) {
             let healthText = $(element).next().text();
-            health = __utilities_substringBeforeSlash(healthText);
-            maxHealth = __utilities_substringAfterSlash(healthText);
+            health = util.substringBeforeSlash(healthText);
+            maxHealth = util.substringAfterSlash(healthText);
 
             let manaText = $(element).next().next().text();
-            mana = __utilities_substringBeforeSlash(manaText);
-            maxMana = __utilities_substringAfterSlash(manaText);
+            mana = util.substringBeforeSlash(manaText);
+            maxMana = util.substringAfterSlash(manaText);
         }
     });
     // 生命力低于最大值的配置比例，住宿推荐
