@@ -1,0 +1,1 @@
+export const POCKETROSE_DOMAIN = "https://pocketrose.itsns.net.cn/pocketrose";
