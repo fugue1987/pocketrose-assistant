@@ -3038,6 +3038,19 @@ function enhanceTownAdventurerGuild(htmlText) {
         }
     });
 
+    $("input:checkbox").each(function (_idx, checkbox) {
+        const checkboxName = $(checkbox).attr("name");
+        if (checkboxName.startsWith("item")) {
+            const mapX = parseInt($(checkbox).parent().next().next().next().next().text());
+            const mapY = parseInt($(checkbox).parent().next().next().next().next().next().text());
+            if (isUnavailableTreasureHintMap(mapX, mapY)) {
+                let html = $(checkbox).parent().next().next().html();
+                html = "<font color='red'><b>[城]</b></font>" + html;
+                $(checkbox).parent().next().next().html(html);
+            }
+        }
+    });
+
     __page_constructNpcMessageTable("花子");
     __page_writeNpcMessage("欢、欢、欢迎光临冒险家公会，等等，你这、这是什么表情？你肯定是认错人了，前几天你领薪水后碰、碰到的绝对" +
         "不、不、不是我！[漫长的沉默中] 你、你怎么不相信我的话，人与人之间基本的信、信任呢？[再次漫长的沉默] 算了，你这次要去哪里？" +
