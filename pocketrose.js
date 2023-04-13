@@ -5,7 +5,7 @@
 // @icon         data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==
 // @license      mit
 // @author       xiaohaiz,fugue
-// @version      1.6.0.RC1
+// @version      1.6.0.RC4
 // @grant        unsafeWindow
 // @match        *://pocketrose.itsns.net.cn/*
 // @require      https://cdn.bootcdn.net/ajax/libs/jquery/3.6.4/jquery.min.js
@@ -1350,6 +1350,19 @@ function __isCityCoordinate(x, y) {
     return false;
 }
 
+/**
+ * 检查是否无效的藏宝图
+ * @param x X坐标
+ * @param y Y坐标
+ * @returns {boolean}
+ */
+function isUnavailableTreasureHintMap(x, y) {
+    if (x < 0 || y < 0) {
+        return true;
+    }
+    return __isCityCoordinate(x, y);
+}
+
 // ============================================================================
 // 通用辅助功能函数实现
 // ============================================================================
@@ -1409,6 +1422,44 @@ function convertEncodingToUtf8(response, fromEncoding) {
     }
 
     return decoder.decode(uint8Array);
+}
+
+
+function readCastleInformation(id, pass, callback) {
+    fetch("castle_print.cgi", {
+        method: "GET"
+    })
+        .then((response) => {
+            if (!response.ok) {
+                throw new Error("RESPONSE was not ok");
+            }
+            return response.arrayBuffer();
+        })
+        .then((arrayBuffer) => {
+            const decoder = new TextDecoder("gb2312");
+            const html = decoder.decode(new Uint8Array(arrayBuffer));
+
+            const castles = {};
+            $(html).find("td").each(function (_idx, td) {
+                const tdText = $(td).text();
+                if (tdText.endsWith(" (自购)")) {
+                    const castleName = $(td).prev().text();
+                    const castleOwner = tdText.substring(0, tdText.indexOf(" (自购)"));
+                    const castleLocationText = $(td).next().text();
+                    const coordinate = castleLocationText.substring(1, castleLocationText.length - 1).split(",");
+                    const castleLocation = [parseInt(coordinate[0]), parseInt(coordinate[1])];
+                    castles[castleOwner] = {
+                        "name": castleName,
+                        "owner": castleOwner,
+                        "coordinate": castleLocation
+                    };
+                }
+            });
+            callback({"id": id, "pass": pass, "html": html}, castles);
+        })
+        .catch((error) => {
+            console.error("Error raised:", error);
+        });
 }
 
 /**
@@ -1489,6 +1540,30 @@ function __ajax_readPersonalInformation(id, pass, callback) {
         })
         .catch((error) => {
             console.error("Error raised when posting STATUS_PRINT:", error);
+        });
+}
+
+function sendPostRequest(url, request, callback) {
+    fetch(url, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: new URLSearchParams(request),
+    })
+        .then((response) => {
+            if (!response.ok) {
+                throw new Error("RESPONSE was not ok");
+            }
+            return response.arrayBuffer();
+        })
+        .then((arrayBuffer) => {
+            const decoder = new TextDecoder("gb2312");
+            const html = decoder.decode(new Uint8Array(arrayBuffer));
+            callback(html);
+        })
+        .catch((error) => {
+            console.error("Error raised:", error);
         });
 }
 
@@ -1727,8 +1802,9 @@ function __status(htmlText) {
     $("option[value='INN']").text("客栈·驿站");
     $("option[value='LETTER']").text("口袋助手设置");
     $("option[value='LETTER']").attr("style", "background:#20c0ff");
+    $("option[value='CHANGEMAP']").text("冒险家公会");
 
-    // 主页面如果角色满级则经验(大于等于14900)显示为红色
+    // 主页面如果角色满级则经验(大于等于14900)显示为蓝色
     $("td:parent").each(function (_idx, td) {
         const text = $(td).text();
         if (text === "经验值") {
@@ -1736,8 +1812,53 @@ function __status(htmlText) {
             const exp = expText.substring(0, expText.indexOf(" EX"));
             if (exp >= 14900) {
                 let expHtml = $(td).next().html();
-                expHtml = "<font color='red'>" + expHtml + "</font>";
+                expHtml = "<font color='blue'>" + expHtml + "</font>";
                 $(td).next().html(expHtml);
+            }
+        }
+    });
+
+    // 读取角色当前的能力值
+    const text = $("#c_001").find("table:last").find("td:first").text();
+    let idx = text.indexOf("Lv：");
+    let s = text.substring(idx);
+    const level = parseInt(s.substring(3, s.indexOf(" ")));
+    idx = text.indexOf("攻击力：");
+    s = text.substring(idx);
+    const attack = parseInt(s.substring(4, s.indexOf(" ")));
+    idx = s.indexOf("防御力：");
+    s = s.substring(idx);
+    const defense = parseInt(s.substring(4, s.indexOf(" ")));
+    idx = s.indexOf("智力：");
+    s = s.substring(idx);
+    const specialAttack = parseInt(s.substring(3, s.indexOf(" ")));
+    idx = s.indexOf("精神力：");
+    s = s.substring(idx);
+    const specialDefense = parseInt(s.substring(4, s.indexOf(" ")));
+    idx = s.indexOf("速度：");
+    s = s.substring(idx);
+    const speed = parseInt(s.substring(3));
+    if (level !== 150 && (attack === 375 || defense === 375 || specialAttack === 375 || specialDefense === 375 || speed === 375)) {
+        $("td:parent").each(function (_idx, td) {
+            const text = $(td).text();
+            if (text === "身份") {
+                let titleHtml = $(td).next().html();
+                titleHtml = "<font color='red'>" + titleHtml + "</font>";
+                $(td).next().html(titleHtml);
+            }
+        });
+    }
+
+    // 主页面如果角色现金超过100万显示为红色
+    $("td:parent").each(function (_idx, td) {
+        const text = $(td).text();
+        if (text === "资金") {
+            const cashText = $(td).next().text();
+            const cash = cashText.substring(0, cashText.indexOf(" Gold"));
+            if (cash >= 1000000) {
+                let cashHtml = $(td).next().html();
+                cashHtml = "<font color='red'>" + cashHtml + "</font>";
+                $(td).next().html(cashHtml);
             }
         }
     });
@@ -2015,6 +2136,9 @@ function postProcessCityRelatedFunctionalities(htmlText) {
         // 物品卖出完成
         __city_itemSold(htmlText);
     }
+    if (htmlText.indexOf("*  藏宝图以旧换新业务 *") !== -1) {
+        enhanceTownAdventurerGuild(htmlText);
+    }
 }
 
 function __town_inn(htmlText) {
@@ -2049,8 +2173,10 @@ function __town_inn(htmlText) {
         "如果你关闭当前页面则意味着你方毁约，你会处于什么样的位置和状态我们家不会负责。开始旅途后<br>" +
         "请耐心等待，到达目的地后欢迎按钮会自动亮起，点击即可进城。<br>");
     __page_writeNpcMessage("<input type='button' id='travel' style='color: blue' value='开始旅途'>");
+    __page_writeNpcMessage("<input type='button' id='moveToCastle' style='color: red' value='移动到城堡'>");
     __page_writeNpcMessage("<div id='currentLocation' style='display: none'></div>");
     __page_writeNpcMessage("<div id='faeryTreasureCount' style='display: none'></div>");
+    __page_writeNpcMessage("<div id='castleInformation' style='display: none'></div>");
     __page_writeNpcMessage("<br>");
 
     const cityIds = Object.keys(_CITY_DICT);
@@ -2074,12 +2200,14 @@ function __town_inn(htmlText) {
     __page_writeNpcMessage(html);
 
     $("#travel").prop("disabled", true);
+    $("#moveToCastle").prop("disabled", true);
 
     const id = __page_readIdFromCurrentPage();
     const pass = __page_readPassFromCurrentPage();
 
     $("#travel").click(function () {
         $("#travel").prop("disabled", true);
+        $("#moveToCastle").prop("disabled", true);
         $("#returnButton").prop("disabled", true);
         $("input:submit[value='宿泊']").prop("disabled", true);
         const currentTownId = $("#currentLocation").text();
@@ -2106,86 +2234,74 @@ function __town_inn(htmlText) {
                 amount = Math.ceil((100000 - cash) / 10000);
             }
 
-            prepareMoneyAndTakeOff(id, pass, amount, function (id, pass, html) {
-                let msg = playerName + "已经离开了" + sourceTown["name"] + "。";
-                __update_travel_message_board(msg);
-
-                const moveScope = $(html).find("select[name='chara_m']").find("option:last").attr("value");
-                let moveMode = "ROOK";
-                $(html).find("input:submit").each(function (_idx, input) {
-                    const v = $(input).attr("value");
-                    const d = $(input).attr("disabled");
-                    if (v === "↖" && d === undefined) {
-                        moveMode = "QUEEN";
-                    }
+            if (amount > 0) {
+                __ajax_withdrawGolds(id, pass, amount, function (data) {
+                    __update_travel_message_board("我们替你从银行取款10万以备可能需要的入城税。");
+                    __update_travel_message_board("别担心，如果不需要的话到达目的地后会帮你存起来。");
+                    moveToTown(id, pass, playerName, currentTownId, destinationTownId);
                 });
-
-                msg = playerName + "已经确认最大行动力" + moveScope + "，行动采用" + moveMode + "模式。";
-                __update_travel_message_board(msg);
-
-                // 已经确认了行动范围和行动的模式（ROOK | QUEEN）
-                // 接着需要计算出整个路上需要走过的节点
-                const path = __travel_calculate_path_locations(sourceLocation, destinationLocation, moveScope, moveMode);
-                msg = playerName + "的旅途路径已经计算完毕，总共需要次移动" + (path.length - 1) + "次。";
-                __update_travel_message_board(msg);
-
-                msg = "旅途路径规划：";
-                for (let i = 0; i < path.length; i++) {
-                    let node = path[i];
-                    msg += "(" + node[0] + "," + node[1] + ")";
-                    if (i !== path.length - 1) {
-                        msg += " -> ";
-                    }
-                }
-                __update_travel_message_board(msg);
-
-                __travel_perform_move(id, pass, playerName, path, 0, function (id, pass, playerName) {
-                    // 到达目的地了，准备执行进城操作
-                    __update_travel_message_board(playerName + "准备进城，等待行动冷却中...... (约55秒)");
-                    setTimeout(function () {
-                        __travel_enter_city(id, pass, destinationTownId, function (id, pass, townId, html) {
-                            if ($(html).text().indexOf("战胜门卫。") !== -1) {
-                                // 到达了其他国家的城市，并且没有仙人宝物。。无法直接进入，选择交钱吧。。打打杀杀挺不好的
-                                __update_travel_message_board("与门卫交涉中......");
-                                const request = {};
-                                request["id"] = id;
-                                request["pass"] = pass;
-                                request["townid"] = townId;
-                                request["givemoney"] = "1";
-                                request["mode"] = "MOVE";
-                                $.post("status.cgi", request, function (html) {
-                                    __update_travel_message_board("门卫通情达理的收取了合理的入城税。");
-                                    __ajax_depositAllGolds(id, pass, function (data) {
-                                        __update_travel_message_board("我们贴心为您把剩余的现金存入了银行。");
-                                        $("#returnButton").prop("disabled", false);
-                                        $("#returnButton").attr("value", destinationTown["name"] + "欢迎您的到来");
-                                        __update_travel_message_board(playerName + "成功到达" + destinationTown["name"] + "。");
-                                        __update_travel_message_board("期待下次旅途与您再见。");
-                                    });
-                                });
-                            } else {
-                                __ajax_depositAllGolds(id, pass, function (data) {
-                                    __update_travel_message_board("我们贴心为您把剩余的现金存入了银行。");
-                                    $("#returnButton").prop("disabled", false);
-                                    $("#returnButton").attr("value", destinationTown["name"] + "欢迎您的到来");
-                                    __update_travel_message_board(playerName + "成功到达" + destinationTown["name"] + "。");
-                                    __update_travel_message_board("期待下次旅途与您再见。");
-                                });
-                            }
-                        });
-                    }, 55000);
-                });
-            });
+            } else {
+                moveToTown(id, pass, playerName, currentTownId, destinationTownId);
+            }
         }
     });
 
-    __ajax_readPersonalInformation(id, pass, function (data) {
-        const currentTownId = data["TOWN_ID"];
-        const faeryTreasureCount = data["FTC"];
-        $(".cityClass[value='" + currentTownId + "']").prop("disabled", true);
-        $("#currentLocation").text(currentTownId);
-        $("#faeryTreasureCount").text(faeryTreasureCount);
-        $("#travel").prop("disabled", false);
+    $("#moveToCastle").click(function () {
+        $("#travel").prop("disabled", true);
+        $("#moveToCastle").prop("disabled", true);
+        $("#returnButton").prop("disabled", true);
+        $("input:submit[value='宿泊']").prop("disabled", true);
+
+        $("#messageBoard").html("我们将实时为你播报旅途的动态：<br>");
+        const ss = $("#castleInformation").text().split("_");
+        const castleName = ss[0];
+        const castleLocation = [parseInt(ss[1]), parseInt(ss[2])];
+        const currentTownId = $("#currentLocation").text();
+        __update_travel_message_board(playerName + "的目标设定为城堡'" + castleName + "'，坐标位于(" + castleLocation[0] + "," + castleLocation[1] + ")。");
+
+        leaveTown(id, pass, playerName, currentTownId, function (data) {
+            const id = data["id"];
+            const pass = data["pass"];
+            const player = data["player"];
+            const sourceLocation = data["location"];
+            const moveScope = data["moveScope"];
+            const moveMode = data["moveMode"];
+            moveFromTo(id, pass, player, sourceLocation, castleLocation, moveScope, moveMode, function (data) {
+                const id = data["id"];
+                const pass = data["pass"];
+                const player = data["player"];
+                $.post("map.cgi", {"id": id, "pass": pass, "mode": "CASTLE_ENTRY"}, function (html) {
+                    __update_travel_message_board(player + "成功到达城堡'" + castleName + "'。");
+                    __update_travel_message_board("期待下次旅途与您再见。");
+
+                    $("form[action='status.cgi']").attr("action", "castlestatus.cgi");
+                    $("input:hidden[value='STATUS']").attr("value", "CASTLESTATUS");
+                    $("#returnButton").attr("value", castleName + "欢迎您的到来");
+                    $("#returnButton").prop("disabled", false);
+                });
+            });
+        });
+    });
+
+    readCastleInformation(id, pass, function (ctx, castles) {
+        const castle = castles[playerName];
+        if (castle !== undefined) {
+            const s1 = castle["name"];
+            const s2 = castle["coordinate"][0];
+            const s3 = castle["coordinate"][1];
+            $("#castleInformation").text(s1 + "_" + s2 + "_" + s3);
+            $("#moveToCastle").attr("value", "移动到" + s1);
+            $("#moveToCastle").prop("disabled", false);
+        }
+
+        __ajax_readPersonalInformation(ctx["id"], ctx["pass"], function (data) {
+            const currentTownId = data["TOWN_ID"];
+            const faeryTreasureCount = data["FTC"];
+            $(".cityClass[value='" + currentTownId + "']").prop("disabled", true);
+            $("#currentLocation").text(currentTownId);
+            $("#faeryTreasureCount").text(faeryTreasureCount);
+            $("#travel").prop("disabled", false);
+        });
     });
 }
 
@@ -2195,11 +2311,64 @@ function __update_travel_message_board(message) {
     $("#messageBoard").html(messageBoard + "<li>(" + now.toLocaleString() + ") " + message + "</li>");
 }
 
-function __travel_perform_move(id, pass, playerName, path, index, reachDestination) {
-    __update_travel_message_board(playerName + "等待行动冷却中...... (约55秒)");
+function moveToTown(id, pass, player, sourceTownId, destinationTownId) {
+    leaveTown(id, pass, player, sourceTownId, function (data) {
+        const sourceLocation = data["location"];
+        const moveScope = data["moveScope"];
+        const moveMode = data["moveMode"];
+        const destinationTown = _CITY_DICT[destinationTownId];
+        const destinationLocation = [parseInt(destinationTown["x"]), parseInt(destinationTown["y"])];
+
+        moveFromTo(id, pass, player, sourceLocation, destinationLocation, moveScope, moveMode, function (data) {
+            // 到达目的地了，准备执行进城操作
+            __update_travel_message_board(player + "准备进城，等待行动冷却中...... (约55秒)");
+            setTimeout(function () {
+                enterTown(id, pass, destinationTownId, function (data) {
+                    const html = data["html"];
+                    if ($(html).text().indexOf("战胜门卫。") !== -1) {
+                        // 到达了其他国家的城市，并且没有仙人宝物。。无法直接进入，选择交钱吧。。打打杀杀挺不好的
+                        __update_travel_message_board("与门卫交涉中......");
+                        const request = {};
+                        request["id"] = id;
+                        request["pass"] = pass;
+                        request["townid"] = destinationTownId;
+                        request["givemoney"] = "1";
+                        request["mode"] = "MOVE";
+                        $.post("status.cgi", request, function (html) {
+                            __update_travel_message_board("门卫通情达理的收取了合理的入城税。");
+                            __ajax_depositAllGolds(id, pass, function () {
+                                __update_travel_message_board("我们贴心为您把剩余的现金存入了银行。");
+                                $("#returnButton").prop("disabled", false);
+                                $("#returnButton").attr("value", destinationTown["name"] + "欢迎您的到来");
+                                __update_travel_message_board(player + "成功到达" + destinationTown["name"] + "。");
+                                __update_travel_message_board("期待下次旅途与您再见。");
+                            });
+                        });
+                    } else {
+                        __ajax_depositAllGolds(id, pass, function () {
+                            __update_travel_message_board("我们贴心为您把剩余的现金存入了银行。");
+                            $("#returnButton").prop("disabled", false);
+                            $("#returnButton").attr("value", destinationTown["name"] + "欢迎您的到来");
+                            __update_travel_message_board(player + "成功到达" + destinationTown["name"] + "。");
+                            __update_travel_message_board("期待下次旅途与您再见。");
+                        });
+                    }
+                });
+            }, 55000);
+        });
+    });
+}
+
+function moveFromTo(id, pass, player, from, to, scope, mode, callback) {
+    const pathList = __travel_calculate_path_locations(from, to, scope, mode);
+    moveThePathList(id, pass, player, pathList, 0, callback);
+}
+
+function moveThePathList(id, pass, player, pathList, index, callback) {
+    __update_travel_message_board(player + "等待行动冷却中...... (约55秒)");
     setTimeout(function () {
-        const from = path[index];
-        const to = path[index + 1];
+        const from = pathList[index];
+        const to = pathList[index + 1];
 
         const x1 = from[0];
         const y1 = from[1];
@@ -2250,19 +2419,19 @@ function __travel_perform_move(id, pass, playerName, path, index, reachDestinati
         request["chara_m"] = distance;
         $.post("map.cgi", request, function (html) {
             const nextIndex = index + 1;
-            if (nextIndex === path.length - 1) {
-                __update_travel_message_board(playerName + "到达目的地(" + to[0] + "," + to[1] + ")。");
-                reachDestination(id, pass, playerName);
+            if (nextIndex === pathList.length - 1) {
+                __update_travel_message_board(player + "到达目的地(" + to[0] + "," + to[1] + ")。");
+                callback({"id": id, "pass": pass, "player": player, "html": html});
             } else {
-                __update_travel_message_board(playerName + "到达坐标(" + to[0] + "," + to[1] + ")。");
-                __travel_perform_move(id, pass, playerName, path, nextIndex, reachDestination);
+                __update_travel_message_board(player + "到达坐标(" + to[0] + "," + to[1] + ")。");
+                moveThePathList(id, pass, player, pathList, nextIndex, callback);
             }
         });
 
     }, 55000);
 }
 
-function __travel_enter_city(id, pass, townId, callback) {
+function enterTown(id, pass, townId, callback) {
     const request = {};
     request["id"] = id;
     request["pass"] = pass;
@@ -2284,25 +2453,27 @@ function __travel_enter_city(id, pass, townId, callback) {
         .then((arrayBuffer) => {
             const decoder = new TextDecoder("gb2312");
             const html = decoder.decode(new Uint8Array(arrayBuffer));
-            callback(id, pass, townId, html);
+            const data = {};
+            data["id"] = id;
+            data["pass"] = pass;
+            data["townId"] = townId;
+            data["html"] = html;
+            callback(data);
         })
         .catch((error) => {
             console.error("Error raised:", error);
         });
 }
 
-function prepareMoneyAndTakeOff(id, pass, amount, callback) {
-    if (amount > 0) {
-        __ajax_withdrawGolds(id, pass, amount, function (data) {
-            __update_travel_message_board("提前支取了" + amount + "万的现金作为可能的入城保障。");
-            __travel_leave_city(id, pass, callback);
-        });
-    } else {
-        __travel_leave_city(id, pass, callback);
-    }
-}
-
-function __travel_leave_city(id, pass, callback) {
+/**
+ * 出城，离开当前所在的城市。
+ * @param id ID
+ * @param pass PASS
+ @param player PLAYER NAME
+ * @param townId TOWN ID
+ * @param callback 后续动作
+ */
+function leaveTown(id, pass, player, townId, callback) {
     const request = {};
     request["id"] = id;
     request["pass"] = pass;
@@ -2325,7 +2496,32 @@ function __travel_leave_city(id, pass, callback) {
         .then((arrayBuffer) => {
             const decoder = new TextDecoder("gb2312");
             const html = decoder.decode(new Uint8Array(arrayBuffer));
-            callback(id, pass, html);
+
+            const moveScope = $(html).find("select[name='chara_m']").find("option:last").attr("value");
+            let moveMode = "ROOK";
+            $(html).find("input:submit").each(function (_idx, input) {
+                const v = $(input).attr("value");
+                const d = $(input).attr("disabled");
+                if (v === "↖" && d === undefined) {
+                    moveMode = "QUEEN";
+                }
+            });
+
+            const town = _CITY_DICT[townId];
+            __update_travel_message_board(player + "已经离开了" + town["name"] + "。");
+            __update_travel_message_board(player + "已经确认最大行动力" + moveScope + "，行动采用" + moveMode + "模式。");
+
+            const data = {};
+            data["id"] = id;
+            data["pass"] = pass;
+            data["html"] = html;
+            data["player"] = player;
+            data["townId"] = townId;
+            data["location"] = [town["x"], town["y"]];
+            data["moveScope"] = moveScope;
+            data["moveMode"] = moveMode;
+
+            callback(data);
         })
         .catch((error) => {
             console.error("Error raised:", error);
@@ -2352,6 +2548,18 @@ function __travel_calculate_path_locations(sourceLocation, destinationLocation, 
         nodeList.push(...p);
         nodeList.push(destinationLocation);
     }
+
+    __update_travel_message_board("旅途路径已经计算完毕，总共需要次移动" + (nodeList.length - 1) + "次。");
+
+    let msg = "旅途路径规划：";
+    for (let i = 0; i < nodeList.length; i++) {
+        let node = nodeList[i];
+        msg += "(" + node[0] + "," + node[1] + ")";
+        if (i !== nodeList.length - 1) {
+            msg += " -> ";
+        }
+    }
+    __update_travel_message_board(msg);
 
     return nodeList;
 }
@@ -2834,6 +3042,318 @@ function __city_itemSold_buildReturnFunction(id, pass) {
             $("input[type='submit']").trigger("click");
         });
     });
+}
+
+function enhanceTownAdventurerGuild(htmlText) {
+    $("input:submit[value='交换']").attr("id", "exchangeButton");
+    $("input:submit[value='返回城市']").attr("id", "returnButton");
+
+    let player = "";
+    let cash = 0;
+    $("td:parent").each(function (_idx, td) {
+        const text = $(td).text();
+        if (text.indexOf("因为手持城市图不能使用而烦恼吗？") !== -1) {
+            if (_idx === 16) {
+                $(td).attr("id", "messageBoard");
+                $(td).attr("style", "color: white");
+            }
+        }
+        if (text === "姓名") {
+            player = $(td).parent().next().find("td:first").text();
+        }
+        if (text === "所持金") {
+            const cashText = $(td).next().text();
+            cash = parseInt(cashText.substring(0, cashText.indexOf(" GOLD")));
+        }
+    });
+
+    let treasureHintMapCount = 0;
+    $("input:checkbox").each(function (_idx, checkbox) {
+        const checkboxName = $(checkbox).attr("name");
+        if (checkboxName.startsWith("item")) {
+            const mapX = parseInt($(checkbox).parent().next().next().next().next().text());
+            const mapY = parseInt($(checkbox).parent().next().next().next().next().next().text());
+            if (isUnavailableTreasureHintMap(mapX, mapY)) {
+                let html = $(checkbox).parent().next().next().html();
+                html = "<font color='red'><b>[城]</b></font>" + html;
+                $(checkbox).parent().next().next().html(html);
+            } else {
+                treasureHintMapCount++;
+            }
+        }
+    });
+
+    __page_constructNpcMessageTable("花子");
+    __page_writeNpcMessage("欢、欢、欢迎光临冒险家公会，等等，你这、这是什么表情？你肯定是认错人了，前几天你领薪水后碰、碰到的绝对" +
+        "不、不、不是我！[漫长的沉默中] 你、你怎么不相信我的话，人与人之间基本的信、信任呢？[再次漫长的沉默] 算了，你这次要去哪里？" +
+        "我免费让人带你过去。你出门去上、上、上马车吧。<br>");
+    let select = "";
+    select += "<select name='x' id='x'>";
+    for (let i = 0; i <= 15; i++) {
+        select += "<option value='" + i + "'>" + i + "</option>";
+    }
+    select += "</select>";
+    select += "<select name='y' id='y'>";
+    for (let i = 0; i <= 15; i++) {
+        select += "<option value='" + i + "'>" + i + "</option>";
+    }
+    select += "</select>";
+    __page_writeNpcMessage(select);
+    __page_writeNpcMessage("<input type='button' id='coach_1' style='color: blue' value='车门上鸢尾兰的纹章熠熠生辉'>");
+    __page_writeNpcMessage("<input type='button' id='coach_2' style='color: red' value='车身上剑与盾透露出铁血的气息'>");
+    __page_writeNpcMessage("<input type='button' id='coach_3' style='color: black' value='斑驳的车身上隐约可见半拉兔子骷髅的形状'>");
+    if (treasureHintMapCount > 0) {
+        __page_writeNpcMessage("<br>");
+        __page_writeNpcMessage("什、什、什么？？你有藏宝图！要不要去试试手气？在上面选好你想探险的藏宝图。<br>");
+        __page_writeNpcMessage("<input type='button' id='treasure' style='color: red' value='带上藏宝图跟上兔子骷髅的脚步'>");
+    }
+
+    __page_writeNpcMessage("<div id='townId' style='display: none'></div>");
+
+    $("#coach_1").prop("disabled", true);
+    $("#coach_2").prop("disabled", true);
+    $("#coach_3").prop("disabled", true);
+    if (treasureHintMapCount > 0) {
+        $("#treasure").prop("disabled", true);
+    }
+
+    const id = __page_readIdFromCurrentPage();
+    const pass = __page_readPassFromCurrentPage();
+
+    $("#coach_1").click(function () {
+        alert("滚开，也不看看，什么马车都敢随便上！");
+        $("#coach_1").prop("disabled", true);
+    });
+    $("#coach_2").click(function () {
+        alert("下去，你要找的马车在隔壁。");
+        $("#coach_2").prop("disabled", true);
+    });
+    $("#coach_3").click(function () {
+        const x = parseInt($("#x").val());
+        const y = parseInt($("#y").val());
+
+        const townId = $("#townId").text();
+        const town = _CITY_DICT[townId];
+        const townLocation = [parseInt(town["x"]), parseInt(town["y"])];
+
+        if (x === townLocation[0] && y === townLocation[1]) {
+            alert("有没有一种可能你现在就在这里？坐标(" + x + "," + y + ")");
+        } else {
+            $("#x").prop("disabled", true);
+            $("#y").prop("disabled", true);
+            $("#exchangeButton").prop("disabled", true);
+            $("#returnButton").prop("disabled", true);
+            $("#coach_1").prop("disabled", true);
+            $("#coach_2").prop("disabled", true);
+            $("#coach_3").prop("disabled", true);
+            if (treasureHintMapCount > 0) {
+                $("#treasure").prop("disabled", true);
+            }
+
+            $("#messageBoard").html("放心，实时播报动态我们是专业的，绝对不比隔壁新开张的驿站差：<br>");
+            __update_travel_message_board(player + "登上了车身斑驳的马车，一股说不出的味道扑鼻而来。");
+            __update_travel_message_board(player + "皱了皱眉头，很不舒服的感觉。");
+            __update_travel_message_board("嘎吱嘎吱声中，马车出发了。");
+
+            leaveTown(id, pass, player, townId, function (data) {
+                const moveScope = data["moveScope"];
+                const moveMode = data["moveMode"];
+                moveFromTo(id, pass, player, townLocation, [x, y], moveScope, moveMode, function (data) {
+                    __update_travel_message_board("\"我们到了\"，车夫粗鲁的喊声惊醒了昏昏欲睡的" + player + "。");
+                    __update_travel_message_board(player + "暗暗发誓再也不乘坐这架马车了！");
+                    $("#returnButton").attr("value", "摇摇晃晃走下马车");
+                    $("#returnButton").prop("disabled", false);
+                });
+            });
+        }
+    });
+
+    if (treasureHintMapCount > 0) {
+        $("#treasure").click(function () {
+            const candidates = [];
+            $("input:checkbox:checked").each(function (_idx, checkbox) {
+                const checkboxName = $(checkbox).attr("name");
+                if (checkboxName.startsWith("item")) {
+                    const mapX = parseInt($(checkbox).parent().next().next().next().next().text());
+                    const mapY = parseInt($(checkbox).parent().next().next().next().next().next().text());
+                    if (!isUnavailableTreasureHintMap(mapX, mapY)) {
+                        candidates.push([mapX, mapY]);
+                    }
+                }
+            });
+            if (candidates.length === 0) {
+                alert("咱们就是说你好歹带上一张能用的藏宝图？");
+            } else {
+                $("#x").prop("disabled", true);
+                $("#y").prop("disabled", true);
+                $("#exchangeButton").prop("disabled", true);
+                $("#returnButton").prop("disabled", true);
+                $("#coach_1").prop("disabled", true);
+                $("#coach_2").prop("disabled", true);
+                $("#coach_3").prop("disabled", true);
+                $("#treasure").prop("disabled", true);
+
+                const townId = $("#townId").text();
+                const town = _CITY_DICT[townId];
+                const townLocation = [parseInt(town["x"]), parseInt(town["y"])];
+
+
+                $("#messageBoard").html("冒险家公会之探险播报：<br>");
+
+                let amount = 0;
+                if (cash < 1100000) {
+                    amount = Math.ceil((1100000 - cash) / 10000);
+                }
+                if (amount > 0) {
+                    __ajax_withdrawGolds(id, pass, amount, function () {
+                        __update_travel_message_board(player + "取出了" + amount + "万探险保证金。");
+                        startTreasureHintMapSearchJournal(id, pass, player, townId, townLocation, candidates);
+                    });
+                } else {
+                    startTreasureHintMapSearchJournal(id, pass, player, townId, townLocation, candidates);
+                }
+            }
+        });
+    }
+
+    __ajax_readPersonalInformation(id, pass, function (data) {
+        const townId = data["TOWN_ID"];
+        $("#townId").text(townId);
+        $("#coach_1").prop("disabled", false);
+        $("#coach_2").prop("disabled", false);
+        $("#coach_3").prop("disabled", false);
+        $("#treasure").prop("disabled", false);
+    });
+}
+
+function startTreasureHintMapSearchJournal(id, pass, player, townId, townLocation, candidates) {
+    candidates.sort((a, b) => {
+        let ret = a[0] - b[0];
+        if (ret === 0) {
+            ret = a[1] - b[1];
+        }
+        return ret;
+    });
+
+    const locationList = [];
+    locationList.push(townLocation);
+    locationList.push(...candidates);
+    locationList.push(townLocation);
+
+    __update_travel_message_board("兔子骷髅帮忙整理了" + player + "手中的藏宝图，说道：");
+    let msg = "就按这个顺序走：";
+    for (let i = 0; i < candidates.length; i++) {
+        const it = candidates[i];
+        msg += "(" + it[0] + "," + it[1] + ")";
+        if (i !== candidates.length - 1) {
+            msg += "=>";
+        }
+    }
+    __update_travel_message_board(msg);
+    __update_travel_message_board("完事儿后最后我们还回这儿来。");
+
+    const foundList = [];
+
+    leaveTown(id, pass, player, townId, function (data) {
+        const scope = data["moveScope"];
+        const mode = data["moveMode"];
+        moveToAndSearch(id, pass, player, townId, scope, mode, locationList, 0, foundList);
+    });
+}
+
+function moveToAndSearch(id, pass, player, townId, scope, mode, locationList, locationIndex, foundList) {
+    const from = locationList[locationIndex];
+    const to = locationList[locationIndex + 1];
+
+    if (locationIndex !== locationList.length - 2) {
+        if (from[0] === to[0] && from[1] === to[1]) {
+            // 下一张图在原地
+            __update_travel_message_board("兔子骷髅说：运气真好，原地可以继续探险。");
+            __update_travel_message_board("等待探险冷却中......(约55秒)");
+            setTimeout(function () {
+                const request = {"id": id, "pass": pass, "mode": "MAP_SEARCH"};
+                sendPostRequest("map.cgi", request, function (html) {
+                    __update_travel_message_board(player + "在(" + to[0] + "," + to[1] + ")完成探险！");
+                    if (html.indexOf("所持金超过1000000。请先存入银行。") !== -1) {
+                        __update_travel_message_board("<font color='yellow'>" + player + "惨被3BT袭击，兔子骷髅开心看着完全没有搭把手的意思。</font>");
+                        foundList.push("被3BT殴打！");
+                    } else {
+                        const found = $(html).find("h2:first").text();
+                        foundList.push(found);
+                        __update_travel_message_board("<font color='red'>" + player + found + "</font>");
+                    }
+                    moveToAndSearch(id, pass, player, townId, scope, mode, locationList, locationIndex + 1, foundList);
+                });
+            }, 55000);
+        } else {
+            moveFromTo(id, pass, player, from, to, scope, mode, function (data) {
+                __update_travel_message_board("等待探险冷却中......(约55秒)");
+                setTimeout(function () {
+                    const request = {"id": id, "pass": pass, "mode": "MAP_SEARCH"};
+                    sendPostRequest("map.cgi", request, function (html) {
+                        __update_travel_message_board(player + "在(" + to[0] + "," + to[1] + ")完成探险！");
+                        if (html.indexOf("所持金超过1000000。请先存入银行。") !== -1) {
+                            __update_travel_message_board("<font color='yellow'>" + player + "惨被3BT袭击，兔子骷髅开心看着完全没有搭把手的意思。</font>");
+                            foundList.push("被3BT殴打！");
+                        } else {
+                            const found = $(html).find("h2:first").text();
+                            foundList.push(found);
+                            __update_travel_message_board("<font color='red'>" + player + found + "</font>");
+                        }
+                        moveToAndSearch(id, pass, player, townId, scope, mode, locationList, locationIndex + 1, foundList);
+                    });
+                }, 55000);
+            });
+        }
+    } else {
+        // 最后一个坐标已经完成了探险。现在可以回城了
+        __update_travel_message_board("藏宝图都用完了，回城吧。");
+        moveFromTo(id, pass, player, from, to, scope, mode, function (data) {
+            __update_travel_message_board("等待进城冷却中......(约55秒)");
+            setTimeout(function () {
+                enterTown(id, pass, townId, function (data) {
+                    const html = data["html"];
+                    if ($(html).text().indexOf("战胜门卫。") !== -1) {
+                        __update_travel_message_board("与门卫交涉中......");
+                        const request = {};
+                        request["id"] = id;
+                        request["pass"] = pass;
+                        request["townid"] = townId;
+                        request["givemoney"] = "1";
+                        request["mode"] = "MOVE";
+                        $.post("status.cgi", request, function (html) {
+                            __update_travel_message_board("门卫通情达理的收取了合理的入城税。");
+                            __ajax_depositAllGolds(id, pass, function () {
+                                __update_travel_message_board(player + "吧剩余的现金存入了银行。");
+                                $("#returnButton").prop("disabled", false);
+                                $("#returnButton").attr("value", "欢迎回来");
+                                __update_travel_message_board("探险完成，在兔子骷髅不怀好意的挥手注视下，" + player + "快速离开了。");
+                                if (foundList.length > 0) {
+                                    __update_travel_message_board(player + "回到无人处，悄悄检视了下探险的收入：");
+                                    for (let i = 0; i < foundList.length; i++) {
+                                        __update_travel_message_board("<font color='blue'>" + foundList[i] + "</font>");
+                                    }
+                                }
+                            });
+                        });
+                    } else {
+                        __ajax_depositAllGolds(id, pass, function () {
+                            __update_travel_message_board(player + "吧剩余的现金存入了银行。");
+                            $("#returnButton").prop("disabled", false);
+                            $("#returnButton").attr("value", "欢迎回来");
+                            __update_travel_message_board("探险完成，在兔子骷髅不怀好意的挥手注视下，" + player + "快速离开了。");
+                            if (foundList.length > 0) {
+                                __update_travel_message_board(player + "回到无人处，悄悄检视了下探险的收入：");
+                                for (let i = 0; i < foundList.length; i++) {
+                                    __update_travel_message_board("<font color='blue'>" + foundList[i] + "</font>");
+                                }
+                            }
+                        });
+                    }
+                })
+            }, 55000);
+        });
+    }
 }
 
 // ============================================================================
@@ -3541,7 +4061,7 @@ function __personalStatus_equipment(htmlText) {
             // Process 藏宝图 related enhancement.
             let x = $(inputTableCell).next().next().next().next().text();
             let y = $(inputTableCell).next().next().next().next().next().text();
-            if (__isCityCoordinate(parseInt(x), parseInt(y))) {
+            if (isUnavailableTreasureHintMap(parseInt(x), parseInt(y))) {
                 let nameHtml = $(inputTableCell).next().next().html();
                 nameHtml = "<font color='red'><b>[城]</b></font>" + nameHtml;
                 $(inputTableCell).next().next().html(nameHtml);
@@ -3967,7 +4487,7 @@ function __personalStatus_treasureBag(htmlText) {
         if (category === "物品" && name.indexOf("藏宝图") !== -1) {
             let x = power;
             let y = $(td).next().next().next().next().text();
-            if (__isCityCoordinate(parseInt(x), parseInt(y))) {
+            if (isUnavailableTreasureHintMap(parseInt(x), parseInt(y))) {
                 let nameHtml = $(td).next().html();
                 nameHtml = "<font color='red'><b>[城]</b></font>" + nameHtml;
                 $(td).next().html(nameHtml);
