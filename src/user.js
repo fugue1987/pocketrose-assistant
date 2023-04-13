@@ -19,7 +19,7 @@ export class Credential {
 
     /**
      * Get credential id property.
-     * @returns string
+     * @returns {string}
      */
     get id() {
         return this.#id;
@@ -27,11 +27,21 @@ export class Credential {
 
     /**
      * Get credential pass property.
-     * @returns string
+     * @returns {string}
      */
     get pass() {
         return this.#pass;
     }
 
+}
+
+/**
+ * Generate Credential object from current HTML form.
+ * @returns {Credential}
+ */
+export function generateCredential() {
+    let id = $("input:hidden[name='id']:first").attr("value");
+    let pass = $("input:hidden[name='pass']:first").attr("value");
+    return new Credential(id, pass);
 }
 
