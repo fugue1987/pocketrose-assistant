@@ -23,6 +23,7 @@
 import * as constant from "./constant";
 import * as npc from "./npc";
 import * as pokemon from "./pokemon";
+import * as user from "./user";
 
 // 转职建议字典，对当前能力的需求，分别是MP，攻击，防御，智力，精神，速度
 const transferCareerRequirementDict = {
