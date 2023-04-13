@@ -76,19 +76,6 @@ const _PROHIBIT_SELLING_ITEM_DICT = [
     "龙"
 ];
 
-/**
- * 终极隐藏职业天位系的职业名称定义。
- * @type {string[]}
- * @private
- */
-const _ROLE_TOP_CAREER_DICT = [
-    "小天位",
-    "强天位",
-    "斋天位",
-    "太天位",
-    "终极"
-];
-
 const _CAREER_DICT = {
     "兵士": {"id": 0},
     "武士": {"id": 1},
@@ -745,29 +732,6 @@ function __utilities_isHeavyArmor(name) {
         }
     }
     return false;
-}
-
-/**
- * 检查指定的职业是否为天位系隐藏职业
- * @param career 等待检查的职业
- * @private
- */
-function __utilities_isRoleTopCareer(career) {
-    for (let i = 0; i < _ROLE_TOP_CAREER_DICT.length; i++) {
-        if (career === _ROLE_TOP_CAREER_DICT[i]) {
-            return true;
-        }
-    }
-    return false;
-}
-
-function __utilities_formalizeRoleTopCareer(career) {
-    for (let i = 0; i < _ROLE_TOP_CAREER_DICT.length; i++) {
-        if (career.indexOf(_ROLE_TOP_CAREER_DICT[i]) != -1) {
-            return _ROLE_TOP_CAREER_DICT[i];
-        }
-    }
-    return undefined;
 }
 
 /**
