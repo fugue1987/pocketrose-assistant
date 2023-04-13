@@ -1350,6 +1350,19 @@ function __isCityCoordinate(x, y) {
     return false;
 }
 
+/**
+ * 检查是否无效的藏宝图
+ * @param x X坐标
+ * @param y Y坐标
+ * @returns {boolean}
+ */
+function isUnavailableTreasureHintMap(x, y) {
+    if (x < 0 || y < 0) {
+        return true;
+    }
+    return __isCityCoordinate(x, y);
+}
+
 // ============================================================================
 // 通用辅助功能函数实现
 // ============================================================================
@@ -3813,7 +3826,7 @@ function __personalStatus_equipment(htmlText) {
             // Process 藏宝图 related enhancement.
             let x = $(inputTableCell).next().next().next().next().text();
             let y = $(inputTableCell).next().next().next().next().next().text();
-            if (__isCityCoordinate(parseInt(x), parseInt(y))) {
+            if (isUnavailableTreasureHintMap(parseInt(x), parseInt(y))) {
                 let nameHtml = $(inputTableCell).next().next().html();
                 nameHtml = "<font color='red'><b>[城]</b></font>" + nameHtml;
                 $(inputTableCell).next().next().html(nameHtml);
@@ -4239,7 +4252,7 @@ function __personalStatus_treasureBag(htmlText) {
         if (category === "物品" && name.indexOf("藏宝图") !== -1) {
             let x = power;
             let y = $(td).next().next().next().next().text();
-            if (__isCityCoordinate(parseInt(x), parseInt(y))) {
+            if (isUnavailableTreasureHintMap(parseInt(x), parseInt(y))) {
                 let nameHtml = $(td).next().html();
                 nameHtml = "<font color='red'><b>[城]</b></font>" + nameHtml;
                 $(td).next().html(nameHtml);
