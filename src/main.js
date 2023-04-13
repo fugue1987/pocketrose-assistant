@@ -21,6 +21,7 @@
 // ============================================================================
 
 import * as constant from "./constant";
+import * as network from "./network";
 import * as npc from "./npc";
 import * as pokemon from "./pokemon";
 import * as user from "./user";
@@ -1009,30 +1010,6 @@ function __ajax_readPersonalInformation(id, pass, callback) {
         })
         .catch((error) => {
             console.error("Error raised when posting STATUS_PRINT:", error);
-        });
-}
-
-function sendPostRequest(url, request, callback) {
-    fetch(url, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-        },
-        body: new URLSearchParams(request),
-    })
-        .then((response) => {
-            if (!response.ok) {
-                throw new Error("RESPONSE was not ok");
-            }
-            return response.arrayBuffer();
-        })
-        .then((arrayBuffer) => {
-            const decoder = new TextDecoder("gb2312");
-            const html = decoder.decode(new Uint8Array(arrayBuffer));
-            callback(html);
-        })
-        .catch((error) => {
-            console.error("Error raised:", error);
         });
 }
 
@@ -2741,7 +2718,7 @@ function moveToAndSearch(id, pass, player, townId, scope, mode, locationList, lo
             __update_travel_message_board("等待探险冷却中......(约55秒)");
             setTimeout(function () {
                 const request = {"id": id, "pass": pass, "mode": "MAP_SEARCH"};
-                sendPostRequest("map.cgi", request, function (html) {
+                network.sendPostRequest("map.cgi", request, function (html) {
                     __update_travel_message_board(player + "在(" + to[0] + "," + to[1] + ")完成探险！");
                     if (html.indexOf("所持金超过1000000。请先存入银行。") !== -1) {
                         __update_travel_message_board("<font color='yellow'>" + player + "惨被3BT袭击，兔子骷髅开心看着完全没有搭把手的意思。</font>");
@@ -2759,7 +2736,7 @@ function moveToAndSearch(id, pass, player, townId, scope, mode, locationList, lo
                 __update_travel_message_board("等待探险冷却中......(约55秒)");
                 setTimeout(function () {
                     const request = {"id": id, "pass": pass, "mode": "MAP_SEARCH"};
-                    sendPostRequest("map.cgi", request, function (html) {
+                    network.sendPostRequest("map.cgi", request, function (html) {
                         __update_travel_message_board(player + "在(" + to[0] + "," + to[1] + ")完成探险！");
                         if (html.indexOf("所持金超过1000000。请先存入银行。") !== -1) {
                             __update_travel_message_board("<font color='yellow'>" + player + "惨被3BT袭击，兔子骷髅开心看着完全没有搭把手的意思。</font>");
