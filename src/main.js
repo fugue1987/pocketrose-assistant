@@ -21,10 +21,10 @@
 // ============================================================================
 
 import * as castle from "./castle";
-import * as constant from "./constant";
 import * as map from "./map";
 import * as network from "./network";
 import * as npc from "./npc";
+import * as pocket from "./pocket";
 import * as pokemon from "./pokemon";
 import * as user from "./user";
 
@@ -2116,7 +2116,7 @@ function __town_petMap(htmlText) {
     $("td:parent").each(function (_i, element) {
         var img = $(element).children("img");
         var src = img.attr("src");
-        if (src != undefined && src.indexOf(constant.POCKETROSE_DOMAIN + "/image/386/") != -1) {
+        if (src != undefined && src.indexOf(pocket.DOMAIN + "/image/386/") != -1) {
             var code = img.attr("alt");
             var count = $(element).next();
 
