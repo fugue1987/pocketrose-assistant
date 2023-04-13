@@ -29,3 +29,23 @@ export function substringAfter(text, searchString) {
 export function substringBetween(text, leftString, rightString) {
     return substringBefore(substringAfter(text, leftString), rightString);
 }
+
+export function substringBeforeSlash(text) {
+    if (contains(text, " /")) {
+        return substringBefore(text, " /");
+    }
+    if (contains(text, "/")) {
+        return substringBefore(text, "/");
+    }
+    return text;
+}
+
+export function substringAfterSlash(text) {
+    if (contains(text, "/ ")) {
+        return substringAfter(text, "/ ");
+    }
+    if (contains(text, "/")) {
+        return substringAfter(text, "/");
+    }
+    return text;
+}
