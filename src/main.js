@@ -699,28 +699,6 @@ function __utilities_substringAfterSlash(text) {
     return text;
 }
 
-function __utilities_trimSpace(text) {
-    let result = "";
-    for (let i = 0; i < text.length; i++) {
-        let c = text[i];
-        if (c !== ' ') {
-            result += c;
-        }
-    }
-    return result;
-}
-
-function __utilities_convertEncodingToUtf8(response, fromEncoding) {
-    const decoder = new TextDecoder(fromEncoding);
-    const uint8Array = new Uint8Array(response.length);
-
-    for (let i = 0; i < response.length; i++) {
-        uint8Array[i] = response.charCodeAt(i);
-    }
-
-    return decoder.decode(uint8Array);
-}
-
 /**
  * 判断指定的名字是否为属性重铠，支持齐心重铠的检查。
  * @private
