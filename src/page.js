@@ -56,6 +56,8 @@ export function initializeMessageBoard(message) {
 
 export function publishMessageBoard(message) {
     let html = $("#messageBoard").html();
-    html = html + "<li>" + message + "</li>";
+    const now = new Date();
+    const timeHtml = "<font color='#adff2f'>(" + now.toLocaleString() + ")</font>";
+    html = html + "<li>" + timeHtml + " " + message + "</li>";
     $("#messageBoard").html(html);
 }

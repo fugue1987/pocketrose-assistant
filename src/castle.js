@@ -245,7 +245,13 @@ class CastlePostHouse {
                 journey.scope = scope;
                 journey.mode = mode;
                 journey.start(function () {
-                    
+                    map.enterTown(credential, town.id, function () {
+                        page.publishMessageBoard(role.name + "已经成功到达" + town.name);
+                        $("form[action='castlestatus.cgi']").attr("action", "status.cgi");
+                        $("input:hidden[value='CASTLESTATUS']").attr("value", "STATUS");
+                        $("input:submit[value='返回城堡']").prop("disabled", false);
+                        $("input:submit[value='返回城堡']").attr("value", town.name + "欢迎您");
+                    });
                 });
             })
         });
