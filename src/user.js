@@ -8,58 +8,7 @@ import * as pocket from "./pocket";
 import * as network from "./network";
 import * as util from "./util";
 import {Coordinate} from "./geo";
-
-export class Role {
-
-    _name;
-    _location;
-    _coordinate;
-    _castleName;
-    _townName;
-
-    constructor() {
-    }
-
-    get name() {
-        return this._name;
-    }
-
-    set name(value) {
-        this._name = value;
-    }
-
-    get location() {
-        return this._location;
-    }
-
-    set location(value) {
-        this._location = value;
-    }
-
-    get coordinate() {
-        return this._coordinate;
-    }
-
-    set coordinate(value) {
-        this._coordinate = value;
-    }
-
-    get castleName() {
-        return this._castleName;
-    }
-
-    set castleName(value) {
-        this._castleName = value;
-    }
-
-    get townName() {
-        return this._townName;
-    }
-
-    set townName(value) {
-        this._townName = value;
-    }
-}
+import {Role} from "./role";
 
 export class RoleLoader {
 
