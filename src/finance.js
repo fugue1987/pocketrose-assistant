@@ -24,11 +24,9 @@ export function calculateCashDifferenceAmount(cash, expect) {
  * 存钱到城市的银行
  * @param credential 用户凭证
  * @param amount 存入金额，undefined意味全部存入
+ * @returns {Promise<void>}
  */
-export function depositIntoTownBank(credential, amount) {
-    if (amount !== undefined && amount < 0) {
-        return;
-    }
+export async function depositIntoTownBank(credential, amount) {
     const doDeposit = (credential, amount) => {
         return new Promise((resolve) => {
             const request = credential.asRequest();
@@ -43,13 +41,14 @@ export function depositIntoTownBank(credential, amount) {
             });
         });
     };
-    doDeposit(credential, amount).then();
+    await doDeposit(credential, amount);
 }
 
 /**
  * 从城堡取钱
  * @param credential 用户凭证
  * @param amount 取钱的金额
+ * @returns {Promise<void>}
  */
 export async function withdrawFromCastleBank(credential, amount) {
     const doWithdrawFromCastleBank = (credential, amount) => {

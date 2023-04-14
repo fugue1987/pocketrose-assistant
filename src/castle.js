@@ -191,6 +191,7 @@ class CastlePostHouse {
                 $(td).html("我们已经将城堡中废弃的机车建造厂改造成为了驿站。<br>");
             }
             if (text === "所持金") {
+                $(td).next().attr("id", "cash");
                 cash = parseInt(util.substringBefore($(td).next().text(), " GOLD"));
             }
         });
@@ -220,6 +221,7 @@ class CastlePostHouse {
                     const credential = generateCredential();
                     finance.withdrawFromCastleBank(credential, amount).then(() => {
                         page.publishMessageBoard("从城堡提款机支取了" + amount + "万现金");
+                        $("#cash").text((cash + amount * 10000) + " GOLD");
                         postHouse.#travelTo(town);
                     });
                 } else {
@@ -249,10 +251,14 @@ class CastlePostHouse {
                 journey.start(function () {
                     map.enterTown(credential, town.id, function () {
                         page.publishMessageBoard(role.name + "已经成功到达" + town.name);
-                        $("form[action='castlestatus.cgi']").attr("action", "status.cgi");
-                        $("input:hidden[value='CASTLESTATUS']").attr("value", "STATUS");
-                        $("input:submit[value='返回城堡']").prop("disabled", false);
-                        $("input:submit[value='返回城堡']").attr("value", town.name + "欢迎您");
+                        finance.depositIntoTownBank(credential, undefined).then(() => {
+                            page.publishMessageBoard(role.name + "将全部现金存入银行");
+                            $("form[action='castlestatus.cgi']").attr("action", "status.cgi");
+                            $("input:hidden[value='CASTLESTATUS']").attr("value", "STATUS");
+                            $("input:submit[value='返回城堡']").prop("disabled", false);
+                            $("input:submit[value='返回城堡']").attr("value", town.name + "欢迎您");
+                        });
+
                     });
                 });
             });
