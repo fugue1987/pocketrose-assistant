@@ -242,6 +242,8 @@ class CastlePostHouse {
                 journey.role = role;
                 journey.source = role.coordinate;
                 journey.destination = town.coordinate;
+                journey.scope = scope;
+                journey.mode = mode;
                 journey.start(function () {
                     
                 });

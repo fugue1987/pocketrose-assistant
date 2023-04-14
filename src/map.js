@@ -6,6 +6,7 @@
 
 import * as network from "./network";
 import {Coordinate, isSameCoordinate} from "./util";
+import * as page from "./page";
 
 export function leaveCastle(credential, role, callback) {
     const request = credential.asRequest();
@@ -67,6 +68,11 @@ export class Journey {
     }
 
     start(callback) {
+        const pathList = this.#calculatePath();
+        this.#moveOnPath(pathList, 0, callback);
+    }
+
+    #moveOnPath(pathList, index, callback) {
 
     }
 
@@ -88,6 +94,17 @@ export class Journey {
             pathList.push(...p);
             pathList.push(this._destination);
         }
+
+        page.publishMessageBoard("旅途路径已经计算完毕，总共需要次移动" + (pathList.length - 1) + "步");
+        let msg = "旅途路径规划：";
+        for (let i = 0; i < pathList.length; i++) {
+            let node = pathList[i];
+            msg += node.longText();
+            if (i !== pathList.length - 1) {
+                msg += "=>";
+            }
+        }
+        page.publishMessageBoard(msg);
 
         return pathList;
     }
