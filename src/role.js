@@ -88,21 +88,22 @@ export function loadRole(credential) {
                 role.name = s;
             }
             if (text === "现在位置") {
-                if (text.includes("(") && text.includes(")")) {
+                const locationText = $(td).next().text();
+                if (locationText.includes("(") && locationText.includes(")")) {
                     // 在城堡
                     role.location = "CASTLE";
-                    const s = util.substringBetween(text, "(", ")");
+                    const s = util.substringBetween(locationText, "(", ")");
                     const x = util.substringBefore(s, ",");
                     const y = util.substringAfter(s, ",");
                     role.coordinate = new geo.Coordinate(parseInt(x), parseInt(y));
-                    role.castleName = util.substringBefore(text, " (");
+                    role.castleName = util.substringBefore(locationText, " (");
                 } else {
                     // 在城市或者野外
-                    if (text === "野外") {
+                    if (locationText === "野外") {
                         role.location = "WILD";
                     } else {
                         role.location = "TOWN";
-                        const town = pocket.findTownByName(text);
+                        const town = pocket.findTownByName(locationText);
                         if (town !== undefined) {
                             role.coordinate = town.coordinate;
                             role.townName = town.name;
