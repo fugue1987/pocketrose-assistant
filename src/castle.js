@@ -10,8 +10,8 @@ import * as page from "./page";
 import * as pocket from "./pocket";
 import * as user from "./user";
 import * as util from "./util";
-import {Coordinate} from "./util";
 import {generateCredential} from "./credential";
+import {Coordinate} from "./geo";
 
 /**
  * 城堡的数据结构

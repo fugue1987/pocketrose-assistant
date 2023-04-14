@@ -5,8 +5,8 @@
  */
 
 import * as network from "./network";
-import {Coordinate, isSameCoordinate} from "./util";
 import * as page from "./page";
+import {Coordinate, isSameCoordinate} from "./geo";
 
 export function enterTown(credential, townId, callback) {
     page.publishMessageBoard("等待进城冷却中......(约55秒)");

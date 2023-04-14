@@ -7,6 +7,7 @@
 import * as pocket from "./pocket";
 import * as network from "./network";
 import * as util from "./util";
+import {Coordinate} from "./geo";
 
 export class Role {
 
@@ -102,7 +103,7 @@ export class RoleLoader {
             const s = util.substringBetween(text, "(", ")");
             const x = util.substringBefore(s, ",");
             const y = util.substringAfter(s, ",");
-            role.coordinate = new util.Coordinate(parseInt(x), parseInt(y));
+            role.coordinate = new Coordinate(parseInt(x), parseInt(y));
             role.castleName = util.substringBefore(text, " (");
         } else {
             // 在城市或者野外
