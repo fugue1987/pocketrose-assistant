@@ -8,7 +8,6 @@ import * as map from "./map";
 import * as network from "./network";
 import * as page from "./page";
 import * as pocket from "./pocket";
-import * as user from "./user";
 import * as util from "./util";
 import {generateCredential} from "./credential";
 import {Coordinate} from "./geo";
