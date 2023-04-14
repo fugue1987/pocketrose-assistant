@@ -51,10 +51,7 @@ export function depositIntoTownBank(credential, amount) {
  * @param credential 用户凭证
  * @param amount 取钱的金额
  */
-export function withdrawFromCastleBank(credential, amount) {
-    if (amount === undefined || amount <= 0) {
-        return;
-    }
+export async function withdrawFromCastleBank(credential, amount) {
     const doWithdrawFromCastleBank = (credential, amount) => {
         return new Promise((resolve) => {
             const request = credential.asRequest();
@@ -65,5 +62,5 @@ export function withdrawFromCastleBank(credential, amount) {
             });
         });
     }
-    doWithdrawFromCastleBank(credential, amount).then();
+    await doWithdrawFromCastleBank(credential, amount);
 }

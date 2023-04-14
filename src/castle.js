@@ -215,14 +215,17 @@ class CastlePostHouse {
                 const town = pocket.getTown(townId);
                 page.publishMessageBoard("目的地设定为‘" + town.name + "’");
 
-                if (cash < 100000) {
+                const amount = finance.calculateCashDifferenceAmount(cash, 100000);
+                if (amount > 0) {
                     const credential = generateCredential();
-                    finance.withdrawFromCastleBank(credential, 10);
-                    page.publishMessageBoard("从城堡提款机支取了10万现金");
+                    finance.withdrawFromCastleBank(credential, amount).then(() => {
+                        page.publishMessageBoard("从城堡提款机支取了" + amount + "万现金");
+                        postHouse.#travelTo(town);
+                    });
                 } else {
                     page.publishMessageBoard("身上现金充裕，准备出发");
+                    postHouse.#travelTo(town);
                 }
-                postHouse.#travelTo(town);
             }
         });
     }
