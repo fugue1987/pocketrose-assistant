@@ -55,12 +55,21 @@ export function generateCredential() {
 
 export class Role {
 
+    _name;
     _location;
     _coordinate;
     _castleName;
     _townName;
 
     constructor() {
+    }
+
+    get name() {
+        return this._name;
+    }
+
+    set name(value) {
+        this._name = value;
     }
 
     get location() {
@@ -112,6 +121,9 @@ export class RoleLoader {
             const role = new Role();
             $(html).find("td").each(function (_idx, td) {
                 const text = $(td).text();
+                if (text.startsWith("姓名 ：")) {
+                    roleLoader.#parseName(role, text);
+                }
                 if (text === "现在位置") {
                     roleLoader.#parseLocation(role, $(td).next().text());
                 }
@@ -120,6 +132,12 @@ export class RoleLoader {
                 callback(role);
             }
         });
+    }
+
+    #parseName(role, text) {
+        let s = util.substringAfter(text, "姓名 ： ");
+        s = util.substringBefore(s, " (");
+        role.name = s;
     }
 
     #parseLocation(role, text) {
