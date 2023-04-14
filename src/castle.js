@@ -101,7 +101,7 @@ export class CastleRequestInterceptor {
         // 城堡机车建造厂改造成城堡驿站
         // castle.cgi CASTLE_BUILDMACHINE
         if (text.includes("＜＜ * 机车建造厂 *＞＞")) {
-            new CastlePostHouseRenderer().render();
+            new CastlePostHouse().process();
         }
 
         // 城堡有很多中间确认页面，意义不大，平白无故增加了点击的消息
@@ -152,11 +152,11 @@ class CastleStatusRenderer {
 }
 
 /**
- * 城堡驿站渲染器
+ * 城堡驿站
  */
-class CastlePostHouseRenderer {
+class CastlePostHouse {
 
-    render() {
+    process() {
         this.#reformatHTML();
     }
 
@@ -172,6 +172,7 @@ class CastlePostHouseRenderer {
 
         $("table:first").removeAttr("height");
 
+        let cash = 0;
         $("td:parent").each(function (_idx, td) {
             const text = $(td).text();
             if (text.endsWith("＜＜ * 机车建造厂 *＞＞")) {
@@ -185,14 +186,72 @@ class CastlePostHouseRenderer {
                 $(td).attr("style", "color: white");
                 $(td).html("我们已经将城堡中废弃的机车建造厂改造成为了驿站。<br>");
             }
+            if (text === "所持金") {
+                cash = parseInt(util.substringBefore($(td).next().text(), " GOLD"));
+            }
         });
 
         const npc = page.createFooterNPC("饭饭");
         npc.welcome("轮到我啦，上镜+RP，+RP，+RP，重要的事情喊三遍！<br>");
         npc.message("快看看你想去哪里？<br>");
+        npc.message("<input type='button' id='returnTown' style='color: blue' value='选好后立刻出发'><br>");
         npc.message(generateTownSelectionTable());
+
+        const postHouse = this;
+        $("#returnTown").click(function () {
+            const townId = $("input:radio[name='townId']:checked").val();
+            if (townId === undefined) {
+                alert("人可以笨，但是不可以这么笨，好歹你先选个目的地，你觉得呢？");
+            } else {
+                $("input:radio[name='townId']").prop("disabled", true);
+                $("input:submit[value='返回城堡']").prop("disabled", true);
+                $("#returnTown").prop("disabled", true);
+
+                page.initializeMessageBoard("开始播报实时动态：<br>");
+                const town = pocket.getTown(townId);
+                page.publishMessageBoard("目的地设定为‘" + town.name + "’");
+
+                if (cash >= 100000) {
+                    page.publishMessageBoard("身上现金充裕，准备出发");
+                    postHouse.#travelTo(town);
+                } else {
+                    const credential = user.generateCredential();
+                    const bank = new CastleBank(credential);
+                    bank.withdraw(10, function () {
+                        page.publishMessageBoard("从城堡提款机支取了10万现金");
+                        postHouse.#travelTo(town);
+                    });
+                }
+            }
+        });
     }
 
+    #travelTo(town) {
+
+    }
+}
+
+/**
+ * 城堡银行
+ */
+class CastleBank {
+
+    #credential;
+
+    constructor(credential) {
+        this.#credential = credential;
+    }
+
+    withdraw(amount, callback) {
+        const request = this.#credential.asRequest();
+        request["mode"] = "CASTLEBANK_BUY";
+        request["dasu"] = amount;
+        network.sendPostRequest("castle.cgi", request, function () {
+            if (callback !== undefined) {
+                callback();
+            }
+        });
+    }
 }
 
 /**

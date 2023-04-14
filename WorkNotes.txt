@@ -169,3 +169,10 @@ mode    MAP_SEARCH
 <CENTER><hr size=0><h2><BR>发现<FONT COLOR=red><img src="https://pocketrose.itsns.net.cn/pocketrose/image/item/PowerStone.gif" alt="威力宝石"><span title="威力宝石">威力宝石</span></font>！</h2><p>
 <P><font color=red><B>所持金超过1000000。请先存入银行。</B></font>
 <CENTER><hr size=0><h2><BR>发现<FONT COLOR=red>双尾猴(424)</font>的 宠物蛋！</h2><p>
+
+城堡取钱
+castle.cgi
+dasu
+id
+pass
+mode    CASTLEBANK_BUY

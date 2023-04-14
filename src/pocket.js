@@ -163,3 +163,7 @@ export const TOWNS = {
 export function getTownsAsList() {
     return Object.values(TOWNS);
 }
+
+export function getTown(townId) {
+    return TOWNS[townId];
+}

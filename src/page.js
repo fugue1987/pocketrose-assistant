@@ -45,3 +45,17 @@ export function createFooterNPC(name) {
 
     return new NPC("footerNPCMessage");
 }
+
+// ----------------------------------------------------------------------------
+// M E S S A G E   B O A R D
+// ----------------------------------------------------------------------------
+
+export function initializeMessageBoard(message) {
+    $("#messageBoard").html(message);
+}
+
+export function publishMessageBoard(message) {
+    let html = $("#messageBoard").html();
+    html = html + "<li>" + message + "</li>";
+    $("#messageBoard").html(html);
+}
