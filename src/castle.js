@@ -7,6 +7,7 @@
 import * as map from "./map";
 import * as network from "./network";
 import * as page from "./page";
+import * as pocket from "./pocket";
 import * as user from "./user";
 import * as util from "./util";
 
@@ -188,6 +189,8 @@ class CastlePostHouseRenderer {
 
         const npc = page.createFooterNPC("饭饭");
         npc.welcome("轮到我啦，上镜+RP，+RP，+RP，重要的事情喊三遍！<br>");
+        npc.message("快看看你想去哪里？<br>");
+        npc.message(generateTownSelectionTable());
     }
 
 }
@@ -200,4 +203,29 @@ class ConfirmationEliminator {
     returnToCastle() {
         $("input:submit[value='返回城堡']").trigger("click");
     }
+}
+
+function generateTownSelectionTable() {
+    let html = "";
+    html += "<table border='1'><tbody>";
+    html += "<thead><tr>" +
+        "<td style='color: white'>选择</td>" +
+        "<td style='color: white'>目的地</td>" +
+        "<td colspan='2' style='color: white'>坐标</td></tr></thead>";
+
+    const townList = pocket.getTownsAsList();
+    for (let i = 0; i < townList.length; i++) {
+        const town = townList[i];
+        html += "<tr>";
+        html += "<td><input type='radio' class='townClass' name='townId' value='" + town.id + "'></td>";
+        html += "<td style='color: white'>" + town.name + "</td>";
+        html += "<td style='color: white'>" + town.coordinate.x + "</td>";
+        html += "<td style='color: white'>" + town.coordinate.y + "</td>";
+        html += "</tr>";
+    }
+
+    html += "</tbody></table>";
+    html += "<br>";
+
+    return html;
 }

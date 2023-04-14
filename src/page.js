@@ -17,6 +17,12 @@ export class NPC {
     welcome(message) {
         $("#" + this.#messageId).html(message);
     }
+
+    message(message) {
+        let html = $("#" + this.#messageId).html();
+        html += message;
+        $("#" + this.#messageId).html(html);
+    }
 }
 
 /**
