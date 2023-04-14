@@ -142,13 +142,13 @@ export class Journey {
         }
         const milestone = this.#calculateMilestone(this._source, this._destination, this._mode);
         if (milestone !== undefined) {
-            const p1 = this.#calculateMilestonePath(this._source, milestone, this._scope);
-            const p2 = this.#calculateMilestonePath(milestone, this._destination, this._scope);
+            const p1 = geo.calculateMilestonePath(this._source, milestone, this._scope);
+            const p2 = geo.calculateMilestonePath(milestone, this._destination, this._scope);
             pathList.push(...p1);
             pathList.push(...p2);
             pathList.push(this._destination);
         } else {
-            const p = this.#calculateMilestonePath(this._source, this._destination, this._scope);
+            const p = geo.calculateMilestonePath(this._source, this._destination, this._scope);
             pathList.push(...p);
             pathList.push(this._destination);
         }
@@ -201,49 +201,5 @@ export class Journey {
         return undefined;
     }
 
-    #calculateMilestonePath(from, to, scope) {
-        const nodeList = [];
-        nodeList.push(from);
-        if (from.x === to.x) {
-            // 一条竖线上
-            const step = Math.ceil(Math.abs(from.y - to.y) / scope);
-            for (let i = 1; i <= step - 1; i++) {
-                if (to.y > from.y) {
-                    nodeList.push(new Coordinate(from.x, from.y + (i * scope)));
-                } else {
-                    nodeList.push(new Coordinate(from.x, from.y - (i * scope)));
-                }
-            }
-        } else if (from.y === to.y) {
-            // 一条横线上
-            const step = Math.ceil(Math.abs(from.x - to.x) / scope);
-            for (let i = 1; i <= step - 1; i++) {
-                if (to.x > from.x) {
-                    nodeList.push(new Coordinate(from.x + (i * scope), from.y));
-                } else {
-                    nodeList.push(new Coordinate(from.x - (i * scope), from.y));
-                }
-            }
-        } else {
-            // 一条斜线上
-            const step = Math.ceil(Math.abs(from.x - to.x) / scope);
-            for (let i = 1; i <= step - 1; i++) {
-                let x = from.x;
-                if (to.x > from.x) {
-                    x = x + (i * scope);
-                } else {
-                    x = x - (i * scope);
-                }
-                let y = from.y;
-                if (to.y > from.y) {
-                    y = y + (i * scope);
-                } else {
-                    y = y - (i * scope);
-                }
-                nodeList.push(new Coordinate(x, y));
-            }
-        }
-        return nodeList;
-    }
 
 }
