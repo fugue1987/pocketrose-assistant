@@ -99,7 +99,13 @@ export class CastleFunctionalities {
     process() {
         if (this.#text.includes("在网吧的用户请使用这个退出")) {
             // 根据关键字匹配出城堡首页，重新渲染
-            new CastleStatusRender().doRender();
+            new CastleStatusRenderer().render();
+        }
+
+        // 城堡机车建造厂改造成城堡驿站
+        // castle.cgi CASTLE_BUILDMACHINE
+        if (this.#text.includes("＜＜ * 机车建造厂 *＞＞")) {
+            new CastlePostHouseRenderer().render();
         }
 
         // 城堡有很多中间确认页面，意义不大，平白无故增加了点击的消息
@@ -121,11 +127,12 @@ export class CastleFunctionalities {
  * ----------------------------------------------------------------------------
  * 1. 资金超过100万红色显示。
  * 2. 经验满级时蓝色显示[MAX]。
+ * 3. 机车建造(CASTLE_BUILDMACHINE)改造为城堡驿站。
  * ----------------------------------------------------------------------------
  */
-class CastleStatusRender {
+class CastleStatusRenderer {
 
-    doRender() {
+    render() {
         $("td:parent").each(function (_idx, td) {
             const tdText = $(td).text();
             if (tdText === "资金") {
@@ -142,7 +149,42 @@ class CastleStatusRender {
                 }
             }
         });
+
+        $("option[value='CASTLE_BUILDMACHINE']").attr("style", "background: yellow");
+        $("option[value='CASTLE_BUILDMACHINE']").text("城堡驿站");
     }
+}
+
+/**
+ * 城堡驿站渲染器
+ */
+class CastlePostHouseRenderer {
+
+    render() {
+        this.#reformatHTML();
+    }
+
+    #reformatHTML() {
+        // 把之前的机车建设厂的部分内容隐藏
+        const html = $("body:first").html();
+        const a1 = util.substringBefore(html, "<center>");
+        let left = util.substringAfter(html, "<center>");
+        const a2 = util.substringBefore(left, "</center>");
+        const a3 = util.substringAfter(left, "</center>");
+        const reformat = a1 + "<div style='display: none'>" + a2 + "</div>" + a3;
+        console.log(reformat);
+        $("body:first").html(reformat);
+
+        // 改名字为“城堡驿站”
+        $("td:parent").each(function (_idx, td) {
+            const text = $(td).text();
+            if (text.endsWith("＜＜ * 机车建造厂 *＞＞")) {
+                const title = "　<font color=#f1f1f1 size=4>　　　＜＜<B> * 城堡驿站 *</B>＞＞</font>";
+                $(td).html(title);
+            }
+        });
+    }
+
 }
 
 /**
