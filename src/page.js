@@ -4,7 +4,7 @@
  * ============================================================================
  */
 
-import * as user from "./user";
+import {loadNPC} from "./npc";
 
 export class NPC {
 
@@ -30,7 +30,7 @@ export class NPC {
  * @param name NPC名字
  */
 export function createFooterNPC(name) {
-    const npc = user.loadNPC(name);
+    const npc = loadNPC(name);
     if (npc === undefined) {
         return undefined;
     }
