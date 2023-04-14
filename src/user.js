@@ -64,23 +64,9 @@ export class Role {
     }
 }
 
-/**
- * Load role of specified credential.
- * @param credential User credential.
- * @returns {Role}
- */
-export function loadRole(credential) {
-    const role = new Role();
-    const doLoadRole = (credential) => {
-        return new Promise((resolve) => {
-            const request = credential.asRequest();
-            request["mode"] = "STATUS_PRINT";
-            network.sendPostRequest("mydata.cgi", request, function (html) {
-                resolve(html);
-            });
-        });
-    };
-    const doParseRole = (role, html) => {
+export async function loadRole(credential) {
+    const doParseRole = (html) => {
+        const role = new Role();
         $(html).find("td").each(function (_idx, td) {
             const text = $(td).text();
             if (text.startsWith("姓名 ：")) {
@@ -113,11 +99,18 @@ export function loadRole(credential) {
                 }
             }
         });
+        return role;
     };
 
-    doLoadRole(credential).then(html => {
-        doParseRole(role, html);
-    });
-
-    return role;
+    const doLoadRole = (credential) => {
+        return new Promise((resolve) => {
+            const request = credential.asRequest();
+            request["mode"] = "STATUS_PRINT";
+            network.sendPostRequest("mydata.cgi", request, function (html) {
+                const role = doParseRole(html);
+                resolve(role);
+            });
+        });
+    };
+    return await doLoadRole(credential);
 }
