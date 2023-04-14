@@ -1,14 +1,10 @@
 /**
  * ============================================================================
- * [ 简 单 的 工 具 函 数 ]
+ * [ 工 具 模 块 ]
  * ----------------------------------------------------------------------------
  * 对js不熟，如果有现成的函数，就尽量替换。
  * ============================================================================
  */
-
-export function contains(text, searchString) {
-    return text.indexOf(searchString) !== -1;
-}
 
 export function substringBefore(text, searchString) {
     let idx = text.indexOf(searchString);
@@ -49,3 +45,4 @@ export function substringAfterSlash(text) {
     }
     return text;
 }
+

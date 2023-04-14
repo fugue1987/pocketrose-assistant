@@ -1,6 +1,6 @@
 /**
  * ============================================================================
- * [ 网 络 相 关 功 能 ]
+ * [ 网 络 通 信 模 块 ]
  * ----------------------------------------------------------------------------
  * 所有与口袋服务端请求的低层实现方法放在这里。
  * 主要包括对口袋cgi的POST和GET请求。
@@ -19,7 +19,9 @@ export function sendGetRequest(cgi, callback) {
         .then((arrayBuffer) => {
             const decoder = new TextDecoder("gb2312");
             const html = decoder.decode(new Uint8Array(arrayBuffer));
-            callback(html);
+            if (callback !== undefined) {
+                callback(html);
+            }
         })
         .catch((error) => {
             console.error("Error raised:", error);
@@ -43,7 +45,9 @@ export function sendPostRequest(cgi, request, callback) {
         .then((arrayBuffer) => {
             const decoder = new TextDecoder("gb2312");
             const html = decoder.decode(new Uint8Array(arrayBuffer));
-            callback(html);
+            if (callback !== undefined) {
+                callback(html);
+            }
         })
         .catch((error) => {
             console.error("Error raised:", error);

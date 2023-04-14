@@ -4,7 +4,8 @@
  * ============================================================================
  */
 
-import {Coordinate} from "./map";
+
+import {Coordinate} from "./geo";
 
 export const DOMAIN = "https://pocketrose.itsns.net.cn/pocketrose";
 
@@ -162,4 +163,19 @@ export const TOWNS = {
 
 export function getTownsAsList() {
     return Object.values(TOWNS);
+}
+
+export function getTown(townId) {
+    return TOWNS[townId];
+}
+
+export function findTownByName(name) {
+    const townList = getTownsAsList();
+    for (let i = 0; i < townList.length; i++) {
+        const town = townList[i];
+        if (name.includes(town.name)) {
+            return town;
+        }
+    }
+    return undefined;
 }
