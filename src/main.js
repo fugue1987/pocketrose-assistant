@@ -26,7 +26,7 @@ import * as network from "./network";
 import * as npc from "./npc";
 import * as pocket from "./pocket";
 import {
-    __utilities_isHeavyArmor,
+    __utilities_checkIfEquipmentFullExperience,
     _ACCESSORY_DICT,
     _ARMOR_DICT,
     _CAREER_DICT,
@@ -97,28 +97,6 @@ function replacePkm(page) {
 // ============================================================================
 // 工具功能函数实现
 // ============================================================================
-
-/**
- * 检查装备是否已经满经验。
- * @param name 装备名称
- * @param power 装备威力
- * @param experience 装备当前经验
- * @private
- */
-function __utilities_checkIfEquipmentFullExperience(name, power, experience) {
-    if (name == "大师球" || name == "宗师球" || name == "超力怪兽球" || name == "宠物蛋") {
-        return false;
-    }
-    let maxExperience = 0;
-    if (__utilities_isHeavyArmor(name)) {
-        // 属性重铠满级经验为76000
-        maxExperience = 76000;
-    } else if (power != 0) {
-        power = Math.abs(power);
-        maxExperience = Math.floor(power * 0.2) * 1000;
-    }
-    return experience >= maxExperience;
-}
 
 // ============================================================================
 // 通用辅助功能函数实现
