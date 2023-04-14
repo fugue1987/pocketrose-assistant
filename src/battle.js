@@ -28,6 +28,7 @@ export class BattleRequestInterceptor {
         if (text.includes("＜＜ - 秘宝之岛 - ＞＞") ||
             text.includes("＜＜ - 初级之森 - ＞＞") ||
             text.includes("＜＜ - 中级之塔 - ＞＞") ||
+            text.includes("＜＜ - 上级之洞窟 - ＞＞") ||
             text.includes("＜＜ - 十二神殿 - ＞＞")) {
             $('a[target="_blank"]').attr('tabIndex', -1);
             this.#doProcess();
