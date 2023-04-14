@@ -27,6 +27,8 @@ import * as npc from "./npc";
 import * as pocket from "./pocket";
 import * as pokemon from "./pokemon";
 import * as util from "./util";
+import * as finance from "./finance";
+import {generateCredential} from "./credential";
 
 // 转职建议字典，对当前能力的需求，分别是MP，攻击，防御，智力，精神，速度
 const transferCareerRequirementDict = {
@@ -1022,6 +1024,7 @@ function __ajax_lodgeAtInn(id, pass, callback) {
  * @param pass PASS
  * @param callback 回调函数，参数{id:x,pass:x}
  * @private
+ * @deprecated
  */
 function __ajax_depositAllGolds(id, pass, callback) {
     $.ajax({
@@ -2329,7 +2332,8 @@ function __city_itemSold(htmlText) {
         __page_writeNpcMessage(returnMessage);
         __city_itemSold_buildReturnFunction(id, pass);
     } else {
-        __ajax_depositAllGolds(id, pass, function (data) {
+        const credential = generateCredential();
+        finance.depositIntoTownBank(credential, undefined).then(() => {
             let messageHtml = messageElement.html() + "已经自动存入银行。";
             messageElement.html(messageHtml);
             let autoDepositMessage = "呦嚯嚯。。这个全口袋也只有我能收下！钱已经存到银行了，我是雷锋。";
@@ -3335,7 +3339,8 @@ function __personalStatus_salary(htmlText) {
     const id = __page_readIdFromCurrentPage();
     const pass = __page_readPassFromCurrentPage();
     $("#runaway").click(function () {
-        __ajax_depositAllGolds(id, pass, function (data) {
+        const credential = generateCredential();
+        finance.depositIntoTownBank(credential, undefined).then(() => {
             $("input:submit[value='返回城市']").trigger("click");
         });
     });
