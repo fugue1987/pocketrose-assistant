@@ -6,6 +6,7 @@
 
 import * as map from "./map";
 import * as network from "./network";
+import * as user from "./user";
 import * as util from "./util";
 
 /**
@@ -183,6 +184,8 @@ class CastlePostHouseRenderer {
                 $(td).html("我们已经将城堡中废弃的机车建造厂改造成为了驿站。<br>");
             }
         });
+
+
     }
 
 }
