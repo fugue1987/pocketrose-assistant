@@ -6,6 +6,7 @@
 
 import * as network from "./network";
 import * as page from "./page";
+import * as geo from "./geo";
 import {Coordinate, isSameCoordinate} from "./geo";
 
 export function enterTown(credential, townId, callback) {
@@ -115,7 +116,7 @@ export class Journey {
                 const to = pathList[index + 1];
 
                 const direction = journey.#calculateDirection(from, to);
-                const distance = journey.#calculateDistance(from, to);
+                const distance = geo.calculateDistance(from, to);
                 page.publishMessageBoard("准备" + direction[1] + "移动" + distance + "格");
 
                 const request = journey._credential.asRequest();
@@ -285,11 +286,4 @@ export class Journey {
         return direction;
     }
 
-    #calculateDistance(from, to) {
-        const x1 = from.x;
-        const y1 = from.y;
-        const x2 = to.x;
-        const y2 = to.y;
-        return Math.max(Math.abs(x1 - x2), Math.abs(y1 - y2));
-    }
 }
