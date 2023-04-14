@@ -20,6 +20,7 @@
 // 所有验证码破解的相关领域都设立为禁区，我们绝对不触碰验证码破解！
 // ============================================================================
 
+import * as battle from "./battle";
 import * as castle from "./castle";
 import * as network from "./network";
 import * as npc from "./npc";
@@ -636,6 +637,7 @@ function getAndParseCookie(cookieKey, defaultValue, callback) {
 }
 
 const CGI_MAPPING = {
+    "/battle.cgi": new battle.BattleRequestInterceptor(),
     "/castlestatus.cgi": new castle.CastleRequestInterceptor(),
     "/castle.cgi": new castle.CastleRequestInterceptor()
 };
