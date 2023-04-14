@@ -73,7 +73,36 @@ export class Journey {
     }
 
     #moveOnPath(pathList, index, callback) {
+        if (pathList.length === 1) {
+            // 路径中只有一个点，表示起点和终点是一个点，直接结束
+            callback(this._credential, this._role, this._destination);
+        } else if (index === pathList.length - 1) {
+            // 已经移动到最后一个点
+            callback(this._credential, this._role, this._destination);
+        } else {
+            const journey = this;
+            page.publishMessageBoard(this._role.name + "等待行动冷却中...... (约55秒)");
+            setTimeout(function () {
+                const from = pathList[index];
+                const to = pathList[index + 1];
 
+                const direction = journey.#calculateDirection(from, to);
+                const distance = journey.#calculateDistance(from, to);
+                page.publishMessageBoard("准备" + direction[1] + "移动" + distance + "格");
+
+                const request = journey._credential.asRequest();
+                request["con"] = "2";
+                request["navi"] = "on";
+                request["mode"] = "CHARA_MOVE";
+                request["direct"] = direction[0];
+                request["chara_m"] = distance;
+                network.sendPostRequest("map.cgi", request, function () {
+                    page.publishMessageBoard(journey._role.name + "到达坐标" + to.longText());
+                    journey.#moveOnPath(pathList, index + 1, callback);
+                });
+
+            }, 55000);
+        }
     }
 
     #calculatePath() {
@@ -186,5 +215,53 @@ export class Journey {
             }
         }
         return nodeList;
+    }
+
+    #calculateDirection(from, to) {
+        const x1 = from.x;
+        const y1 = from.y;
+        const x2 = to.x;
+        const y2 = to.y;
+
+        let direction;
+        if (x1 === x2) {
+            // 上或者下
+            if (y2 > y1) {
+                direction = ["%u2191", "↑"];
+            } else {
+                direction = ["%u2193", "↓"];
+            }
+        } else if (y1 === y2) {
+            // 左或者右
+            if (x2 > x1) {
+                direction = ["%u2192", "→"];
+            } else {
+                direction = ["%u2190", "←"];
+            }
+        } else {
+            // 4种斜向移动
+            if (x2 > x1 && y2 > y1) {
+                direction = ["%u2197", "↗"];
+            }
+            if (x2 > x1 && y2 < y1) {
+                direction = ["%u2198", "↘"];
+            }
+            if (x2 < x1 && y2 > y1) {
+                direction = ["%u2196", "↖"];
+            }
+            if (x2 < x1 && y2 < y1) {
+                direction = ["%u2199", "↙"];
+            }
+        }
+
+        return direction;
+    }
+
+    #calculateDistance(from, to) {
+        const x1 = from.x;
+        const y1 = from.y;
+        const x2 = to.x;
+        const y2 = to.y;
+        return Math.max(Math.abs(x1 - x2), Math.abs(y1 - y2));
     }
 }
