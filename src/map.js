@@ -140,7 +140,7 @@ export class Journey {
             pathList.push(this._source);
             return pathList;
         }
-        const milestone = this.#calculateMilestone(this._source, this._destination, this._mode);
+        const milestone = geo.calculateMilestone(this._source, this._destination, this._mode);
         if (milestone !== undefined) {
             const p1 = geo.calculateMilestonePath(this._source, milestone, this._scope);
             const p2 = geo.calculateMilestonePath(milestone, this._destination, this._scope);
@@ -165,40 +165,6 @@ export class Journey {
         page.publishMessageBoard(msg);
 
         return pathList;
-    }
-
-    #calculateMilestone(from, to, mode) {
-        if (mode === "ROOK") {
-            if (from.x === to.x || from.y === to.y) {
-                return undefined;
-            }
-            return new Coordinate(from.x, to.y);
-        }
-        if (mode === "QUEEN") {
-            if (from.x === to.x || from.y === to.y) {
-                return undefined;
-            }
-            const xDelta = Math.abs(from.x - to.x);
-            const yDelta = Math.abs(from.y - to.y);
-            if (xDelta === yDelta) {
-                return undefined;
-            }
-            const delta = Math.min(xDelta, yDelta);
-            let x = from.x;
-            let y = from.y;
-            if (to.x > from.x) {
-                x = x + delta;
-            } else {
-                x = x - delta;
-            }
-            if (to.y > from.y) {
-                y = y + delta;
-            } else {
-                y = y - delta;
-            }
-            return new Coordinate(x, y);
-        }
-        return undefined;
     }
 
 
