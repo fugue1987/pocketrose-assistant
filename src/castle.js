@@ -11,6 +11,7 @@ import * as pocket from "./pocket";
 import * as user from "./user";
 import * as util from "./util";
 import {Coordinate} from "./util";
+import {generateCredential} from "./credential";
 
 /**
  * 城堡的数据结构
@@ -216,7 +217,7 @@ class CastlePostHouse {
                     page.publishMessageBoard("身上现金充裕，准备出发");
                     postHouse.#travelTo(town);
                 } else {
-                    const credential = user.generateCredential();
+                    const credential = generateCredential();
                     const bank = new CastleBank(credential);
                     bank.withdraw(10, function () {
                         page.publishMessageBoard("从城堡提款机支取了10万现金");
@@ -228,7 +229,7 @@ class CastlePostHouse {
     }
 
     #travelTo(town) {
-        const credential = user.generateCredential();
+        const credential = generateCredential();
         const roleLoader = new user.RoleLoader(credential);
         roleLoader.load(function (role) {
             map.leaveCastle(credential, role, function (scope, mode) {
