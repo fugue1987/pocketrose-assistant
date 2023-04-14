@@ -8,8 +8,8 @@
 
 import * as geo from "./geo";
 import * as network from "./network";
-import * as util from "./util";
 import * as pocket from "./pocket";
+import * as util from "./util";
 
 export class Role {
 

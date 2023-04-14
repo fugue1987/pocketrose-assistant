@@ -13,6 +13,7 @@ import * as util from "./util";
 import {generateCredential} from "./credential";
 import {Coordinate} from "./geo";
 import * as finance from "./finance";
+import * as personal from "./personal";
 
 /**
  * 城堡的数据结构
@@ -228,32 +229,30 @@ class CastlePostHouse {
 
     #travelTo(town) {
         const credential = generateCredential();
-        const roleLoader = new user.RoleLoader(credential);
-        roleLoader.load(function (role) {
-            map.leaveCastle(credential, role, function (scope, mode) {
-                page.publishMessageBoard(role.name + "已经离开城堡'" + role.castleName + "'");
-                page.publishMessageBoard(role.name + "当前所在坐标" + role.coordinate.longText());
-                page.publishMessageBoard(role.name + "最大移动范围" + scope + "，移动模式" + mode);
+        const role = personal.loadRole(credential);
+        map.leaveCastle(credential, role, function (scope, mode) {
+            page.publishMessageBoard(role.name + "已经离开城堡'" + role.castleName + "'");
+            page.publishMessageBoard(role.name + "当前所在坐标" + role.coordinate.longText());
+            page.publishMessageBoard(role.name + "最大移动范围" + scope + "，移动模式" + mode);
 
-                // 创建行程
-                const journey = new map.Journey();
-                journey.credential = credential;
-                journey.role = role;
-                journey.source = role.coordinate;
-                journey.destination = town.coordinate;
-                journey.scope = scope;
-                journey.mode = mode;
-                journey.start(function () {
-                    map.enterTown(credential, town.id, function () {
-                        page.publishMessageBoard(role.name + "已经成功到达" + town.name);
-                        $("form[action='castlestatus.cgi']").attr("action", "status.cgi");
-                        $("input:hidden[value='CASTLESTATUS']").attr("value", "STATUS");
-                        $("input:submit[value='返回城堡']").prop("disabled", false);
-                        $("input:submit[value='返回城堡']").attr("value", town.name + "欢迎您");
-                    });
+            // 创建行程
+            const journey = new map.Journey();
+            journey.credential = credential;
+            journey.role = role;
+            journey.source = role.coordinate;
+            journey.destination = town.coordinate;
+            journey.scope = scope;
+            journey.mode = mode;
+            journey.start(function () {
+                map.enterTown(credential, town.id, function () {
+                    page.publishMessageBoard(role.name + "已经成功到达" + town.name);
+                    $("form[action='castlestatus.cgi']").attr("action", "status.cgi");
+                    $("input:hidden[value='CASTLESTATUS']").attr("value", "STATUS");
+                    $("input:submit[value='返回城堡']").prop("disabled", false);
+                    $("input:submit[value='返回城堡']").attr("value", town.name + "欢迎您");
                 });
-            })
-        });
+            });
+        })
     }
 }
 
