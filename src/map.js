@@ -8,6 +8,34 @@ import * as network from "./network";
 import {Coordinate, isSameCoordinate} from "./util";
 import * as page from "./page";
 
+export function enterTown(credential, townId, callback) {
+    page.publishMessageBoard("等待进城冷却中......(约55秒)");
+    setTimeout(function () {
+        const request = credential.asRequest();
+        request["townid"] = townId;
+        request["mode"] = "MOVE";
+        network.sendPostRequest("status.cgi", request, function (html) {
+            if ($(html).text().includes("战胜门卫。")) {
+                page.publishMessageBoard("与门卫交涉中......");
+                const request = credential.asRequest();
+                request["townid"] = townId;
+                request["givemoney"] = "1";
+                request["mode"] = "MOVE";
+                network.sendPostRequest("status.cgi", request, function () {
+                    page.publishMessageBoard("门卫通情达理的收取了合理的入城税");
+                    if (callback !== undefined) {
+                        callback();
+                    }
+                });
+            } else {
+                if (callback !== undefined) {
+                    callback();
+                }
+            }
+        });
+    }, 55000);
+}
+
 export function leaveCastle(credential, role, callback) {
     const request = credential.asRequest();
     request["navi"] = "on";
