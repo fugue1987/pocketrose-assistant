@@ -642,7 +642,7 @@ function postProcessCityRelatedFunctionalities(htmlText) {
 
 function __town_inn(htmlText) {
     loadRole(generateCredential()).then(role => {
-        alert(role.asShortText());
+        alert(role.attribute + " " + role.experience + " " + role.cash);
     });
 
     $("td:parent").each(function (_idx, td) {

@@ -25,10 +25,13 @@ export class Role {
     _specialAttack;
     _specialDefense;
     _speed;
+    _attribute;
     _location;          // 所在位置(TOWN|CASTLE|WILD)
     _coordinate;        // 所在坐标(location=CASTLE)
     _castleName;        // 城堡名称(location=CASTLE)
     _townName;          // 城市名称(location=TOWN)
+    _experience;
+    _cash;
 
     constructor() {
     }
@@ -121,6 +124,14 @@ export class Role {
         this._speed = value;
     }
 
+    get attribute() {
+        return this._attribute;
+    }
+
+    set attribute(value) {
+        this._attribute = value;
+    }
+
     get location() {
         return this._location;
     }
@@ -151,6 +162,22 @@ export class Role {
 
     set townName(value) {
         this._townName = value;
+    }
+
+    get experience() {
+        return this._experience;
+    }
+
+    set experience(value) {
+        this._experience = value;
+    }
+
+    get cash() {
+        return this._cash;
+    }
+
+    set cash(value) {
+        this._cash = value;
     }
 
     asShortText() {
@@ -186,32 +213,35 @@ export async function loadRole(credential) {
                 role.name = s;
             }
             if (text.startsWith("Ｌｖ") && role.level < 0) {
-                role.level = util.substringAfter(text, "Ｌｖ");
+                role.level = parseInt(util.substringAfter(text, "Ｌｖ"));
             }
             if (text === "ＨＰ" && role.health < 0) {
                 const healthText = $(td).next().text();
-                role.health = util.substringBefore(healthText, "/");
-                role.maxHealth = util.substringAfter(healthText, "/");
+                role.health = parseInt(util.substringBefore(healthText, "/"));
+                role.maxHealth = parseInt(util.substringAfter(healthText, "/"));
             }
             if (text === "ＭＰ" && role.mana < 0) {
                 const manaText = $(td).next().text();
-                role.mana = util.substringBefore(manaText, "/");
-                role.maxMana = util.substringAfter(manaText, "/");
+                role.mana = parseInt(util.substringBefore(manaText, "/"));
+                role.maxMana = parseInt(util.substringAfter(manaText, "/"));
             }
             if (text === "攻击力" && role.attack < 0) {
-                role.attack = $(td).next().text();
+                role.attack = parseInt($(td).next().text());
             }
             if (text === "防御力" && role.defense < 0) {
-                role.defense = $(td).next().text();
+                role.defense = parseInt($(td).next().text());
             }
             if (text === "智力" && role.specialAttack < 0) {
-                role.specialAttack = $(td).next().text();
+                role.specialAttack = parseInt($(td).next().text());
             }
             if (text === "精神力" && role.specialDefense < 0) {
-                role.specialDefense = $(td).next().text();
+                role.specialDefense = parseInt($(td).next().text());
             }
             if (text === "速度" && role.speed < 0) {
-                role.speed = $(td).next().text();
+                role.speed = parseInt($(td).next().text());
+            }
+            if (text === "属性") {
+                role.attribute = $(td).next().text();
             }
             if (text === "现在位置") {
                 const locationText = $(td).next().text();
@@ -236,6 +266,13 @@ export async function loadRole(credential) {
                         }
                     }
                 }
+            }
+            if (text === "经验值") {
+                role.experience = parseInt($(td).next().text());
+            }
+            if (text === "所持金") {
+                const cashText = $(td).next().text();
+                role.cash = parseInt(util.substringBefore(cashText, " G"));
             }
         });
         return role;
