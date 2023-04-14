@@ -14,7 +14,17 @@ import * as util from "./util";
 
 export class Role {
 
-    _name;              // 角色姓名
+    _name;              // 姓名
+    _level;             // 等级
+    _health;
+    _maxHealth;
+    _mana;
+    _maxMana;
+    _attack;
+    _defense;
+    _specialAttack;
+    _specialDefense;
+    _speed;
     _location;          // 所在位置(TOWN|CASTLE|WILD)
     _coordinate;        // 所在坐标(location=CASTLE)
     _castleName;        // 城堡名称(location=CASTLE)
@@ -29,6 +39,86 @@ export class Role {
 
     set name(value) {
         this._name = value;
+    }
+
+    get level() {
+        return this._level;
+    }
+
+    set level(value) {
+        this._level = value;
+    }
+
+    get health() {
+        return this._health;
+    }
+
+    set health(value) {
+        this._health = value;
+    }
+
+    get maxHealth() {
+        return this._maxHealth;
+    }
+
+    set maxHealth(value) {
+        this._maxHealth = value;
+    }
+
+    get mana() {
+        return this._mana;
+    }
+
+    set mana(value) {
+        this._mana = value;
+    }
+
+    get maxMana() {
+        return this._maxMana;
+    }
+
+    set maxMana(value) {
+        this._maxMana = value;
+    }
+
+    get attack() {
+        return this._attack;
+    }
+
+    set attack(value) {
+        this._attack = value;
+    }
+
+    get defense() {
+        return this._defense;
+    }
+
+    set defense(value) {
+        this._defense = value;
+    }
+
+    get specialAttack() {
+        return this._specialAttack;
+    }
+
+    set specialAttack(value) {
+        this._specialAttack = value;
+    }
+
+    get specialDefense() {
+        return this._specialDefense;
+    }
+
+    set specialDefense(value) {
+        this._specialDefense = value;
+    }
+
+    get speed() {
+        return this._speed;
+    }
+
+    set speed(value) {
+        this._speed = value;
     }
 
     get location() {
@@ -62,17 +152,66 @@ export class Role {
     set townName(value) {
         this._townName = value;
     }
+
+    asShortText() {
+        return this._name + " " + this._level +
+            " " + this._health + "/" + this._maxHealth +
+            " " + this._mana + "/" + this._maxMana +
+            " " + this._attack +
+            " " + this._defense +
+            " " + this._specialAttack +
+            " " + this._specialDefense +
+            " " + this._speed;
+    }
 }
 
 export async function loadRole(credential) {
     const doParseRole = (html) => {
         const role = new Role();
+        role.level = -1;
+        role.health = -1;
+        role.maxHealth = -1;
+        role.mana = -1;
+        role.maxMana = -1;
+        role.attack = -1;
+        role.defense = -1;
+        role.specialAttack = -1;
+        role.specialDefense = -1;
+        role.speed = -1;
         $(html).find("td").each(function (_idx, td) {
             const text = $(td).text();
             if (text.startsWith("姓名 ：")) {
                 let s = util.substringAfter(text, "姓名 ： ");
                 s = util.substringBefore(s, " (");
                 role.name = s;
+            }
+            if (text.startsWith("Ｌｖ") && role.level < 0) {
+                role.level = util.substringAfter(text, "Ｌｖ");
+            }
+            if (text === "ＨＰ" && role.health < 0) {
+                const healthText = $(td).next().text();
+                role.health = util.substringBefore(healthText, "/");
+                role.maxHealth = util.substringAfter(healthText, "/");
+            }
+            if (text === "ＭＰ" && role.mana < 0) {
+                const manaText = $(td).next().text();
+                role.mana = util.substringBefore(manaText, "/");
+                role.maxMana = util.substringAfter(manaText, "/");
+            }
+            if (text === "攻击力" && role.attack < 0) {
+                role.attack = $(td).next().text();
+            }
+            if (text === "防御力" && role.defense < 0) {
+                role.defense = $(td).next().text();
+            }
+            if (text === "智力" && role.specialAttack < 0) {
+                role.specialAttack = $(td).next().text();
+            }
+            if (text === "精神力" && role.specialDefense < 0) {
+                role.specialDefense = $(td).next().text();
+            }
+            if (text === "速度" && role.speed < 0) {
+                role.speed = $(td).next().text();
             }
             if (text === "现在位置") {
                 const locationText = $(td).next().text();

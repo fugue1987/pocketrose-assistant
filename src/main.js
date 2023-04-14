@@ -55,6 +55,7 @@ import {
     __cookie_getRepairItemThreshold,
     __cookie_getReturnButtonText
 } from "./option";
+import {loadRole} from "./user";
 
 const CGI_MAPPING = {
     "/battle.cgi": new battle.BattleRequestInterceptor(),
@@ -246,6 +247,7 @@ function readCastleInformation(id, pass, callback) {
  * @param pass PASSWORD
  * @param callback 回调函数
  * @private
+ * @deprecated
  */
 function __ajax_readPersonalInformation(id, pass, callback) {
     fetch("mydata.cgi", {
@@ -639,6 +641,10 @@ function postProcessCityRelatedFunctionalities(htmlText) {
 }
 
 function __town_inn(htmlText) {
+    loadRole(generateCredential()).then(role => {
+        alert(role.asShortText());
+    });
+
     $("td:parent").each(function (_idx, td) {
         const text = $(td).text();
         if (text.indexOf("每天的战斗让你疲倦了吧? 来休息一下吧") !== -1) {
