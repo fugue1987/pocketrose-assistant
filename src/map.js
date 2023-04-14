@@ -4,6 +4,8 @@
  * ============================================================================
  */
 
+import * as network from "./network";
+
 /**
  * 地图上的坐标点。
  */
@@ -36,4 +38,27 @@ export class Coordinate {
     longText() {
         return "(" + this.#x + "," + this.#y + ")";
     }
+}
+
+export function leaveCastle(credential, role, callback) {
+    const request = credential.asRequest();
+    request["navi"] = "on";
+    request["out"] = "1";
+    request["mode"] = "MAP_MOVE";
+
+    network.sendPostRequest("map.cgi", request, function (html) {
+        const moveScope = $(html).find("select[name='chara_m']").find("option:last").attr("value");
+        let moveMode = "ROOK";
+        $(html).find("input:submit").each(function (_idx, input) {
+            const v = $(input).attr("value");
+            const d = $(input).attr("disabled");
+            if (v === "↖" && d === undefined) {
+                moveMode = "QUEEN";
+            }
+        });
+
+        if (callback !== undefined) {
+            callback(parseInt(moveScope), moveMode);
+        }
+    });
 }

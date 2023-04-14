@@ -230,7 +230,11 @@ class CastlePostHouse {
         const credential = user.generateCredential();
         const roleLoader = new user.RoleLoader(credential);
         roleLoader.load(function (role) {
-            page.publishMessageBoard("当前所在城堡‘" + role.castleName + "’，坐标" + role.coordinate.longText());
+            map.leaveCastle(credential, role, function (scope, mode) {
+                page.publishMessageBoard(role.name + "已经离开城堡'" + role.castleName + "'");
+                page.publishMessageBoard(role.name + "当前所在坐标" + role.coordinate.longText());
+                page.publishMessageBoard(role.name + "最大移动范围" + scope + "，移动模式" + mode);
+            })
         });
     }
 }
