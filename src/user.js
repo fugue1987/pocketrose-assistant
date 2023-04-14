@@ -57,6 +57,8 @@ export class Role {
 
     _location;
     _coordinate;
+    _castleName;
+    _townName;
 
     constructor() {
     }
@@ -77,6 +79,21 @@ export class Role {
         this._coordinate = value;
     }
 
+    get castleName() {
+        return this._castleName;
+    }
+
+    set castleName(value) {
+        this._castleName = value;
+    }
+
+    get townName() {
+        return this._townName;
+    }
+
+    set townName(value) {
+        this._townName = value;
+    }
 }
 
 export class RoleLoader {
@@ -113,6 +130,7 @@ export class RoleLoader {
             const x = util.substringBefore(s, ",");
             const y = util.substringAfter(s, ",");
             role.coordinate(new map.Coordinate(parseInt(x), parseInt(y)));
+            role.castleName(util.substringBefore(text, " ("));
         } else {
             // 在城市或者野外
             if (text === "野外") {
@@ -122,6 +140,7 @@ export class RoleLoader {
                 const town = pocket.findTownByName(text);
                 if (town !== undefined) {
                     role.coordinate(town.coordinate);
+                    role.townName(town.name);
                 }
             }
         }
