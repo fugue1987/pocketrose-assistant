@@ -73,6 +73,8 @@ export class Journey {
     _role;
     _source;
     _destination;
+    _scope;
+    _mode;
 
     constructor() {
     }
@@ -93,6 +95,14 @@ export class Journey {
         this._destination = value;
     }
 
+    set scope(value) {
+        this._scope = value;
+    }
+
+    set mode(value) {
+        this._mode = value;
+    }
+
     start(callback) {
 
     }
@@ -103,7 +113,7 @@ export class Journey {
             pathList.push(this._source);
             return pathList;
         }
-
+        const milestone = this.#calculateMilestone(this._source, this._destination, this._mode);
     }
 
     #calculateMilestone(from, to, mode) {
