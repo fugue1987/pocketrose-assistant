@@ -38,8 +38,68 @@ export class Coordinate {
     }
 }
 
+export class Direction {
+
+    #name;
+    #code;
+
+    constructor(name, code) {
+        this.#name = name;
+        this.#code = code;
+    }
+
+
+    get name() {
+        return this.#name;
+    }
+
+    get code() {
+        return this.#code;
+    }
+}
+
 export function isSameCoordinate(a, b) {
     return a.x === b.x && a.y === b.y;
+}
+
+export function calculateDirection(from, to) {
+    const x1 = from.x;
+    const y1 = from.y;
+    const x2 = to.x;
+    const y2 = to.y;
+
+    let direction;
+    if (x1 === x2) {
+        // 上或者下
+        if (y2 > y1) {
+            direction = ["%u2191", "↑"];
+        } else {
+            direction = ["%u2193", "↓"];
+        }
+    } else if (y1 === y2) {
+        // 左或者右
+        if (x2 > x1) {
+            direction = ["%u2192", "→"];
+        } else {
+            direction = ["%u2190", "←"];
+        }
+    } else {
+        // 4种斜向移动
+        if (x2 > x1 && y2 > y1) {
+            direction = ["%u2197", "↗"];
+        }
+        if (x2 > x1 && y2 < y1) {
+            direction = ["%u2198", "↘"];
+        }
+        if (x2 < x1 && y2 > y1) {
+            direction = ["%u2196", "↖"];
+        }
+        if (x2 < x1 && y2 < y1) {
+            direction = ["%u2199", "↙"];
+        }
+    }
+
+    return new Direction(direction[0], direction[1]);
 }
 
 export function calculateDistance(from, to) {

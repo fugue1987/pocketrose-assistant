@@ -115,15 +115,15 @@ export class Journey {
                 const from = pathList[index];
                 const to = pathList[index + 1];
 
-                const direction = journey.#calculateDirection(from, to);
+                const direction = geo.calculateDirection(from, to);
                 const distance = geo.calculateDistance(from, to);
-                page.publishMessageBoard("准备" + direction[1] + "移动" + distance + "格");
+                page.publishMessageBoard("准备" + direction.name + "移动" + distance + "格");
 
                 const request = journey._credential.asRequest();
                 request["con"] = "2";
                 request["navi"] = "on";
                 request["mode"] = "CHARA_MOVE";
-                request["direct"] = direction[0];
+                request["direct"] = direction.code;
                 request["chara_m"] = distance;
                 network.sendPostRequest("map.cgi", request, function () {
                     page.publishMessageBoard(journey._role.name + "到达坐标" + to.longText());
@@ -244,46 +244,6 @@ export class Journey {
             }
         }
         return nodeList;
-    }
-
-    #calculateDirection(from, to) {
-        const x1 = from.x;
-        const y1 = from.y;
-        const x2 = to.x;
-        const y2 = to.y;
-
-        let direction;
-        if (x1 === x2) {
-            // 上或者下
-            if (y2 > y1) {
-                direction = ["%u2191", "↑"];
-            } else {
-                direction = ["%u2193", "↓"];
-            }
-        } else if (y1 === y2) {
-            // 左或者右
-            if (x2 > x1) {
-                direction = ["%u2192", "→"];
-            } else {
-                direction = ["%u2190", "←"];
-            }
-        } else {
-            // 4种斜向移动
-            if (x2 > x1 && y2 > y1) {
-                direction = ["%u2197", "↗"];
-            }
-            if (x2 > x1 && y2 < y1) {
-                direction = ["%u2198", "↘"];
-            }
-            if (x2 < x1 && y2 > y1) {
-                direction = ["%u2196", "↖"];
-            }
-            if (x2 < x1 && y2 < y1) {
-                direction = ["%u2199", "↙"];
-            }
-        }
-
-        return direction;
     }
 
 }
