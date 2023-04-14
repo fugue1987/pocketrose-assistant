@@ -26,7 +26,7 @@ export function calculateCashDifferenceAmount(cash, expect) {
  * 存钱到城市的银行
  * @param credential 用户凭证
  * @param amount 存入金额，undefined意味全部存入
- * @returns {Promise<void>}
+ * @returns {Promise<unknown>}
  */
 export async function depositIntoTownBank(credential, amount) {
     const doDeposit = (credential, amount) => {
@@ -39,11 +39,11 @@ export async function depositIntoTownBank(credential, amount) {
                 request["azukeru"] = "all";
             }
             network.sendPostRequest("town.cgi", request, function () {
-                resolve();
+                resolve("OK");
             });
         });
     };
-    await doDeposit(credential, amount);
+    return await doDeposit(credential, amount);
 }
 
 /**
@@ -59,7 +59,7 @@ export async function withdrawFromTownBank(credential, amount) {
             request["mode"] = "BANK_BUY";
             request["dasu"] = amount;
             network.sendPostRequest("town.cgi", request, function () {
-                resolve();
+                resolve("OK");
             });
         });
     };
@@ -70,7 +70,7 @@ export async function withdrawFromTownBank(credential, amount) {
  * 从城堡取钱
  * @param credential 用户凭证
  * @param amount 取钱的金额
- * @returns {Promise<void>}
+ * @returns {Promise<unknown>}
  */
 export async function withdrawFromCastleBank(credential, amount) {
     const doWithdrawFromCastleBank = (credential, amount) => {
@@ -83,5 +83,5 @@ export async function withdrawFromCastleBank(credential, amount) {
             });
         });
     }
-    await doWithdrawFromCastleBank(credential, amount);
+    return await doWithdrawFromCastleBank(credential, amount);
 }

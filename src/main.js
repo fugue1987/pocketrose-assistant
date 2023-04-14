@@ -1045,6 +1045,7 @@ function __ajax_depositAllGolds(id, pass, callback) {
  * @param amount 单位是万
  * @param callback 回调
  * @private
+ * @deprecated
  */
 function __ajax_withdrawGolds(id, pass, amount, callback) {
     if (amount <= 0) {
@@ -2288,11 +2289,12 @@ function __town_common_prepareForShopping(id, pass, cash, table, submit) {
         if (totalPrice > 0) {
             totalPrice = Math.max(10000, totalPrice);   // 如果总价不到1万，按照1万来计算
         }
-        if (cash >= totalPrice) {
+        const amount = finance.calculateCashDifferenceAmount(cash, totalPrice);
+        if (amount === 0) {
             $(submit).trigger("click");
         } else {
-            let delta = Math.ceil((totalPrice - cash) / 10000);
-            __ajax_withdrawGolds(id, pass, delta, function (data) {
+            const credential = generateCredential();
+            finance.withdrawFromTownBank(credential, amount).then(_code => {
                 $(submit).trigger("click");
             });
         }
@@ -2333,13 +2335,13 @@ function __city_itemSold(htmlText) {
         __city_itemSold_buildReturnFunction(id, pass);
     } else {
         const credential = generateCredential();
-        finance.depositIntoTownBank(credential, undefined).then(() => {
+        finance.depositIntoTownBank(credential, undefined).then(_code => {
             let messageHtml = messageElement.html() + "已经自动存入银行。";
             messageElement.html(messageHtml);
             let autoDepositMessage = "呦嚯嚯。。这个全口袋也只有我能收下！钱已经存到银行了，我是雷锋。";
             __page_writeNpcMessage(autoDepositMessage);
             __page_writeNpcMessage(returnMessage);
-            __city_itemSold_buildReturnFunction(data["id"], data["pass"]);
+            __city_itemSold_buildReturnFunction(credential.id, credential.pass);
         });
     }
 }
@@ -3340,7 +3342,7 @@ function __personalStatus_salary(htmlText) {
     const pass = __page_readPassFromCurrentPage();
     $("#runaway").click(function () {
         const credential = generateCredential();
-        finance.depositIntoTownBank(credential, undefined).then(() => {
+        finance.depositIntoTownBank(credential, undefined).then(_code => {
             $("input:submit[value='返回城市']").trigger("click");
         });
     });
