@@ -167,3 +167,14 @@ export function getTownsAsList() {
 export function getTown(townId) {
     return TOWNS[townId];
 }
+
+export function findTownByName(name) {
+    const townList = getTownsAsList();
+    for (let i = 0; i < townList.length; i++) {
+        const town = townList[i];
+        if (name.includes(town.name)) {
+            return town;
+        }
+    }
+    return undefined;
+}

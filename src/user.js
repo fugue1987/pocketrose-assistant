@@ -5,6 +5,9 @@
  */
 
 import * as pocket from "./pocket";
+import * as map from "./map";
+import * as network from "./network";
+import * as util from "./util";
 
 /**
  * Credential data structure for describing id/pass fetched from HTML.
@@ -50,6 +53,80 @@ export function generateCredential() {
     return new Credential(id, pass);
 }
 
+export class Role {
+
+    _location;
+    _coordinate;
+
+    constructor() {
+    }
+
+    get location() {
+        return this._location;
+    }
+
+    set location(value) {
+        this._location = value;
+    }
+
+    get coordinate() {
+        return this._coordinate;
+    }
+
+    set coordinate(value) {
+        this._coordinate = value;
+    }
+
+}
+
+export class RoleLoader {
+
+    #credential;
+
+    constructor(credential) {
+        this.#credential = credential;
+    }
+
+    load(callback) {
+        const roleLoader = this;
+        const request = this.#credential.asRequest();
+        request["mode"] = "STATUS_PRINT";
+        network.sendPostRequest("mydata.cgi", request, function (html) {
+            const role = new Role();
+            $("td:parent").each(function (_idx, td) {
+                const text = $(td).next();
+                if (text === "现在位置") {
+                    roleLoader.#parseLocation(role, $(td).next().text());
+                }
+            });
+            if (callback !== undefined) {
+                callback(role);
+            }
+        });
+    }
+
+    #parseLocation(role, text) {
+        if (text.includes("(") && text.includes(")")) {
+            // 在城堡
+            role.location("CASTLE");
+            const s = util.substringBetween(text, "(", ")");
+            const x = util.substringBefore(s, ",");
+            const y = util.substringAfter(s, ",");
+            role.coordinate(new map.Coordinate(parseInt(x), parseInt(y)));
+        } else {
+            // 在城市或者野外
+            if (text === "野外") {
+                role.location("WILD");
+            } else {
+                role.location("TOWN");
+                const town = pocket.findTownByName(text);
+                if (town !== undefined) {
+                    role.coordinate(town.coordinate);
+                }
+            }
+        }
+    }
+}
 
 /**
  * NPC数据结构
