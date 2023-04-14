@@ -2,7 +2,9 @@
  * ============================================================================
  * [ 资 金 相 关 模 块 ]
  * ----------------------------------------------------------------------------
- * 1. withdrawFromCastleBank = 从城堡取钱
+ * # depositIntoTownBank = 存入城市银行
+ * # withdrawFromTownBank = 从城市银行取钱
+ * # withdrawFromCastleBank = 从城堡取钱
  * ============================================================================
  */
 
@@ -42,6 +44,26 @@ export async function depositIntoTownBank(credential, amount) {
         });
     };
     await doDeposit(credential, amount);
+}
+
+/**
+ * 从城市银行取钱
+ * @param credential 用户凭证
+ * @param amount 取钱的金额，单位万
+ * @returns {Promise<unknown>}
+ */
+export async function withdrawFromTownBank(credential, amount) {
+    const doWithdrawFromTownBank = (credential, amount) => {
+        return new Promise((resolve) => {
+            const request = credential.asRequest();
+            request["mode"] = "BANK_BUY";
+            request["dasu"] = amount;
+            network.sendPostRequest("town.cgi", request, function () {
+                resolve();
+            });
+        });
+    };
+    return await doWithdrawFromTownBank(credential, amount);
 }
 
 /**
