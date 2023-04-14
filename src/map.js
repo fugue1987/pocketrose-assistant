@@ -114,6 +114,19 @@ export class Journey {
             return pathList;
         }
         const milestone = this.#calculateMilestone(this._source, this._destination, this._mode);
+        if (milestone !== undefined) {
+            const p1 = this.#calculateMilestonePath(this._source, milestone, this._scope);
+            const p2 = this.#calculateMilestonePath(milestone, this._destination, this._scope);
+            pathList.push(...p1);
+            pathList.push(...p2);
+            pathList.push(this._destination);
+        } else {
+            const p = this.#calculateMilestonePath(this._source, this._destination, this._scope);
+            pathList.push(...p);
+            pathList.push(this._destination);
+        }
+
+        return pathList;
     }
 
     #calculateMilestone(from, to, mode) {
