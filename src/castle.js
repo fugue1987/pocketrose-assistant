@@ -190,9 +190,17 @@ class CastlePostHouse {
                 $(td).attr("style", "color: white");
                 $(td).html("我们已经将城堡中废弃的机车建造厂改造成为了驿站。<br>");
             }
+            if (text === "姓名") {
+                $(td).parent().next().find("td:first").attr("id", "role_name");
+            }
             if (text === "所持金") {
-                $(td).next().attr("id", "cash");
+                $(td).next().attr("id", "role_cash");
                 cash = parseInt(util.substringBefore($(td).next().text(), " GOLD"));
+            }
+            if (text === "铁储备") {
+                $(td).text("计时器");
+                $(td).next().attr("id", "count_up_timer");
+                $(td).next().text("-");
             }
         });
 
@@ -221,7 +229,7 @@ class CastlePostHouse {
                     const credential = generateCredential();
                     finance.withdrawFromCastleBank(credential, amount).then(() => {
                         page.publishMessageBoard("从城堡提款机支取了" + amount + "万现金");
-                        $("#cash").text((cash + amount * 10000) + " GOLD");
+                        $("#role_cash").text((cash + amount * 10000) + " GOLD");
                         postHouse.#travelTo(town);
                     });
                 } else {
@@ -235,6 +243,7 @@ class CastlePostHouse {
     #travelTo(town) {
         const credential = generateCredential();
         user.loadRole(credential).then(role => {
+            $("#role_name").text(role.name);
             map.leaveCastle(credential, role, function (scope, mode) {
                 page.publishMessageBoard(role.name + "已经离开城堡'" + role.castleName + "'");
                 page.publishMessageBoard(role.name + "当前所在坐标" + role.coordinate.longText());

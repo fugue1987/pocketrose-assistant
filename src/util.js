@@ -46,3 +46,19 @@ export function substringAfterSlash(text) {
     return text;
 }
 
+export function latencyExecute(timeout, handler) {
+    if ($("#count_up_timer").length > 0) {
+        let count = 0;
+        const timer = setInterval(function () {
+            $("#count_up_timer").text(count++);
+        }, 1000);
+        setTimeout(function () {
+            clearInterval(timer);
+            $("#count_up_timer").text("-");
+            handler();
+        }, timeout);
+    } else {
+        setTimeout(handler, timeout);
+    }
+}
+

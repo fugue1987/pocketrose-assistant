@@ -7,11 +7,12 @@
 import * as network from "./network";
 import * as page from "./page";
 import * as geo from "./geo";
+import * as util from "./util";
 import {Coordinate, isSameCoordinate} from "./geo";
 
 export function enterTown(credential, townId, callback) {
     page.publishMessageBoard("等待进城冷却中......(约55秒)");
-    setTimeout(function () {
+    util.latencyExecute(55000, function () {
         const request = credential.asRequest();
         request["townid"] = townId;
         request["mode"] = "MOVE";
@@ -34,7 +35,7 @@ export function enterTown(credential, townId, callback) {
                 }
             }
         });
-    }, 55000);
+    });
 }
 
 export function leaveCastle(credential, role, callback) {
@@ -111,7 +112,8 @@ export class Journey {
         } else {
             const journey = this;
             page.publishMessageBoard(this._role.name + "等待行动冷却中...... (约55秒)");
-            setTimeout(function () {
+
+            util.latencyExecute(55000, function () {
                 const from = pathList[index];
                 const to = pathList[index + 1];
 
@@ -129,8 +131,7 @@ export class Journey {
                     page.publishMessageBoard(journey._role.name + "到达坐标" + to.longText());
                     journey.#moveOnPath(pathList, index + 1, callback);
                 });
-
-            }, 55000);
+            });
         }
     }
 
