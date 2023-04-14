@@ -62,3 +62,34 @@ export function leaveCastle(credential, role, callback) {
         }
     });
 }
+
+export class Journey {
+
+    _credential;
+    _role;
+    _source;
+    _destination;
+
+    constructor() {
+    }
+
+    set credential(value) {
+        this._credential = value;
+    }
+
+    set role(value) {
+        this._role = value;
+    }
+
+    set source(value) {
+        this._source = value;
+    }
+
+    set destination(value) {
+        this._destination = value;
+    }
+
+    start(callback) {
+
+    }
+}

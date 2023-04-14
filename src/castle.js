@@ -234,6 +234,16 @@ class CastlePostHouse {
                 page.publishMessageBoard(role.name + "已经离开城堡'" + role.castleName + "'");
                 page.publishMessageBoard(role.name + "当前所在坐标" + role.coordinate.longText());
                 page.publishMessageBoard(role.name + "最大移动范围" + scope + "，移动模式" + mode);
+
+                // 创建行程
+                const journey = new map.Journey();
+                journey.credential = credential;
+                journey.role = role;
+                journey.source = role.coordinate;
+                journey.destination = town.coordinate;
+                journey.start(function () {
+                    
+                });
             })
         });
     }
