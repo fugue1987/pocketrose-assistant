@@ -12,6 +12,7 @@ import * as user from "./user";
 import * as util from "./util";
 import {generateCredential} from "./credential";
 import {Coordinate} from "./geo";
+import * as finance from "./finance";
 
 /**
  * 城堡的数据结构
@@ -213,17 +214,14 @@ class CastlePostHouse {
                 const town = pocket.getTown(townId);
                 page.publishMessageBoard("目的地设定为‘" + town.name + "’");
 
-                if (cash >= 100000) {
-                    page.publishMessageBoard("身上现金充裕，准备出发");
-                    postHouse.#travelTo(town);
-                } else {
+                if (cash < 100000) {
                     const credential = generateCredential();
-                    const bank = new CastleBank(credential);
-                    bank.withdraw(10, function () {
-                        page.publishMessageBoard("从城堡提款机支取了10万现金");
-                        postHouse.#travelTo(town);
-                    });
+                    finance.castleWithdraw(credential, 10).then();
+                    page.publishMessageBoard("从城堡提款机支取了10万现金");
+                } else {
+                    page.publishMessageBoard("身上现金充裕，准备出发");
                 }
+                postHouse.#travelTo(town);
             }
         });
     }

@@ -178,7 +178,7 @@ export function calculateDirection(from, to) {
         }
     }
 
-    return new Direction(direction[0], direction[1]);
+    return new Direction(direction[1], direction[0]);
 }
 
 export function calculateDistance(from, to) {
