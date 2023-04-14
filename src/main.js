@@ -635,6 +635,11 @@ function getAndParseCookie(cookieKey, defaultValue, callback) {
     return callback(value);
 }
 
+const CGI_MAPPING = {
+    "/castlestatus.cgi": new castle.CastleRequestInterceptor(),
+    "/castle.cgi": new castle.CastleRequestInterceptor()
+};
+
 $(function () {
     replacePkm('pocketrose')
 });
@@ -657,11 +662,14 @@ function replacePkm(page) {
             if (location.href.includes("/mydata.cgi")) {
                 postProcessPersonalStatusRelatedFunctionalities($('html').html());
             }
-            if (
-                location.href.includes("/castlestatus.cgi") ||
-                location.href.includes("/castle.cgi")
-            ) {
-                new castle.CastleFunctionalities($("body").text()).process();
+
+            // Lookup CGI request interceptor and process the request if found.
+            const keywords = Object.keys(CGI_MAPPING);
+            for (let i = 0; i < keywords.length; i++) {
+                const keyword = keywords[i];
+                if (location.href.includes(keyword)) {
+                    CGI_MAPPING[keyword].process();
+                }
             }
         })
     }

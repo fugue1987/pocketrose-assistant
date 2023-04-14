@@ -33,6 +33,9 @@ export class Credential {
         return this.#pass;
     }
 
+    asRequest() {
+        return {"id": this.#id, "pass": this.#pass};
+    }
 }
 
 /**

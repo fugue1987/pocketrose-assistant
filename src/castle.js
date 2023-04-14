@@ -84,27 +84,21 @@ export function getAllCastles(callback) {
 /**
  * 城堡相关页面的处理入口
  */
-export class CastleFunctionalities {
+export class CastleRequestInterceptor {
 
-    #text;
-
-    constructor(text) {
-        this.#text = text;
-    }
-
-    get text() {
-        return this.#text;
+    constructor() {
     }
 
     process() {
-        if (this.#text.includes("在网吧的用户请使用这个退出")) {
+        const text = $("body").text();
+        if (text.includes("在网吧的用户请使用这个退出")) {
             // 根据关键字匹配出城堡首页，重新渲染
             new CastleStatusRenderer().render();
         }
 
         // 城堡机车建造厂改造成城堡驿站
         // castle.cgi CASTLE_BUILDMACHINE
-        if (this.#text.includes("＜＜ * 机车建造厂 *＞＞")) {
+        if (text.includes("＜＜ * 机车建造厂 *＞＞")) {
             new CastlePostHouseRenderer().render();
         }
 
@@ -113,8 +107,8 @@ export class CastleFunctionalities {
         // 1. 城堡取钱
         // 2. 城堡存钱
         if (
-            this.#text.includes("请善加利用，欢迎您再来！") ||
-            this.#text.includes("已经顺利存入您的账户！")
+            text.includes("请善加利用，欢迎您再来！") ||
+            text.includes("已经顺利存入您的账户！")
         ) {
             new ConfirmationEliminator().returnToCastle();
         }
@@ -175,12 +169,18 @@ class CastlePostHouseRenderer {
         console.log(reformat);
         $("body:first").html(reformat);
 
-        // 改名字为“城堡驿站”
         $("td:parent").each(function (_idx, td) {
             const text = $(td).text();
             if (text.endsWith("＜＜ * 机车建造厂 *＞＞")) {
+                // 改名字为“城堡驿站”
                 const title = "　<font color=#f1f1f1 size=4>　　　＜＜<B> * 城堡驿站 *</B>＞＞</font>";
                 $(td).html(title);
+            }
+            if (text === "机车建造厂是城堡内最重要的设施之一,在这里建造的机车将用于异世界的行动") {
+                // 改说明
+                $(td).attr("id", "messageBoard");
+                $(td).attr("style", "color: white");
+                $(td).html("我们已经将城堡中废弃的机车建造厂改造成为了驿站。<br>");
             }
         });
     }
