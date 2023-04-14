@@ -13,6 +13,7 @@ import {generateCredential} from "./credential";
 import {Coordinate} from "./geo";
 import * as finance from "./finance";
 import * as user from "./user";
+import {withdrawFromCastleBank} from "./finance";
 
 /**
  * 城堡的数据结构
@@ -216,7 +217,7 @@ class CastlePostHouse {
 
                 if (cash < 100000) {
                     const credential = generateCredential();
-                    finance.castleWithdraw(credential, 10).then();
+                    finance.withdrawFromCastleBank(credential, 10);
                     page.publishMessageBoard("从城堡提款机支取了10万现金");
                 } else {
                     page.publishMessageBoard("身上现金充裕，准备出发");
