@@ -12,7 +12,7 @@ import * as util from "./util";
 import {generateCredential} from "./credential";
 import {Coordinate} from "./geo";
 import * as finance from "./finance";
-import * as personal from "./personal";
+import * as personal from "./user";
 
 /**
  * 城堡的数据结构
