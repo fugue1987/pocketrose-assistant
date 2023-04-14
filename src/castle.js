@@ -12,7 +12,7 @@ import * as util from "./util";
 import {generateCredential} from "./credential";
 import {Coordinate} from "./geo";
 import * as finance from "./finance";
-import * as personal from "./user";
+import * as user from "./user";
 
 /**
  * 城堡的数据结构
@@ -228,7 +228,7 @@ class CastlePostHouse {
 
     #travelTo(town) {
         const credential = generateCredential();
-        const role = personal.loadRole(credential);
+        const role = user.loadRole(credential);
         map.leaveCastle(credential, role, function (scope, mode) {
             page.publishMessageBoard(role.name + "已经离开城堡'" + role.castleName + "'");
             page.publishMessageBoard(role.name + "当前所在坐标" + role.coordinate.longText());
