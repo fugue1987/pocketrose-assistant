@@ -6,6 +6,7 @@
 
 import * as map from "./map";
 import * as network from "./network";
+import * as page from "./page";
 import * as user from "./user";
 import * as util from "./util";
 
@@ -74,7 +75,6 @@ export function getAllCastles(callback) {
                 let y = util.substringAfter(location, ",");
                 const coordinate = new map.Coordinate(parseInt(x), parseInt(y));
                 castles[owner] = new Castle(name, owner, coordinate);
-                console.log(castles[owner].longText());
             }
         });
 
@@ -167,8 +167,9 @@ class CastlePostHouseRenderer {
         const a2 = util.substringBefore(left, "</center>");
         const a3 = util.substringAfter(left, "</center>");
         const reformat = a1 + "<div style='display: none'>" + a2 + "</div>" + a3;
-        console.log(reformat);
         $("body:first").html(reformat);
+
+        $("table:first").removeAttr("height");
 
         $("td:parent").each(function (_idx, td) {
             const text = $(td).text();
@@ -185,7 +186,8 @@ class CastlePostHouseRenderer {
             }
         });
 
-
+        const npc = page.createFooterNPC("饭饭");
+        npc.welcome("轮到我啦，上镜+RP，+RP，+RP，重要的事情喊三遍！<br>");
     }
 
 }

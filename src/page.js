@@ -6,6 +6,19 @@
 
 import * as user from "./user";
 
+export class NPC {
+
+    #messageId;
+
+    constructor(messageId) {
+        this.#messageId = messageId;
+    }
+
+    welcome(message) {
+        $("#" + this.#messageId).html(message);
+    }
+}
+
 /**
  * 在页面最后一个div元素之前添加指定的NPC
  * @param name NPC名字
@@ -13,13 +26,16 @@ import * as user from "./user";
 export function createFooterNPC(name) {
     const npc = user.loadNPC(name);
     if (npc === undefined) {
-        return;
+        return undefined;
     }
     $("div:last").prepend("<TABLE WIDTH='100%' bgcolor='#888888'><tbody><tr>" +
         "<TD bgcolor='#F8F0E0' height='5'>" +
         "<table bgcolor='#888888' border='0'><tbody><tr>" +
         "<td bgcolor='#F8F0E0'>" + npc.imageHTML + "</td>" +
-        "<td width='100%' bgcolor='#000000' id='footerNPCMessage'></td></tr></tbody></table>" +
+        "<td width='100%' bgcolor='#000000' id='footerNPCMessage' style='color: white'>" +
+        "</td></tr></tbody></table>" +
         "</TD>" +
         "</tr></tbody></TABLE>");
+
+    return new NPC("footerNPCMessage");
 }
