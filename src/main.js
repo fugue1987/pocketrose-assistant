@@ -26,13 +26,13 @@ import * as network from "./network";
 import * as npc from "./npc";
 import * as pocket from "./pocket";
 import {
+    __utilities_isHeavyArmor,
     _ACCESSORY_DICT,
     _ARMOR_DICT,
     _CAREER_DICT,
     _CITY_DICT,
     _PROHIBIT_SELLING_ITEM_DICT,
     _WEAPON_DICT,
-    heavyArmorNameDict,
     transferCareerRequirementDict
 } from "./pocket";
 import * as pokemon from "./pokemon";
@@ -97,19 +97,6 @@ function replacePkm(page) {
 // ============================================================================
 // 工具功能函数实现
 // ============================================================================
-
-/**
- * 判断指定的名字是否为属性重铠，支持齐心重铠的检查。
- * @private
- */
-function __utilities_isHeavyArmor(name) {
-    for (var i = 0; i < heavyArmorNameDict.length; i++) {
-        if (name.indexOf(heavyArmorNameDict[i]) != -1) {
-            return true;
-        }
-    }
-    return false;
-}
 
 /**
  * 检查装备是否已经满经验。

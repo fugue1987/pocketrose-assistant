@@ -649,3 +649,15 @@ export const _ACCESSORY_DICT = [
     "极光之翼",
     "雪的结晶"
 ];
+
+/**
+ * 判断指定的名字是否为属性重铠，支持齐心重铠的检查。
+ */
+export function __utilities_isHeavyArmor(name) {
+    for (var i = 0; i < heavyArmorNameDict.length; i++) {
+        if (name.indexOf(heavyArmorNameDict[i]) != -1) {
+            return true;
+        }
+    }
+    return false;
+}
