@@ -21,6 +21,32 @@ export function calculateCashDifferenceAmount(cash, expect) {
 }
 
 /**
+ * 存钱到城市的银行
+ * @param credential 用户凭证
+ * @param amount 存入金额，undefined意味全部存入
+ */
+export function depositIntoTownBank(credential, amount) {
+    if (amount !== undefined && amount < 0) {
+        return;
+    }
+    const doDeposit = (credential, amount) => {
+        return new Promise((resolve) => {
+            const request = credential.asRequest();
+            request["mode"] = "BANK_SELL";
+            if (amount !== undefined) {
+                request["azukeru"] = amount;
+            } else {
+                request["azukeru"] = "all";
+            }
+            network.sendPostRequest("town.cgi", request, function () {
+                resolve();
+            });
+        });
+    };
+    doDeposit(credential, amount).then();
+}
+
+/**
  * 从城堡取钱
  * @param credential 用户凭证
  * @param amount 取钱的金额
