@@ -227,7 +227,11 @@ class CastlePostHouse {
     }
 
     #travelTo(town) {
-
+        const credential = user.generateCredential();
+        const roleLoader = new user.RoleLoader(credential);
+        roleLoader.load(function (role) {
+            page.publishMessageBoard("当前所在城堡‘" + role.castleName + "’，坐标" + role.coordinate.longText());
+        });
     }
 }
 

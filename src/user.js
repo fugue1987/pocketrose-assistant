@@ -110,8 +110,8 @@ export class RoleLoader {
         request["mode"] = "STATUS_PRINT";
         network.sendPostRequest("mydata.cgi", request, function (html) {
             const role = new Role();
-            $("td:parent").each(function (_idx, td) {
-                const text = $(td).next();
+            $(html).find("td").each(function (_idx, td) {
+                const text = $(td).text();
                 if (text === "现在位置") {
                     roleLoader.#parseLocation(role, $(td).next().text());
                 }
@@ -125,22 +125,22 @@ export class RoleLoader {
     #parseLocation(role, text) {
         if (text.includes("(") && text.includes(")")) {
             // 在城堡
-            role.location("CASTLE");
+            role.location = "CASTLE";
             const s = util.substringBetween(text, "(", ")");
             const x = util.substringBefore(s, ",");
             const y = util.substringAfter(s, ",");
-            role.coordinate(new map.Coordinate(parseInt(x), parseInt(y)));
-            role.castleName(util.substringBefore(text, " ("));
+            role.coordinate = new map.Coordinate(parseInt(x), parseInt(y));
+            role.castleName = util.substringBefore(text, " (");
         } else {
             // 在城市或者野外
             if (text === "野外") {
-                role.location("WILD");
+                role.location = "WILD";
             } else {
-                role.location("TOWN");
+                role.location = "TOWN";
                 const town = pocket.findTownByName(text);
                 if (town !== undefined) {
-                    role.coordinate(town.coordinate);
-                    role.townName(town.name);
+                    role.coordinate = town.coordinate;
+                    role.townName = town.name;
                 }
             }
         }
