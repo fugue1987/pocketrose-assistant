@@ -10,6 +10,7 @@ import * as page from "./page";
 import * as pocket from "./pocket";
 import * as user from "./user";
 import * as util from "./util";
+import {Coordinate} from "./util";
 
 /**
  * 城堡的数据结构
@@ -74,7 +75,7 @@ export function getAllCastles(callback) {
                 location = util.substringBetween(location, "(", ")");
                 let x = util.substringBefore(location, ",");
                 let y = util.substringAfter(location, ",");
-                const coordinate = new map.Coordinate(parseInt(x), parseInt(y));
+                const coordinate = new Coordinate(parseInt(x), parseInt(y));
                 castles[owner] = new Castle(name, owner, coordinate);
             }
         });

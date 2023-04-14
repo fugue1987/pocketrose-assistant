@@ -4,7 +4,8 @@
  * ============================================================================
  */
 
-import {Coordinate} from "./map";
+
+import {Coordinate} from "./util";
 
 export const DOMAIN = "https://pocketrose.itsns.net.cn/pocketrose";
 
