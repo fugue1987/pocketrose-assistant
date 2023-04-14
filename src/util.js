@@ -31,20 +31,20 @@ export function substringBetween(text, leftString, rightString) {
 }
 
 export function substringBeforeSlash(text) {
-    if (contains(text, " /")) {
+    if (text.includes(" /")) {
         return substringBefore(text, " /");
     }
-    if (contains(text, "/")) {
+    if (text.includes("/")) {
         return substringBefore(text, "/");
     }
     return text;
 }
 
 export function substringAfterSlash(text) {
-    if (contains(text, "/ ")) {
+    if (text.includes("/ ")) {
         return substringAfter(text, "/ ");
     }
-    if (contains(text, "/")) {
+    if (text.includes("/")) {
         return substringAfter(text, "/");
     }
     return text;

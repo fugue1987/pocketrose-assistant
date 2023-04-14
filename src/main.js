@@ -20,6 +20,7 @@
 // 所有验证码破解的相关领域都设立为禁区，我们绝对不触碰验证码破解！
 // ============================================================================
 
+import * as castle from "./castle";
 import * as network from "./network";
 import * as npc from "./npc";
 import * as pocket from "./pocket";
@@ -644,17 +645,23 @@ function replacePkm(page) {
             if (__cookie_getEnablePokemonWiki()) {
                 pokemon.processPokemonWikiReplacement();
             }
-            if (location.href.includes("status.cgi")) {
+            if (location.href.includes("/status.cgi")) {
                 postProcessMainStatusFunctionalities($('html').html());
             }
-            if (location.href.includes("battle.cgi")) {
+            if (location.href.includes("/battle.cgi")) {
                 postProcessBattleRelatedFunctionalities($('html').html());
             }
-            if (location.href.includes("town.cgi")) {
+            if (location.href.includes("/town.cgi")) {
                 postProcessCityRelatedFunctionalities($('html').html());
             }
-            if (location.href.includes("mydata.cgi")) {
+            if (location.href.includes("/mydata.cgi")) {
                 postProcessPersonalStatusRelatedFunctionalities($('html').html());
+            }
+            if (
+                location.href.includes("/castlestatus.cgi") ||
+                location.href.includes("/castle.cgi")
+            ) {
+                new castle.CastleFunctionalities($("body").text()).process();
             }
         })
     }
