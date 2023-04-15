@@ -61,9 +61,13 @@ class TownInnPostHouse {
                 }
             });
         });
+
+        this.#processMoveToTown();
+        this.#processMoveToCastle();
     }
 
     #renderHTML() {
+        $("input:submit[value='宿泊']").attr("id", "restButton");
         $("input:submit[value='返回城市']").attr("id", "returnButton");
 
         $("td:parent").each(function (_idx, td) {
@@ -102,6 +106,20 @@ class TownInnPostHouse {
 
         $("#moveToTown").prop("disabled", true);
         $("#moveToCastle").prop("disabled", true);
+    }
+
+    #processMoveToTown() {
+
+    }
+
+    #processMoveToCastle() {
+        $("#moveToCastle").click(function () {
+            $("#restButton").prop("disabled", true);
+            $("#returnButton").prop("disabled", true);
+            $("#moveToTown").prop("disabled", true);
+            $("#moveToCastle").prop("disabled", true);
+            $(".townClass").prop("disabled", true);
+        });
     }
 }
 
