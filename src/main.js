@@ -56,9 +56,11 @@ import {
     __cookie_getReturnButtonText
 } from "./option";
 import {TownRequestInterceptor} from "./town";
+import {StatusRequestInterceptor} from "./status";
 
 const CGI_MAPPING = {
     "/battle.cgi": new battle.BattleRequestInterceptor(),
+    "/mydata.cgi": new StatusRequestInterceptor(),
     "/town.cgi": new TownRequestInterceptor(),
     "/castlestatus.cgi": new castle.CastleRequestInterceptor(),
     "/castle.cgi": new castle.CastleRequestInterceptor()
@@ -1865,9 +1867,9 @@ function postProcessPersonalStatusRelatedFunctionalities(htmlText) {
         // 复用个人接收的信作为Cookie管理的页面
         __personalStatus_cookieManagement(htmlText);
     }
-    if (htmlText.indexOf("仙人的宝物") != -1) {
-        __personalStatus_view(htmlText);
-    }
+    // if (htmlText.indexOf("仙人的宝物") != -1) {
+    //     __personalStatus_view(htmlText);
+    // }
     if (htmlText.indexOf("领取了") !== -1) {
         __personalStatus_salary(htmlText);
     }
