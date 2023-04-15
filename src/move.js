@@ -6,9 +6,14 @@
  * LEAVE_CASTLE
  * LEAVE_TOWN
  * MOVE_STYLE
+ * ENTER_TOWN_AWAIT
+ * ENTER_TOWN_GUARD
+ * ENTER_TOWN_GUARD_PASS
  * ============================================================================
  */
+import * as network from "./network";
 import {sendPostRequest} from "./network";
+import {latencyExecute} from "./util";
 
 export class MoveStyle {
 
@@ -110,4 +115,46 @@ export async function leaveCastle(credential, eventHandler) {
         });
     };
     return await doLeaveCastle(credential, eventHandler);
+}
+
+/**
+ * 进入城市，如果碰上门卫则自动缴入城费（必须保证身上有足够的现金）
+ * @param credential 用户凭证
+ * @param townId 城市ID
+ * @param eventHandler 事件处理器
+ * @returns {Promise<void>}
+ */
+export async function enterTown(credential, townId, eventHandler) {
+    const doEnterTown = (credential, townId, eventHandler) => {
+        return new Promise((resolve) => {
+            if (eventHandler !== undefined) {
+                eventHandler("ENTER_TOWN_AWAIT");
+            }
+            latencyExecute(55000, function () {
+                const request = credential.asRequest();
+                request["townid"] = townId;
+                request["mode"] = "MOVE";
+                sendPostRequest("status.cgi", request, function (html) {
+                    if ($(html).text().includes("战胜门卫。")) {
+                        if (eventHandler !== undefined) {
+                            eventHandler("ENTER_TOWN_GUARD");
+                        }
+                        const request = credential.asRequest();
+                        request["townid"] = townId;
+                        request["givemoney"] = "1";
+                        request["mode"] = "MOVE";
+                        network.sendPostRequest("status.cgi", request, function () {
+                            if (eventHandler !== undefined) {
+                                eventHandler("ENTER_TOWN_GUARD_PASS");
+                            }
+                            resolve();
+                        });
+                    } else {
+                        resolve();
+                    }
+                });
+            });
+        });
+    };
+    await doEnterTown(credential, townId, eventHandler);
 }
