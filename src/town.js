@@ -67,30 +67,22 @@ class TownInnPostHouse {
     }
 
     #renderHTML() {
-        $("td:parent").each(function (_idx, td) {
-            const text = $(td).text();
-            if (text.includes("每天的战斗让你疲倦了吧? 来休息一下吧")) {
-                if (_idx === 17) {
-                    $(td).attr("id", "messageBoard");
-                    $(td).attr("style", "color: white");
-                }
-            }
-        });
+        page.findAndCreateMessageBoard("每天的战斗让你疲倦了吧? 来休息一下吧");
 
         $("input:submit[value='宿泊']").attr("id", "restButton");
         $("input:submit[value='返回城市']").attr("id", "returnButton");
 
-        // $("td:parent").each(function (_idx, td) {
-        //     const text = $(td).text();
-        //     if (text === "所持金") {
-        //         let html = $(td).parent().parent().html();
-        //         html += "<tr>" +
-        //             "<td style='background-color:#E0D0B0'>计时器</td>" +
-        //             "<td style='background-color:#E0D0B0;text-align:right;color:red' colspan=3 id='count_up_timer'>-</td>" +
-        //             "</tr>";
-        //         $(td).parent().parent().html(html);
-        //     }
-        // });
+        $("td:parent").each(function (_idx, td) {
+            const text = $(td).text();
+            if (text === "所持金") {
+                let html = $(td).parent().parent().html();
+                html += "<tr>" +
+                    "<td style='background-color:#E0D0B0'>计时器</td>" +
+                    "<td style='background-color:#E0D0B0;text-align:right;color:red' colspan=3 id='count_up_timer'>-</td>" +
+                    "</tr>";
+                $(td).parent().parent().html(html);
+            }
+        });
 
         $("td:parent").each(function (_idx, td) {
             const text = $(td).text();

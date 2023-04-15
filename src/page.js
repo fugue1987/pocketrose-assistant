@@ -120,3 +120,21 @@ export function generateTownSelectionTable() {
 
     return html;
 }
+
+export function findAndCreateMessageBoard(s) {
+    let i = -1;
+    $("td:parent").each(function (_idx, td) {
+        const text = $(td).text();
+        if (text.includes(s)) {
+            i = _idx;
+        }
+    });
+    if (i >= 0) {
+        $("td:parent").each(function (_idx, td) {
+            if (i === _idx) {
+                $(td).attr("id", "messageBoard");
+                $(td).attr("style", "color:white");
+            }
+        });
+    }
+}
