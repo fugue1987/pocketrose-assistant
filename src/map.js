@@ -7,8 +7,8 @@
 import * as network from "./network";
 import * as page from "./page";
 import * as geo from "./geo";
+import {isSameCoordinate} from "./geo";
 import * as util from "./util";
-import {Coordinate, isSameCoordinate} from "./geo";
 
 export function enterTown(credential, townId, callback) {
     page.publishMessageBoard("等待进城冷却中......(约55秒)");
@@ -35,29 +35,6 @@ export function enterTown(credential, townId, callback) {
                 }
             }
         });
-    });
-}
-
-export function leaveCastle(credential, role, callback) {
-    const request = credential.asRequest();
-    request["navi"] = "on";
-    request["out"] = "1";
-    request["mode"] = "MAP_MOVE";
-
-    network.sendPostRequest("map.cgi", request, function (html) {
-        const moveScope = $(html).find("select[name='chara_m']").find("option:last").attr("value");
-        let moveMode = "ROOK";
-        $(html).find("input:submit").each(function (_idx, input) {
-            const v = $(input).attr("value");
-            const d = $(input).attr("disabled");
-            if (v === "↖" && d === undefined) {
-                moveMode = "QUEEN";
-            }
-        });
-
-        if (callback !== undefined) {
-            callback(parseInt(moveScope), moveMode);
-        }
     });
 }
 

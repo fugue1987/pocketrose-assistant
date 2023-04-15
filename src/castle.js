@@ -13,6 +13,7 @@ import {generateCredential} from "./credential";
 import {Coordinate} from "./geo";
 import * as finance from "./finance";
 import * as user from "./user";
+import * as move from "./move";
 
 /**
  * 城堡的数据结构
@@ -243,19 +244,27 @@ class CastlePostHouse {
         const credential = generateCredential();
         user.loadRole(credential).then(role => {
             $("#role_name").text(role.name);
-            map.leaveCastle(credential, role, function (scope, mode) {
-                page.publishMessageBoard(role.name + "已经离开城堡'" + role.castleName + "'");
-                page.publishMessageBoard(role.name + "当前所在坐标" + role.coordinate.longText());
-                page.publishMessageBoard(role.name + "最大移动范围" + scope + "，移动模式" + mode);
 
+            const eventListener = new move.MoveEventListener(function (id, data) {
+                if (id === "LEAVE_CASTLE") {
+                    page.publishMessageBoard(role.name + "已经离开城堡'" + role.castleName + "'");
+                    page.publishMessageBoard(role.name + "当前所在坐标" + role.coordinate.longText());
+                }
+                if (id === "MOVE_STYLE") {
+                    const style = data["move_style"]
+                    page.publishMessageBoard(role.name + "最大移动范围" + style.scope + "，移动模式" + style.mode);
+                }
+            });
+
+            move.leaveCastle(credential, eventListener).then(style => {
                 // 创建行程
                 const journey = new map.Journey();
                 journey.credential = credential;
                 journey.role = role;
                 journey.source = role.coordinate;
                 journey.destination = town.coordinate;
-                journey.scope = scope;
-                journey.mode = mode;
+                journey.scope = style.scope;
+                journey.mode = style.mode;
                 journey.start(function () {
                     map.enterTown(credential, town.id, function () {
                         page.publishMessageBoard(role.name + "已经成功到达" + town.name);
@@ -270,29 +279,6 @@ class CastlePostHouse {
                     });
                 });
             });
-        });
-    }
-}
-
-/**
- * 城堡银行
- */
-class CastleBank {
-
-    #credential;
-
-    constructor(credential) {
-        this.#credential = credential;
-    }
-
-    withdraw(amount, callback) {
-        const request = this.#credential.asRequest();
-        request["mode"] = "CASTLEBANK_BUY";
-        request["dasu"] = amount;
-        network.sendPostRequest("castle.cgi", request, function () {
-            if (callback !== undefined) {
-                callback();
-            }
         });
     }
 }
