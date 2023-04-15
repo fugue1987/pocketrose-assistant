@@ -1446,7 +1446,7 @@ function __town_common_prepareForShopping(id, pass, cash, table, submit) {
             $(submit).trigger("click");
         } else {
             const credential = generateCredential();
-            finance.withdrawFromTownBank(credential, amount).then(_code => {
+            finance.withdrawFromTownBank(credential, amount).then(() => {
                 $(submit).trigger("click");
             });
         }
@@ -1487,7 +1487,7 @@ function __city_itemSold(htmlText) {
         __city_itemSold_buildReturnFunction(id, pass);
     } else {
         const credential = generateCredential();
-        finance.depositIntoTownBank(credential, undefined).then(_code => {
+        finance.depositIntoTownBank(credential, undefined).then(() => {
             let messageHtml = messageElement.html() + "已经自动存入银行。";
             messageElement.html(messageHtml);
             let autoDepositMessage = "呦嚯嚯。。这个全口袋也只有我能收下！钱已经存到银行了，我是雷锋。";
@@ -2494,7 +2494,7 @@ function __personalStatus_salary(htmlText) {
     const pass = __page_readPassFromCurrentPage();
     $("#runaway").click(function () {
         const credential = generateCredential();
-        finance.depositIntoTownBank(credential, undefined).then(_code => {
+        finance.depositIntoTownBank(credential, undefined).then(() => {
             $("input:submit[value='返回城市']").trigger("click");
         });
     });

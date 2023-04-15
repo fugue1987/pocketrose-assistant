@@ -13,7 +13,6 @@ import {generateCredential} from "./credential";
 import {Coordinate} from "./geo";
 import * as finance from "./finance";
 import * as user from "./user";
-import {withdrawFromCastleBank} from "./finance";
 
 /**
  * 城堡的数据结构
@@ -227,7 +226,7 @@ class CastlePostHouse {
                 const amount = finance.calculateCashDifferenceAmount(cash, 100000);
                 if (amount > 0) {
                     const credential = generateCredential();
-                    finance.withdrawFromCastleBank(credential, amount).then(_code => {
+                    finance.withdrawFromCastleBank(credential, amount).then(() => {
                         page.publishMessageBoard("从城堡提款机支取了" + amount + "万现金");
                         $("#role_cash").text((cash + amount * 10000) + " GOLD");
                         postHouse.#travelTo(town);
@@ -260,7 +259,7 @@ class CastlePostHouse {
                 journey.start(function () {
                     map.enterTown(credential, town.id, function () {
                         page.publishMessageBoard(role.name + "已经成功到达" + town.name);
-                        finance.depositIntoTownBank(credential, undefined).then(_code => {
+                        finance.depositIntoTownBank(credential, undefined).then(() => {
                             page.publishMessageBoard(role.name + "将全部现金存入银行");
                             $("form[action='castlestatus.cgi']").attr("action", "status.cgi");
                             $("input:hidden[value='CASTLESTATUS']").attr("value", "STATUS");
