@@ -1,4 +1,5 @@
 import * as bank from "./bank";
+import * as dashboard from "./dashboard";
 import * as page from "./page";
 import * as pocket from "./pocket";
 import * as util from "./util";
@@ -10,12 +11,20 @@ export class StatusRequestInterceptor {
 
     process() {
         const text = $("body:first").text();
-        if (text.includes("仙人的宝物")) {
-            // 个人状态查看
-            new PersonalStatus().process();
-        } else if (text.includes("领取了") || text.includes("下次领取俸禄还需要等待")) {
-            // 领取薪水
-            new PersonalSalary().process();
+        if (location.href.includes("/status.cgi")) {
+            if (text.includes("城市支配率")) {
+                // 城市主页面
+                new dashboard.TownDashboardProcessor().process();
+            }
+        }
+        if (location.href.includes("/mydata.cgi")) {
+            if (text.includes("仙人的宝物")) {
+                // 个人状态查看
+                new PersonalStatus().process();
+            } else if (text.includes("领取了") || text.includes("下次领取俸禄还需要等待")) {
+                // 领取薪水
+                new PersonalSalary().process();
+            }
         }
     }
 }
@@ -78,7 +87,7 @@ class PersonalStatus {
                 const experience = parseInt($(td).next().text());
                 if (experience >= 14900) {
                     $(td).next().attr("style", "color: blue");
-                    $(td).next().text("MAX");
+                    $(td).next().text("[MAX]");
                 }
             }
             if (text === "所持金") {

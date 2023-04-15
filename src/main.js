@@ -61,6 +61,7 @@ import {generateCredential} from "./page";
 const CGI_MAPPING = {
     "/battle.cgi": new battle.BattleRequestInterceptor(),
     "/mydata.cgi": new StatusRequestInterceptor(),
+    "/status.cgi": new StatusRequestInterceptor(),
     "/town.cgi": new TownRequestInterceptor(),
     "/castlestatus.cgi": new castle.CastleRequestInterceptor(),
     "/castle.cgi": new castle.CastleRequestInterceptor()
@@ -527,7 +528,7 @@ function __common_item_selectAllStorableItems(parentElement) {
 // ============================================================================
 function postProcessMainStatusFunctionalities(htmlText) {
     if (htmlText.indexOf("在网吧的用户请使用这个退出") !== -1) {
-        __status(htmlText);
+        //__status(htmlText);
     }
 }
 
@@ -603,7 +604,7 @@ function __status(htmlText) {
 function postProcessCityRelatedFunctionalities(htmlText) {
     if (htmlText.indexOf("在网吧的用户请使用这个退出") !== -1) {
         // 战斗后的主页是通过town.cgi返回的
-        __status(htmlText);
+        //__status(htmlText);
     }
     if (htmlText.indexOf("* 宿 屋 *") !== -1) {
         __town_inn(htmlText);
