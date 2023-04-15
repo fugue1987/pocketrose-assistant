@@ -14,6 +14,7 @@ import {Coordinate} from "./geo";
 import * as finance from "./finance";
 import * as user from "./user";
 import * as move from "./move";
+import {createEventHandler} from "./event";
 
 /**
  * 城堡的数据结构
@@ -245,25 +246,7 @@ class CastlePostHouse {
         user.loadRole(credential).then(role => {
             $("#role_name").text(role.name);
 
-            const eventHandler = function (id, data) {
-                if (id === "LEAVE_CASTLE") {
-                    page.publishMessageBoard(role.name + "已经离开城堡'" + role.castleName + "'");
-                    page.publishMessageBoard(role.name + "当前所在坐标" + role.coordinate.longText());
-                }
-                if (id === "MOVE_STYLE") {
-                    const style = data["move_style"]
-                    page.publishMessageBoard(role.name + "最大移动范围" + style.scope + "，移动模式" + style.mode);
-                }
-                if (id === "ENTER_TOWN_AWAIT") {
-                    page.publishMessageBoard(role.name + "等待进城冷却中......(约55秒)");
-                }
-                if (id === "ENTER_TOWN_GUARD") {
-                    page.publishMessageBoard(role.name + "与门卫交涉中......");
-                }
-                if (id === "ENTER_TOWN_GUARD_PASS") {
-                    page.publishMessageBoard("门卫通情达理的收取了入城费用放" + role.name + "入城");
-                }
-            };
+            const eventHandler = createEventHandler(role);
 
             move.leaveCastle(credential, eventHandler).then(style => {
                 // 创建行程
