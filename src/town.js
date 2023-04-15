@@ -128,7 +128,8 @@ class TownInnPostHouse {
 
             page.initializeMessageBoard("我们将实时为你播报旅途的动态：<br>");
             const townId = $("#townId").text();
-            const source = pocket.getTown(townId).coordinate;
+            const town = pocket.getTown(townId)
+            const source = town.coordinate;
 
             const castleText = $("#castle").text();
             const location = util.substringBefore(castleText, " ");
@@ -139,7 +140,10 @@ class TownInnPostHouse {
 
             const role = new user.Role();
             role.name = $("#player").text();
+            role.townName = town.name;
+            role.coordinate = town.coordinate;
             const eventHandler = event.createEventHandler(role);
+            eventHandler(event.EVENT_TARGET_CASTLE, {"castleName": castleName, "castleCoordinate": destination});
 
             const credential = page.generateCredential();
             map.leaveTown(credential, eventHandler).then((scope, mode) => {

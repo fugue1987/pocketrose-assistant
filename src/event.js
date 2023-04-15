@@ -20,6 +20,7 @@ export const EVENT_LEAVE_CASTLE = "EVENT_LEAVE_CASTLE";
 export const EVENT_LEAVE_TOWN = "EVENT_LEAVE_TOWN";
 export const EVENT_MOVE = "EVENT_MOVE";
 export const EVENT_MOVE_AWAIT = "EVENT_MOVE_AWAIT";
+export const EVENT_TARGET_CASTLE = "EVENT_TARGET_CASTLE";
 
 export function createEventHandler(role) {
     return function (id, data) {
@@ -61,8 +62,26 @@ export function createEventHandler(role) {
             page.publishMessageBoard("门卫通情达理的收取了入城费用放" + role.name + "入城");
         }
         if (id === EVENT_LEAVE_CASTLE) {
-            page.publishMessageBoard(role.name + "已经离开城堡'" + role.castleName + "'");
-            page.publishMessageBoard(role.name + "当前所在坐标" + role.coordinate.longText());
+            const castleName = role.castleName;
+            if (castleName === undefined) {
+                page.publishMessageBoard(role.name + "已经离开了所在城堡");
+            } else {
+                page.publishMessageBoard(role.name + "已经离开了<b style='color:darkorange'>" + castleName + "</b>");
+            }
+            if (role.coordinate !== undefined) {
+                page.publishMessageBoard(role.name + "当前所在坐标" + role.coordinate.longText());
+            }
+        }
+        if (id === EVENT_LEAVE_TOWN) {
+            const townName = role.townName;
+            if (townName === undefined) {
+                page.publishMessageBoard(role.name + "已经离开了所在城市");
+            } else {
+                page.publishMessageBoard(role.name + "已经离开了<b style='color:darkorange'>" + townName + "</b>");
+            }
+            if (role.coordinate !== undefined) {
+                page.publishMessageBoard(role.name + "当前所在坐标" + role.coordinate.longText());
+            }
         }
         if (id === EVENT_MOVE) {
             const direction = data["direction"];
@@ -72,6 +91,20 @@ export function createEventHandler(role) {
         }
         if (id === EVENT_MOVE_AWAIT) {
             page.publishMessageBoard(role.name + "等待移动冷却中...... (约55秒)");
+        }
+        if (id === EVENT_TARGET_CASTLE) {
+            const castleName = data["castleName"];
+            const castleCoordinate = data["castleCoordinate"];
+            let message = role.name + "准备移动到";
+            if (castleName === undefined) {
+                message += "城堡";
+            } else {
+                message += "<b style='color:darkorange'>" + castleName + "</b>";
+            }
+            page.publishMessageBoard(message);
+            if (castleCoordinate !== undefined) {
+                page.publishMessageBoard("坐标位于" + castleCoordinate.longText());
+            }
         }
     };
 }
