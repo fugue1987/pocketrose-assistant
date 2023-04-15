@@ -254,6 +254,15 @@ class CastlePostHouse {
                     const style = data["move_style"]
                     page.publishMessageBoard(role.name + "最大移动范围" + style.scope + "，移动模式" + style.mode);
                 }
+                if (id === "ENTER_TOWN_AWAIT") {
+                    page.publishMessageBoard(role.name + "等待进城冷却中......(约55秒)");
+                }
+                if (id === "ENTER_TOWN_GUARD") {
+                    page.publishMessageBoard(role.name + "与门卫交涉中......");
+                }
+                if (id === "ENTER_TOWN_GUARD_PASS") {
+                    page.publishMessageBoard("门卫通情达理的收取了入城费用放" + role.name + "入城");
+                }
             };
 
             move.leaveCastle(credential, eventHandler).then(style => {
@@ -266,7 +275,7 @@ class CastlePostHouse {
                 journey.scope = style.scope;
                 journey.mode = style.mode;
                 journey.start(function () {
-                    map.enterTown(credential, town.id, function () {
+                    move.enterTown(credential, town.id, eventHandler).then(() => {
                         page.publishMessageBoard(role.name + "已经成功到达" + town.name);
                         finance.depositIntoTownBank(credential, undefined).then(() => {
                             page.publishMessageBoard(role.name + "将全部现金存入银行");
@@ -275,7 +284,6 @@ class CastlePostHouse {
                             $("input:submit[value='返回城堡']").prop("disabled", false);
                             $("input:submit[value='返回城堡']").attr("value", town.name + "欢迎您");
                         });
-
                     });
                 });
             });
