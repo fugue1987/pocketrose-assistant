@@ -86,7 +86,7 @@ export async function leaveCastle(credential, eventHandler) {
             request["mode"] = "MAP_MOVE";
             sendPostRequest("map.cgi", request, function (html) {
                 if (eventHandler !== undefined) {
-                    eventHandler.publish("LEAVE_CASTLE");
+                    eventHandler("LEAVE_CASTLE");
                 }
 
                 const scope = $(html).find("select[name='chara_m']")
@@ -102,7 +102,7 @@ export async function leaveCastle(credential, eventHandler) {
 
                 const style = new MoveStyle(scope, mode);
                 if (eventHandler !== undefined) {
-                    eventHandler.publish("MOVE_STYLE", {"move_style": style});
+                    eventHandler("MOVE_STYLE", {"move_style": style});
                 }
 
                 resolve(style);
