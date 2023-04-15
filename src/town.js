@@ -48,6 +48,18 @@ class TownInnPostHouse {
             const town = pocket.findTownByName(role.townName);
             $(".townClass[value='" + town.id + "']").prop("disabled", true);
             $("#townId").text(town.id);
+            $("#moveToTown").prop("disabled", false);
+
+            user.loadCastle(role.name).then(castle => {
+                if (castle !== undefined) {
+                    const name = castle.name;
+                    const x = castle.coordinate.x;
+                    const y = castle.coordinate.y;
+                    $("#castle").text(x + "," + y + " " + name);
+                    $("#moveToCastle").attr("value", "回到" + name);
+                    $("#moveToCastle").prop("disabled", false);
+                }
+            });
         });
     }
 
@@ -84,7 +96,7 @@ class TownInnPostHouse {
         npc.message("<input type='button' id='moveToTown' style='color: blue' value='开始旅途'>");
         npc.message("<input type='button' id='moveToCastle' style='color: red' value='回到城堡'>");
         npc.message("<div id='townId' style='display: none'></div>");
-        npc.message("<div id='castleInformation' style='display: none'></div>");
+        npc.message("<div id='castle' style='display: none'></div>");
         npc.message("<br>");
         npc.message(page.generateTownSelectionTable());
 

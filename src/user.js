@@ -342,7 +342,7 @@ export class Castle {
 
     /**
      * Get castle _coordinate
-     * @returns {map.Coordinate}
+     * @returns {Coordinate}
      */
     get coordinate() {
         return this.#coordinate;
