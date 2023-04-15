@@ -12,7 +12,7 @@ import * as pocket from "./pocket";
 import * as util from "./util";
 import {generateCredential} from "./credential";
 import {Coordinate} from "./geo";
-import * as finance from "./finance";
+import * as finance from "./bank";
 import * as user from "./user";
 import {createEventHandler} from "./event";
 

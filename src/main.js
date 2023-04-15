@@ -37,7 +37,7 @@ import {
 } from "./pocket";
 import * as pokemon from "./pokemon";
 import * as util from "./util";
-import * as finance from "./finance";
+import * as finance from "./bank";
 import {generateCredential} from "./credential";
 import {
     __cookie_getDepositBattleNumber,
