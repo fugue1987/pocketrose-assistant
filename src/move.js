@@ -10,20 +10,6 @@
  */
 import {sendPostRequest} from "./network";
 
-export class MoveEventListener {
-
-    #listener;
-
-    constructor(listener) {
-        this.#listener = listener;
-    }
-
-    publish(id, data) {
-        this.#listener(id, data);
-    }
-
-}
-
 export class MoveStyle {
 
     #scope;
@@ -47,18 +33,20 @@ export class MoveStyle {
 /**
  * 离开当前所在城市的行动
  * @param credential 用户凭证
- * @param eventListener 移动事件
+ * @param eventHandler 事件处理器
  * @returns {Promise<MoveStyle>}
  */
-export async function leaveTown(credential, eventListener) {
-    const doLeaveTown = (credential, moveEvent) => {
+export async function leaveTown(credential, eventHandler) {
+    const doLeaveTown = (credential, eventHandler) => {
         return new Promise((resolve) => {
             const request = credential.asRequest();
             request["navi"] = "on";
             request["out"] = "1";
             request["mode"] = "MAP_MOVE";
             sendPostRequest("map.cgi", request, function (html) {
-                moveEvent.publish("LEAVE_TOWN");
+                if (eventHandler !== undefined) {
+                    eventHandler("LEAVE_TOWN");
+                }
 
                 const scope = $(html).find("select[name='chara_m']")
                     .find("option:last").attr("value");
@@ -72,30 +60,34 @@ export async function leaveTown(credential, eventListener) {
                 });
 
                 const style = new MoveStyle(scope, mode);
-                moveEvent.publish("MOVE_STYLE", {"move_style": style});
+                if (eventHandler !== undefined) {
+                    eventHandler("MOVE_STYLE", {"move_style": style});
+                }
 
                 resolve(style);
             });
         });
     };
-    return await doLeaveTown(credential, eventListener);
+    return await doLeaveTown(credential, eventHandler);
 }
 
 /**
  * 离开当前所在城堡
  * @param credential 用户凭证
- * @param eventListener 移动事件
+ * @param eventHandler 事件处理器
  * @returns {Promise<MoveStyle>}
  */
-export async function leaveCastle(credential, eventListener) {
-    const doLeaveCastle = (credential, moveEvent) => {
+export async function leaveCastle(credential, eventHandler) {
+    const doLeaveCastle = (credential, eventHandler) => {
         return new Promise((resolve) => {
             const request = credential.asRequest();
             request["navi"] = "on";
             request["out"] = "1";
             request["mode"] = "MAP_MOVE";
             sendPostRequest("map.cgi", request, function (html) {
-                moveEvent.publish("LEAVE_CASTLE");
+                if (eventHandler !== undefined) {
+                    eventHandler.publish("LEAVE_CASTLE");
+                }
 
                 const scope = $(html).find("select[name='chara_m']")
                     .find("option:last").attr("value");
@@ -109,11 +101,13 @@ export async function leaveCastle(credential, eventListener) {
                 });
 
                 const style = new MoveStyle(scope, mode);
-                moveEvent.publish("MOVE_STYLE", {"move_style": style});
+                if (eventHandler !== undefined) {
+                    eventHandler.publish("MOVE_STYLE", {"move_style": style});
+                }
 
                 resolve(style);
             });
         });
     };
-    return await doLeaveCastle(credential, eventListener);
+    return await doLeaveCastle(credential, eventHandler);
 }

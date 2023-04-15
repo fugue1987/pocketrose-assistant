@@ -245,7 +245,7 @@ class CastlePostHouse {
         user.loadRole(credential).then(role => {
             $("#role_name").text(role.name);
 
-            const eventListener = new move.MoveEventListener(function (id, data) {
+            const eventHandler = function (id, data) {
                 if (id === "LEAVE_CASTLE") {
                     page.publishMessageBoard(role.name + "已经离开城堡'" + role.castleName + "'");
                     page.publishMessageBoard(role.name + "当前所在坐标" + role.coordinate.longText());
@@ -254,9 +254,9 @@ class CastlePostHouse {
                     const style = data["move_style"]
                     page.publishMessageBoard(role.name + "最大移动范围" + style.scope + "，移动模式" + style.mode);
                 }
-            });
+            };
 
-            move.leaveCastle(credential, eventListener).then(style => {
+            move.leaveCastle(credential, eventHandler).then(style => {
                 // 创建行程
                 const journey = new map.Journey();
                 journey.credential = credential;
