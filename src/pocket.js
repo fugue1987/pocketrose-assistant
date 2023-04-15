@@ -693,3 +693,28 @@ export function __utilities_checkIfEquipmentFullExperience(name, power, experien
     }
     return experience >= maxExperience;
 }
+
+function __isCityCoordinate(x, y) {
+    let cityIds = Object.keys(_CITY_DICT);
+    for (let i = 0; i < cityIds.length; i++) {
+        let id = cityIds[i];
+        let city = _CITY_DICT[id];
+        if (x === city["x"] && y === city["y"]) {
+            return true;
+        }
+    }
+    return false;
+}
+
+/**
+ * 检查是否无效的藏宝图
+ * @param x X坐标
+ * @param y Y坐标
+ * @returns {boolean}
+ */
+export function isUnavailableTreasureHintMap(x, y) {
+    if (x < 0 || y < 0) {
+        return true;
+    }
+    return __isCityCoordinate(x, y);
+}

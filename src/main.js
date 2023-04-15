@@ -33,6 +33,7 @@ import {
     _CITY_DICT,
     _PROHIBIT_SELLING_ITEM_DICT,
     _WEAPON_DICT,
+    isUnavailableTreasureHintMap,
     transferCareerRequirementDict
 } from "./pocket";
 import * as pokemon from "./pokemon";
@@ -116,31 +117,6 @@ function __lookupTownIdByName(townName) {
     }
     // 人在野外的情况
     return "-1";
-}
-
-function __isCityCoordinate(x, y) {
-    let cityIds = Object.keys(_CITY_DICT);
-    for (let i = 0; i < cityIds.length; i++) {
-        let id = cityIds[i];
-        let city = _CITY_DICT[id];
-        if (x === city["x"] && y === city["y"]) {
-            return true;
-        }
-    }
-    return false;
-}
-
-/**
- * 检查是否无效的藏宝图
- * @param x X坐标
- * @param y Y坐标
- * @returns {boolean}
- */
-function isUnavailableTreasureHintMap(x, y) {
-    if (x < 0 || y < 0) {
-        return true;
-    }
-    return __isCityCoordinate(x, y);
 }
 
 // ============================================================================
@@ -553,7 +529,7 @@ function postProcessCityRelatedFunctionalities(htmlText) {
         __city_itemSold(htmlText);
     }
     if (htmlText.indexOf("*  藏宝图以旧换新业务 *") !== -1) {
-        enhanceTownAdventurerGuild(htmlText);
+        //enhanceTownAdventurerGuild(htmlText);
     }
 }
 

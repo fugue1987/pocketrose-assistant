@@ -31,6 +31,8 @@ export class TownRequestInterceptor {
             new TownInnPostHouse().process();
         } else if (text.includes("* 运 送 屋 *")) {
             new TownItemExpress().process();
+        } else if (text.includes("*  藏宝图以旧换新业务 *")) {
+            new TownAdventurerGuild().process();
         }
     }
 }
@@ -234,7 +236,6 @@ class TownInnPostHouse {
     }
 }
 
-
 /**
  * 城市中的运送屋
  */
@@ -277,5 +278,105 @@ class TownItemExpress {
                 "。我办事，你放心！";
             npc.message(message);
         }
+    }
+}
+
+/**
+ * 冒险家公会
+ */
+class TownAdventurerGuild {
+
+    constructor() {
+    }
+
+    process() {
+        let treasureHintMapCount = 0;
+        $("input:checkbox").each(function (_idx, checkbox) {
+            const checkboxName = $(checkbox).attr("name");
+            if (checkboxName.startsWith("item")) {
+                const mapX = parseInt($(checkbox).parent().next().next().next().next().text());
+                const mapY = parseInt($(checkbox).parent().next().next().next().next().next().text());
+                if (pocket.isUnavailableTreasureHintMap(mapX, mapY)) {
+                    let html = $(checkbox).parent().next().next().html();
+                    html = "<b style='color: red'>[城]</b>" + html;
+                    $(checkbox).parent().next().next().html(html);
+                } else {
+                    treasureHintMapCount++;
+                }
+            }
+        });
+
+        this.#renderHTML(treasureHintMapCount);
+
+        const credential = page.generateCredential();
+        user.loadRole(credential).then(role => {
+            const town = pocket.findTownByName(role.townName);
+            $("#townId").text(town.id);
+            $("#coach_1").prop("disabled", false);
+            $("#coach_2").prop("disabled", false);
+            $("#coach_3").prop("disabled", false);
+        });
+    }
+
+    #renderHTML(mapCount) {
+        page.findAndCreateMessageBoard("因为手持城市图不能使用而烦恼吗？");
+
+        $("td:parent").each(function (_idx, td) {
+            const text = $(td).text();
+            if (text === "所持金") {
+                let html = $(td).parent().parent().html();
+                html += "<tr>" +
+                    "<td style='background-color:#E0D0B0'>计时器</td>" +
+                    "<td style='background-color:#E0D0B0;text-align:right;color:red' colspan=3 id='count_up_timer'>-</td>" +
+                    "</tr>";
+                $(td).parent().parent().html(html);
+            }
+        });
+
+        let player = "";
+        let cash = 0;
+        $("td:parent").each(function (_idx, td) {
+            const text = $(td).text();
+            if (text === "　　　　＜＜ *  藏宝图以旧换新业务 *＞＞") {
+                let html = $(td).html();
+                html = html.replace("藏宝图以旧换新业务", "冒险家公会");
+                $(td).html(html);
+            }
+            if (text === "姓名") {
+                player = $(td).parent().next().find("td:first").text();
+            }
+            if (text === "所持金") {
+                const cashText = $(td).next().text();
+                cash = parseInt(cashText.substring(0, cashText.indexOf(" GOLD")));
+            }
+        });
+
+        const npc = page.createFooterNPC("花子");
+        npc.welcome("欢、欢、欢迎光临冒险家公会，等等，你这、这是什么表情？你肯定是认错人了，前几天你领薪水后碰、碰到的绝对" +
+            "不、不、不是我！[漫长的沉默中] 你、你怎么不相信我的话，人与人之间基本的信、信任呢？[再次漫长的沉默] 算了，你这次要去哪里？" +
+            "我免费让人带你过去。你出门去上、上、上马车吧。<br>");
+
+        let select = "";
+        select += "<select name='x' id='x'>";
+        select += "<option value='-1'>X坐标</option>";
+        for (let i = 0; i <= 15; i++) {
+            select += "<option value='" + i + "'>" + i + "</option>";
+        }
+        select += "</select>";
+        select += "<select name='y' id='y'>";
+        select += "<option value='-1'>Y坐标</option>";
+        for (let i = 0; i <= 15; i++) {
+            select += "<option value='" + i + "'>" + i + "</option>";
+        }
+        select += "</select>";
+        npc.message(select);
+        npc.message("<input type='button' id='coach_1' style='color: blue' value='车门上鸢尾兰的纹章熠熠生辉'>");
+        npc.message("<input type='button' id='coach_2' style='color: red' value='车身上剑与盾透露出铁血的气息'>");
+        npc.message("<input type='button' id='coach_3' style='color: black' value='斑驳的车身上隐约可见半拉兔子骷髅的形状'>");
+        npc.message("<div id='townId' style='display: none'></div>");
+
+        $("#coach_1").prop("disabled", true);
+        $("#coach_2").prop("disabled", true);
+        $("#coach_3").prop("disabled", true);
     }
 }
