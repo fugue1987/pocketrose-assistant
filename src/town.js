@@ -119,6 +119,13 @@ class TownInnPostHouse {
             $("#moveToTown").prop("disabled", true);
             $("#moveToCastle").prop("disabled", true);
             $(".townClass").prop("disabled", true);
+
+            page.initializeMessageBoard("我们将实时为你播报旅途的动态：<br>");
+            const castleText = $("#castle").text();
+            const location = util.substringBefore(castleText, " ");
+            const castleName = util.substringAfter(castleText, " ");
+            const x = parseInt(util.substringBefore(location, ","));
+            const y = parseInt(util.substringAfter(location, ","));
         });
     }
 }
