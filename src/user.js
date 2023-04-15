@@ -32,6 +32,7 @@ export class Role {
     _townName;          // 城市名称(location=TOWN)
     _experience;
     _cash;
+    _career;
 
     constructor() {
     }
@@ -180,6 +181,14 @@ export class Role {
         this._cash = value;
     }
 
+    get career() {
+        return this._career;
+    }
+
+    set career(value) {
+        this._career = value;
+    }
+
     asShortText() {
         return this._name + " " + this._level +
             " " + this._health + "/" + this._maxHealth +
@@ -273,6 +282,9 @@ export async function loadRole(credential) {
             if (text === "所持金") {
                 const cashText = $(td).next().text();
                 role.cash = parseInt(util.substringBefore(cashText, " G"));
+            }
+            if (text.startsWith("职业：")) {
+                role.career = util.substringAfter(text, "职业：");
             }
         });
         return role;

@@ -55,7 +55,6 @@ import {
     __cookie_getRepairItemThreshold,
     __cookie_getReturnButtonText
 } from "./option";
-import {loadRole} from "./user";
 
 const CGI_MAPPING = {
     "/battle.cgi": new battle.BattleRequestInterceptor(),
@@ -641,10 +640,6 @@ function postProcessCityRelatedFunctionalities(htmlText) {
 }
 
 function __town_inn(htmlText) {
-    loadRole(generateCredential()).then(role => {
-        alert(role.attribute + " " + role.experience + " " + role.cash);
-    });
-
     $("td:parent").each(function (_idx, td) {
         const text = $(td).text();
         if (text.indexOf("每天的战斗让你疲倦了吧? 来休息一下吧") !== -1) {
