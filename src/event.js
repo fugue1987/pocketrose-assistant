@@ -16,6 +16,8 @@ export const EVENT_ENTER_TOWN_GUARD = "EVENT_ENTER_TOWN_GUARD";
 export const EVENT_ENTER_TOWN_GUARD_PASS = "EVENT_ENTER_TOWN_GUARD_PASS";
 export const EVENT_LEAVE_CASTLE = "EVENT_LEAVE_CASTLE";
 export const EVENT_LEAVE_TOWN = "EVENT_LEAVE_TOWN";
+export const EVENT_MOVE = "EVENT_MOVE";
+export const EVENT_MOVE_AWAIT = "EVENT_MOVE_AWAIT";
 
 export function createEventHandler(role) {
     return function (id, data) {
@@ -52,6 +54,15 @@ export function createEventHandler(role) {
         if (id === "EVENT_LEAVE_CASTLE") {
             page.publishMessageBoard(role.name + "已经离开城堡'" + role.castleName + "'");
             page.publishMessageBoard(role.name + "当前所在坐标" + role.coordinate.longText());
+        }
+        if (id === EVENT_MOVE) {
+            const direction = data["direction"];
+            const distance = data["distance"];
+            const coordinate = data["coordinate"];
+            page.publishMessageBoard(role.name + direction + "移动" + distance + "格，到达" + coordinate.longText());
+        }
+        if (id === EVENT_MOVE_AWAIT) {
+            page.publishMessageBoard(role.name + "等待移动冷却中...... (约55秒)");
         }
     };
 }

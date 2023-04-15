@@ -249,15 +249,14 @@ class CastlePostHouse {
             const eventHandler = createEventHandler(role);
 
             move.leaveCastle(credential, eventHandler).then(style => {
-                // 创建行程
-                const journey = new map.Journey();
-                journey.credential = credential;
-                journey.role = role;
-                journey.source = role.coordinate;
-                journey.destination = town.coordinate;
-                journey.scope = style.scope;
-                journey.mode = style.mode;
-                journey.start(function () {
+                const plan = new map.MovePlan();
+                plan.credential = credential;
+                plan.source = role.coordinate;
+                plan.destination = town.coordinate;
+                plan.scope = style.scope;
+                plan.mode = style.mode;
+
+                map.executeMovePlan(plan, eventHandler).then(() => {
                     move.enterTown(credential, town.id, eventHandler).then(() => {
                         page.publishMessageBoard(role.name + "已经成功到达" + town.name);
                         finance.depositIntoTownBank(credential, undefined).then(() => {
@@ -268,7 +267,8 @@ class CastlePostHouse {
                             $("input:submit[value='返回城堡']").attr("value", town.name + "欢迎您");
                         });
                     });
-                }, eventHandler);
+                });
+
             });
         });
     }
