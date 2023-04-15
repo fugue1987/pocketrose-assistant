@@ -357,7 +357,7 @@ export class Castle {
  * 读取所有的城堡信息并回调。
  * @param callback 回调函数
  */
-export function getAllCastles(callback) {
+function getAllCastles(callback) {
 
     network.sendGetRequest("castle_print.cgi", function (html) {
 
@@ -379,4 +379,21 @@ export function getAllCastles(callback) {
 
         callback(castles);
     });
+}
+
+/**
+ * 根据姓名查找对应的城堡信息
+ * @param player 姓名
+ * @returns {Promise<Castle>}
+ */
+export async function loadCastle(player) {
+    const doLoadCastle = (player) => {
+        return new Promise((resolve) => {
+            getAllCastles(function (castles) {
+                const castle = castles[player];
+                resolve(castle);
+            });
+        });
+    };
+    return await doLoadCastle(player);
 }
