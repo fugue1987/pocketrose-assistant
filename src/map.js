@@ -7,7 +7,9 @@
 import * as event from "./event";
 import * as geo from "./geo";
 import * as network from "./network";
+import {sendPostRequest} from "./network";
 import * as util from "./util";
+import {latencyExecute} from "./util";
 
 /**
  * 用于描述移动计划的数据结构。表述了谁从哪里移动到哪里，怎么样的移动方式。
@@ -131,4 +133,124 @@ function moveOnPath(credential, pathList, index, callback, eventHandler) {
             });
         });
     }
+}
+
+/**
+ * 离开当前所在城市的行动
+ * @param credential 用户凭证
+ * @param eventHandler 事件处理器
+ * @returns {Promise<string, string>}
+ */
+export async function leaveTown(credential, eventHandler) {
+    const doLeaveTown = (credential, eventHandler) => {
+        return new Promise((resolve) => {
+            const request = credential.asRequest();
+            request["navi"] = "on";
+            request["out"] = "1";
+            request["mode"] = "MAP_MOVE";
+            sendPostRequest("map.cgi", request, function (html) {
+                if (eventHandler !== undefined) {
+                    eventHandler("EVENT_LEAVE_TOWN");
+                }
+
+                const scope = $(html).find("select[name='chara_m']")
+                    .find("option:last").attr("value");
+                let mode = "ROOK";
+                $(html).find("input:submit").each(function (_idx, input) {
+                    const v = $(input).attr("value");
+                    const d = $(input).attr("disabled");
+                    if (v === "↖" && d === undefined) {
+                        mode = "QUEEN";
+                    }
+                });
+
+                if (eventHandler !== undefined) {
+                    eventHandler("EVENT_CHECK_MOVE_STYLE", {"scope": scope, "mode": mode});
+                }
+                resolve(scope, mode);
+            });
+        });
+    };
+    return await doLeaveTown(credential, eventHandler);
+}
+
+/**
+ * 离开当前所在城堡
+ * @param credential 用户凭证
+ * @param eventHandler 事件处理器
+ * @returns {Promise<string, string>}
+ */
+export async function leaveCastle(credential, eventHandler) {
+    const doLeaveCastle = (credential, eventHandler) => {
+        return new Promise((resolve) => {
+            const request = credential.asRequest();
+            request["navi"] = "on";
+            request["out"] = "1";
+            request["mode"] = "MAP_MOVE";
+            sendPostRequest("map.cgi", request, function (html) {
+                if (eventHandler !== undefined) {
+                    eventHandler("EVENT_LEAVE_CASTLE");
+                }
+
+                const scope = $(html).find("select[name='chara_m']")
+                    .find("option:last").attr("value");
+                let mode = "ROOK";
+                $(html).find("input:submit").each(function (_idx, input) {
+                    const v = $(input).attr("value");
+                    const d = $(input).attr("disabled");
+                    if (v === "↖" && d === undefined) {
+                        mode = "QUEEN";
+                    }
+                });
+
+                if (eventHandler !== undefined) {
+                    eventHandler("EVENT_CHECK_MOVE_STYLE", {"scope": scope, "mode": mode});
+                }
+                resolve(scope, mode);
+            });
+        });
+    };
+    return await doLeaveCastle(credential, eventHandler);
+}
+
+/**
+ * 进入城市，如果碰上门卫则自动缴入城费（必须保证身上有足够的现金）
+ * @param credential 用户凭证
+ * @param townId 城市ID
+ * @param eventHandler 事件处理器
+ * @returns {Promise<void>}
+ */
+export async function enterTown(credential, townId, eventHandler) {
+    const doEnterTown = (credential, townId, eventHandler) => {
+        return new Promise((resolve) => {
+            if (eventHandler !== undefined) {
+                eventHandler("EVENT_ENTER_TOWN_AWAIT");
+            }
+            latencyExecute(55000, function () {
+                const request = credential.asRequest();
+                request["townid"] = townId;
+                request["mode"] = "MOVE";
+                sendPostRequest("status.cgi", request, function (html) {
+                    if ($(html).text().includes("战胜门卫。")) {
+                        if (eventHandler !== undefined) {
+                            eventHandler("EVENT_ENTER_TOWN_GUARD");
+                        }
+                        const request = credential.asRequest();
+                        request["townid"] = townId;
+                        request["givemoney"] = "1";
+                        request["mode"] = "MOVE";
+                        network.sendPostRequest("status.cgi", request, function () {
+                            if (eventHandler !== undefined) {
+                                eventHandler("EVENT_ENTER_TOWN_GUARD_PASS");
+                            }
+                            resolve();
+                        });
+                    } else {
+                        resolve();
+                    }
+                });
+            });
+        });
+    };
+    await doEnterTown(credential, townId, eventHandler);
 }

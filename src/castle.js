@@ -5,6 +5,7 @@
  */
 
 import * as map from "./map";
+import {enterTown, leaveCastle} from "./map";
 import * as network from "./network";
 import * as page from "./page";
 import * as pocket from "./pocket";
@@ -13,7 +14,6 @@ import {generateCredential} from "./credential";
 import {Coordinate} from "./geo";
 import * as finance from "./finance";
 import * as user from "./user";
-import * as move from "./move";
 import {createEventHandler} from "./event";
 
 /**
@@ -248,7 +248,7 @@ class CastlePostHouse {
 
             const eventHandler = createEventHandler(role);
 
-            move.leaveCastle(credential, eventHandler).then((scope, mode) => {
+            leaveCastle(credential, eventHandler).then((scope, mode) => {
                 const plan = new map.MovePlan();
                 plan.credential = credential;
                 plan.source = role.coordinate;
@@ -257,7 +257,7 @@ class CastlePostHouse {
                 plan.mode = mode;
 
                 map.executeMovePlan(plan, eventHandler).then(() => {
-                    move.enterTown(credential, town.id, eventHandler).then(() => {
+                    enterTown(credential, town.id, eventHandler).then(() => {
                         page.publishMessageBoard(role.name + "已经成功到达" + town.name);
                         finance.depositIntoTownBank(credential, undefined).then(() => {
                             page.publishMessageBoard(role.name + "将全部现金存入银行");
