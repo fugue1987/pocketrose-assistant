@@ -3,6 +3,7 @@
  * [ 地 图 移 动 相 关 功 能 模 块 ]
  * ----------------------------------------------------------------------------
  * 移动事件定义
+ * LEAVE_CASTLE
  * LEAVE_TOWN
  * MOVE_STYLE
  * ============================================================================
@@ -78,4 +79,41 @@ export async function leaveTown(credential, moveEvent) {
         });
     };
     return await doLeaveTown(credential, moveEvent);
+}
+
+/**
+ * 离开当前所在城堡
+ * @param credential 用户凭证
+ * @param moveEvent 移动事件
+ * @returns {Promise<MoveStyle>}
+ */
+export async function leaveCastle(credential, moveEvent) {
+    const doLeaveCastle = (credential, moveEvent) => {
+        return new Promise((resolve) => {
+            const request = credential.asRequest();
+            request["navi"] = "on";
+            request["out"] = "1";
+            request["mode"] = "MAP_MOVE";
+            sendPostRequest("map.cgi", request, function (html) {
+                moveEvent.publish("LEAVE_CASTLE");
+
+                const scope = $(html).find("select[name='chara_m']")
+                    .find("option:last").attr("value");
+                let mode = "ROOK";
+                $(html).find("input:submit").each(function (_idx, input) {
+                    const v = $(input).attr("value");
+                    const d = $(input).attr("disabled");
+                    if (v === "↖" && d === undefined) {
+                        mode = "QUEEN";
+                    }
+                });
+
+                const style = new MoveStyle(scope, mode);
+                moveEvent.publish("MOVE_STYLE", {"move_style": style});
+
+                resolve(style);
+            });
+        });
+    };
+    return await doLeaveCastle(credential, moveEvent);
 }
