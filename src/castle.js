@@ -248,13 +248,13 @@ class CastlePostHouse {
 
             const eventHandler = createEventHandler(role);
 
-            move.leaveCastle(credential, eventHandler).then(style => {
+            move.leaveCastle(credential, eventHandler).then((scope, mode) => {
                 const plan = new map.MovePlan();
                 plan.credential = credential;
                 plan.source = role.coordinate;
                 plan.destination = town.coordinate;
-                plan.scope = style.scope;
-                plan.mode = style.mode;
+                plan.scope = scope;
+                plan.mode = mode;
 
                 map.executeMovePlan(plan, eventHandler).then(() => {
                     move.enterTown(credential, town.id, eventHandler).then(() => {

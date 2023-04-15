@@ -7,31 +7,11 @@ import * as network from "./network";
 import {sendPostRequest} from "./network";
 import {latencyExecute} from "./util";
 
-export class MoveStyle {
-
-    #scope;
-    #mode;
-
-    constructor(scope, mode) {
-        this.#scope = scope;
-        this.#mode = mode;
-    }
-
-
-    get scope() {
-        return this.#scope;
-    }
-
-    get mode() {
-        return this.#mode;
-    }
-}
-
 /**
  * 离开当前所在城市的行动
  * @param credential 用户凭证
  * @param eventHandler 事件处理器
- * @returns {Promise<MoveStyle>}
+ * @returns {Promise<string, string>}
  */
 export async function leaveTown(credential, eventHandler) {
     const doLeaveTown = (credential, eventHandler) => {
@@ -56,12 +36,10 @@ export async function leaveTown(credential, eventHandler) {
                     }
                 });
 
-                const style = new MoveStyle(scope, mode);
                 if (eventHandler !== undefined) {
                     eventHandler("EVENT_CHECK_MOVE_STYLE", {"scope": scope, "mode": mode});
                 }
-
-                resolve(style);
+                resolve(scope, mode);
             });
         });
     };
@@ -72,7 +50,7 @@ export async function leaveTown(credential, eventHandler) {
  * 离开当前所在城堡
  * @param credential 用户凭证
  * @param eventHandler 事件处理器
- * @returns {Promise<MoveStyle>}
+ * @returns {Promise<string, string>}
  */
 export async function leaveCastle(credential, eventHandler) {
     const doLeaveCastle = (credential, eventHandler) => {
@@ -97,12 +75,10 @@ export async function leaveCastle(credential, eventHandler) {
                     }
                 });
 
-                const style = new MoveStyle(scope, mode);
                 if (eventHandler !== undefined) {
                     eventHandler("EVENT_CHECK_MOVE_STYLE", {"scope": scope, "mode": mode});
                 }
-
-                resolve(style);
+                resolve(scope, mode);
             });
         });
     };
