@@ -1867,9 +1867,6 @@ function postProcessPersonalStatusRelatedFunctionalities(htmlText) {
         // 复用个人接收的信作为Cookie管理的页面
         __personalStatus_cookieManagement(htmlText);
     }
-    // if (htmlText.indexOf("仙人的宝物") != -1) {
-    //     __personalStatus_view(htmlText);
-    // }
     if (htmlText.indexOf("领取了") !== -1) {
         __personalStatus_salary(htmlText);
     }
@@ -2462,24 +2459,6 @@ function __doGenerateOwnEquipmentSelectOptions(id, ownWeapons, ownArmors, ownAcc
         $(".set" + idx + "_armor_class[value='" + set[2] + "']").prop("selected", true);
         $(".set" + idx + "_accessory_star_class[value='" + set[5] + "']").prop("selected", true);
         $(".set" + idx + "_accessory_class[value='" + set[4] + "']").prop("selected", true);
-    }
-}
-
-// 个人状态 -> 状态查看
-function __personalStatus_view(htmlText) {
-    $('input[value="返回城市"]').attr('tabIndex', 1);
-    var honor;
-    $("td:parent").each(function (_i, e) {
-        var t = $(e).html();
-        if (t.indexOf("荣誉：") != -1) {
-            honor = $(e);
-        }
-    });
-    if (honor != undefined) {
-        var honorHtml = honor.html();
-        var noBR = honorHtml.replace(/<br>/g, '');
-        honor.attr('style', 'word-break:break-all');
-        honor.html(noBR);
     }
 }
 
