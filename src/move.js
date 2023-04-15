@@ -10,7 +10,7 @@
  */
 import {sendPostRequest} from "./network";
 
-export class MoveEvent {
+export class MoveEventListener {
 
     #listener;
 
@@ -47,10 +47,10 @@ export class MoveStyle {
 /**
  * 离开当前所在城市的行动
  * @param credential 用户凭证
- * @param moveEvent 移动事件
+ * @param eventListener 移动事件
  * @returns {Promise<MoveStyle>}
  */
-export async function leaveTown(credential, moveEvent) {
+export async function leaveTown(credential, eventListener) {
     const doLeaveTown = (credential, moveEvent) => {
         return new Promise((resolve) => {
             const request = credential.asRequest();
@@ -78,16 +78,16 @@ export async function leaveTown(credential, moveEvent) {
             });
         });
     };
-    return await doLeaveTown(credential, moveEvent);
+    return await doLeaveTown(credential, eventListener);
 }
 
 /**
  * 离开当前所在城堡
  * @param credential 用户凭证
- * @param moveEvent 移动事件
+ * @param eventListener 移动事件
  * @returns {Promise<MoveStyle>}
  */
-export async function leaveCastle(credential, moveEvent) {
+export async function leaveCastle(credential, eventListener) {
     const doLeaveCastle = (credential, moveEvent) => {
         return new Promise((resolve) => {
             const request = credential.asRequest();
@@ -115,5 +115,5 @@ export async function leaveCastle(credential, moveEvent) {
             });
         });
     };
-    return await doLeaveCastle(credential, moveEvent);
+    return await doLeaveCastle(credential, eventListener);
 }
