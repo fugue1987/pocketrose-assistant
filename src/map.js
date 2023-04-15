@@ -7,8 +7,9 @@
 import * as network from "./network";
 import * as page from "./page";
 import * as geo from "./geo";
-import {isSameCoordinate} from "./geo";
+import {calculatePath} from "./geo";
 import * as util from "./util";
+import * as event from "./event";
 
 export class Journey {
 
@@ -46,8 +47,15 @@ export class Journey {
         this._mode = value;
     }
 
-    start(callback) {
-        const pathList = this.#calculatePath();
+    start(callback, eventHandler) {
+        const pathList = calculatePath(this._source,
+            this._destination,
+            this._scope,
+            this._mode,
+            eventHandler);
+        if (eventHandler !== undefined) {
+            eventHandler(event.EVENT_CALCULATE_MOVE_PATH, {"pathList": pathList});
+        }
         this.#moveOnPath(pathList, 0, callback);
     }
 
@@ -83,39 +91,5 @@ export class Journey {
             });
         }
     }
-
-    #calculatePath() {
-        const pathList = [];
-        if (isSameCoordinate(this._source, this._destination)) {
-            pathList.push(this._source);
-            return pathList;
-        }
-        const milestone = geo.calculateMilestone(this._source, this._destination, this._mode);
-        if (milestone !== undefined) {
-            const p1 = geo.calculateMilestonePath(this._source, milestone, this._scope);
-            const p2 = geo.calculateMilestonePath(milestone, this._destination, this._scope);
-            pathList.push(...p1);
-            pathList.push(...p2);
-            pathList.push(this._destination);
-        } else {
-            const p = geo.calculateMilestonePath(this._source, this._destination, this._scope);
-            pathList.push(...p);
-            pathList.push(this._destination);
-        }
-
-        page.publishMessageBoard("旅途路径已经计算完毕，总共需要次移动" + (pathList.length - 1) + "步");
-        let msg = "旅途路径规划：";
-        for (let i = 0; i < pathList.length; i++) {
-            let node = pathList[i];
-            msg += node.longText();
-            if (i !== pathList.length - 1) {
-                msg += "=>";
-            }
-        }
-        page.publishMessageBoard(msg);
-
-        return pathList;
-    }
-
 
 }

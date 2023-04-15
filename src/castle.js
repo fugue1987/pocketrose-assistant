@@ -268,7 +268,7 @@ class CastlePostHouse {
                             $("input:submit[value='返回城堡']").attr("value", town.name + "欢迎您");
                         });
                     });
-                });
+                }, eventHandler);
             });
         });
     }
