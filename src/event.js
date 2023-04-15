@@ -11,8 +11,10 @@ import * as page from "./page";
 
 export const EVENT_CALCULATE_MOVE_PATH = "EVENT_CALCULATE_MOVE_PATH";
 export const EVENT_CHECK_MOVE_STYLE = "EVENT_CHECK_MOVE_STYLE";
+export const EVENT_DEPOSIT_AT_TOWN = "EVENT_DEPOSIT_AT_TOWN";
 export const EVENT_ENTER_CASTLE = "EVENT_ENTER_CASTLE";
 export const EVENT_ENTER_CASTLE_ENTRY = "EVENT_ENTER_CASTLE_ENTRY";
+export const EVENT_ENTER_TOWN = "EVENT_ENTER_TOWN";
 export const EVENT_ENTER_TOWN_AWAIT = "EVENT_ENTER_TOWN_AWAIT";
 export const EVENT_ENTER_TOWN_GUARD = "EVENT_ENTER_TOWN_GUARD";
 export const EVENT_ENTER_TOWN_GUARD_PASS = "EVENT_ENTER_TOWN_GUARD_PASS";
@@ -21,6 +23,8 @@ export const EVENT_LEAVE_TOWN = "EVENT_LEAVE_TOWN";
 export const EVENT_MOVE = "EVENT_MOVE";
 export const EVENT_MOVE_AWAIT = "EVENT_MOVE_AWAIT";
 export const EVENT_TARGET_CASTLE = "EVENT_TARGET_CASTLE";
+export const EVENT_TARGET_TOWN = "EVENT_TARGET_TOWN";
+export const EVENT_WITHDRAW_FROM_TOWN = "EVENT_WITHDRAW_FROM_TOWN";
 
 export function createEventHandler(role) {
     return function (id, data) {
@@ -45,12 +49,21 @@ export function createEventHandler(role) {
             page.publishMessageBoard(role.name + "确定移动范围" + scope);
             page.publishMessageBoard(role.name + "确定移动模式" + mode);
         }
+        if (id === EVENT_DEPOSIT_AT_TOWN) {
+            page.publishMessageBoard(role.name + "把身上全部现金存入了银行");
+        }
         if (id === EVENT_ENTER_CASTLE) {
             const castleName = data["castleName"];
             page.publishMessageBoard(role.name + "进入了城堡'" + castleName + "'");
         }
         if (id === EVENT_ENTER_CASTLE_ENTRY) {
             page.publishMessageBoard(role.name + "进入城堡入口");
+        }
+        if (id === EVENT_ENTER_TOWN) {
+            const townName = data["townName"];
+            if (townName !== undefined) {
+                page.publishMessageBoard(role.name + "进入了<b style='color:darkorange'>" + townName + "</b>");
+            }
         }
         if (id === EVENT_ENTER_TOWN_AWAIT) {
             page.publishMessageBoard(role.name + "等待进城冷却中......(约55秒)");
@@ -104,6 +117,18 @@ export function createEventHandler(role) {
             page.publishMessageBoard(message);
             if (castleCoordinate !== undefined) {
                 page.publishMessageBoard("坐标位于" + castleCoordinate.longText());
+            }
+        }
+        if (id === EVENT_TARGET_TOWN) {
+            const townName = data["townName"];
+            if (townName !== undefined) {
+                page.publishMessageBoard(role.name + "准备移动到<b style='color:darkorange'>" + townName + "</b>");
+            }
+        }
+        if (id === EVENT_WITHDRAW_FROM_TOWN) {
+            const amount = data["amount"];
+            if (amount !== undefined && amount > 0) {
+                page.publishMessageBoard(role.name + "从银行提取了" + amount + "万现金");
             }
         }
     };

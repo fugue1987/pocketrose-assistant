@@ -115,13 +115,77 @@ class TownInnPostHouse {
     }
 
     #processMoveToTown() {
+        $("#moveToTown").click(function () {
+            const destinationTownId = $("input:radio[name='townId']:checked").val();
+            if (destinationTownId === undefined) {
+                alert("你敢告诉我你到底要去哪里么？");
+            } else {
+                $("#restButton").prop("disabled", true);
+                $("#restButton").attr("style", "display:none");
+                $("#returnButton").prop("disabled", true);
+                $("#returnButton").attr("style", "display:none");
+                $("#moveToTown").prop("disabled", true);
+                $("#moveToCastle").prop("disabled", true);
+                $(".townClass").prop("disabled", true);
 
+                page.initializeMessageBoard("我们将实时为你播报旅途的动态：<br>");
+                const townId = $("#townId").text();
+                const town = pocket.getTown(townId)
+                const source = town.coordinate;
+
+                const destinationTown = pocket.getTown(destinationTownId);
+                const destination = destinationTown.coordinate;
+
+                const role = new user.Role();
+                role.name = $("#player").text();
+                role.townName = town.name;
+                role.coordinate = town.coordinate;
+                const eventHandler = event.createEventHandler(role);
+                eventHandler(event.EVENT_TARGET_TOWN, {"townName": destinationTown.name});
+
+                const credential = page.generateCredential();
+                let cash = 0;
+                $("td:parent").each(function (_idx, td) {
+                    const text = $(td).text();
+                    if (text === "所持金") {
+                        const cashText = $(td).next().text();
+                        cash = parseInt(util.substringBefore(cashText, " GOLD"));
+                        $(td).next().attr("id", "cash");
+                    }
+                });
+                const amount = bank.calculateCashDifferenceAmount(cash, 100000);
+                bank.withdrawFromTownBank(credential, amount).then(() => {
+                    eventHandler(event.EVENT_WITHDRAW_FROM_TOWN, {"amount": amount});
+                    map.leaveTown(credential, eventHandler).then((scope, mode) => {
+                        const plan = new map.MovePlan();
+                        plan.credential = credential;
+                        plan.source = source;
+                        plan.destination = destination;
+                        plan.scope = scope;
+                        plan.mode = mode;
+                        map.executeMovePlan(plan, eventHandler).then(() => {
+                            map.enterTown(credential, destinationTownId, eventHandler).then(() => {
+                                eventHandler(event.EVENT_ENTER_TOWN, {"townName": destinationTown.name});
+                                bank.depositIntoTownBank(credential, undefined).then(() => {
+                                    eventHandler(event.EVENT_DEPOSIT_AT_TOWN, {});
+                                    $("#returnButton").attr("value", destinationTown.name + "欢迎您的到来");
+                                    $("#returnButton").removeAttr("style");
+                                    $("#returnButton").prop("disabled", false);
+                                });
+                            });
+                        });
+                    });
+                });
+            }
+        });
     }
 
     #processMoveToCastle() {
         $("#moveToCastle").click(function () {
             $("#restButton").prop("disabled", true);
+            $("#restButton").attr("style", "display:none");
             $("#returnButton").prop("disabled", true);
+            $("#returnButton").attr("style", "display:none");
             $("#moveToTown").prop("disabled", true);
             $("#moveToCastle").prop("disabled", true);
             $(".townClass").prop("disabled", true);
@@ -161,6 +225,7 @@ class TownInnPostHouse {
                         $("form[action='status.cgi']").attr("action", "castlestatus.cgi");
                         $("input:hidden[value='STATUS']").attr("value", "CASTLESTATUS");
                         $("#returnButton").attr("value", castleName + "欢迎您的到来");
+                        $("#returnButton").removeAttr("style");
                         $("#returnButton").prop("disabled", false);
                     });
                 });
