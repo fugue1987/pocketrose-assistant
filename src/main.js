@@ -55,9 +55,11 @@ import {
     __cookie_getRepairItemThreshold,
     __cookie_getReturnButtonText
 } from "./option";
+import {TownRequestInterceptor} from "./town";
 
 const CGI_MAPPING = {
     "/battle.cgi": new battle.BattleRequestInterceptor(),
+    "/town.cgi": new TownRequestInterceptor(),
     "/castlestatus.cgi": new castle.CastleRequestInterceptor(),
     "/castle.cgi": new castle.CastleRequestInterceptor()
 };
