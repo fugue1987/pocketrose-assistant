@@ -38,7 +38,7 @@ export function createEventHandler(role) {
                 page.publishMessageBoard(msg);
             }
         }
-        if (id === "EVENT_CHECK_MOVE_STYLE") {
+        if (id === EVENT_CHECK_MOVE_STYLE) {
             const scope = data["scope"];
             const mode = data["mode"];
             page.publishMessageBoard(role.name + "确定移动范围" + scope);
@@ -51,16 +51,16 @@ export function createEventHandler(role) {
         if (id === EVENT_ENTER_CASTLE_ENTRY) {
             page.publishMessageBoard(role.name + "进入城堡入口");
         }
-        if (id === "EVENT_ENTER_TOWN_AWAIT") {
+        if (id === EVENT_ENTER_TOWN_AWAIT) {
             page.publishMessageBoard(role.name + "等待进城冷却中......(约55秒)");
         }
-        if (id === "EVENT_ENTER_TOWN_GUARD") {
+        if (id === EVENT_ENTER_TOWN_GUARD) {
             page.publishMessageBoard(role.name + "与门卫交涉中......");
         }
-        if (id === "EVENT_ENTER_TOWN_GUARD_PASS") {
+        if (id === EVENT_ENTER_TOWN_GUARD_PASS) {
             page.publishMessageBoard("门卫通情达理的收取了入城费用放" + role.name + "入城");
         }
-        if (id === "EVENT_LEAVE_CASTLE") {
+        if (id === EVENT_LEAVE_CASTLE) {
             page.publishMessageBoard(role.name + "已经离开城堡'" + role.castleName + "'");
             page.publishMessageBoard(role.name + "当前所在坐标" + role.coordinate.longText());
         }

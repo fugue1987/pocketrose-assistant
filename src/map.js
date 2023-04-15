@@ -150,7 +150,7 @@ export async function leaveTown(credential, eventHandler) {
             request["mode"] = "MAP_MOVE";
             sendPostRequest("map.cgi", request, function (html) {
                 if (eventHandler !== undefined) {
-                    eventHandler("EVENT_LEAVE_TOWN");
+                    eventHandler(event.EVENT_LEAVE_TOWN);
                 }
 
                 const scope = $(html).find("select[name='chara_m']")
@@ -165,7 +165,7 @@ export async function leaveTown(credential, eventHandler) {
                 });
 
                 if (eventHandler !== undefined) {
-                    eventHandler("EVENT_CHECK_MOVE_STYLE", {"scope": scope, "mode": mode});
+                    eventHandler(event.EVENT_CHECK_MOVE_STYLE, {"scope": scope, "mode": mode});
                 }
                 resolve(scope, mode);
             });
@@ -189,7 +189,7 @@ export async function leaveCastle(credential, eventHandler) {
             request["mode"] = "MAP_MOVE";
             sendPostRequest("map.cgi", request, function (html) {
                 if (eventHandler !== undefined) {
-                    eventHandler("EVENT_LEAVE_CASTLE");
+                    eventHandler(event.EVENT_LEAVE_CASTLE);
                 }
 
                 const scope = $(html).find("select[name='chara_m']")
@@ -204,7 +204,7 @@ export async function leaveCastle(credential, eventHandler) {
                 });
 
                 if (eventHandler !== undefined) {
-                    eventHandler("EVENT_CHECK_MOVE_STYLE", {"scope": scope, "mode": mode});
+                    eventHandler(event.EVENT_CHECK_MOVE_STYLE, {"scope": scope, "mode": mode});
                 }
                 resolve(scope, mode);
             });
@@ -224,7 +224,7 @@ export async function enterTown(credential, townId, eventHandler) {
     const doEnterTown = (credential, townId, eventHandler) => {
         return new Promise((resolve) => {
             if (eventHandler !== undefined) {
-                eventHandler("EVENT_ENTER_TOWN_AWAIT");
+                eventHandler(event.EVENT_ENTER_TOWN_AWAIT);
             }
             latencyExecute(55000, function () {
                 const request = credential.asRequest();
@@ -233,7 +233,7 @@ export async function enterTown(credential, townId, eventHandler) {
                 sendPostRequest("status.cgi", request, function (html) {
                     if ($(html).text().includes("战胜门卫。")) {
                         if (eventHandler !== undefined) {
-                            eventHandler("EVENT_ENTER_TOWN_GUARD");
+                            eventHandler(event.EVENT_ENTER_TOWN_GUARD);
                         }
                         const request = credential.asRequest();
                         request["townid"] = townId;
@@ -241,7 +241,7 @@ export async function enterTown(credential, townId, eventHandler) {
                         request["mode"] = "MOVE";
                         network.sendPostRequest("status.cgi", request, function () {
                             if (eventHandler !== undefined) {
-                                eventHandler("EVENT_ENTER_TOWN_GUARD_PASS");
+                                eventHandler(event.EVENT_ENTER_TOWN_GUARD_PASS);
                             }
                             resolve();
                         });
