@@ -6,6 +6,7 @@
 
 import {loadNPC} from "./npc";
 import {Credential} from "./util";
+import * as pocket from "./pocket";
 
 export class NPC {
 
@@ -75,4 +76,47 @@ export function generateCredential() {
     let id = $("input:hidden[name='id']:first").attr("value");
     let pass = $("input:hidden[name='pass']:first").attr("value");
     return new Credential(id, pass);
+}
+
+export function generateTownSelectionTable() {
+    let html = "";
+    html += "<table border='1'><tbody>";
+    html += "<thead><tr>" +
+        "<td style='color: white'>选择</td>" +
+        "<td style='color: white'>目的地</td>" +
+        "<td colspan='2' style='color: white'>坐标</td>" +
+        "<td style='color: white'>选择</td>" +
+        "<td style='color: white'>目的地</td>" +
+        "<td colspan='2' style='color: white'>坐标</td>" +
+        "<td style='color: white'>选择</td>" +
+        "<td style='color: white'>目的地</td>" +
+        "<td colspan='2' style='color: white'>坐标</td>" +
+        "<td style='color: white'>选择</td>" +
+        "<td style='color: white'>目的地</td>" +
+        "<td colspan='2' style='color: white'>坐标</td>" +
+        "</tr></thead>";
+
+    const townList = pocket.getTownsAsList();
+    for (let i = 0; i < 7; i++) {
+        const row = [];
+        row.push(townList[i * 4]);
+        row.push(townList[i * 4 + 1]);
+        row.push(townList[i * 4 + 2]);
+        row.push(townList[i * 4 + 3]);
+
+        html += "<tr>";
+        for (let j = 0; j < row.length; j++) {
+            const town = row[j];
+            html += "<td><input type='radio' class='townClass' name='townId' value='" + town.id + "'></td>";
+            html += "<td style='color: white'>" + town.name + "</td>";
+            html += "<td style='color: white'>" + town.coordinate.x + "</td>";
+            html += "<td style='color: white'>" + town.coordinate.y + "</td>";
+        }
+        html += "</tr>";
+    }
+
+    html += "</tbody></table>";
+    html += "<br>";
+
+    return html;
 }

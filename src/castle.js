@@ -209,7 +209,7 @@ class CastlePostHouse {
         npc.welcome("轮到我啦，上镜+RP，+RP，+RP，重要的事情喊三遍！<br>");
         npc.message("快看看你想去哪里？<br>");
         npc.message("<input type='button' id='returnTown' style='color: blue' value='选好后立刻出发'><br>");
-        npc.message(generateTownSelectionTable());
+        npc.message(page.generateTownSelectionTable());
 
         const postHouse = this;
         $("#returnTown").click(function () {
@@ -282,47 +282,4 @@ class ConfirmationEliminator {
     returnToCastle() {
         $("input:submit[value='返回城堡']").trigger("click");
     }
-}
-
-function generateTownSelectionTable() {
-    let html = "";
-    html += "<table border='1'><tbody>";
-    html += "<thead><tr>" +
-        "<td style='color: white'>选择</td>" +
-        "<td style='color: white'>目的地</td>" +
-        "<td colspan='2' style='color: white'>坐标</td>" +
-        "<td style='color: white'>选择</td>" +
-        "<td style='color: white'>目的地</td>" +
-        "<td colspan='2' style='color: white'>坐标</td>" +
-        "<td style='color: white'>选择</td>" +
-        "<td style='color: white'>目的地</td>" +
-        "<td colspan='2' style='color: white'>坐标</td>" +
-        "<td style='color: white'>选择</td>" +
-        "<td style='color: white'>目的地</td>" +
-        "<td colspan='2' style='color: white'>坐标</td>" +
-        "</tr></thead>";
-
-    const townList = pocket.getTownsAsList();
-    for (let i = 0; i < 7; i++) {
-        const row = [];
-        row.push(townList[i * 4]);
-        row.push(townList[i * 4 + 1]);
-        row.push(townList[i * 4 + 2]);
-        row.push(townList[i * 4 + 3]);
-
-        html += "<tr>";
-        for (let j = 0; j < row.length; j++) {
-            const town = row[j];
-            html += "<td><input type='radio' class='townClass' name='townId' value='" + town.id + "'></td>";
-            html += "<td style='color: white'>" + town.name + "</td>";
-            html += "<td style='color: white'>" + town.coordinate.x + "</td>";
-            html += "<td style='color: white'>" + town.coordinate.y + "</td>";
-        }
-        html += "</tr>";
-    }
-
-    html += "</tbody></table>";
-    html += "<br>";
-
-    return html;
 }

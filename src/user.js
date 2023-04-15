@@ -201,6 +201,11 @@ export class Role {
     }
 }
 
+/**
+ * Load role information by specified credential.
+ * @param credential User credential.
+ * @returns {Promise<Role>}
+ */
 export async function loadRole(credential) {
     const doParseRole = (html) => {
         const role = new Role();

@@ -7,6 +7,8 @@
 import * as bank from "./bank";
 import * as dashboard from "./dashboard";
 import * as page from "./page";
+import * as pocket from "./pocket";
+import * as user from "./user";
 import * as util from "./util";
 
 /**
@@ -22,11 +24,75 @@ export class TownRequestInterceptor {
         if (text.includes("城市支配率")) {
             // 战斗后返回城市主页面是town.cgi
             new dashboard.TownDashboardProcessor().process();
+        } else if (text.includes("* 宿 屋 *")) {
+            new TownInnPostHouse().process();
         } else if (text.includes("* 运 送 屋 *")) {
             new TownItemExpress().process();
         }
     }
 }
+
+/**
+ * 客栈+驿站
+ */
+class TownInnPostHouse {
+
+    constructor() {
+    }
+
+    process() {
+        this.#renderHTML();
+
+        const credential = page.generateCredential();
+        user.loadRole(credential).then(role => {
+            const town = pocket.findTownByName(role.townName);
+            $(".townClass[value='" + town.id + "']").prop("disabled", true);
+            $("#townId").text(town.id);
+        });
+    }
+
+    #renderHTML() {
+        $("input:submit[value='返回城市']").attr("id", "returnButton");
+
+        $("td:parent").each(function (_idx, td) {
+            const text = $(td).text();
+            if (text.includes("* 宿 屋 *")) {
+                let html = $(td).html();
+                html = html.replace("* 宿 屋 *", "* 宿 屋 & 驿 站 *");
+                $(td).html(html);
+            }
+            if (text === "所持金") {
+                let html = $(td).parent().parent().html();
+                html += "<tr>" +
+                    "<td style='background-color:#E0D0B0'>计时器</td>" +
+                    "<td style='background-color:#E0D0B0;text-align:right;color:red' colspan=3 id='count_up_timer'>-</td>" +
+                    "</tr>";
+                $(td).parent().parent().html(html);
+            }
+            if (text.includes("每天的战斗让你疲倦了吧? 来休息一下吧")) {
+                $(td).attr("id", "messageBoard");
+                $(td).attr("style", "color: white");
+            }
+        });
+
+        const npc = page.createFooterNPC("夜九年");
+
+        npc.welcome("驿站试运营中，先把丑话说在前面。<br>");
+        npc.message("你选择我们家驿站服务，我们家免费带你飞。开始旅途后切勿关闭当前页面，这样我们才可以一起浪。<br>" +
+            "如果你关闭当前页面则意味着你方毁约，你会处于什么样的位置和状态我们家不会负责。开始旅途后<br>" +
+            "请耐心等待，到达目的地后欢迎按钮会自动亮起，点击即可进城。<br>");
+        npc.message("<input type='button' id='moveToTown' style='color: blue' value='开始旅途'>");
+        npc.message("<input type='button' id='moveToCastle' style='color: red' value='回到城堡'>");
+        npc.message("<div id='townId' style='display: none'></div>");
+        npc.message("<div id='castleInformation' style='display: none'></div>");
+        npc.message("<br>");
+        npc.message(page.generateTownSelectionTable());
+
+        $("#moveToTown").prop("disabled", true);
+        $("#moveToCastle").prop("disabled", true);
+    }
+}
+
 
 /**
  * 城市中的运送屋

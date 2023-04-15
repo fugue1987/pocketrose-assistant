@@ -526,7 +526,7 @@ function __common_item_selectAllStorableItems(parentElement) {
 // ============================================================================
 function postProcessCityRelatedFunctionalities(htmlText) {
     if (htmlText.indexOf("* 宿 屋 *") !== -1) {
-        __town_inn(htmlText);
+        //__town_inn(htmlText);
     }
     if (htmlText.indexOf("* 宠物图鉴 *") !== -1) {
         // 宠物图鉴
