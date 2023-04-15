@@ -532,9 +532,6 @@ function postProcessCityRelatedFunctionalities(htmlText) {
         // 宠物图鉴
         __town_petMap(htmlText);
     }
-    if (htmlText.indexOf("* 运 送 屋 *") !== -1) {
-        __town_houseForSendingItems(htmlText);
-    }
     if (htmlText.indexOf("* 宠 物 赠 送 屋 *") !== -1) {
         __town_houseForSendingPets(htmlText);
     }
@@ -1106,45 +1103,6 @@ function __town_petMap(htmlText) {
             $("input[name='mode']").attr("value", "PETBORN");
             $("form[action='status.cgi']").attr("action", "mydata.cgi");
             $("input[value='返回城市']").trigger("click");
-        });
-    }
-}
-
-/**
- * 城市送物屋增强实现。
- * @param htmlText HTML文本
- * @private
- */
-function __town_houseForSendingItems(htmlText) {
-    __page_constructNpcMessageTable("末末");
-    __page_writeNpcMessage("我来啦！");
-
-    $("input[value='发送']").attr("id", "sendItemSubmit");
-
-    // 读取当前身上的Gold数量
-    let gold = 0;
-    $("td:parent").each(function (_idx, td) {
-        if ($(td).text() == "所持金") {
-            let goldText = $(td).next().text();
-            let spaceIdx = goldText.indexOf(" ");
-            gold = goldText.substring(0, spaceIdx);
-        }
-    });
-    if (gold >= 100000) {
-        __page_writeNpcMessage("让我看看你都偷偷给人送些啥。");
-    } else {
-        let delta = Math.ceil((100000 - gold) / 10000);
-        let message = "看起来你身上的钱还差" + delta + "万呀，我可以帮你" +
-            "<a href='javascript:void(0)' id='safeSendItem'><b>取钱发送</b></a>" +
-            "。我办事，你放心！";
-        __page_writeNpcMessage(message);
-
-        let id = __page_readIdFromCurrentPage();
-        let pass = __page_readPassFromCurrentPage();
-        $("#safeSendItem").click(function () {
-            __ajax_withdrawGolds(id, pass, delta, function (data) {
-                $("#sendItemSubmit").trigger("click");
-            });
         });
     }
 }
