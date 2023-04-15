@@ -38,7 +38,6 @@ import {
 import * as pokemon from "./pokemon";
 import * as util from "./util";
 import * as finance from "./bank";
-import {generateCredential} from "./credential";
 import {
     __cookie_getDepositBattleNumber,
     __cookie_getDepositButtonText,
@@ -57,6 +56,7 @@ import {
 } from "./option";
 import {TownRequestInterceptor} from "./town";
 import {StatusRequestInterceptor} from "./status";
+import {generateCredential} from "./page";
 
 const CGI_MAPPING = {
     "/battle.cgi": new battle.BattleRequestInterceptor(),
@@ -1867,9 +1867,6 @@ function postProcessPersonalStatusRelatedFunctionalities(htmlText) {
         // 复用个人接收的信作为Cookie管理的页面
         __personalStatus_cookieManagement(htmlText);
     }
-    if (htmlText.indexOf("领取了") !== -1) {
-        __personalStatus_salary(htmlText);
-    }
     if (htmlText.indexOf("物品使用．装备") != -1) {
         __personalStatus_equipment(htmlText);
     }
@@ -2460,25 +2457,6 @@ function __doGenerateOwnEquipmentSelectOptions(id, ownWeapons, ownArmors, ownAcc
         $(".set" + idx + "_accessory_star_class[value='" + set[5] + "']").prop("selected", true);
         $(".set" + idx + "_accessory_class[value='" + set[4] + "']").prop("selected", true);
     }
-}
-
-/**
- * 领取俸禄后增强，添加存钱返回的功能。
- * @param htmlText HTML
- * @private
- */
-function __personalStatus_salary(htmlText) {
-    __page_constructNpcMessageTable("花子");
-    __page_writeNpcMessage("打、打、打劫。不许笑，我跟这儿打劫呢。IC、IP、IQ卡，通通告诉我密码！");
-    __page_writeNpcMessage("<a href='javascript:void(0)' id='runaway' style='color: yellow'><b>[溜了溜了]</b></a>");
-    const id = __page_readIdFromCurrentPage();
-    const pass = __page_readPassFromCurrentPage();
-    $("#runaway").click(function () {
-        const credential = generateCredential();
-        finance.depositIntoTownBank(credential, undefined).then(() => {
-            $("input:submit[value='返回城市']").trigger("click");
-        });
-    });
 }
 
 // 个人状态 -> 物品使用．装备

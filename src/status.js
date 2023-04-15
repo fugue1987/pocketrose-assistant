@@ -1,3 +1,5 @@
+import * as bank from "./bank";
+import * as page from "./page";
 import * as pocket from "./pocket";
 import * as util from "./util";
 
@@ -7,11 +9,13 @@ export class StatusRequestInterceptor {
     }
 
     process() {
-        const text = $("body").text();
-        // 个人状态查看
+        const text = $("body:first").text();
         if (text.includes("仙人的宝物")) {
+            // 个人状态查看
             new PersonalStatus().process();
-            return;
+        } else if (text.includes("领取了") || text.includes("下次领取俸禄还需要等待")) {
+            // 领取薪水
+            new PersonalSalary().process();
         }
     }
 }
@@ -90,5 +94,37 @@ class PersonalStatus {
                 $(td).html(honorHtml);
             }
         });
+    }
+}
+
+class PersonalSalary {
+    constructor() {
+    }
+
+    process() {
+        this.#renderHTML();
+        if ($("#deposit").length > 0) {
+            $("#deposit").click(function () {
+                const credential = page.generateCredential();
+                bank.depositIntoTownBank(credential, undefined).then(() => {
+                    $("#returnButton").trigger("click");
+                });
+            });
+        }
+    }
+
+    #renderHTML() {
+        $("input:submit[value='返回城市']").attr("id", "returnButton");
+
+        if ($("body:first").text().includes("下次领取俸禄还需要等待")) {
+            $("#ueqtweixin").remove();
+            $("body:first").children(":last-child").append("<div></div>");
+            const npc = page.createFooterNPC("花子");
+            npc.welcome("害我也白跑一趟，晦气！");
+        } else {
+            const npc = page.createFooterNPC("花子");
+            npc.welcome("打、打、打劫。不许笑，我跟这儿打劫呢。IC、IP、IQ卡，通通告诉我密码！");
+            npc.message("<a href='javascript:void(0)' id='deposit' style='color: yellow'><b>[溜了溜了]</b></a>");
+        }
     }
 }
