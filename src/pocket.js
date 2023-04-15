@@ -165,10 +165,20 @@ export function getTownsAsList() {
     return Object.values(TOWNS);
 }
 
+/**
+ * Get town by specified id.
+ * @param townId
+ * @returns {undefined|Town}
+ */
 export function getTown(townId) {
     return TOWNS[townId];
 }
 
+/**
+ * Find town by name.
+ * @param name town name.
+ * @returns {undefined|Town}
+ */
 export function findTownByName(name) {
     const townList = getTownsAsList();
     for (let i = 0; i < townList.length; i++) {

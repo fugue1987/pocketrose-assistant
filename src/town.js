@@ -6,6 +6,9 @@
 
 import * as bank from "./bank";
 import * as dashboard from "./dashboard";
+import * as event from "./event";
+import * as geo from "./geo";
+import * as map from "./map";
 import * as page from "./page";
 import * as pocket from "./pocket";
 import * as user from "./user";
@@ -47,6 +50,7 @@ class TownInnPostHouse {
         user.loadRole(credential).then(role => {
             const town = pocket.findTownByName(role.townName);
             $(".townClass[value='" + town.id + "']").prop("disabled", true);
+            $("#player").text(role.name);
             $("#townId").text(town.id);
             $("#moveToTown").prop("disabled", false);
 
@@ -94,13 +98,13 @@ class TownInnPostHouse {
         });
 
         const npc = page.createFooterNPC("夜九年");
-
         npc.welcome("驿站试运营中，先把丑话说在前面。<br>");
         npc.message("你选择我们家驿站服务，我们家免费带你飞。开始旅途后切勿关闭当前页面，这样我们才可以一起浪。<br>" +
             "如果你关闭当前页面则意味着你方毁约，你会处于什么样的位置和状态我们家不会负责。开始旅途后<br>" +
             "请耐心等待，到达目的地后欢迎按钮会自动亮起，点击即可进城。<br>");
         npc.message("<input type='button' id='moveToTown' style='color: blue' value='开始旅途'>");
         npc.message("<input type='button' id='moveToCastle' style='color: red' value='回到城堡'>");
+        npc.message("<div id='player' style='display: none'></div>");
         npc.message("<div id='townId' style='display: none'></div>");
         npc.message("<div id='castle' style='display: none'></div>");
         npc.message("<br>");
@@ -116,21 +120,47 @@ class TownInnPostHouse {
 
     #processMoveToCastle() {
         $("#moveToCastle").click(function () {
-            alert($("#messageBoard").length);
-            page.initializeMessageBoard("我们将实时为你播报旅途的动态：<br>");
-
             $("#restButton").prop("disabled", true);
             $("#returnButton").prop("disabled", true);
             $("#moveToTown").prop("disabled", true);
             $("#moveToCastle").prop("disabled", true);
             $(".townClass").prop("disabled", true);
 
-            //page.initializeMessageBoard("我们将实时为你播报旅途的动态：<br>");
+            page.initializeMessageBoard("我们将实时为你播报旅途的动态：<br>");
+            const townId = $("#townId").text();
+            const source = pocket.getTown(townId).coordinate;
+
             const castleText = $("#castle").text();
             const location = util.substringBefore(castleText, " ");
             const castleName = util.substringAfter(castleText, " ");
             const x = parseInt(util.substringBefore(location, ","));
             const y = parseInt(util.substringAfter(location, ","));
+            const destination = new geo.Coordinate(x, y);
+
+            const role = new user.Role();
+            role.name = $("#player").text();
+            const eventHandler = event.createEventHandler(role);
+
+            const credential = page.generateCredential();
+            map.leaveTown(credential, eventHandler).then((scope, mode) => {
+                const plan = new map.MovePlan();
+                plan.credential = credential;
+                plan.source = source;
+                plan.destination = destination;
+                plan.scope = scope;
+                plan.mode = mode;
+
+                map.executeMovePlan(plan, eventHandler).then(() => {
+                    map.enterCastle(credential, eventHandler).then(() => {
+                        eventHandler(event.EVENT_ENTER_CASTLE, {"castleName": castleName});
+
+                        $("form[action='status.cgi']").attr("action", "castlestatus.cgi");
+                        $("input:hidden[value='STATUS']").attr("value", "CASTLESTATUS");
+                        $("#returnButton").attr("value", castleName + "欢迎您的到来");
+                        $("#returnButton").prop("disabled", false);
+                    });
+                });
+            });
         });
     }
 }

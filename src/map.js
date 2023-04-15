@@ -254,3 +254,19 @@ export async function enterTown(credential, townId, eventHandler) {
     };
     await doEnterTown(credential, townId, eventHandler);
 }
+
+export async function enterCastle(credential, eventHandler) {
+    const doEnterCastle = (credential, eventHandler) => {
+        return new Promise((resolve) => {
+            const request = credential.asRequest();
+            request["mode"] = "CASTLE_ENTRY";
+            network.sendPostRequest("map.cgi", request, function () {
+                if (eventHandler !== undefined) {
+                    eventHandler(event.EVENT_ENTER_CASTLE_ENTRY);
+                }
+                resolve();
+            });
+        });
+    };
+    await doEnterCastle(credential, eventHandler);
+}
