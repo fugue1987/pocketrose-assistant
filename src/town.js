@@ -310,12 +310,23 @@ class TownAdventurerGuild {
 
         const credential = page.generateCredential();
         user.loadRole(credential).then(role => {
+            $("#player").text(role.name);
             const town = pocket.findTownByName(role.townName);
             $("#townId").text(town.id);
             $("#coach_1").prop("disabled", false);
             $("#coach_2").prop("disabled", false);
             $("#coach_3").prop("disabled", false);
         });
+
+        $("#coach_1").click(function () {
+            alert("滚开，也不看看，什么马车都敢随便上！");
+            $("#coach_1").prop("disabled", true);
+        });
+        $("#coach_2").click(function () {
+            alert("下去，你要找的马车在隔壁。");
+            $("#coach_2").prop("disabled", true);
+        });
+        this.#processMoveToWild();
     }
 
     #renderHTML(mapCount) {
@@ -333,8 +344,6 @@ class TownAdventurerGuild {
             }
         });
 
-        let player = "";
-        let cash = 0;
         $("td:parent").each(function (_idx, td) {
             const text = $(td).text();
             if (text === "　　　　＜＜ *  藏宝图以旧换新业务 *＞＞") {
@@ -342,14 +351,16 @@ class TownAdventurerGuild {
                 html = html.replace("藏宝图以旧换新业务", "冒险家公会");
                 $(td).html(html);
             }
-            if (text === "姓名") {
-                player = $(td).parent().next().find("td:first").text();
-            }
-            if (text === "所持金") {
-                const cashText = $(td).next().text();
-                cash = parseInt(cashText.substring(0, cashText.indexOf(" GOLD")));
+        });
+        $("th").each(function (_idx, th) {
+            const text = $(th).text();
+            if (text === "选择") {
+                $(th).parent().parent().parent().attr("id", "mapTable");
             }
         });
+
+        $("input:submit[value='交换']").attr("id", "exchangeButton");
+        $("input:submit[value='返回城市']").attr("id", "returnButton");
 
         const npc = page.createFooterNPC("花子");
         npc.welcome("欢、欢、欢迎光临冒险家公会，等等，你这、这是什么表情？你肯定是认错人了，前几天你领薪水后碰、碰到的绝对" +
@@ -373,10 +384,39 @@ class TownAdventurerGuild {
         npc.message("<input type='button' id='coach_1' style='color: blue' value='车门上鸢尾兰的纹章熠熠生辉'>");
         npc.message("<input type='button' id='coach_2' style='color: red' value='车身上剑与盾透露出铁血的气息'>");
         npc.message("<input type='button' id='coach_3' style='color: black' value='斑驳的车身上隐约可见半拉兔子骷髅的形状'>");
+        npc.message("<div id='player' style='display: none'></div>");
         npc.message("<div id='townId' style='display: none'></div>");
 
         $("#coach_1").prop("disabled", true);
         $("#coach_2").prop("disabled", true);
         $("#coach_3").prop("disabled", true);
+    }
+
+    #processMoveToWild() {
+        $("#coach_3").click(function () {
+            const x = parseInt($("#x").val());
+            const y = parseInt($("#y").val());
+
+            if (x < 0 || y < 0) {
+                alert("你知道怎么选择坐标么？");
+            } else {
+                const townId = $("#townId").text();
+                const town = pocket.getTown(townId);
+                if (x === town.coordinate.x && y === town.coordinate.y) {
+                    alert("有没有一种可能你现在就在这里？坐标(" + x + "," + y + ")");
+                } else {
+                    $("#mapTable").attr("style", "display:none");
+                    $("#x").prop("disabled", true);
+                    $("#y").prop("disabled", true);
+                    $("#exchangeButton").prop("disabled", true);
+                    $("#exchangeButton").attr("style", "display:none");
+                    $("#returnButton").prop("disabled", true);
+                    $("#returnButton").attr("style", "display:none");
+                    $("#coach_1").prop("disabled", true);
+                    $("#coach_2").prop("disabled", true);
+                    $("#coach_3").prop("disabled", true);
+                }
+            }
+        });
     }
 }
