@@ -15,6 +15,8 @@ export const _event_town_withdraw = "_event_town_withdraw";
 
 export const _event_castle_target = "_event_castle_target";
 
+export const _event_move_path = "_event_move_path";
+
 function getEventHandlers() {
     const doGetEventProperty = (data, name, defaultValue) => {
         if (data === undefined) {
@@ -44,15 +46,15 @@ function getEventHandlers() {
             return "城堡";
         }
     };
-    const eventHandlers = {};
-    eventHandlers[_event_town_target] = function (data) {
+    const handlers = {};
+    handlers[_event_town_target] = function (data) {
         const player = doGetEventPlayer(data);
         const town = doGetEventTown(data);
         if (town !== undefined) {
             page.publishMessageBoard(player + "设定移动目标为" + town);
         }
     };
-    eventHandlers[_event_town_deposit] = function (data) {
+    handlers[_event_town_deposit] = function (data) {
         const player = doGetEventPlayer(data);
         const amount = doGetEventProperty(data, "amount");
         if (amount !== undefined && amount > 0) {
@@ -61,19 +63,34 @@ function getEventHandlers() {
             page.publishMessageBoard(player + "在城市银行存入了全部现金");
         }
     };
-    eventHandlers[_event_town_withdraw] = function (data) {
+    handlers[_event_town_withdraw] = function (data) {
         const player = doGetEventPlayer(data);
         const amount = doGetEventProperty(data, "amount");
         if (amount !== undefined && amount > 0) {
             page.publishMessageBoard(player + "从城市银行提取了" + amount + "万现金");
         }
     };
-    eventHandlers[_event_castle_target] = function (data) {
+    handlers[_event_castle_target] = function (data) {
         const player = doGetEventPlayer(data);
         const castle = doGetEventCastle(data);
         page.publishMessageBoard(player + "设定移动目标为" + castle);
     };
-    return eventHandlers;
+    handlers[_event_move_path] = function (data) {
+        const pathList = doGetEventProperty(data, "pathList");
+        if (pathList !== undefined && pathList.length > 1) {
+            page.publishMessageBoard("旅途路径已经计算完毕，总共需要次移动" + (pathList.length - 1) + "步");
+            let msg = "旅途路径规划：";
+            for (let i = 0; i < pathList.length; i++) {
+                let node = pathList[i];
+                msg += node.longText();
+                if (i !== pathList.length - 1) {
+                    msg += "=>";
+                }
+            }
+            page.publishMessageBoard(msg);
+        }
+    };
+    return handlers;
 }
 
 export function publishEvent(id, data) {

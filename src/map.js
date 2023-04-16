@@ -10,6 +10,7 @@ import {sendPostRequest} from "./network";
 import * as util from "./util";
 import {latencyExecute} from "./util";
 import * as page from "./page";
+import * as event from "./event";
 
 /**
  * 用于描述移动计划的数据结构。表述了谁从哪里移动到哪里，怎么样的移动方式。
@@ -80,7 +81,7 @@ export async function executeMovePlan(plan) {
                 plan.scope,
                 plan.mode
             );
-            publishEvent(_event_path, {"pathList": pathList});
+            event.publishEvent(event._event_move_path, {"pathList": pathList});
             moveOnPath(
                 plan.credential,
                 pathList,
@@ -259,7 +260,6 @@ export const _event_move = "_event_move";
 export const _event_move_await = "_event_move_await";
 export const _event_move_mode = "_event_move_mode";
 export const _event_move_scope = "_event_move_scope";
-export const _event_path = "_event_path";
 
 export function publishEvent(id, data) {
     const player = readEventData(data, "player", "你");
@@ -332,21 +332,6 @@ export function publishEvent(id, data) {
     if (id === _event_move_scope) {
         const scope = readEventData(data, "scope");
         page.publishMessageBoard(player + "确定移动范围" + scope);
-    }
-    if (id === _event_path) {
-        const pathList = data["pathList"];
-        if (pathList.length > 1) {
-            page.publishMessageBoard("旅途路径已经计算完毕，总共需要次移动" + (pathList.length - 1) + "步");
-            let msg = "旅途路径规划：";
-            for (let i = 0; i < pathList.length; i++) {
-                let node = pathList[i];
-                msg += node.longText();
-                if (i !== pathList.length - 1) {
-                    msg += "=>";
-                }
-            }
-            page.publishMessageBoard(msg);
-        }
     }
 }
 
