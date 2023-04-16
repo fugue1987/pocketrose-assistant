@@ -246,7 +246,7 @@ export async function enterCastle(credential) {
             const request = credential.asRequest();
             request["mode"] = "CASTLE_ENTRY";
             network.sendPostRequest("map.cgi", request, function () {
-                publishEvent(_event_enter_castle_entry, {});
+                event.publishEvent(event._event_castle_entry);
                 resolve();
             });
         });
@@ -258,8 +258,6 @@ export async function enterCastle(credential) {
 // 移动时相关事件处理功能
 // ============================================================================
 
-export const _event_enter_castle = "_event_enter_castle";
-export const _event_enter_castle_entry = "_event_enter_castle_entry";
 export const _event_enter_town = "_event_enter_town";
 export const _event_enter_town_await = "_event_enter_town_await";
 export const _event_enter_town_guard = "_event_enter_town_guard";
@@ -267,18 +265,6 @@ export const _event_enter_town_guard_pass = "_event_enter_town_guard_pass";
 
 export function publishEvent(id, data) {
     const player = readEventData(data, "player", "你");
-    if (id === _event_enter_castle) {
-        let castle = readEventData(data, "castle");
-        if (castle === undefined) {
-            castle = "所在城堡";
-        } else {
-            castle = "<b style='color:darkorange'>" + castle + "</b>";
-        }
-        page.publishMessageBoard(player + "进入了" + castle);
-    }
-    if (id === _event_enter_castle_entry) {
-        page.publishMessageBoard(player + "来到城堡入口");
-    }
     if (id === _event_enter_town) {
         let town = readEventData(data, "town");
         if (town === undefined) {

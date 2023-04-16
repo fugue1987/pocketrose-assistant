@@ -14,6 +14,8 @@ export const _event_town_target = "_event_town_target";
 export const _event_town_deposit = "_event_town_deposit";
 export const _event_town_withdraw = "_event_town_withdraw";
 
+export const _event_castle_enter = "_event_castle_enter";
+export const _event_castle_entry = "_event_castle_entry";
 export const _event_castle_leave = "_event_castle_leave";
 export const _event_castle_target = "_event_castle_target";
 
@@ -92,6 +94,22 @@ function getEventHandlers() {
     // ------------------------------------------------------------------------
     // CASTLE related event handlers
     // ------------------------------------------------------------------------
+    handlers[_event_castle_enter] = function (data) {
+        const player = doGetEventPlayer(data);
+        let castle = doGetEventCastle(data);
+        if (castle === undefined) {
+            castle = "城堡";
+        }
+        page.publishMessageBoard(player + "进入了" + castle);
+    };
+    handlers[_event_castle_entry] = function (data) {
+        const player = doGetEventPlayer(data);
+        let castle = doGetEventCastle(data);
+        if (castle === undefined) {
+            castle = "城堡";
+        }
+        page.publishMessageBoard(player + "来到" + castle + "入口");
+    };
     handlers[_event_castle_leave] = function (data) {
         const player = doGetEventPlayer(data);
         let castle = doGetEventCastle(data);
