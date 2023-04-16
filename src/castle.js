@@ -149,13 +149,13 @@ class CastlePostHouse {
 
                 message.initializeMessageBoard("开始播报实时动态：<br>");
                 const town = pocket.getTown(townId);
-                page.publishMessageBoard("目的地设定为‘" + town.name + "’");
+                message.publishMessageBoard(message._message_town_target, {"town": town.name});
 
                 const amount = finance.calculateCashDifferenceAmount(cash, 100000);
                 if (amount > 0) {
                     const credential = generateCredential();
                     finance.withdrawFromCastleBank(credential, amount).then(() => {
-                        page.publishMessageBoard("从城堡提款机支取了" + amount + "万现金");
+                        message.publishMessageBoard(message._message_castle_withdraw, {"amount": amount});
                         $("#role_cash").text((cash + amount * 10000) + " GOLD");
                         postHouse.#travelTo(town);
                     });

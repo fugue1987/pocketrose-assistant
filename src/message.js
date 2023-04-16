@@ -26,6 +26,7 @@ export const _message_castle_enter = "_message_castle_enter";
 export const _message_castle_entry = "_message_castle_entry";
 export const _message_castle_leave = "_message_castle_leave";
 export const _message_castle_target = "_message_castle_target";
+export const _message_castle_withdraw = "_message_castle_withdraw";
 
 export const _message_move = "_message_move";
 export const _message_move_await = "_message_move_await";
@@ -150,6 +151,13 @@ function getMessageHandlers() {
         const player = getPlayer(data);
         const castle = getCastle(data);
         page.publishMessageBoard(player + "设定移动目标为" + castle);
+    };
+    handlers[_message_castle_withdraw] = function (data) {
+        const player = getPlayer(data);
+        const amount = getProperty(data, "amount");
+        if (amount !== undefined && amount > 0) {
+            page.publishMessageBoard(player + "从城堡提款机提取了" + amount + "万现金");
+        }
     };
     // ------------------------------------------------------------------------
     // MOVE related message handlers
