@@ -9,27 +9,31 @@
 
 import * as page from "./page";
 
-export const _event_town_enter = "_event_town_enter";
-export const _event_town_enter_await = "_event_town_enter_await";
-export const _event_town_enter_guard = "_event_town_enter_guard";
-export const _event_town_enter_guard_pass = "_event_town_enter_guard_pass";
-export const _event_town_leave = "_event_town_leave";
-export const _event_town_target = "_event_town_target";
-export const _event_town_deposit = "_event_town_deposit";
-export const _event_town_withdraw = "_event_town_withdraw";
+// ============================================================================
+// Message id definitions
+// ============================================================================
 
-export const _event_castle_enter = "_event_castle_enter";
-export const _event_castle_entry = "_event_castle_entry";
-export const _event_castle_leave = "_event_castle_leave";
-export const _event_castle_target = "_event_castle_target";
+export const _message_town_enter = "_message_town_enter";
+export const _message_town_enter_await = "_message_town_enter_await";
+export const _message_town_enter_guard = "_message_town_enter_guard";
+export const _message_town_enter_guard_pass = "_message_town_enter_guard_pass";
+export const _message_town_leave = "_message_town_leave";
+export const _message_town_target = "_message_town_target";
+export const _message_town_deposit = "_message_town_deposit";
+export const _message_town_withdraw = "_message_town_withdraw";
 
-export const _event_move = "_event_move";
-export const _event_move_await = "_event_move_await";
-export const _event_move_mode = "_event_move_mode";
-export const _event_move_scope = "_event_move_scope";
-export const _event_move_source = "_event_move_source";
-export const _event_move_destination = "_event_move_destination";
-export const _event_move_path = "_event_move_path";
+export const _message_castle_enter = "_message_castle_enter";
+export const _message_castle_entry = "_message_castle_entry";
+export const _message_castle_leave = "_message_castle_leave";
+export const _message_castle_target = "_message_castle_target";
+
+export const _message_move = "_message_move";
+export const _message_move_await = "_message_move_await";
+export const _message_move_mode = "_message_move_mode";
+export const _message_move_scope = "_message_move_scope";
+export const _message_move_source = "_message_move_source";
+export const _message_move_destination = "_message_move_destination";
+export const _message_move_path = "_message_move_path";
 
 function getMessageHandlers() {
     const getProperty = (data, name, defaultValue) => {
@@ -64,7 +68,7 @@ function getMessageHandlers() {
     // ------------------------------------------------------------------------
     // TOWN related message handlers
     // ------------------------------------------------------------------------
-    handlers[_event_town_enter] = function (data) {
+    handlers[_message_town_enter] = function (data) {
         const player = getPlayer(data);
         let town = getTown(data);
         if (town === undefined) {
@@ -72,19 +76,19 @@ function getMessageHandlers() {
         }
         page.publishMessageBoard(player + "进入了" + town);
     };
-    handlers[_event_town_enter_await] = function (data) {
+    handlers[_message_town_enter_await] = function (data) {
         const player = getPlayer(data);
         page.publishMessageBoard(player + "等待进城冷却中......(约55秒)");
     };
-    handlers[_event_town_enter_guard] = function (data) {
+    handlers[_message_town_enter_guard] = function (data) {
         const player = getPlayer(data);
         page.publishMessageBoard(player + "与门卫交涉中......");
     };
-    handlers[_event_town_enter_guard_pass] = function (data) {
+    handlers[_message_town_enter_guard_pass] = function (data) {
         const player = getPlayer(data);
         page.publishMessageBoard("门卫通情达理的收取了入城费用放" + player + "入城");
     };
-    handlers[_event_town_leave] = function (data) {
+    handlers[_message_town_leave] = function (data) {
         const player = getPlayer(data);
         let town = getTown(data);
         if (town === undefined) {
@@ -92,14 +96,14 @@ function getMessageHandlers() {
         }
         page.publishMessageBoard(player + "已经离开了" + town);
     };
-    handlers[_event_town_target] = function (data) {
+    handlers[_message_town_target] = function (data) {
         const player = getPlayer(data);
         const town = getTown(data);
         if (town !== undefined) {
             page.publishMessageBoard(player + "设定移动目标为" + town);
         }
     };
-    handlers[_event_town_deposit] = function (data) {
+    handlers[_message_town_deposit] = function (data) {
         const player = getPlayer(data);
         const amount = getProperty(data, "amount");
         if (amount !== undefined && amount > 0) {
@@ -108,7 +112,7 @@ function getMessageHandlers() {
             page.publishMessageBoard(player + "在城市银行存入了全部现金");
         }
     };
-    handlers[_event_town_withdraw] = function (data) {
+    handlers[_message_town_withdraw] = function (data) {
         const player = getPlayer(data);
         const amount = getProperty(data, "amount");
         if (amount !== undefined && amount > 0) {
@@ -118,7 +122,7 @@ function getMessageHandlers() {
     // ------------------------------------------------------------------------
     // CASTLE related message handlers
     // ------------------------------------------------------------------------
-    handlers[_event_castle_enter] = function (data) {
+    handlers[_message_castle_enter] = function (data) {
         const player = getPlayer(data);
         let castle = getCastle(data);
         if (castle === undefined) {
@@ -126,7 +130,7 @@ function getMessageHandlers() {
         }
         page.publishMessageBoard(player + "进入了" + castle);
     };
-    handlers[_event_castle_entry] = function (data) {
+    handlers[_message_castle_entry] = function (data) {
         const player = getPlayer(data);
         let castle = getCastle(data);
         if (castle === undefined) {
@@ -134,7 +138,7 @@ function getMessageHandlers() {
         }
         page.publishMessageBoard(player + "来到" + castle + "入口");
     };
-    handlers[_event_castle_leave] = function (data) {
+    handlers[_message_castle_leave] = function (data) {
         const player = getPlayer(data);
         let castle = getCastle(data);
         if (castle === undefined) {
@@ -142,7 +146,7 @@ function getMessageHandlers() {
         }
         page.publishMessageBoard(player + "已经离开了" + castle);
     };
-    handlers[_event_castle_target] = function (data) {
+    handlers[_message_castle_target] = function (data) {
         const player = getPlayer(data);
         const castle = getCastle(data);
         page.publishMessageBoard(player + "设定移动目标为" + castle);
@@ -150,14 +154,14 @@ function getMessageHandlers() {
     // ------------------------------------------------------------------------
     // MOVE related message handlers
     // ------------------------------------------------------------------------
-    handlers[_event_move] = function (data) {
+    handlers[_message_move] = function (data) {
         const player = getPlayer(data);
         const direction = data["direction"];
         const distance = data["distance"];
         const coordinate = data["coordinate"];
         page.publishMessageBoard(player + direction + "移动" + distance + "格，到达" + coordinate.longText());
     };
-    handlers[_event_move_await] = function (data) {
+    handlers[_message_move_await] = function (data) {
         const player = getPlayer(data);
         const timeout = getProperty(data, "timeout");
         if (timeout === undefined) {
@@ -166,31 +170,31 @@ function getMessageHandlers() {
             page.publishMessageBoard(player + "等待移动冷却中......(约" + timeout + "秒)");
         }
     };
-    handlers[_event_move_mode] = function (data) {
+    handlers[_message_move_mode] = function (data) {
         const player = getPlayer(data);
         const mode = getProperty(data, "mode");
         page.publishMessageBoard(player + "确定移动模式" + mode);
     };
-    handlers[_event_move_scope] = function (data) {
+    handlers[_message_move_scope] = function (data) {
         const player = getPlayer(data);
         const scope = getProperty(data, "scope");
         page.publishMessageBoard(player + "确定移动范围" + scope);
     };
-    handlers[_event_move_source] = function (data) {
+    handlers[_message_move_source] = function (data) {
         const player = getPlayer(data);
         const source = getProperty(data, "source");
         if (source !== undefined) {
             page.publishMessageBoard(player + "当前的坐标" + source.longText());
         }
     }
-    handlers[_event_move_destination] = function (data) {
+    handlers[_message_move_destination] = function (data) {
         const player = getPlayer(data);
         const destination = getProperty(data, "destination");
         if (destination !== undefined) {
             page.publishMessageBoard(player + "目的地坐标" + destination.longText());
         }
     }
-    handlers[_event_move_path] = function (data) {
+    handlers[_message_move_path] = function (data) {
         const pathList = getProperty(data, "pathList");
         if (pathList !== undefined && pathList.length > 1) {
             page.publishMessageBoard("旅途路径已经计算完毕，总共需要次移动" + (pathList.length - 1) + "步");

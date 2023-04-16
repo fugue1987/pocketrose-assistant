@@ -138,7 +138,7 @@ class TownInnPostHouse {
                 const destinationTown = pocket.getTown(destinationTownId);
                 const destination = destinationTown.coordinate;
 
-                event.publishMessage(event._event_town_target, {"town": destinationTown.name});
+                event.publishMessage(event._message_town_target, {"town": destinationTown.name});
 
                 const credential = page.generateCredential();
                 let cash = 0;
@@ -152,17 +152,17 @@ class TownInnPostHouse {
                 });
                 const amount = bank.calculateCashDifferenceAmount(cash, 100000);
                 bank.withdrawFromTownBank(credential, amount).then(() => {
-                    event.publishMessage(event._event_town_withdraw, {"amount": amount});
+                    event.publishMessage(event._message_town_withdraw, {"amount": amount});
                     map.leaveTown(credential).then(plan => {
                         plan.source = source;
                         plan.destination = destination;
-                        event.publishMessage(event._event_move_source, {"source": source});
-                        event.publishMessage(event._event_move_destination, {"destination": destination});
+                        event.publishMessage(event._message_move_source, {"source": source});
+                        event.publishMessage(event._message_move_destination, {"destination": destination});
                         map.executeMovePlan(plan).then(() => {
                             map.enterTown(credential, destinationTownId).then(() => {
-                                event.publishMessage(event._event_town_enter, {"town": destinationTown.name});
+                                event.publishMessage(event._message_town_enter, {"town": destinationTown.name});
                                 bank.depositIntoTownBank(credential, undefined).then(() => {
-                                    event.publishMessage(event._event_town_deposit);
+                                    event.publishMessage(event._message_town_deposit);
                                     $("#returnButton").attr("value", destinationTown.name + "欢迎您的到来");
                                     $("#returnButton").removeAttr("style");
                                     $("#returnButton").prop("disabled", false);
@@ -201,7 +201,7 @@ class TownInnPostHouse {
             role.name = $("#player").text();
             role.townName = town.name;
             role.coordinate = town.coordinate;
-            event.publishMessage(event._event_castle_target, {"castle": castleName});
+            event.publishMessage(event._message_castle_target, {"castle": castleName});
 
             const credential = page.generateCredential();
             map.leaveTown(credential).then(plan => {
@@ -209,7 +209,7 @@ class TownInnPostHouse {
                 plan.destination = destination;
                 map.executeMovePlan(plan).then(() => {
                     map.enterCastle(credential).then(() => {
-                        event.publishMessage(event._event_castle_enter, {"castle": castleName});
+                        event.publishMessage(event._message_castle_enter, {"castle": castleName});
 
                         $("form[action='status.cgi']").attr("action", "castlestatus.cgi");
                         $("input:hidden[value='STATUS']").attr("value", "CASTLESTATUS");
