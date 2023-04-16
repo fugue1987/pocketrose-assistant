@@ -517,7 +517,8 @@ class TownAdventurerGuild {
         if (locationIndex !== locationList.length - 2) {
             if (from.x === to.x && from.y === to.y) {
                 // 下一张图在原地
-                map.explore(credential).then(() => {
+                map.explore(credential).then(found => {
+                    foundList.push(found);
                     inst.#seekTreasure(credential, player, town, scope, mode, locationList, locationIndex + 1, foundList);
                 });
             } else {
@@ -528,7 +529,8 @@ class TownAdventurerGuild {
                 plan.scope = scope;
                 plan.mode = mode;
                 map.executeMovePlan(plan).then(() => {
-                    map.explore(credential).then(() => {
+                    map.explore(credential).then(found => {
+                        foundList.push(found);
                         inst.#seekTreasure(credential, player, town, scope, mode, locationList, locationIndex + 1, foundList);
                     });
                 });
@@ -545,6 +547,10 @@ class TownAdventurerGuild {
             map.executeMovePlan(plan).then(() => {
                 map.enterTown(credential, town.id).then(() => {
                     bank.depositIntoTownBank(credential, undefined).then(() => {
+                        message.publishMessageBoard(message._message_treasure_done, {
+                            "player": player,
+                            "foundList": foundList
+                        });
                         $("#returnButton").prop("disabled", false);
                         $("#returnButton").attr("value", "欢迎回来");
                         $("#returnButton").removeAttr("style");

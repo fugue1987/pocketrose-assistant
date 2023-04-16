@@ -38,6 +38,9 @@ export const _message_move_path = "_message_move_path";
 
 export const _message_treasure_await = "_message_treasure_await";
 export const _message_treasure_path = "_message_treasure_path";
+export const _message_treasure_3bt = "_message_treasure_3bt";
+export const _message_treasure_found = "_message_treasure_found";
+export const _message_treasure_done = "_message_treasure_done";
 
 function getMessageHandlers() {
     const getProperty = (data, name, defaultValue) => {
@@ -246,6 +249,28 @@ function getMessageHandlers() {
             writeMessageBoard(msg);
         }
     };
+    handlers[_message_treasure_3bt] = function (data) {
+        const player = getPlayer(data);
+        writeMessageBoard("在探险过程中，突然跳出<b style='color:chartreuse'>3个BT</b>对" + player + "进行了殴打");
+    };
+    handlers[_message_treasure_found] = function (data) {
+        const player = getPlayer(data);
+        const found = getProperty(data, "found");
+        if (found !== undefined) {
+            writeMessageBoard(player + "<b style='color:red'>" + found + "</b>");
+        }
+    };
+    handlers[_message_treasure_done] = function (data) {
+        const player = getPlayer(data);
+        const foundList = getProperty(data, "foundList");
+        writeMessageBoard("探险完成，在兔子骷髅不怀好意的挥手注视下，" + player + "快速离开了");
+        if (foundList.length > 0) {
+            writeMessageBoard(player + "回到无人处，悄悄检视了下探险的收入：");
+            for (let i = 0; i < foundList.length; i++) {
+                writeMessageBoard("<b style='color: yellow'>" + foundList[i] + "</b>");
+            }
+        }
+    }
     return handlers;
 }
 

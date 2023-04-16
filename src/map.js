@@ -260,6 +260,11 @@ export async function enterCastle(credential) {
     await doEnterCastle(credential);
 }
 
+/**
+ * 执行探险操作
+ * @param credential
+ * @returns {Promise<string>}
+ */
 export async function explore(credential) {
     const doExplore = (credential) => {
         return new Promise((resolve) => {
@@ -267,11 +272,19 @@ export async function explore(credential) {
             util.latencyExecute(55000, function () {
                 const request = credential.asRequest();
                 request["mode"] = "MAP_SEARCH";
-                // TODO
-                message.writeMessageBoard("模拟探险");
-                resolve();
+
+                network.sendPostRequest("map.cgi", request, function (html) {
+                    if (html.includes("所持金超过1000000。请先存入银行。")) {
+                        message.publishMessageBoard(message._message_treasure_3bt);
+                        resolve("被3BT殴打！");
+                    } else {
+                        const found = $(html).find("h2:first").text();
+                        message.publishMessageBoard(message._message_treasure_found, {"found": found});
+                        resolve(found);
+                    }
+                });
             });
         });
     };
-    await doExplore(credential);
+    return await doExplore(credential);
 }
