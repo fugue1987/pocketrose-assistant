@@ -221,7 +221,7 @@ export async function enterTown(credential, townId) {
                 request["mode"] = "MOVE";
                 sendPostRequest("status.cgi", request, function (html) {
                     if ($(html).text().includes("战胜门卫。")) {
-                        publishEvent(_event_enter_town_guard);
+                        event.publishMessage(event._event_town_enter_guard);
                         const request = credential.asRequest();
                         request["townid"] = townId;
                         request["givemoney"] = "1";
@@ -258,13 +258,9 @@ export async function enterCastle(credential) {
 // 移动时相关事件处理功能
 // ============================================================================
 
-export const _event_enter_town_guard = "_event_enter_town_guard";
 export const _event_enter_town_guard_pass = "_event_enter_town_guard_pass";
 
 export function publishEvent(id, data) {
-    if (id === _event_enter_town_guard) {
-        page.publishMessageBoard(player + "与门卫交涉中......");
-    }
     if (id === _event_enter_town_guard_pass) {
         page.publishMessageBoard("门卫通情达理的收取了入城费用放" + player + "入城");
     }
