@@ -9,6 +9,10 @@
 
 import * as page from "./page";
 
+export const _event_town_enter = "_event_town_enter";
+export const _event_town_enter_await = "_event_town_enter_await";
+export const _event_town_enter_guard = "_event_town_enter_guard";
+export const _event_town_enter_guard_pass = "_event_town_enter_guard_pass";
 export const _event_town_leave = "_event_town_leave";
 export const _event_town_target = "_event_town_target";
 export const _event_town_deposit = "_event_town_deposit";
@@ -60,6 +64,26 @@ function getEventHandlers() {
     // ------------------------------------------------------------------------
     // TOWN related event handlers
     // ------------------------------------------------------------------------
+    handlers[_event_town_enter] = function (data) {
+        const player = doGetEventPlayer(data);
+        let town = doGetEventTown(data);
+        if (town === undefined) {
+            town = "目的城市";
+        }
+        page.publishMessageBoard(player + "进入了" + town);
+    };
+    handlers[_event_town_enter_await] = function (data) {
+        const player = doGetEventPlayer(data);
+        page.publishMessageBoard(player + "等待进城冷却中......(约55秒)");
+    };
+    handlers[_event_town_enter_guard] = function (data) {
+        const player = doGetEventPlayer(data);
+        page.publishMessageBoard(player + "与门卫交涉中......");
+    };
+    handlers[_event_town_enter_guard_pass] = function (data) {
+        const player = doGetEventPlayer(data);
+        page.publishMessageBoard("门卫通情达理的收取了入城费用放" + player + "入城");
+    };
     handlers[_event_town_leave] = function (data) {
         const player = doGetEventPlayer(data);
         let town = doGetEventTown(data);
