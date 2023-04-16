@@ -31,6 +31,8 @@ export class TownRequestInterceptor {
             new TownInnPostHouse().process();
         } else if (text.includes("* 运 送 屋 *")) {
             new TownItemExpress().process();
+        } else if (text.includes("* 宠 物 赠 送 屋 *")) {
+            new TownPetExpress().process();
         } else if (text.includes("*  藏宝图以旧换新业务 *")) {
             new TownAdventurerGuild().process();
         }
@@ -257,10 +259,54 @@ class TownItemExpress {
         if (amount === 0) {
             npc.message("让我看看你都偷偷给人送些啥。");
         } else {
-            let message = "看起来你身上的钱还差" + amount + "万呀，我可以帮你" +
+            const message = "看起来你身上的钱还差" + amount + "万呀，我可以帮你" +
                 "<a href='javascript:void(0)' id='withdrawSend'><b style='color:yellow'>取钱发送</b></a>" +
                 "。我办事，你放心！";
             npc.message(message);
+            $("#withdrawSend").click(function () {
+                const credential = page.generateCredential();
+                bank.withdrawFromTownBank(credential, amount).then(() => {
+                    $("#sendButton").trigger("click");
+                });
+            });
+        }
+    }
+}
+
+/**
+ * 送宠屋
+ */
+class TownPetExpress {
+
+    constructor() {
+    }
+
+    process() {
+        $("input[value='发送']").attr("id", "sendButton");
+
+        const npc = page.createFooterNPC("末末");
+        npc.welcome("我来啦！");
+        npc.message("哈哈，我又来啦！没想到吧？这边还是我。");
+
+        let cash = 0;
+        $("td:parent").each(function (_idx, td) {
+            if ($(td).text() === "所持金") {
+                let goldText = $(td).next().text();
+                cash = goldText.substring(0, goldText.indexOf(" "));
+            }
+        });
+
+        const amount = bank.calculateCashDifferenceAmount(cash, 100000);
+        if (amount > 0) {
+            const message = "差" + amount + "万，老规矩，还是" +
+                "<a href='javascript:void(0)' id='withdrawSend'><b style='color:yellow'>取钱发送</b></a>？";
+            npc.message(message);
+            $("#withdrawSend").click(function () {
+                const credential = page.generateCredential();
+                bank.withdrawFromTownBank(credential, amount).then(() => {
+                    $("#sendButton").trigger("click");
+                });
+            });
         }
     }
 }

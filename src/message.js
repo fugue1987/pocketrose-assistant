@@ -260,10 +260,9 @@ function getMessageHandlers() {
         writeMessageBoard("在探险过程中，突然跳出<b style='color:chartreuse'>3个BT</b>对" + player + "进行了殴打");
     };
     handlers[_message_treasure_found] = function (data) {
-        const player = getPlayer(data);
         const found = getProperty(data, "found");
         if (found !== undefined) {
-            writeMessageBoard(player + "<b style='color:red'>" + found + "</b>");
+            writeMessageBoard("<b style='color:red'>" + found + "</b>");
         }
     };
     handlers[_message_treasure_map_exhausted] = function (data) {
