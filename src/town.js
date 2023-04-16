@@ -263,12 +263,6 @@ class TownItemExpress {
                 "<a href='javascript:void(0)' id='withdrawSend'><b style='color:yellow'>取钱发送</b></a>" +
                 "。我办事，你放心！";
             npc.message(message);
-            $("#withdrawSend").click(function () {
-                const credential = page.generateCredential();
-                bank.withdrawFromTownBank(credential, amount).then(() => {
-                    $("#sendButton").trigger("click");
-                });
-            });
         }
     }
 }
