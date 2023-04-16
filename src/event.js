@@ -12,7 +12,6 @@ import * as page from "./page";
 export const EVENT_DEPOSIT_AT_TOWN = "EVENT_DEPOSIT_AT_TOWN";
 export const EVENT_TARGET_CASTLE = "EVENT_TARGET_CASTLE";
 export const EVENT_TARGET_TOWN = "EVENT_TARGET_TOWN";
-export const EVENT_WITHDRAW_FROM_TOWN = "EVENT_WITHDRAW_FROM_TOWN";
 
 export function createEventHandler(role) {
     return function (id, data) {
@@ -39,11 +38,37 @@ export function createEventHandler(role) {
                 page.publishMessageBoard(role.name + "准备移动到<b style='color:darkorange'>" + townName + "</b>");
             }
         }
-        if (id === EVENT_WITHDRAW_FROM_TOWN) {
-            const amount = data["amount"];
-            if (amount !== undefined && amount > 0) {
-                page.publishMessageBoard(role.name + "从银行提取了" + amount + "万现金");
-            }
+    };
+}
+
+export const _event_withdraw_at_town = "_event_withdraw_at_town";
+
+function getEventHandlers() {
+    const eventHandlers = {};
+    eventHandlers[_event_withdraw_at_town] = function (data) {
+        const player = getEventProperty(data, "player", "你");
+        const amount = getEventProperty(data, "amount");
+        if (amount !== undefined && amount > 0) {
+            page.publishMessageBoard(player + "从城市银行提取了" + amount + "万现金");
         }
     };
+    return eventHandlers;
+}
+
+function getEventProperty(data, name, defaultValue) {
+    if (data === undefined) {
+        return defaultValue;
+    }
+    const value = data[name];
+    if (value === undefined) {
+        return defaultValue;
+    }
+    return value;
+}
+
+export function publishEvent(id, data) {
+    const handler = getEventHandlers()[id];
+    if (handler !== undefined) {
+        handler(data);
+    }
 }

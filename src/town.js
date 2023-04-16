@@ -157,7 +157,7 @@ class TownInnPostHouse {
                 });
                 const amount = bank.calculateCashDifferenceAmount(cash, 100000);
                 bank.withdrawFromTownBank(credential, amount).then(() => {
-                    eventHandler(event.EVENT_WITHDRAW_FROM_TOWN, {"amount": amount});
+                    event.publishEvent(event._event_withdraw_at_town, {"amount": amount});
                     map.leaveTown(credential, eventHandler).then((scope, mode) => {
                         const plan = new map.MovePlan();
                         plan.credential = credential;
