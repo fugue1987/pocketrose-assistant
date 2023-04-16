@@ -81,7 +81,7 @@ export async function executeMovePlan(plan) {
                 plan.scope,
                 plan.mode
             );
-            event.publishEvent(event._event_move_path, {"pathList": pathList});
+            event.publishMessage(event._event_move_path, {"pathList": pathList});
             moveOnPath(
                 plan.credential,
                 pathList,
@@ -101,7 +101,7 @@ function moveOnPath(credential, pathList, index, callback) {
         // 已经移动到最后一个点
         callback();
     } else {
-        event.publishEvent(event._event_move_await, {"timeout": 55});
+        event.publishMessage(event._event_move_await, {"timeout": 55});
         util.latencyExecute(55000, function () {
             const from = pathList[index];
             const to = pathList[index + 1];
@@ -116,7 +116,7 @@ function moveOnPath(credential, pathList, index, callback) {
             request["direct"] = direction.code;
             request["chara_m"] = distance;
             network.sendPostRequest("map.cgi", request, function () {
-                event.publishEvent(event._event_move, {
+                event.publishMessage(event._event_move, {
                     "direction": direction.name,
                     "distance": distance,
                     "coordinate": to
@@ -140,7 +140,7 @@ export async function leaveTown(credential) {
             request["out"] = "1";
             request["mode"] = "MAP_MOVE";
             sendPostRequest("map.cgi", request, function (html) {
-                event.publishEvent(event._event_town_leave);
+                event.publishMessage(event._event_town_leave);
 
                 const scope = $(html).find("select[name='chara_m']")
                     .find("option:last").attr("value");
@@ -152,8 +152,8 @@ export async function leaveTown(credential) {
                         mode = "QUEEN";
                     }
                 });
-                event.publishEvent(event._event_move_scope, {"scope": scope});
-                event.publishEvent(event._event_move_mode, {"mode": mode});
+                event.publishMessage(event._event_move_scope, {"scope": scope});
+                event.publishMessage(event._event_move_mode, {"mode": mode});
 
                 const plan = new MovePlan();
                 plan.credential = credential;
@@ -180,7 +180,7 @@ export async function leaveCastle(credential) {
             request["out"] = "1";
             request["mode"] = "MAP_MOVE";
             sendPostRequest("map.cgi", request, function (html) {
-                event.publishEvent(event._event_castle_leave);
+                event.publishMessage(event._event_castle_leave);
 
                 const scope = $(html).find("select[name='chara_m']")
                     .find("option:last").attr("value");
@@ -192,8 +192,8 @@ export async function leaveCastle(credential) {
                         mode = "QUEEN";
                     }
                 });
-                event.publishEvent(event._event_move_mode, {"mode": mode});
-                event.publishEvent(event._event_move_scope, {"scope": scope});
+                event.publishMessage(event._event_move_mode, {"mode": mode});
+                event.publishMessage(event._event_move_scope, {"scope": scope});
                 const plan = new MovePlan();
                 plan.credential = credential;
                 plan.scope = scope;
@@ -246,7 +246,7 @@ export async function enterCastle(credential) {
             const request = credential.asRequest();
             request["mode"] = "CASTLE_ENTRY";
             network.sendPostRequest("map.cgi", request, function () {
-                event.publishEvent(event._event_castle_entry);
+                event.publishMessage(event._event_castle_entry);
                 resolve();
             });
         });

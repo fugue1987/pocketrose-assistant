@@ -1,9 +1,9 @@
 /**
  * ============================================================================
- * [ 事 件 相 关 功 能 模 块 ]
+ * [ 消 息 面 板 功 能 模 块 ]
  * ----------------------------------------------------------------------------
- * 没想好具体怎么弄好，目前不清楚js怎么做事件监听的机制，先临时这样吧，有机会再重构。
- * 目的是为了将逻辑和展现解耦。
+ * 用于展现实时消息，目的是为了将逻辑和展现解耦。
+ * 在使用消息面板前需要提前在当前页面构建id为messageBoard的元素作为消息展现的载体。
  * ============================================================================
  */
 
@@ -31,8 +31,8 @@ export const _event_move_source = "_event_move_source";
 export const _event_move_destination = "_event_move_destination";
 export const _event_move_path = "_event_move_path";
 
-function getEventHandlers() {
-    const doGetEventProperty = (data, name, defaultValue) => {
+function getMessageHandlers() {
+    const getProperty = (data, name, defaultValue) => {
         if (data === undefined) {
             return defaultValue;
         }
@@ -42,18 +42,18 @@ function getEventHandlers() {
         }
         return value;
     }
-    const doGetEventPlayer = (data) => {
-        return doGetEventProperty(data, "player", "你");
+    const getPlayer = (data) => {
+        return getProperty(data, "player", "你");
     }
-    const doGetEventTown = (data) => {
-        let value = doGetEventProperty(data, "town");
+    const getTown = (data) => {
+        let value = getProperty(data, "town");
         if (value !== undefined) {
             value = "<b style='color:darkorange'>" + value + "</b>";
         }
         return value;
     }
-    const doGetEventCastle = (data) => {
-        let value = doGetEventProperty(data, "castle");
+    const getCastle = (data) => {
+        let value = getProperty(data, "castle");
         if (value !== undefined) {
             return "<b style='color:darkorange'>" + value + "</b>";
         } else {
@@ -62,46 +62,46 @@ function getEventHandlers() {
     };
     const handlers = {};
     // ------------------------------------------------------------------------
-    // TOWN related event handlers
+    // TOWN related message handlers
     // ------------------------------------------------------------------------
     handlers[_event_town_enter] = function (data) {
-        const player = doGetEventPlayer(data);
-        let town = doGetEventTown(data);
+        const player = getPlayer(data);
+        let town = getTown(data);
         if (town === undefined) {
             town = "目的城市";
         }
         page.publishMessageBoard(player + "进入了" + town);
     };
     handlers[_event_town_enter_await] = function (data) {
-        const player = doGetEventPlayer(data);
+        const player = getPlayer(data);
         page.publishMessageBoard(player + "等待进城冷却中......(约55秒)");
     };
     handlers[_event_town_enter_guard] = function (data) {
-        const player = doGetEventPlayer(data);
+        const player = getPlayer(data);
         page.publishMessageBoard(player + "与门卫交涉中......");
     };
     handlers[_event_town_enter_guard_pass] = function (data) {
-        const player = doGetEventPlayer(data);
+        const player = getPlayer(data);
         page.publishMessageBoard("门卫通情达理的收取了入城费用放" + player + "入城");
     };
     handlers[_event_town_leave] = function (data) {
-        const player = doGetEventPlayer(data);
-        let town = doGetEventTown(data);
+        const player = getPlayer(data);
+        let town = getTown(data);
         if (town === undefined) {
             town = "所在城市";
         }
         page.publishMessageBoard(player + "已经离开了" + town);
     };
     handlers[_event_town_target] = function (data) {
-        const player = doGetEventPlayer(data);
-        const town = doGetEventTown(data);
+        const player = getPlayer(data);
+        const town = getTown(data);
         if (town !== undefined) {
             page.publishMessageBoard(player + "设定移动目标为" + town);
         }
     };
     handlers[_event_town_deposit] = function (data) {
-        const player = doGetEventPlayer(data);
-        const amount = doGetEventProperty(data, "amount");
+        const player = getPlayer(data);
+        const amount = getProperty(data, "amount");
         if (amount !== undefined && amount > 0) {
             page.publishMessageBoard(player + "在城市银行存入了" + amount + "万现金");
         } else {
@@ -109,57 +109,57 @@ function getEventHandlers() {
         }
     };
     handlers[_event_town_withdraw] = function (data) {
-        const player = doGetEventPlayer(data);
-        const amount = doGetEventProperty(data, "amount");
+        const player = getPlayer(data);
+        const amount = getProperty(data, "amount");
         if (amount !== undefined && amount > 0) {
             page.publishMessageBoard(player + "从城市银行提取了" + amount + "万现金");
         }
     };
     // ------------------------------------------------------------------------
-    // CASTLE related event handlers
+    // CASTLE related message handlers
     // ------------------------------------------------------------------------
     handlers[_event_castle_enter] = function (data) {
-        const player = doGetEventPlayer(data);
-        let castle = doGetEventCastle(data);
+        const player = getPlayer(data);
+        let castle = getCastle(data);
         if (castle === undefined) {
             castle = "城堡";
         }
         page.publishMessageBoard(player + "进入了" + castle);
     };
     handlers[_event_castle_entry] = function (data) {
-        const player = doGetEventPlayer(data);
-        let castle = doGetEventCastle(data);
+        const player = getPlayer(data);
+        let castle = getCastle(data);
         if (castle === undefined) {
             castle = "城堡";
         }
         page.publishMessageBoard(player + "来到" + castle + "入口");
     };
     handlers[_event_castle_leave] = function (data) {
-        const player = doGetEventPlayer(data);
-        let castle = doGetEventCastle(data);
+        const player = getPlayer(data);
+        let castle = getCastle(data);
         if (castle === undefined) {
             castle = "城堡";
         }
         page.publishMessageBoard(player + "已经离开了" + castle);
     };
     handlers[_event_castle_target] = function (data) {
-        const player = doGetEventPlayer(data);
-        const castle = doGetEventCastle(data);
+        const player = getPlayer(data);
+        const castle = getCastle(data);
         page.publishMessageBoard(player + "设定移动目标为" + castle);
     };
     // ------------------------------------------------------------------------
-    // MOVE related event handlers
+    // MOVE related message handlers
     // ------------------------------------------------------------------------
     handlers[_event_move] = function (data) {
-        const player = doGetEventPlayer(data);
+        const player = getPlayer(data);
         const direction = data["direction"];
         const distance = data["distance"];
         const coordinate = data["coordinate"];
         page.publishMessageBoard(player + direction + "移动" + distance + "格，到达" + coordinate.longText());
     };
     handlers[_event_move_await] = function (data) {
-        const player = doGetEventPlayer(data);
-        const timeout = doGetEventProperty(data, "timeout");
+        const player = getPlayer(data);
+        const timeout = getProperty(data, "timeout");
         if (timeout === undefined) {
             page.publishMessageBoard(player + "等待移动冷却中......");
         } else {
@@ -167,31 +167,31 @@ function getEventHandlers() {
         }
     };
     handlers[_event_move_mode] = function (data) {
-        const player = doGetEventPlayer(data);
-        const mode = doGetEventProperty(data, "mode");
+        const player = getPlayer(data);
+        const mode = getProperty(data, "mode");
         page.publishMessageBoard(player + "确定移动模式" + mode);
     };
     handlers[_event_move_scope] = function (data) {
-        const player = doGetEventPlayer(data);
-        const scope = doGetEventProperty(data, "scope");
+        const player = getPlayer(data);
+        const scope = getProperty(data, "scope");
         page.publishMessageBoard(player + "确定移动范围" + scope);
     };
     handlers[_event_move_source] = function (data) {
-        const player = doGetEventPlayer(data);
-        const source = doGetEventProperty(data, "source");
+        const player = getPlayer(data);
+        const source = getProperty(data, "source");
         if (source !== undefined) {
             page.publishMessageBoard(player + "当前的坐标" + source.longText());
         }
     }
     handlers[_event_move_destination] = function (data) {
-        const player = doGetEventPlayer(data);
-        const destination = doGetEventProperty(data, "destination");
+        const player = getPlayer(data);
+        const destination = getProperty(data, "destination");
         if (destination !== undefined) {
             page.publishMessageBoard(player + "目的地坐标" + destination.longText());
         }
     }
     handlers[_event_move_path] = function (data) {
-        const pathList = doGetEventProperty(data, "pathList");
+        const pathList = getProperty(data, "pathList");
         if (pathList !== undefined && pathList.length > 1) {
             page.publishMessageBoard("旅途路径已经计算完毕，总共需要次移动" + (pathList.length - 1) + "步");
             let msg = "旅途路径规划：";
@@ -208,8 +208,8 @@ function getEventHandlers() {
     return handlers;
 }
 
-export function publishEvent(id, data) {
-    const handler = getEventHandlers()[id];
+export function publishMessage(id, data) {
+    const handler = getMessageHandlers()[id];
     if (handler !== undefined) {
         handler(data);
     }
