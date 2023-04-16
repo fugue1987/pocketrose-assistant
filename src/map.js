@@ -4,7 +4,6 @@
  * ============================================================================
  */
 
-import * as event from "./event";
 import * as geo from "./geo";
 import * as network from "./network";
 import {sendPostRequest} from "./network";
@@ -103,10 +102,7 @@ function moveOnPath(credential, pathList, index, callback, eventHandler) {
         // 已经移动到最后一个点
         callback();
     } else {
-        if (eventHandler !== undefined) {
-            eventHandler(event.EVENT_MOVE_AWAIT);
-        }
-
+        publishEvent(_event_move_await, {"timeout": 55});
         util.latencyExecute(55000, function () {
             const from = pathList[index];
             const to = pathList[index + 1];
@@ -265,6 +261,7 @@ export const _event_enter_town_guard_pass = "_event_enter_town_guard_pass";
 export const _event_leave_castle = "_event_leave_castle";
 export const _event_leave_town = "_event_leave_town";
 export const _event_move = "_event_move";
+export const _event_move_await = "_event_move_await";
 export const _event_move_mode = "_event_move_mode";
 export const _event_move_scope = "_event_move_scope";
 export const _event_path = "_event_path";
@@ -324,6 +321,14 @@ export function publishEvent(id, data) {
         const distance = data["distance"];
         const coordinate = data["coordinate"];
         page.publishMessageBoard(player + direction + "移动" + distance + "格，到达" + coordinate.longText());
+    }
+    if (id === _event_move_await) {
+        const timeout = readEventData(data, "timeout");
+        if (timeout === undefined) {
+            page.publishMessageBoard(player + "等待移动冷却中......");
+        } else {
+            page.publishMessageBoard(player + "等待移动冷却中......(约" + timeout + "秒)");
+        }
     }
     if (id === _event_move_mode) {
         const mode = readEventData(data, "mode");

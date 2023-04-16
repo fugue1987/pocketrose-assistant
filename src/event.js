@@ -10,7 +10,6 @@
 import * as page from "./page";
 
 export const EVENT_DEPOSIT_AT_TOWN = "EVENT_DEPOSIT_AT_TOWN";
-export const EVENT_MOVE_AWAIT = "EVENT_MOVE_AWAIT";
 export const EVENT_TARGET_CASTLE = "EVENT_TARGET_CASTLE";
 export const EVENT_TARGET_TOWN = "EVENT_TARGET_TOWN";
 export const EVENT_WITHDRAW_FROM_TOWN = "EVENT_WITHDRAW_FROM_TOWN";
@@ -19,9 +18,6 @@ export function createEventHandler(role) {
     return function (id, data) {
         if (id === EVENT_DEPOSIT_AT_TOWN) {
             page.publishMessageBoard(role.name + "把身上全部现金存入了银行");
-        }
-        if (id === EVENT_MOVE_AWAIT) {
-            page.publishMessageBoard(role.name + "等待移动冷却中...... (约55秒)");
         }
         if (id === EVENT_TARGET_CASTLE) {
             const castleName = data["castleName"];
