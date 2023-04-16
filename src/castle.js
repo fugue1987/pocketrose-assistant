@@ -179,8 +179,8 @@ class CastlePostHouse {
                 plan.scope = scope;
                 plan.mode = mode;
 
-                map.executeMovePlan(plan, eventHandler).then(() => {
-                    enterTown(credential, town.id, eventHandler).then(() => {
+                map.executeMovePlan(plan).then(() => {
+                    enterTown(credential, town.id).then(() => {
                         page.publishMessageBoard(role.name + "已经成功到达" + town.name);
                         finance.depositIntoTownBank(credential, undefined).then(() => {
                             page.publishMessageBoard(role.name + "将全部现金存入银行");
