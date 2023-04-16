@@ -262,7 +262,8 @@ function getMessageHandlers() {
         }
     };
     handlers[_message_treasure_map_exhausted] = function (data) {
-        writeMessageBoard("藏宝图已经用完，回城");
+        const player = getPlayer(data);
+        writeMessageBoard(player + "的藏宝图已经用完，回城");
     };
     handlers[_message_treasure_finish] = function (data) {
         const player = getPlayer(data);
@@ -287,10 +288,6 @@ export function publishMessageBoard(id, data) {
 
 export function initializeMessageBoard(htmlMessage) {
     page.initializeMessageBoard(htmlMessage);
-}
-
-export function resetMessageBoard() {
-    page.resetMessageBoard();
 }
 
 export function writeMessageBoard(htmlMessage) {
