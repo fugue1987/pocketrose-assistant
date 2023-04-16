@@ -171,10 +171,6 @@ class CastlePostHouse {
                 plan.destination = town.coordinate;
                 map.executeMovePlan(plan).then(() => {
                     enterTown(credential, town.id).then(() => {
-                        message.publishMessageBoard(message._message_town_enter, {
-                            "player": role.name,
-                            "town": town.name
-                        });
                         finance.depositIntoTownBank(credential, undefined).then(() => {
                             $("form[action='castlestatus.cgi']").attr("action", "status.cgi");
                             $("input:hidden[value='CASTLESTATUS']").attr("value", "STATUS");

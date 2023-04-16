@@ -38,6 +38,10 @@ export class Town {
         return this.#description;
     }
 
+    /**
+     * Return town coordinate.
+     * @returns {Coordinate}
+     */
     get coordinate() {
         return this.#coordinate;
     }

@@ -159,7 +159,6 @@ class TownInnPostHouse {
                         message.publishMessageBoard(message._message_move_destination, {"destination": destination});
                         map.executeMovePlan(plan).then(() => {
                             map.enterTown(credential, destinationTownId).then(() => {
-                                message.publishMessageBoard(message._message_town_enter, {"town": destinationTown.name});
                                 bank.depositIntoTownBank(credential, undefined).then(() => {
                                     $("#returnButton").attr("value", destinationTown.name + "欢迎您的到来");
                                     $("#returnButton").removeAttr("style");

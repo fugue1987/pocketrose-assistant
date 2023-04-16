@@ -8,6 +8,7 @@ import * as geo from "./geo";
 import * as network from "./network";
 import * as util from "./util";
 import * as message from "./message";
+import * as pocket from "./pocket";
 
 /**
  * 用于描述移动计划的数据结构。表述了谁从哪里移动到哪里，怎么样的移动方式。
@@ -225,9 +226,17 @@ export async function enterTown(credential, townId) {
                         request["mode"] = "MOVE";
                         network.sendPostRequest("status.cgi", request, function () {
                             message.publishMessageBoard(message._message_town_enter_guard_pass);
+                            const town = pocket.getTown(townId);
+                            if (town !== undefined) {
+                                message.publishMessageBoard(message._message_town_enter, {"town": town});
+                            }
                             resolve();
                         });
                     } else {
+                        const town = pocket.getTown(townId);
+                        if (town !== undefined) {
+                            message.publishMessageBoard(message._message_town_enter, {"town": town});
+                        }
                         resolve();
                     }
                 });
