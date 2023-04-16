@@ -6,7 +6,7 @@
 
 import * as bank from "./bank";
 import * as dashboard from "./dashboard";
-import * as event from "./message";
+import * as message from "./message";
 import * as geo from "./geo";
 import * as map from "./map";
 import * as page from "./page";
@@ -130,7 +130,7 @@ class TownInnPostHouse {
                 $("#moveToCastle").prop("disabled", true);
                 $(".townClass").prop("disabled", true);
 
-                page.initializeMessageBoard("我们将实时为你播报旅途的动态：<br>");
+                message.initializeMessageBoard("我们将实时为你播报旅途的动态：<br>");
                 const townId = $("#townId").text();
                 const town = pocket.getTown(townId)
                 const source = town.coordinate;
@@ -138,7 +138,7 @@ class TownInnPostHouse {
                 const destinationTown = pocket.getTown(destinationTownId);
                 const destination = destinationTown.coordinate;
 
-                event.publishMessageBoard(event._message_town_target, {"town": destinationTown.name});
+                message.publishMessageBoard(message._message_town_target, {"town": destinationTown.name});
 
                 const credential = page.generateCredential();
                 let cash = 0;
@@ -152,17 +152,17 @@ class TownInnPostHouse {
                 });
                 const amount = bank.calculateCashDifferenceAmount(cash, 100000);
                 bank.withdrawFromTownBank(credential, amount).then(() => {
-                    event.publishMessageBoard(event._message_town_withdraw, {"amount": amount});
+                    message.publishMessageBoard(message._message_town_withdraw, {"amount": amount});
                     map.leaveTown(credential).then(plan => {
                         plan.source = source;
                         plan.destination = destination;
-                        event.publishMessageBoard(event._message_move_source, {"source": source});
-                        event.publishMessageBoard(event._message_move_destination, {"destination": destination});
+                        message.publishMessageBoard(message._message_move_source, {"source": source});
+                        message.publishMessageBoard(message._message_move_destination, {"destination": destination});
                         map.executeMovePlan(plan).then(() => {
                             map.enterTown(credential, destinationTownId).then(() => {
-                                event.publishMessageBoard(event._message_town_enter, {"town": destinationTown.name});
+                                message.publishMessageBoard(message._message_town_enter, {"town": destinationTown.name});
                                 bank.depositIntoTownBank(credential, undefined).then(() => {
-                                    event.publishMessageBoard(event._message_town_deposit);
+                                    message.publishMessageBoard(message._message_town_deposit);
                                     $("#returnButton").attr("value", destinationTown.name + "欢迎您的到来");
                                     $("#returnButton").removeAttr("style");
                                     $("#returnButton").prop("disabled", false);
@@ -185,7 +185,7 @@ class TownInnPostHouse {
             $("#moveToCastle").prop("disabled", true);
             $(".townClass").prop("disabled", true);
 
-            page.initializeMessageBoard("我们将实时为你播报旅途的动态：<br>");
+            message.initializeMessageBoard("我们将实时为你播报旅途的动态：<br>");
             const townId = $("#townId").text();
             const town = pocket.getTown(townId)
             const source = town.coordinate;
@@ -201,7 +201,7 @@ class TownInnPostHouse {
             role.name = $("#player").text();
             role.townName = town.name;
             role.coordinate = town.coordinate;
-            event.publishMessageBoard(event._message_castle_target, {"castle": castleName});
+            message.publishMessageBoard(message._message_castle_target, {"castle": castleName});
 
             const credential = page.generateCredential();
             map.leaveTown(credential).then(plan => {
@@ -209,7 +209,7 @@ class TownInnPostHouse {
                 plan.destination = destination;
                 map.executeMovePlan(plan).then(() => {
                     map.enterCastle(credential).then(() => {
-                        event.publishMessageBoard(event._message_castle_enter, {"castle": castleName});
+                        message.publishMessageBoard(message._message_castle_enter, {"castle": castleName});
 
                         $("form[action='status.cgi']").attr("action", "castlestatus.cgi");
                         $("input:hidden[value='STATUS']").attr("value", "CASTLESTATUS");
