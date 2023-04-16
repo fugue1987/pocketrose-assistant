@@ -8,6 +8,7 @@ import {loadNPC} from "./npc";
 import * as util from "./util";
 import {Credential} from "./util";
 import * as pocket from "./pocket";
+import {isProhibitSellingItem} from "./pocket";
 
 export class NPC {
 
@@ -165,4 +166,17 @@ export function getRoleCash() {
         }
     });
     return cash;
+}
+
+function disableProhibitSellingItems(table) {
+    $(table).find("input:radio[name='select']").each(function (idx, radio) {
+        const name = $(radio).parent().next().next().text();
+        if ($(radio).parent().next().text() === "★") {
+            $(radio).prop("disabled", true);
+        } else {
+            if (isProhibitSellingItem(name)) {
+                $(radio).prop("disabled", true);
+            }
+        }
+    });
 }
