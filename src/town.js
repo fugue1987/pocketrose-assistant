@@ -235,7 +235,7 @@ class TownWeaponStore {
 
     process() {
         const npc = page.createFooterNPC("青鸟");
-        npc.welcome("近期本店进行了升级改造，现在特推出以下增值业务回馈新老客户：<br>");
+        npc.welcome("武器屋全新改版2.0上线，近期本店进行了升级改造，和银行签署了转账协议，现在所有交易都可以线上完成了。");
 
         $("input:submit[value='物品卖出']").attr("id", "sellButton");
         $("input:submit[value='买入']").attr("id", "buyButton");
@@ -246,11 +246,6 @@ class TownWeaponStore {
         if ($("select[name='num']").find("option:first").length === 0) {
             $("#buyButton").attr("value", "身上没有富裕空间");
             $("#buyButton").prop("disabled", true);
-        }
-
-        npc.message("<li><a href='javascript:void(0)' id='depositSell' style='color: lightyellow'>卖后存</a></li>");
-        if (!$("#buyButton").prop("disabled")) {
-            npc.message("<li><a href='javascript:void(0)' id='withdrawBuy' style='color: lightyellow'>取钱买</a></li>");
         }
 
         $("#sellButton").attr("type", "button");
