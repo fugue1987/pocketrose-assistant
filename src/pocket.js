@@ -237,7 +237,8 @@ export const _PROHIBIT_SELLING_ITEM_DICT = [
     "薄翼甲",
     "魔盔 虚无",
     "神冠 灵通",
-    "龙"
+    "龙",
+    "玉佩"
 ];
 export const _CAREER_DICT = {
     "兵士": {"id": 0},
@@ -721,4 +722,17 @@ export function isUnavailableTreasureHintMap(x, y) {
         return true;
     }
     return __isCityCoordinate(x, y);
+}
+
+export function isProhibitSellingItem(name) {
+    if (name === undefined || name === "") {
+        return false;
+    }
+    for (let i = 0; i < _PROHIBIT_SELLING_ITEM_DICT.length; i++) {
+        const it = _PROHIBIT_SELLING_ITEM_DICT[i];
+        if (name.includes(it)) {
+            return true;
+        }
+    }
+    return false;
 }

@@ -29,6 +29,8 @@ export class TownRequestInterceptor {
             new dashboard.TownDashboardProcessor().process();
         } else if (text.includes("* 宿 屋 *")) {
             new TownInnPostHouse().process();
+        } else if (text.includes("＜＜　□　武器屋　□　＞＞")) {
+            new TownWeaponStore().process();
         } else if (text.includes("* 运 送 屋 *")) {
             new TownItemExpress().process();
         } else if (text.includes("* 宠 物 赠 送 屋 *")) {
@@ -223,7 +225,36 @@ class TownInnPostHouse {
 }
 
 /**
- * 城市中的运送屋
+ * 武器屋
+ */
+class TownWeaponStore {
+    constructor() {
+    }
+
+    process() {
+        let tbody = undefined;
+        $("th").each(function (_idx, th) {
+            if ($(th).text() === "所持物品") {
+                tbody = $(th).parent().parent();
+            }
+        });
+        if (tbody !== undefined) {
+            $(tbody).find("input:radio[name='select']").each(function (_idx, radio) {
+                const name = $(radio).parent().next().next().text();
+                if ($(radio).parent().next().text() === "★") {
+                    $(radio).prop("disabled", true);
+                } else {
+                    if (pocket.isProhibitSellingItem(name)) {
+                        $(radio).prop("disabled", true);
+                    }
+                }
+            });
+        }
+    }
+}
+
+/**
+ * 运送屋
  */
 class TownItemExpress {
 
@@ -268,7 +299,7 @@ class TownItemExpress {
 }
 
 /**
- * 送宠屋
+ * 宠物赠送屋
  */
 class TownPetExpress {
 

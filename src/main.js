@@ -507,10 +507,10 @@ function postProcessCityRelatedFunctionalities(htmlText) {
     if (htmlText.indexOf("* 宠 物 赠 送 屋 *") !== -1) {
         __town_houseForSendingPets(htmlText);
     }
-    if (htmlText.indexOf("＜＜　□　<B>武器屋</B>　□　＞＞") !== -1 ||
-        htmlText.indexOf("＜＜　□　<b>武器屋</b>　□　＞＞") !== -1) {
-        __town_weaponStore(htmlText);
-    }
+    // if (htmlText.indexOf("＜＜　□　<B>武器屋</B>　□　＞＞") !== -1 ||
+    //     htmlText.indexOf("＜＜　□　<b>武器屋</b>　□　＞＞") !== -1) {
+    //     __town_weaponStore(htmlText);
+    // }
     if (htmlText.indexOf("＜＜　□　<B>防具屋</B>　□　＞＞") !== -1 ||
         htmlText.indexOf("＜＜　□　<b>防具屋</b>　□　＞＞") !== -1) {
         __town_armorStore(htmlText);
