@@ -465,8 +465,16 @@ class TownAdventurerGuild {
 
                     message.initializeMessageBoard("冒险家公会之探险播报：<br>");
 
+                    let cash = 0;
+                    $("td:parent").each(function (_idx, td) {
+                        const text = $(td).text();
+                        if (text === "所持金") {
+                            cash = parseInt(util.substringBefore($(td).next().text(), " GOLD"));
+                        }
+                    });
+                    const amount = bank.calculateCashDifferenceAmount(cash, 1100000);
                     const credential = page.generateCredential();
-                    bank.withdrawFromTownBank(credential, 110).then(() => {
+                    bank.withdrawFromTownBank(credential, amount).then(() => {
                         const player = $("#player").text();
                         const townId = $("#townId").text();
                         inst.#startTreasureSeeking(credential, player, townId, candidates);
@@ -477,6 +485,7 @@ class TownAdventurerGuild {
     }
 
     #startTreasureSeeking(credential, player, townId, candidates) {
+        const inst = this;
         candidates.sort((a, b) => {
             let ret = a.x - b.x;
             if (ret === 0) {
@@ -484,5 +493,67 @@ class TownAdventurerGuild {
             }
             return ret;
         });
+        const town = pocket.getTown(townId);
+
+        // 这个是要探索的完整路线，从本城开始，回到本城。
+        const locationList = [];
+        locationList.push(town.coordinate);
+        locationList.push(...candidates);
+        locationList.push(town.coordinate);
+        message.publishMessageBoard(message._message_treasure_path, {"pathList": locationList});
+
+        const foundList = [];
+        map.leaveTown(credential).then(plan => {
+            const scope = plan.scope;
+            const mode = plan.mode;
+            inst.#seekTreasure(credential, player, town, scope, mode, locationList, 0, foundList);
+        });
+    }
+
+    #seekTreasure(credential, player, town, scope, mode, locationList, locationIndex, foundList) {
+        const inst = this;
+
+        const from = locationList[locationIndex];
+        const to = locationList[locationIndex + 1];
+
+        if (locationIndex !== locationList.length - 2) {
+            if (from.x === to.x && from.y === to.y) {
+                // 下一张图在原地
+                map.explore(credential).then(() => {
+                    inst.#seekTreasure(credential, player, town, scope, mode, locationList, locationIndex + 1, foundList);
+                });
+            } else {
+                const plan = new map.MovePlan();
+                plan.credential = credential;
+                plan.source = from;
+                plan.destination = to;
+                plan.scope = scope;
+                plan.mode = mode;
+                map.executeMovePlan(plan).then(() => {
+                    map.explore(credential).then(() => {
+                        inst.#seekTreasure(credential, player, town, scope, mode, locationList, locationIndex + 1, foundList);
+                    });
+                });
+            }
+        } else {
+            // 最后一个坐标已经完成了探险。现在可以回城了
+            message.writeMessageBoard("藏宝图已经用完，回城");
+            const plan = new map.MovePlan();
+            plan.credential = credential;
+            plan.source = from;
+            plan.destination = to;
+            plan.scope = scope;
+            plan.mode = mode;
+            map.executeMovePlan(plan).then(() => {
+                map.enterTown(credential, town.id).then(() => {
+                    bank.depositIntoTownBank(credential, undefined).then(() => {
+                        $("#returnButton").prop("disabled", false);
+                        $("#returnButton").attr("value", "欢迎回来");
+                        $("#returnButton").removeAttr("style");
+                    });
+                });
+            });
+        }
     }
 }
+

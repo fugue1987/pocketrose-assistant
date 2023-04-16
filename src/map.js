@@ -250,3 +250,18 @@ export async function enterCastle(credential) {
     };
     await doEnterCastle(credential);
 }
+
+export async function explore(credential) {
+    const doExplore = (credential) => {
+        return new Promise((resolve) => {
+            util.latencyExecute(55000, function () {
+                const request = credential.asRequest();
+                request["mode"] = "MAP_SEARCH";
+                // TODO
+                message.writeMessageBoard("模拟探险");
+                resolve();
+            });
+        });
+    };
+    await doExplore(credential);
+}

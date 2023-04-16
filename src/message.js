@@ -36,6 +36,8 @@ export const _message_move_source = "_message_move_source";
 export const _message_move_destination = "_message_move_destination";
 export const _message_move_path = "_message_move_path";
 
+export const _message_treasure_path = "_message_treasure_path";
+
 function getMessageHandlers() {
     const getProperty = (data, name, defaultValue) => {
         if (data === undefined) {
@@ -217,6 +219,23 @@ function getMessageHandlers() {
             page.publishMessageBoard(msg);
         }
     };
+    // ------------------------------------------------------------------------
+    // TREASURE related message handlers
+    // ------------------------------------------------------------------------
+    handlers[_message_treasure_path] = function (data) {
+        const pathList = getProperty(data, "pathList");
+        if (pathList !== undefined && pathList.length !== 0) {
+            let msg = "探险顺序：";
+            for (let i = 0; i < pathList.length; i++) {
+                const it = pathList[i];
+                msg += it.longText();
+                if (i !== pathList.length - 1) {
+                    msg += "=>";
+                }
+            }
+            writeMessageBoard(msg);
+        }
+    };
     return handlers;
 }
 
@@ -233,4 +252,8 @@ export function initializeMessageBoard(htmlMessage) {
 
 export function resetMessageBoard() {
     page.resetMessageBoard();
+}
+
+export function writeMessageBoard(htmlMessage) {
+    page.publishMessageBoard(htmlMessage);
 }
