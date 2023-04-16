@@ -143,7 +143,7 @@ class TownInnPostHouse {
                 role.townName = town.name;
                 role.coordinate = town.coordinate;
                 const eventHandler = event.createEventHandler(role);
-                eventHandler(event.EVENT_TARGET_TOWN, {"townName": destinationTown.name});
+                event.publishEvent(event._event_town_target, {"town": destinationTown.name});
 
                 const credential = page.generateCredential();
                 let cash = 0;
@@ -209,7 +209,7 @@ class TownInnPostHouse {
             role.townName = town.name;
             role.coordinate = town.coordinate;
             const eventHandler = event.createEventHandler(role);
-            eventHandler(event.EVENT_TARGET_CASTLE, {"castleName": castleName, "castleCoordinate": destination});
+            event.publishEvent(event._event_castle_target, {"castle": castleName});
 
             const credential = page.generateCredential();
             map.leaveTown(credential, eventHandler).then((scope, mode) => {
