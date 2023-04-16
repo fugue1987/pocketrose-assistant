@@ -160,6 +160,8 @@ class TownInnPostHouse {
                         plan.destination = destination;
                         plan.scope = scope;
                         plan.mode = mode;
+                        event.publishEvent(event._event_move_source, {"source": source});
+                        event.publishEvent(event._event_move_destination, {"destination": destination});
                         map.executeMovePlan(plan).then(() => {
                             map.enterTown(credential, destinationTownId).then(() => {
                                 map.publishEvent(map._event_enter_town, {"town": destinationTown.name});

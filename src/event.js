@@ -19,6 +19,8 @@ export const _event_move = "_event_move";
 export const _event_move_await = "_event_move_await";
 export const _event_move_mode = "_event_move_mode";
 export const _event_move_scope = "_event_move_scope";
+export const _event_move_source = "_event_move_source";
+export const _event_move_destination = "_event_move_destination";
 export const _event_move_path = "_event_move_path";
 
 function getEventHandlers() {
@@ -108,6 +110,20 @@ function getEventHandlers() {
         const scope = doGetEventProperty(data, "scope");
         page.publishMessageBoard(player + "确定移动范围" + scope);
     };
+    handlers[_event_move_source] = function (data) {
+        const player = doGetEventPlayer(data);
+        const source = doGetEventProperty(data, "source");
+        if (source !== undefined) {
+            page.publishMessageBoard(player + "当前的坐标" + source.longText());
+        }
+    }
+    handlers[_event_move_destination] = function (data) {
+        const player = doGetEventPlayer(data);
+        const destination = doGetEventProperty(data, "destination");
+        if (destination !== undefined) {
+            page.publishMessageBoard(player + "目的地坐标" + destination.longText());
+        }
+    }
     handlers[_event_move_path] = function (data) {
         const pathList = doGetEventProperty(data, "pathList");
         if (pathList !== undefined && pathList.length > 1) {
