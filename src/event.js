@@ -9,7 +9,6 @@
 
 import * as page from "./page";
 
-export const EVENT_CALCULATE_MOVE_PATH = "EVENT_CALCULATE_MOVE_PATH";
 export const EVENT_DEPOSIT_AT_TOWN = "EVENT_DEPOSIT_AT_TOWN";
 export const EVENT_ENTER_CASTLE = "EVENT_ENTER_CASTLE";
 export const EVENT_ENTER_CASTLE_ENTRY = "EVENT_ENTER_CASTLE_ENTRY";
@@ -25,21 +24,6 @@ export const EVENT_WITHDRAW_FROM_TOWN = "EVENT_WITHDRAW_FROM_TOWN";
 
 export function createEventHandler(role) {
     return function (id, data) {
-        if (id === EVENT_CALCULATE_MOVE_PATH) {
-            const pathList = data["pathList"];
-            if (pathList.length > 1) {
-                page.publishMessageBoard("旅途路径已经计算完毕，总共需要次移动" + (pathList.length - 1) + "步");
-                let msg = "旅途路径规划：";
-                for (let i = 0; i < pathList.length; i++) {
-                    let node = pathList[i];
-                    msg += node.longText();
-                    if (i !== pathList.length - 1) {
-                        msg += "=>";
-                    }
-                }
-                page.publishMessageBoard(msg);
-            }
-        }
         if (id === EVENT_DEPOSIT_AT_TOWN) {
             page.publishMessageBoard(role.name + "把身上全部现金存入了银行");
         }

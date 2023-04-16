@@ -82,9 +82,7 @@ export async function executeMovePlan(plan, eventHandler) {
                 plan.scope,
                 plan.mode
             );
-            if (eventHandler !== undefined) {
-                eventHandler(event.EVENT_CALCULATE_MOVE_PATH, {"pathList": pathList});
-            }
+            publishEvent(_event_path, {"pathList": pathList});
             moveOnPath(
                 plan.credential,
                 pathList,
@@ -272,6 +270,7 @@ export const _event_leave_castle = 1;
 export const _event_leave_town = 2;
 export const _event_move_mode = 3;
 export const _event_move_scope = 4;
+export const _event_path = 5;
 
 export function publishEvent(id, data) {
     const player = readEventData(data, "player", "你");
@@ -300,6 +299,21 @@ export function publishEvent(id, data) {
     if (id === _event_move_scope) {
         const scope = readEventData(data, "scope");
         page.publishMessageBoard(player + "确定移动范围" + scope);
+    }
+    if (id === _event_path) {
+        const pathList = data["pathList"];
+        if (pathList.length > 1) {
+            page.publishMessageBoard("旅途路径已经计算完毕，总共需要次移动" + (pathList.length - 1) + "步");
+            let msg = "旅途路径规划：";
+            for (let i = 0; i < pathList.length; i++) {
+                let node = pathList[i];
+                msg += node.longText();
+                if (i !== pathList.length - 1) {
+                    msg += "=>";
+                }
+            }
+            page.publishMessageBoard(msg);
+        }
     }
 }
 
