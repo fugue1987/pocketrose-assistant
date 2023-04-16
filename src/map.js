@@ -121,13 +121,11 @@ function moveOnPath(credential, pathList, index, callback, eventHandler) {
             request["direct"] = direction.code;
             request["chara_m"] = distance;
             network.sendPostRequest("map.cgi", request, function () {
-                if (eventHandler !== null) {
-                    eventHandler(event.EVENT_MOVE, {
-                        "direction": direction.name,
-                        "distance": distance,
-                        "coordinate": to
-                    });
-                }
+                publishEvent(_event_move, {
+                    "direction": direction.name,
+                    "distance": distance,
+                    "coordinate": to
+                });
                 moveOnPath(credential, pathList, index + 1, callback, eventHandler);
             });
         });
@@ -266,6 +264,7 @@ export const _event_enter_town_guard = "_event_enter_town_guard";
 export const _event_enter_town_guard_pass = "_event_enter_town_guard_pass";
 export const _event_leave_castle = "_event_leave_castle";
 export const _event_leave_town = "_event_leave_town";
+export const _event_move = "_event_move";
 export const _event_move_mode = "_event_move_mode";
 export const _event_move_scope = "_event_move_scope";
 export const _event_path = "_event_path";
@@ -319,6 +318,12 @@ export function publishEvent(id, data) {
             town = "<b style='color:darkorange'>" + town + "</b>";
         }
         page.publishMessageBoard(player + "已经离开了" + town);
+    }
+    if (id === _event_move) {
+        const direction = data["direction"];
+        const distance = data["distance"];
+        const coordinate = data["coordinate"];
+        page.publishMessageBoard(player + direction + "移动" + distance + "格，到达" + coordinate.longText());
     }
     if (id === _event_move_mode) {
         const mode = readEventData(data, "mode");
