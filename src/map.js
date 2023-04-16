@@ -10,6 +10,7 @@ import * as network from "./network";
 import {sendPostRequest} from "./network";
 import * as util from "./util";
 import {latencyExecute} from "./util";
+import * as page from "./page";
 
 /**
  * 用于描述移动计划的数据结构。表述了谁从哪里移动到哪里，怎么样的移动方式。
@@ -163,10 +164,8 @@ export async function leaveTown(credential, eventHandler) {
                         mode = "QUEEN";
                     }
                 });
-
-                if (eventHandler !== undefined) {
-                    eventHandler(event.EVENT_CHECK_MOVE_STYLE, {"scope": scope, "mode": mode});
-                }
+                publishEvent(_event_move_mode, {"mode": mode});
+                publishEvent(_event_move_scope, {"scope": scope});
                 resolve(scope, mode);
             });
         });
@@ -188,9 +187,7 @@ export async function leaveCastle(credential, eventHandler) {
             request["out"] = "1";
             request["mode"] = "MAP_MOVE";
             sendPostRequest("map.cgi", request, function (html) {
-                if (eventHandler !== undefined) {
-                    eventHandler(event.EVENT_LEAVE_CASTLE);
-                }
+                publishEvent(_event_leave_castle, {});
 
                 const scope = $(html).find("select[name='chara_m']")
                     .find("option:last").attr("value");
@@ -202,10 +199,8 @@ export async function leaveCastle(credential, eventHandler) {
                         mode = "QUEEN";
                     }
                 });
-
-                if (eventHandler !== undefined) {
-                    eventHandler(event.EVENT_CHECK_MOVE_STYLE, {"scope": scope, "mode": mode});
-                }
+                publishEvent(_event_move_mode, {"mode": mode});
+                publishEvent(_event_move_scope, {"scope": scope});
                 resolve(scope, mode);
             });
         });
@@ -269,4 +264,44 @@ export async function enterCastle(credential, eventHandler) {
         });
     };
     await doEnterCastle(credential, eventHandler);
+}
+
+// ============================================================================
+// 移动时相关事件处理功能
+// ============================================================================
+
+export const _event_leave_castle = 1;
+export const _event_move_mode = 2;
+export const _event_move_scope = 3;
+
+export function publishEvent(id, data) {
+    const player = readEventData(data, "player", "你");
+    if (id === _event_leave_castle) {
+        let castle = readEventData(data, "castle");
+        if (castle === undefined) {
+            castle = "所在城堡";
+        } else {
+            castle = "<b style='color:darkorange'>" + castle + "</b>";
+        }
+        page.publishMessageBoard(player + "已经离开了" + castle);
+    }
+    if (id === _event_move_mode) {
+        const mode = readEventData(data, "mode");
+        page.publishMessageBoard(player + "确定移动模式" + mode);
+    }
+    if (id === _event_move_scope) {
+        const scope = readEventData(data, "scope");
+        page.publishMessageBoard(player + "确定移动范围" + scope);
+    }
+}
+
+function readEventData(data, name, defaultValue) {
+    if (data === undefined) {
+        return defaultValue;
+    }
+    const value = data[name];
+    if (value === undefined) {
+        return defaultValue;
+    }
+    return value;
 }
