@@ -8,6 +8,7 @@
  * ============================================================================
  */
 
+import * as message from "./message";
 import * as network from "./network";
 
 /**
@@ -55,12 +56,17 @@ export async function depositIntoTownBank(credential, amount) {
 export async function withdrawFromTownBank(credential, amount) {
     const doWithdrawFromTownBank = (credential, amount) => {
         return new Promise((resolve) => {
-            const request = credential.asRequest();
-            request["mode"] = "BANK_BUY";
-            request["dasu"] = amount;
-            network.sendPostRequest("town.cgi", request, function () {
+            if (amount === undefined || amount <= 0) {
                 resolve();
-            });
+            } else {
+                const request = credential.asRequest();
+                request["mode"] = "BANK_BUY";
+                request["dasu"] = amount;
+                network.sendPostRequest("town.cgi", request, function () {
+                    message.publishMessageBoard(message._message_town_withdraw, {"amount": amount});
+                    resolve();
+                });
+            }
         });
     };
     await doWithdrawFromTownBank(credential, amount);
@@ -82,6 +88,7 @@ export async function withdrawFromCastleBank(credential, amount) {
                 request["mode"] = "CASTLEBANK_BUY";
                 request["dasu"] = amount;
                 network.sendPostRequest("castle.cgi", request, function () {
+                    message.publishMessageBoard(message._message_castle_withdraw, {"amount": amount});
                     resolve();
                 });
             }

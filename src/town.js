@@ -152,7 +152,6 @@ class TownInnPostHouse {
                 });
                 const amount = bank.calculateCashDifferenceAmount(cash, 100000);
                 bank.withdrawFromTownBank(credential, amount).then(() => {
-                    message.publishMessageBoard(message._message_town_withdraw, {"amount": amount});
                     map.leaveTown(credential).then(plan => {
                         plan.source = source;
                         plan.destination = destination;
@@ -303,6 +302,9 @@ class TownAdventurerGuild {
             $("#coach_1").prop("disabled", false);
             $("#coach_2").prop("disabled", false);
             $("#coach_3").prop("disabled", false);
+            if ($("#treasure").length > 0) {
+                $("#treasure").prop("disabled", false);
+            }
         });
 
         $("#coach_1").click(function () {
@@ -314,6 +316,7 @@ class TownAdventurerGuild {
             $("#coach_2").prop("disabled", true);
         });
         this.#processMoveToWild();
+        this.#processTreasure();
     }
 
     #renderHTML(mapCount) {
@@ -373,10 +376,18 @@ class TownAdventurerGuild {
         npc.message("<input type='button' id='coach_3' style='color: black' value='斑驳的车身上隐约可见半拉兔子骷髅的形状'>");
         npc.message("<div id='player' style='display: none'></div>");
         npc.message("<div id='townId' style='display: none'></div>");
+        if (mapCount > 0) {
+            npc.message("<br>");
+            npc.message("什、什、什么？？你有藏宝图！要不要去试试手气？在上面选好你想探险的藏宝图。<br>");
+            npc.message("<input type='button' id='treasure' style='color: red' value='带上藏宝图跟上兔子骷髅的脚步'>");
+        }
 
         $("#coach_1").prop("disabled", true);
         $("#coach_2").prop("disabled", true);
         $("#coach_3").prop("disabled", true);
+        if ($("#treasure").length > 0) {
+            $("#treasure").prop("disabled", true);
+        }
     }
 
     #processMoveToWild() {
@@ -402,7 +413,11 @@ class TownAdventurerGuild {
                     $("#coach_1").prop("disabled", true);
                     $("#coach_2").prop("disabled", true);
                     $("#coach_3").prop("disabled", true);
+                    if ($("#treasure").length > 0) {
+                        $("#treasure").prop("disabled", true);
+                    }
 
+                    message.initializeMessageBoard("放心，实时播报动态我们是专业的，绝对不比隔壁新开张的驿站差：<br>");
                     const credential = page.generateCredential();
                     map.leaveTown(credential).then(plan => {
                         plan.source = town.coordinate;
@@ -415,6 +430,59 @@ class TownAdventurerGuild {
                     });
                 }
             }
+        });
+    }
+
+    #processTreasure() {
+        const inst = this;
+        if ($("#treasure").length > 0) {
+            $("#treasure").click(function () {
+                const candidates = [];
+                $("input:checkbox:checked").each(function (_idx, checkbox) {
+                    const checkboxName = $(checkbox).attr("name");
+                    if (checkboxName.startsWith("item")) {
+                        const mapX = parseInt($(checkbox).parent().next().next().next().next().text());
+                        const mapY = parseInt($(checkbox).parent().next().next().next().next().next().text());
+                        if (!pocket.isUnavailableTreasureHintMap(mapX, mapY)) {
+                            candidates.push(new geo.Coordinate(mapX, mapY));
+                        }
+                    }
+                });
+                if (candidates.length === 0) {
+                    alert("咱们就是说你好歹带上一张能用的藏宝图？");
+                } else {
+                    $("#mapTable").attr("style", "display:none");
+                    $("#x").prop("disabled", true);
+                    $("#y").prop("disabled", true);
+                    $("#exchangeButton").prop("disabled", true);
+                    $("#exchangeButton").attr("style", "display:none");
+                    $("#returnButton").prop("disabled", true);
+                    $("#returnButton").attr("style", "display:none");
+                    $("#coach_1").prop("disabled", true);
+                    $("#coach_2").prop("disabled", true);
+                    $("#coach_3").prop("disabled", true);
+                    $("#treasure").prop("disabled", true);
+
+                    message.initializeMessageBoard("冒险家公会之探险播报：<br>");
+
+                    const credential = page.generateCredential();
+                    bank.withdrawFromTownBank(credential, 110).then(() => {
+                        const player = $("#player").text();
+                        const townId = $("#townId").text();
+                        inst.#startTreasureSeeking(credential, player, townId, candidates);
+                    });
+                }
+            });
+        }
+    }
+
+    #startTreasureSeeking(credential, player, townId, candidates) {
+        candidates.sort((a, b) => {
+            let ret = a.x - b.x;
+            if (ret === 0) {
+                ret = a.y - b.y;
+            }
+            return ret;
         });
     }
 }

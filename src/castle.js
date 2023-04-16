@@ -154,7 +154,6 @@ class CastlePostHouse {
                 const amount = finance.calculateCashDifferenceAmount(cash, 100000);
                 const credential = generateCredential();
                 finance.withdrawFromCastleBank(credential, amount).then(() => {
-                    message.publishMessageBoard(message._message_castle_withdraw, {"amount": amount});
                     $("#role_cash").text((cash + amount * 10000) + " GOLD");
                     postHouse.#travelTo(town);
                 });
