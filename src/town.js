@@ -537,7 +537,7 @@ class TownAdventurerGuild {
             }
         } else {
             // 最后一个坐标已经完成了探险。现在可以回城了
-            message.writeMessageBoard("藏宝图已经用完，回城");
+            message.publishMessageBoard(message._message_treasure_map_exhausted);
             const plan = new map.MovePlan();
             plan.credential = credential;
             plan.source = from;
@@ -547,7 +547,7 @@ class TownAdventurerGuild {
             map.executeMovePlan(plan).then(() => {
                 map.enterTown(credential, town.id).then(() => {
                     bank.depositIntoTownBank(credential, undefined).then(() => {
-                        message.publishMessageBoard(message._message_treasure_done, {
+                        message.publishMessageBoard(message._message_treasure_finish, {
                             "player": player,
                             "foundList": foundList
                         });

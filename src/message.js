@@ -40,7 +40,8 @@ export const _message_treasure_await = "_message_treasure_await";
 export const _message_treasure_path = "_message_treasure_path";
 export const _message_treasure_3bt = "_message_treasure_3bt";
 export const _message_treasure_found = "_message_treasure_found";
-export const _message_treasure_done = "_message_treasure_done";
+export const _message_treasure_map_exhausted = "_message_treasure_map_exhausted";
+export const _message_treasure_finish = "_message_treasure_finish";
 
 function getMessageHandlers() {
     const getProperty = (data, name, defaultValue) => {
@@ -260,7 +261,10 @@ function getMessageHandlers() {
             writeMessageBoard(player + "<b style='color:red'>" + found + "</b>");
         }
     };
-    handlers[_message_treasure_done] = function (data) {
+    handlers[_message_treasure_map_exhausted] = function (data) {
+        writeMessageBoard("藏宝图已经用完，回城");
+    };
+    handlers[_message_treasure_finish] = function (data) {
         const player = getPlayer(data);
         const foundList = getProperty(data, "foundList");
         writeMessageBoard("探险完成，在兔子骷髅不怀好意的挥手注视下，" + player + "快速离开了");
