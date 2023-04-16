@@ -36,6 +36,7 @@ export const _message_move_source = "_message_move_source";
 export const _message_move_destination = "_message_move_destination";
 export const _message_move_path = "_message_move_path";
 
+export const _message_treasure_await = "_message_treasure_await";
 export const _message_treasure_path = "_message_treasure_path";
 
 function getMessageHandlers() {
@@ -222,6 +223,15 @@ function getMessageHandlers() {
     // ------------------------------------------------------------------------
     // TREASURE related message handlers
     // ------------------------------------------------------------------------
+    handlers[_message_treasure_await] = function (data) {
+        const player = getPlayer(data);
+        const timeout = getProperty(data, "timeout");
+        if (timeout === undefined) {
+            page.publishMessageBoard(player + "等待探险冷却中......");
+        } else {
+            page.publishMessageBoard(player + "等待探险冷却中......(约" + timeout + "秒)");
+        }
+    };
     handlers[_message_treasure_path] = function (data) {
         const pathList = getProperty(data, "pathList");
         if (pathList !== undefined && pathList.length !== 0) {

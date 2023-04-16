@@ -254,6 +254,7 @@ export async function enterCastle(credential) {
 export async function explore(credential) {
     const doExplore = (credential) => {
         return new Promise((resolve) => {
+            message.publishMessageBoard(message._message_treasure_await, {"timeout": 55});
             util.latencyExecute(55000, function () {
                 const request = credential.asRequest();
                 request["mode"] = "MAP_SEARCH";
