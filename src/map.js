@@ -228,14 +228,14 @@ export async function enterTown(credential, townId) {
                             message.publishMessageBoard(message._message_town_enter_guard_pass);
                             const town = pocket.getTown(townId);
                             if (town !== undefined) {
-                                message.publishMessageBoard(message._message_town_enter, {"town": town});
+                                message.publishMessageBoard(message._message_town_enter, {"town": town.name});
                             }
                             resolve();
                         });
                     } else {
                         const town = pocket.getTown(townId);
                         if (town !== undefined) {
-                            message.publishMessageBoard(message._message_town_enter, {"town": town});
+                            message.publishMessageBoard(message._message_town_enter, {"town": town.name});
                         }
                         resolve();
                     }
