@@ -10,7 +10,7 @@ import {sendPostRequest} from "./network";
 import * as util from "./util";
 import {latencyExecute} from "./util";
 import * as page from "./page";
-import * as event from "./event";
+import * as event from "./message";
 
 /**
  * 用于描述移动计划的数据结构。表述了谁从哪里移动到哪里，怎么样的移动方式。

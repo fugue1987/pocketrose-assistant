@@ -6,7 +6,7 @@
 
 import * as bank from "./bank";
 import * as dashboard from "./dashboard";
-import * as event from "./event";
+import * as event from "./message";
 import * as geo from "./geo";
 import * as map from "./map";
 import * as page from "./page";
