@@ -168,7 +168,7 @@ export function getRoleCash() {
     return cash;
 }
 
-function disableProhibitSellingItems(table) {
+export function disableProhibitSellingItems(table) {
     $(table).find("input:radio[name='select']").each(function (idx, radio) {
         const name = $(radio).parent().next().next().text();
         if ($(radio).parent().next().text() === "★") {

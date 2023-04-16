@@ -241,34 +241,15 @@ class TownWeaponStore {
         $("input:submit[value='买入']").attr("id", "buyButton");
         $("input:submit[value='返回城市']").attr("id", "returnButton");
 
-        let tbody = undefined;
-        $("th").each(function (_idx, th) {
-            if ($(th).text() === "所持物品") {
-                tbody = $(th).parent().parent();
-            }
-        });
-        if (tbody !== undefined) {
-            $(tbody).find("input:radio[name='select']").each(function (_idx, radio) {
-                const name = $(radio).parent().next().next().text();
-                if ($(radio).parent().next().text() === "★") {
-                    $(radio).prop("disabled", true);
-                } else {
-                    if (pocket.isProhibitSellingItem(name)) {
-                        $(radio).prop("disabled", true);
-                    }
-                }
-            });
-        }
+        page.disableProhibitSellingItems($("table")[5]);
 
-        let spaceAvailable = true;
         if ($("select[name='num']").find("option:first").length === 0) {
-            spaceAvailable = false;
             $("#buyButton").attr("value", "身上没有富裕空间");
             $("#buyButton").prop("disabled", true);
         }
 
         npc.message("<li><a href='javascript:void(0)' id='depositSell' style='color: lightyellow'>卖后存</a></li>");
-        if (spaceAvailable) {
+        if (!$("#buyButton").prop("disabled")) {
             npc.message("<li><a href='javascript:void(0)' id='withdrawBuy' style='color: lightyellow'>取钱买</a></li>");
         }
 
@@ -278,17 +259,22 @@ class TownWeaponStore {
                 const name = $(input).attr("name");
                 request[name] = $(input).val();
             });
-            if (tbody !== undefined) {
-                const select = $(tbody).find("input:radio[name='select']:checked").val();
-                if (select !== undefined) {
-                    request["select"] = select;
-                }
+            const select = $($("table")[5]).find("input:radio[name='select']:checked").val();
+            if (select !== undefined) {
+                request["select"] = select;
             }
             if (request["select"] !== undefined) {
-                network.sendPostRequest("town.cgi", request, function (html) {
+                network.sendPostRequest("town.cgi", request, function () {
                     const credential = generateCredential();
                     bank.depositIntoTownBank(credential, undefined).then(() => {
-                        $("#returnButton").trigger("click");
+                        user.loadRole(credential).then(role => {
+                            const town = pocket.findTownByName(role.townName);
+                            $("#returnButton").prepend("<input type='hidden' name='town' value='" + town.id + "'>" +
+                                "<input type='hidden' name='con_str' value='50'>");
+                            $("input:hidden[value='STATUS']").attr("value", "ARM_SHOP");
+                            $("form[action='status.cgi']").attr("action", "town.cgi");
+                            $("#returnButton").trigger("click");
+                        });
                     });
                 });
             }
