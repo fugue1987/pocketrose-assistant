@@ -9,15 +9,11 @@
 
 import * as page from "./page";
 
-export const EVENT_DEPOSIT_AT_TOWN = "EVENT_DEPOSIT_AT_TOWN";
 export const EVENT_TARGET_CASTLE = "EVENT_TARGET_CASTLE";
 export const EVENT_TARGET_TOWN = "EVENT_TARGET_TOWN";
 
 export function createEventHandler(role) {
     return function (id, data) {
-        if (id === EVENT_DEPOSIT_AT_TOWN) {
-            page.publishMessageBoard(role.name + "把身上全部现金存入了银行");
-        }
         if (id === EVENT_TARGET_CASTLE) {
             const castleName = data["castleName"];
             const castleCoordinate = data["castleCoordinate"];
@@ -41,11 +37,21 @@ export function createEventHandler(role) {
     };
 }
 
-export const _event_withdraw_at_town = "_event_withdraw_at_town";
+export const _event_town_deposit = "_event_town_deposit";
+export const _event_town_withdraw = "_event_town_withdraw";
 
 function getEventHandlers() {
     const eventHandlers = {};
-    eventHandlers[_event_withdraw_at_town] = function (data) {
+    eventHandlers[_event_town_deposit] = function (data) {
+        const player = getEventProperty(data, "player", "你");
+        const amount = getEventProperty(data, "amount");
+        if (amount !== undefined && amount > 0) {
+            page.publishMessageBoard(player + "在城市银行存入了" + amount + "万现金");
+        } else {
+            page.publishMessageBoard(player + "在城市银行存入了全部现金");
+        }
+    };
+    eventHandlers[_event_town_withdraw] = function (data) {
         const player = getEventProperty(data, "player", "你");
         const amount = getEventProperty(data, "amount");
         if (amount !== undefined && amount > 0) {

@@ -157,7 +157,7 @@ class TownInnPostHouse {
                 });
                 const amount = bank.calculateCashDifferenceAmount(cash, 100000);
                 bank.withdrawFromTownBank(credential, amount).then(() => {
-                    event.publishEvent(event._event_withdraw_at_town, {"amount": amount});
+                    event.publishEvent(event._event_town_withdraw, {"amount": amount});
                     map.leaveTown(credential, eventHandler).then((scope, mode) => {
                         const plan = new map.MovePlan();
                         plan.credential = credential;
@@ -169,7 +169,7 @@ class TownInnPostHouse {
                             map.enterTown(credential, destinationTownId, eventHandler).then(() => {
                                 map.publishEvent(map._event_enter_town, {"town": destinationTown.name});
                                 bank.depositIntoTownBank(credential, undefined).then(() => {
-                                    eventHandler(event.EVENT_DEPOSIT_AT_TOWN, {});
+                                    event.publishEvent(event._event_town_deposit);
                                     $("#returnButton").attr("value", destinationTown.name + "欢迎您的到来");
                                     $("#returnButton").removeAttr("style");
                                     $("#returnButton").prop("disabled", false);
