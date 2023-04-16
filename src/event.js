@@ -9,6 +9,7 @@
 
 import * as page from "./page";
 
+export const _event_town_leave = "_event_town_leave";
 export const _event_town_target = "_event_town_target";
 export const _event_town_deposit = "_event_town_deposit";
 export const _event_town_withdraw = "_event_town_withdraw";
@@ -53,6 +54,14 @@ function getEventHandlers() {
         }
     };
     const handlers = {};
+    handlers[_event_town_leave] = function (data) {
+        const player = doGetEventPlayer(data);
+        let town = doGetEventTown(data);
+        if (town === undefined) {
+            town = "所在城市";
+        }
+        page.publishMessageBoard(player + "已经离开了" + town);
+    };
     handlers[_event_town_target] = function (data) {
         const player = doGetEventPlayer(data);
         const town = doGetEventTown(data);
