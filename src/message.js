@@ -212,9 +212,17 @@ function getMessageHandlers() {
     return handlers;
 }
 
-export function publishMessage(id, data) {
+export function publishMessageBoard(id, data) {
     const handler = getMessageHandlers()[id];
     if (handler !== undefined) {
         handler(data);
     }
+}
+
+export function initializeMessageBoard(htmlMessage) {
+    page.initializeMessageBoard(htmlMessage);
+}
+
+export function resetMessageBoard() {
+    page.resetMessageBoard();
 }

@@ -52,6 +52,12 @@ export function createFooterNPC(name) {
 // M E S S A G E   B O A R D
 // ----------------------------------------------------------------------------
 
+export function resetMessageBoard() {
+    if ($("#messageBoard").length > 0) {
+        $("#messageBoard").html("");
+    }
+}
+
 export function initializeMessageBoard(message) {
     if ($("#messageBoard").length > 0) {
         $("#messageBoard").html(message);
