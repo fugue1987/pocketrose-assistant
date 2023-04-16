@@ -260,12 +260,17 @@ class TownWeaponStore {
             });
         }
 
+        let spaceAvailable = true;
         if ($("select[name='num']").find("option:first").length === 0) {
+            spaceAvailable = false;
             $("#buyButton").attr("value", "身上没有富裕空间");
             $("#buyButton").prop("disabled", true);
         }
 
-        npc.message("<li><a href='javascript:void(0)' id='depositSell' style='color: lightyellow'>售卖款自动存银行</a></li>");
+        npc.message("<li><a href='javascript:void(0)' id='depositSell' style='color: lightyellow'>卖后存</a></li>");
+        if (spaceAvailable) {
+            npc.message("<li><a href='javascript:void(0)' id='withdrawBuy' style='color: lightyellow'>取钱买</a></li>");
+        }
 
         $("#depositSell").click(function () {
             const request = {};
@@ -280,7 +285,7 @@ class TownWeaponStore {
                 }
             }
             if (request["select"] !== undefined) {
-                network.sendPostRequest("town.cgi", request, function () {
+                network.sendPostRequest("town.cgi", request, function (html) {
                     const credential = generateCredential();
                     bank.depositIntoTownBank(credential, undefined).then(() => {
                         $("#returnButton").trigger("click");
@@ -288,6 +293,25 @@ class TownWeaponStore {
                 });
             }
         });
+        if ($("#withdrawBuy").length > 0) {
+            $("#withdrawBuy").click(function () {
+                const radio = $($("table")[7]).find("input:radio[name='select']:checked");
+                if (radio.val() !== undefined) {
+                    const price = parseInt(util.substringBefore($(radio).parent().next().next().text(), " "));
+                    const count = parseInt($("select[name='num']").find("option:selected").val());
+                    let totalPrice = price * count;
+                    if (totalPrice > 0) {
+                        totalPrice = Math.max(10000, totalPrice);
+                    }
+                    const cash = page.getRoleCash();
+                    const amount = bank.calculateCashDifferenceAmount(cash, totalPrice);
+                    const credential = page.generateCredential();
+                    bank.withdrawFromTownBank(credential, amount).then(() => {
+                        $("#buyButton").trigger("click");
+                    });
+                }
+            });
+        }
     }
 }
 

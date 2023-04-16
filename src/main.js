@@ -525,7 +525,7 @@ function postProcessCityRelatedFunctionalities(htmlText) {
     }
     if (htmlText.indexOf(" Gold卖出。") !== -1) {
         // 物品卖出完成
-        __city_itemSold(htmlText);
+        //__city_itemSold(htmlText);
     }
     if (htmlText.indexOf("*  藏宝图以旧换新业务 *") !== -1) {
         //enhanceTownAdventurerGuild(htmlText);
