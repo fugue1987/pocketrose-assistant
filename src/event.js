@@ -10,8 +10,6 @@
 import * as page from "./page";
 
 export const EVENT_DEPOSIT_AT_TOWN = "EVENT_DEPOSIT_AT_TOWN";
-export const EVENT_ENTER_CASTLE = "EVENT_ENTER_CASTLE";
-export const EVENT_ENTER_CASTLE_ENTRY = "EVENT_ENTER_CASTLE_ENTRY";
 export const EVENT_ENTER_TOWN = "EVENT_ENTER_TOWN";
 export const EVENT_ENTER_TOWN_AWAIT = "EVENT_ENTER_TOWN_AWAIT";
 export const EVENT_ENTER_TOWN_GUARD = "EVENT_ENTER_TOWN_GUARD";
@@ -26,13 +24,6 @@ export function createEventHandler(role) {
     return function (id, data) {
         if (id === EVENT_DEPOSIT_AT_TOWN) {
             page.publishMessageBoard(role.name + "把身上全部现金存入了银行");
-        }
-        if (id === EVENT_ENTER_CASTLE) {
-            const castleName = data["castleName"];
-            page.publishMessageBoard(role.name + "进入了城堡'" + castleName + "'");
-        }
-        if (id === EVENT_ENTER_CASTLE_ENTRY) {
-            page.publishMessageBoard(role.name + "进入城堡入口");
         }
         if (id === EVENT_ENTER_TOWN) {
             const townName = data["townName"];
