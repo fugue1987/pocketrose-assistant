@@ -7,9 +7,11 @@
 import * as bank from "./bank";
 import * as dashboard from "./dashboard";
 import * as message from "./message";
+import * as network from "./network";
 import * as geo from "./geo";
 import * as map from "./map";
 import * as page from "./page";
+import {generateCredential} from "./page";
 import * as pocket from "./pocket";
 import * as user from "./user";
 import * as util from "./util";
@@ -232,6 +234,13 @@ class TownWeaponStore {
     }
 
     process() {
+        const npc = page.createFooterNPC("青鸟");
+        npc.welcome("近期本店进行了升级改造，现在特推出以下增值业务回馈新老客户：<br>");
+
+        $("input:submit[value='物品卖出']").attr("id", "sellButton");
+        $("input:submit[value='买入']").attr("id", "buyButton");
+        $("input:submit[value='返回城市']").attr("id", "returnButton");
+
         let tbody = undefined;
         $("th").each(function (_idx, th) {
             if ($(th).text() === "所持物品") {
@@ -250,6 +259,35 @@ class TownWeaponStore {
                 }
             });
         }
+
+        if ($("select[name='num']").find("option:first").length === 0) {
+            $("#buyButton").attr("value", "身上没有富裕空间");
+            $("#buyButton").prop("disabled", true);
+        }
+
+        npc.message("<li><a href='javascript:void(0)' id='depositSell' style='color: lightyellow'>售卖款自动存银行</a></li>");
+
+        $("#depositSell").click(function () {
+            const request = {};
+            $("#sellButton").parent().find("input:hidden").each(function (_idx, input) {
+                const name = $(input).attr("name");
+                request[name] = $(input).val();
+            });
+            if (tbody !== undefined) {
+                const select = $(tbody).find("input:radio[name='select']:checked").val();
+                if (select !== undefined) {
+                    request["select"] = select;
+                }
+            }
+            if (request["select"] !== undefined) {
+                network.sendPostRequest("town.cgi", request, function () {
+                    const credential = generateCredential();
+                    bank.depositIntoTownBank(credential, undefined).then(() => {
+                        $("#returnButton").trigger("click");
+                    });
+                });
+            }
+        });
     }
 }
 

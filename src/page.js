@@ -5,6 +5,7 @@
  */
 
 import {loadNPC} from "./npc";
+import * as util from "./util";
 import {Credential} from "./util";
 import * as pocket from "./pocket";
 
@@ -143,4 +144,25 @@ export function findAndCreateMessageBoard(s) {
             }
         });
     }
+}
+
+export function getRoleName() {
+    let name = "";
+    $("td:parent").each(function (_idx, td) {
+        if ($(td).text() === "姓名") {
+            name = $(td).parent().next().find("td:first").text();
+        }
+    });
+    return name;
+}
+
+export function getRoleCash() {
+    let cash = 0;
+    $("td:parent").each(function (_idx, td) {
+        if ($(td).text() === "所持金") {
+            const text = $(td).next().text();
+            cash = parseInt(util.substringBefore(text, " "));
+        }
+    });
+    return cash;
 }
