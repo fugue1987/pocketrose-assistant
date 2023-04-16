@@ -631,31 +631,32 @@ class TownPetExpress {
 
     process() {
         $("input[value='发送']").attr("id", "sendButton");
+        $("input[value='返回城市']").attr("id", "returnButton");
 
         const npc = page.createFooterNPC("末末");
         npc.welcome("我来啦！");
         npc.message("哈哈，我又来啦！没想到吧？这边还是我。");
 
-        let cash = 0;
-        $("td:parent").each(function (_idx, td) {
-            if ($(td).text() === "所持金") {
-                let goldText = $(td).next().text();
-                cash = goldText.substring(0, goldText.indexOf(" "));
-            }
-        });
-
-        const amount = bank.calculateCashDifferenceAmount(cash, 100000);
-        if (amount > 0) {
-            const message = "差" + amount + "万，老规矩，还是" +
-                "<a href='javascript:void(0)' id='withdrawSend'><b style='color:yellow'>取钱发送</b></a>？";
-            npc.message(message);
-            $("#withdrawSend").click(function () {
-                const credential = page.generateCredential();
-                bank.withdrawFromTownBank(credential, amount).then(() => {
-                    $("#sendButton").trigger("click");
+        $("#sendButton").attr("type", "button");
+        $("#sendButton").attr("value", "自动取钱发送");
+        $("#sendButton").click(function () {
+            const cash = page.getRoleCash();
+            const amount = bank.calculateCashDifferenceAmount(cash, 100000);
+            const credential = generateCredential();
+            bank.withdrawFromTownBank(credential, amount).then(() => {
+                const select = $("input:radio[name='select']:checked").val();
+                const eid = $("select[name='eid']").val();
+                const request = credential.asRequest();
+                request["select"] = select;
+                request["eid"] = eid;
+                request["mode"] = "PET_SEND2";
+                network.sendPostRequest("town.cgi", request, function () {
+                    bank.depositIntoTownBank(credential, undefined).then(() => {
+                        $("#returnButton").trigger("click");
+                    });
                 });
             });
-        }
+        });
     }
 }
 
