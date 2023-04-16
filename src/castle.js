@@ -177,9 +177,12 @@ class CastlePostHouse {
                 plan.destination = town.coordinate;
                 map.executeMovePlan(plan).then(() => {
                     enterTown(credential, town.id).then(() => {
-                        page.publishMessageBoard(role.name + "已经成功到达" + town.name);
+                        message.publishMessageBoard(message._message_town_enter, {
+                            "player": role.name,
+                            "town": town.name
+                        });
                         finance.depositIntoTownBank(credential, undefined).then(() => {
-                            page.publishMessageBoard(role.name + "将全部现金存入银行");
+                            message.publishMessageBoard(message._message_town_deposit, {"player": role.name});
                             $("form[action='castlestatus.cgi']").attr("action", "status.cgi");
                             $("input:hidden[value='CASTLESTATUS']").attr("value", "STATUS");
                             $("input:submit[value='返回城堡']").prop("disabled", false);
