@@ -415,12 +415,19 @@ class TownAdventurerGuild {
                         $("#treasure").prop("disabled", true);
                     }
 
+                    const player = $("#player").text();
                     message.initializeMessageBoard("放心，实时播报动态我们是专业的，绝对不比隔壁新开张的驿站差：<br>");
                     const credential = page.generateCredential();
+                    message.writeMessageBoard(player + "登上了车身斑驳的马车，一股说不出的味道扑鼻而来");
+                    message.writeMessageBoard(player + "皱了皱眉头，很不舒服的感觉");
+                    message.writeMessageBoard("嘎吱嘎吱声中，马车出发了");
+
                     map.leaveTown(credential).then(plan => {
                         plan.source = town.coordinate;
                         plan.destination = new geo.Coordinate(x, y);
                         map.executeMovePlan(plan).then(() => {
+                            message.writeMessageBoard("\"我们到了\"，车夫粗鲁的喊声惊醒了昏昏欲睡的" + player);
+                            message.writeMessageBoard(player + "暗暗发誓再也不乘坐这架马车了");
                             $("#returnButton").attr("value", "摇摇晃晃走下马车");
                             $("#returnButton").prop("disabled", false);
                             $("#returnButton").removeAttr("style");
