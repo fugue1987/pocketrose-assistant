@@ -9,11 +9,6 @@
 
 import * as page from "./page";
 
-export function createEventHandler(role) {
-    return function (id, data) {
-    };
-}
-
 export const _event_town_target = "_event_town_target";
 export const _event_town_deposit = "_event_town_deposit";
 export const _event_town_withdraw = "_event_town_withdraw";

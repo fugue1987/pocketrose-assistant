@@ -69,11 +69,10 @@ export class MovePlan {
 /**
  * 执行移动计划的入口函数
  * @param plan 移动计划
- * @param eventHandler 事件处理器
  * @returns {Promise<void>}
  */
-export async function executeMovePlan(plan, eventHandler) {
-    const doExecuteMovePlan = (plan, eventHandler) => {
+export async function executeMovePlan(plan) {
+    const doExecuteMovePlan = (plan) => {
         return new Promise((resolve) => {
             const pathList = geo.calculatePath(
                 plan.source,
@@ -88,15 +87,14 @@ export async function executeMovePlan(plan, eventHandler) {
                 0,
                 function () {
                     resolve();
-                },
-                eventHandler
+                }
             );
         });
     };
-    await doExecuteMovePlan(plan, eventHandler);
+    await doExecuteMovePlan(plan);
 }
 
-function moveOnPath(credential, pathList, index, callback, eventHandler) {
+function moveOnPath(credential, pathList, index, callback) {
     if (pathList.length === 1 || index === pathList.length - 1) {
         // 路径中只有一个点，表示起点和终点是一个点，直接结束
         // 已经移动到最后一个点
@@ -122,7 +120,7 @@ function moveOnPath(credential, pathList, index, callback, eventHandler) {
                     "distance": distance,
                     "coordinate": to
                 });
-                moveOnPath(credential, pathList, index + 1, callback, eventHandler);
+                moveOnPath(credential, pathList, index + 1, callback);
             });
         });
     }
@@ -131,11 +129,10 @@ function moveOnPath(credential, pathList, index, callback, eventHandler) {
 /**
  * 离开当前所在城市的行动
  * @param credential 用户凭证
- * @param eventHandler 事件处理器
  * @returns {Promise<string, string>}
  */
-export async function leaveTown(credential, eventHandler) {
-    const doLeaveTown = (credential, eventHandler) => {
+export async function leaveTown(credential) {
+    const doLeaveTown = (credential) => {
         return new Promise((resolve) => {
             const request = credential.asRequest();
             request["navi"] = "on";
@@ -160,17 +157,16 @@ export async function leaveTown(credential, eventHandler) {
             });
         });
     };
-    return await doLeaveTown(credential, eventHandler);
+    return await doLeaveTown(credential);
 }
 
 /**
  * 离开当前所在城堡
  * @param credential 用户凭证
- * @param eventHandler 事件处理器
  * @returns {Promise<string, string>}
  */
-export async function leaveCastle(credential, eventHandler) {
-    const doLeaveCastle = (credential, eventHandler) => {
+export async function leaveCastle(credential) {
+    const doLeaveCastle = (credential) => {
         return new Promise((resolve) => {
             const request = credential.asRequest();
             request["navi"] = "on";
@@ -195,18 +191,17 @@ export async function leaveCastle(credential, eventHandler) {
             });
         });
     };
-    return await doLeaveCastle(credential, eventHandler);
+    return await doLeaveCastle(credential);
 }
 
 /**
  * 进入城市，如果碰上门卫则自动缴入城费（必须保证身上有足够的现金）
  * @param credential 用户凭证
  * @param townId 城市ID
- * @param eventHandler 事件处理器
  * @returns {Promise<void>}
  */
-export async function enterTown(credential, townId, eventHandler) {
-    const doEnterTown = (credential, townId, eventHandler) => {
+export async function enterTown(credential, townId) {
+    const doEnterTown = (credential, townId) => {
         return new Promise((resolve) => {
             publishEvent(_event_enter_town_await);
             latencyExecute(55000, function () {
@@ -231,11 +226,11 @@ export async function enterTown(credential, townId, eventHandler) {
             });
         });
     };
-    await doEnterTown(credential, townId, eventHandler);
+    await doEnterTown(credential, townId);
 }
 
-export async function enterCastle(credential, eventHandler) {
-    const doEnterCastle = (credential, eventHandler) => {
+export async function enterCastle(credential) {
+    const doEnterCastle = (credential) => {
         return new Promise((resolve) => {
             const request = credential.asRequest();
             request["mode"] = "CASTLE_ENTRY";
@@ -245,7 +240,7 @@ export async function enterCastle(credential, eventHandler) {
             });
         });
     };
-    await doEnterCastle(credential, eventHandler);
+    await doEnterCastle(credential);
 }
 
 // ============================================================================

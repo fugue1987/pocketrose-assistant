@@ -12,7 +12,6 @@ import * as pocket from "./pocket";
 import * as util from "./util";
 import * as finance from "./bank";
 import * as user from "./user";
-import {createEventHandler} from "./event";
 
 /**
  * 城堡相关页面的处理入口
@@ -172,9 +171,7 @@ class CastlePostHouse {
         user.loadRole(credential).then(role => {
             $("#role_name").text(role.name);
 
-            const eventHandler = createEventHandler(role);
-
-            leaveCastle(credential, eventHandler).then((scope, mode) => {
+            leaveCastle(credential).then((scope, mode) => {
                 const plan = new map.MovePlan();
                 plan.credential = credential;
                 plan.source = role.coordinate;
