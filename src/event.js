@@ -14,6 +14,7 @@ export const _event_town_target = "_event_town_target";
 export const _event_town_deposit = "_event_town_deposit";
 export const _event_town_withdraw = "_event_town_withdraw";
 
+export const _event_castle_leave = "_event_castle_leave";
 export const _event_castle_target = "_event_castle_target";
 
 export const _event_move = "_event_move";
@@ -54,6 +55,9 @@ function getEventHandlers() {
         }
     };
     const handlers = {};
+    // ------------------------------------------------------------------------
+    // TOWN related event handlers
+    // ------------------------------------------------------------------------
     handlers[_event_town_leave] = function (data) {
         const player = doGetEventPlayer(data);
         let town = doGetEventTown(data);
@@ -84,6 +88,17 @@ function getEventHandlers() {
         if (amount !== undefined && amount > 0) {
             page.publishMessageBoard(player + "从城市银行提取了" + amount + "万现金");
         }
+    };
+    // ------------------------------------------------------------------------
+    // CASTLE related event handlers
+    // ------------------------------------------------------------------------
+    handlers[_event_castle_leave] = function (data) {
+        const player = doGetEventPlayer(data);
+        let castle = doGetEventCastle(data);
+        if (castle === undefined) {
+            castle = "城堡";
+        }
+        page.publishMessageBoard(player + "已经离开了" + castle);
     };
     handlers[_event_castle_target] = function (data) {
         const player = doGetEventPlayer(data);

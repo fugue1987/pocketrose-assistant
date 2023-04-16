@@ -180,7 +180,7 @@ export async function leaveCastle(credential) {
             request["out"] = "1";
             request["mode"] = "MAP_MOVE";
             sendPostRequest("map.cgi", request, function (html) {
-                publishEvent(_event_leave_castle, {});
+                event.publishEvent(event._event_castle_leave);
 
                 const scope = $(html).find("select[name='chara_m']")
                     .find("option:last").attr("value");
@@ -264,7 +264,6 @@ export const _event_enter_town = "_event_enter_town";
 export const _event_enter_town_await = "_event_enter_town_await";
 export const _event_enter_town_guard = "_event_enter_town_guard";
 export const _event_enter_town_guard_pass = "_event_enter_town_guard_pass";
-export const _event_leave_castle = "_event_leave_castle";
 
 export function publishEvent(id, data) {
     const player = readEventData(data, "player", "你");
@@ -297,15 +296,6 @@ export function publishEvent(id, data) {
     }
     if (id === _event_enter_town_guard_pass) {
         page.publishMessageBoard("门卫通情达理的收取了入城费用放" + player + "入城");
-    }
-    if (id === _event_leave_castle) {
-        let castle = readEventData(data, "castle");
-        if (castle === undefined) {
-            castle = "所在城堡";
-        } else {
-            castle = "<b style='color:darkorange'>" + castle + "</b>";
-        }
-        page.publishMessageBoard(player + "已经离开了" + castle);
     }
 }
 
