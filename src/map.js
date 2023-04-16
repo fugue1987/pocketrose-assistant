@@ -214,7 +214,7 @@ export async function leaveCastle(credential) {
 export async function enterTown(credential, townId) {
     const doEnterTown = (credential, townId) => {
         return new Promise((resolve) => {
-            publishEvent(_event_enter_town_await);
+            event.publishMessage(event._event_town_enter_await);
             latencyExecute(55000, function () {
                 const request = credential.asRequest();
                 request["townid"] = townId;
@@ -258,15 +258,10 @@ export async function enterCastle(credential) {
 // 移动时相关事件处理功能
 // ============================================================================
 
-export const _event_enter_town_await = "_event_enter_town_await";
 export const _event_enter_town_guard = "_event_enter_town_guard";
 export const _event_enter_town_guard_pass = "_event_enter_town_guard_pass";
 
 export function publishEvent(id, data) {
-    const player = readEventData(data, "player", "你");
-    if (id === _event_enter_town_await) {
-        page.publishMessageBoard(player + "等待进城冷却中......(约55秒)");
-    }
     if (id === _event_enter_town_guard) {
         page.publishMessageBoard(player + "与门卫交涉中......");
     }
