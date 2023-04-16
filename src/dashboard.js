@@ -9,6 +9,10 @@ export class TownDashboardProcessor {
 
     #renderHTML() {
         $("option[value='INN']").text("客栈·驿站");
+        $("option[value='ARM_SHOP']").text("武器屋(v2.0)");
+        $("option[value='PRO_SHOP']").text("防具屋(v2.0)");
+        $("option[value='ACC_SHOP']").text("饰品屋(v2.0)");
+        $("option[value='ITEM_SHOP']").text("物品屋(v2.0)");
         $("option[value='LETTER']").text("口袋助手设置");
         $("option[value='LETTER']").attr("style", "background:#20c0ff");
         $("option[value='CHANGEMAP']").text("冒险家公会");

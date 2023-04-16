@@ -35,6 +35,8 @@ export class TownRequestInterceptor {
             new TownWeaponStore().process();
         } else if (text.includes("＜＜　□　防具屋　□　＞＞")) {
             new TownArmorStore().process();
+        } else if (text.includes("＜＜　□　饰品屋　□　＞＞")) {
+            new TownAccessoryStore().process();
         } else if (text.includes("* 运 送 屋 *")) {
             new TownItemExpress().process();
         } else if (text.includes("* 宠 物 赠 送 屋 *")) {
@@ -390,6 +392,92 @@ class TownArmorStore {
                             $("#returnButton").prepend("<input type='hidden' name='town' value='" + townId + "'>" +
                                 "<input type='hidden' name='con_str' value='50'>");
                             $("input:hidden[value='STATUS']").attr("value", "PRO_SHOP");
+                            $("form[action='status.cgi']").attr("action", "town.cgi");
+                            $("#returnButton").trigger("click");
+                        });
+                    });
+                }
+            });
+        }
+    }
+}
+
+/**
+ * 饰品屋
+ */
+class TownAccessoryStore {
+    constructor() {
+    }
+
+    process() {
+        const npc = page.createFooterNPC("青鸟");
+        npc.welcome("饰品屋全新改版2.0上线，近期本店进行了升级改造，和银行签署了转账协议，现在所有交易都可以线上完成了。");
+
+        $("input:submit[value='物品卖出']").attr("id", "sellButton");
+        $("input:submit[value='买入']").attr("id", "buyButton");
+        $("input:submit[value='返回城市']").attr("id", "returnButton");
+
+        page.disableProhibitSellingItems($("table")[5]);
+
+        if ($("select[name='num']").find("option:first").length === 0) {
+            $("#buyButton").attr("value", "身上没有富裕空间");
+            $("#buyButton").prop("disabled", true);
+        }
+
+        $("#sellButton").attr("type", "button");
+        $("#sellButton").attr("value", "物品卖出后自动存钱");
+        $("#sellButton").click(function () {
+            const request = {};
+            $("#sellButton").parent().find("input:hidden").each(function (_idx, input) {
+                const name = $(input).attr("name");
+                request[name] = $(input).val();
+            });
+            const select = $($("table")[5]).find("input:radio[name='select']:checked").val();
+            if (select !== undefined) {
+                request["select"] = select;
+            }
+            if (request["select"] !== undefined) {
+                network.sendPostRequest("town.cgi", request, function () {
+                    const credential = generateCredential();
+                    bank.depositIntoTownBank(credential, undefined).then(() => {
+                        const townId = $("input:hidden[name='townid']").val();
+                        $("#returnButton").prepend("<input type='hidden' name='town' value='" + townId + "'>" +
+                            "<input type='hidden' name='con_str' value='50'>");
+                        $("input:hidden[value='STATUS']").attr("value", "ACC_SHOP");
+                        $("form[action='status.cgi']").attr("action", "town.cgi");
+                        $("#returnButton").trigger("click");
+                    });
+                });
+            }
+        });
+        if (!$("#buyButton").prop("disabled")) {
+            $("#buyButton").attr("type", "button");
+            $("#buyButton").attr("value", "自动取钱购买");
+            $("#buyButton").click(function () {
+                const radio = $($("table")[7]).find("input:radio[name='select']:checked");
+                if (radio.val() !== undefined) {
+                    const price = parseInt(util.substringBefore($(radio).parent().next().next().text(), " "));
+                    const count = parseInt($("select[name='num']").find("option:selected").val());
+                    let totalPrice = price * count;
+                    if (totalPrice > 0) {
+                        totalPrice = Math.max(10000, totalPrice);
+                    }
+                    const cash = page.getRoleCash();
+                    const amount = bank.calculateCashDifferenceAmount(cash, totalPrice);
+                    const credential = page.generateCredential();
+                    bank.withdrawFromTownBank(credential, amount).then(() => {
+                        const request = {};
+                        $($("table")[7]).find("input:hidden").each(function (_idx, input) {
+                            const name = $(input).attr("name");
+                            request[name] = $(input).val();
+                        });
+                        request["select"] = radio.val();
+                        request["num"] = count;
+                        network.sendPostRequest("town.cgi", request, function () {
+                            const townId = $("input:hidden[name='townid']").val();
+                            $("#returnButton").prepend("<input type='hidden' name='town' value='" + townId + "'>" +
+                                "<input type='hidden' name='con_str' value='50'>");
+                            $("input:hidden[value='STATUS']").attr("value", "ACC_SHOP");
                             $("form[action='status.cgi']").attr("action", "town.cgi");
                             $("#returnButton").trigger("click");
                         });
