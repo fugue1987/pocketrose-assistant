@@ -501,9 +501,6 @@ function postProcessCityRelatedFunctionalities(htmlText) {
         // 宠物图鉴
         __town_petMap(htmlText);
     }
-    if (htmlText.indexOf("* 宠 物 赠 送 屋 *") !== -1) {
-        __town_houseForSendingPets(htmlText);
-    }
 }
 
 // 城市 -> 宠物图鉴
@@ -532,40 +529,6 @@ function __town_petMap(htmlText) {
             $("input[name='mode']").attr("value", "PETBORN");
             $("form[action='status.cgi']").attr("action", "mydata.cgi");
             $("input[value='返回城市']").trigger("click");
-        });
-    }
-}
-
-/**
- * 城市送宠屋增强实现。
- * @param htmlText HTML文本
- * @private
- */
-function __town_houseForSendingPets(htmlText) {
-    __page_constructNpcMessageTable("末末");
-    __page_writeNpcMessage("哈哈，我又来啦！没想到吧？这边还是我。");
-
-    $("input[value='发送']").attr("id", "sendPetSubmit");
-
-    let gold = 0;
-    $("td:parent").each(function (_idx, td) {
-        if ($(td).text() === "所持金") {
-            let goldText = $(td).next().text();
-            gold = goldText.substring(0, goldText.indexOf(" "));
-        }
-    });
-
-    if (gold < 100000) {
-        let delta = Math.ceil((100000 - gold) / 10000);
-        let message = "差" + delta + "万，老规矩，还是<a href='javascript:void(0)' id='safeSendPet'><b>取钱发送</b></a>？";
-        __page_writeNpcMessage(message);
-
-        let id = __page_readIdFromCurrentPage();
-        let pass = __page_readPassFromCurrentPage();
-        $("#safeSendPet").click(function () {
-            __ajax_withdrawGolds(id, pass, delta, function (data) {
-                $("#sendPetSubmit").trigger("click");
-            });
         });
     }
 }
