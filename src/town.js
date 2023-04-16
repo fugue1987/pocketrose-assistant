@@ -415,6 +415,25 @@ class TownAdventurerGuild {
                     $("#coach_1").prop("disabled", true);
                     $("#coach_2").prop("disabled", true);
                     $("#coach_3").prop("disabled", true);
+
+                    const credential = page.generateCredential();
+                    const role = new user.Role();
+                    role.name = "你";
+                    const eventHandler = event.createEventHandler(role);
+
+                    map.leaveTown(credential, eventHandler).then((scope, mode) => {
+                        const plan = new map.MovePlan();
+                        plan.credential = credential;
+                        plan.source = town.coordinate;
+                        plan.destination = new geo.Coordinate(x, y);
+                        plan.scope = scope;
+                        plan.mode = mode;
+                        map.executeMovePlan(plan, eventHandler).then(() => {
+                            $("#returnButton").attr("value", "摇摇晃晃走下马车");
+                            $("#returnButton").prop("disabled", false);
+                            $("#returnButton").removeAttr("style");
+                        });
+                    });
                 }
             }
         });
