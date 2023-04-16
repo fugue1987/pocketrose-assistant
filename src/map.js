@@ -6,10 +6,8 @@
 
 import * as geo from "./geo";
 import * as network from "./network";
-import {sendPostRequest} from "./network";
 import * as util from "./util";
-import {latencyExecute} from "./util";
-import * as event from "./message";
+import * as message from "./message";
 
 /**
  * 用于描述移动计划的数据结构。表述了谁从哪里移动到哪里，怎么样的移动方式。
@@ -80,7 +78,7 @@ export async function executeMovePlan(plan) {
                 plan.scope,
                 plan.mode
             );
-            event.publishMessage(event._event_move_path, {"pathList": pathList});
+            message.publishMessage(message._event_move_path, {"pathList": pathList});
             moveOnPath(
                 plan.credential,
                 pathList,
@@ -100,7 +98,7 @@ function moveOnPath(credential, pathList, index, callback) {
         // 已经移动到最后一个点
         callback();
     } else {
-        event.publishMessage(event._event_move_await, {"timeout": 55});
+        message.publishMessage(message._event_move_await, {"timeout": 55});
         util.latencyExecute(55000, function () {
             const from = pathList[index];
             const to = pathList[index + 1];
@@ -115,7 +113,7 @@ function moveOnPath(credential, pathList, index, callback) {
             request["direct"] = direction.code;
             request["chara_m"] = distance;
             network.sendPostRequest("map.cgi", request, function () {
-                event.publishMessage(event._event_move, {
+                message.publishMessage(message._event_move, {
                     "direction": direction.name,
                     "distance": distance,
                     "coordinate": to
@@ -138,8 +136,8 @@ export async function leaveTown(credential) {
             request["navi"] = "on";
             request["out"] = "1";
             request["mode"] = "MAP_MOVE";
-            sendPostRequest("map.cgi", request, function (html) {
-                event.publishMessage(event._event_town_leave);
+            network.sendPostRequest("map.cgi", request, function (html) {
+                message.publishMessage(message._event_town_leave);
 
                 const scope = $(html).find("select[name='chara_m']")
                     .find("option:last").attr("value");
@@ -151,8 +149,8 @@ export async function leaveTown(credential) {
                         mode = "QUEEN";
                     }
                 });
-                event.publishMessage(event._event_move_scope, {"scope": scope});
-                event.publishMessage(event._event_move_mode, {"mode": mode});
+                message.publishMessage(message._event_move_scope, {"scope": scope});
+                message.publishMessage(message._event_move_mode, {"mode": mode});
 
                 const plan = new MovePlan();
                 plan.credential = credential;
@@ -178,8 +176,8 @@ export async function leaveCastle(credential) {
             request["navi"] = "on";
             request["out"] = "1";
             request["mode"] = "MAP_MOVE";
-            sendPostRequest("map.cgi", request, function (html) {
-                event.publishMessage(event._event_castle_leave);
+            network.sendPostRequest("map.cgi", request, function (html) {
+                message.publishMessage(message._event_castle_leave);
 
                 const scope = $(html).find("select[name='chara_m']")
                     .find("option:last").attr("value");
@@ -191,8 +189,8 @@ export async function leaveCastle(credential) {
                         mode = "QUEEN";
                     }
                 });
-                event.publishMessage(event._event_move_mode, {"mode": mode});
-                event.publishMessage(event._event_move_scope, {"scope": scope});
+                message.publishMessage(message._event_move_mode, {"mode": mode});
+                message.publishMessage(message._event_move_scope, {"scope": scope});
                 const plan = new MovePlan();
                 plan.credential = credential;
                 plan.scope = scope;
@@ -213,20 +211,20 @@ export async function leaveCastle(credential) {
 export async function enterTown(credential, townId) {
     const doEnterTown = (credential, townId) => {
         return new Promise((resolve) => {
-            event.publishMessage(event._event_town_enter_await);
-            latencyExecute(55000, function () {
+            message.publishMessage(message._event_town_enter_await);
+            util.latencyExecute(55000, function () {
                 const request = credential.asRequest();
                 request["townid"] = townId;
                 request["mode"] = "MOVE";
-                sendPostRequest("status.cgi", request, function (html) {
+                network.sendPostRequest("status.cgi", request, function (html) {
                     if ($(html).text().includes("战胜门卫。")) {
-                        event.publishMessage(event._event_town_enter_guard);
+                        message.publishMessage(message._event_town_enter_guard);
                         const request = credential.asRequest();
                         request["townid"] = townId;
                         request["givemoney"] = "1";
                         request["mode"] = "MOVE";
                         network.sendPostRequest("status.cgi", request, function () {
-                            event.publishMessage(event._event_town_enter_guard_pass);
+                            message.publishMessage(message._event_town_enter_guard_pass);
                             resolve();
                         });
                     } else {
@@ -245,7 +243,7 @@ export async function enterCastle(credential) {
             const request = credential.asRequest();
             request["mode"] = "CASTLE_ENTRY";
             network.sendPostRequest("map.cgi", request, function () {
-                event.publishMessage(event._event_castle_entry);
+                message.publishMessage(message._event_castle_entry);
                 resolve();
             });
         });
