@@ -165,54 +165,6 @@ function __page_readPassFromCurrentPage() {
     return $("input[name='pass']").first().attr("value");
 }
 
-function convertEncodingToUtf8(response, fromEncoding) {
-    const decoder = new TextDecoder(fromEncoding);
-    const uint8Array = new Uint8Array(response.length);
-
-    for (let i = 0; i < response.length; i++) {
-        uint8Array[i] = response.charCodeAt(i);
-    }
-
-    return decoder.decode(uint8Array);
-}
-
-
-function readCastleInformation(id, pass, callback) {
-    fetch("castle_print.cgi", {
-        method: "GET"
-    })
-        .then((response) => {
-            if (!response.ok) {
-                throw new Error("RESPONSE was not ok");
-            }
-            return response.arrayBuffer();
-        })
-        .then((arrayBuffer) => {
-            const decoder = new TextDecoder("gb2312");
-            const html = decoder.decode(new Uint8Array(arrayBuffer));
-
-            const castles = {};
-            $(html).find("td").each(function (_idx, td) {
-                const tdText = $(td).text();
-                if (tdText.endsWith(" (自购)")) {
-                    const castleName = $(td).prev().text();
-                    const castleOwner = tdText.substring(0, tdText.indexOf(" (自购)"));
-                    const castleLocationText = $(td).next().text();
-                    const coordinate = castleLocationText.substring(1, castleLocationText.length - 1).split(",");
-                    const castleLocation = [parseInt(coordinate[0]), parseInt(coordinate[1])];
-                    castles[castleOwner] = {
-                        "name": castleName,
-                        "owner": castleOwner,
-                        "coordinate": castleLocation
-                    };
-                }
-            });
-            callback({"id": id, "pass": pass, "html": html}, castles);
-        })
-        .catch((error) => {
-            console.error("Error raised:", error);
-        });
-}
 
 /**
  * 异步读取并解析个人状态中的基础信息，完成后回调传入的函数。
@@ -366,26 +318,6 @@ function __ajax_lodgeAtInn(id, pass, callback) {
         type: "POST",
         url: "town.cgi",
         data: {id: id, pass: pass, mode: "RECOVERY"},
-        success: function (html) {
-            let data = {id: id, pass: pass};
-            callback(data);
-        }
-    });
-}
-
-/**
- * 存储所有的现金到银行
- * @param id ID
- * @param pass PASS
- * @param callback 回调函数，参数{id:x,pass:x}
- * @private
- * @deprecated
- */
-function __ajax_depositAllGolds(id, pass, callback) {
-    $.ajax({
-        type: "POST",
-        url: "town.cgi",
-        data: {id: id, pass: pass, mode: "BANK_SELL", azukeru: "all"},
         success: function (html) {
             let data = {id: id, pass: pass};
             callback(data);
