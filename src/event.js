@@ -17,7 +17,6 @@ export const EVENT_ENTER_TOWN = "EVENT_ENTER_TOWN";
 export const EVENT_ENTER_TOWN_AWAIT = "EVENT_ENTER_TOWN_AWAIT";
 export const EVENT_ENTER_TOWN_GUARD = "EVENT_ENTER_TOWN_GUARD";
 export const EVENT_ENTER_TOWN_GUARD_PASS = "EVENT_ENTER_TOWN_GUARD_PASS";
-export const EVENT_LEAVE_TOWN = "EVENT_LEAVE_TOWN";
 export const EVENT_MOVE = "EVENT_MOVE";
 export const EVENT_MOVE_AWAIT = "EVENT_MOVE_AWAIT";
 export const EVENT_TARGET_CASTLE = "EVENT_TARGET_CASTLE";
@@ -65,17 +64,6 @@ export function createEventHandler(role) {
         }
         if (id === EVENT_ENTER_TOWN_GUARD_PASS) {
             page.publishMessageBoard("门卫通情达理的收取了入城费用放" + role.name + "入城");
-        }
-        if (id === EVENT_LEAVE_TOWN) {
-            const townName = role.townName;
-            if (townName === undefined) {
-                page.publishMessageBoard(role.name + "已经离开了所在城市");
-            } else {
-                page.publishMessageBoard(role.name + "已经离开了<b style='color:darkorange'>" + townName + "</b>");
-            }
-            if (role.coordinate !== undefined) {
-                page.publishMessageBoard(role.name + "当前所在坐标" + role.coordinate.longText());
-            }
         }
         if (id === EVENT_MOVE) {
             const direction = data["direction"];

@@ -150,9 +150,7 @@ export async function leaveTown(credential, eventHandler) {
             request["out"] = "1";
             request["mode"] = "MAP_MOVE";
             sendPostRequest("map.cgi", request, function (html) {
-                if (eventHandler !== undefined) {
-                    eventHandler(event.EVENT_LEAVE_TOWN);
-                }
+                publishEvent(_event_leave_town, {});
 
                 const scope = $(html).find("select[name='chara_m']")
                     .find("option:last").attr("value");
@@ -271,8 +269,9 @@ export async function enterCastle(credential, eventHandler) {
 // ============================================================================
 
 export const _event_leave_castle = 1;
-export const _event_move_mode = 2;
-export const _event_move_scope = 3;
+export const _event_leave_town = 2;
+export const _event_move_mode = 3;
+export const _event_move_scope = 4;
 
 export function publishEvent(id, data) {
     const player = readEventData(data, "player", "你");
@@ -284,6 +283,15 @@ export function publishEvent(id, data) {
             castle = "<b style='color:darkorange'>" + castle + "</b>";
         }
         page.publishMessageBoard(player + "已经离开了" + castle);
+    }
+    if (id === _event_leave_town) {
+        let town = readEventData(data, "town");
+        if (town === undefined) {
+            town = "所在城市";
+        } else {
+            town = "<b style='color:darkorange'>" + town + "</b>";
+        }
+        page.publishMessageBoard(player + "已经离开了" + town);
     }
     if (id === _event_move_mode) {
         const mode = readEventData(data, "mode");
