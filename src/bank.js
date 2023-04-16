@@ -75,12 +75,16 @@ export async function withdrawFromTownBank(credential, amount) {
 export async function withdrawFromCastleBank(credential, amount) {
     const doWithdrawFromCastleBank = (credential, amount) => {
         return new Promise((resolve) => {
-            const request = credential.asRequest();
-            request["mode"] = "CASTLEBANK_BUY";
-            request["dasu"] = amount;
-            network.sendPostRequest("castle.cgi", request, function () {
+            if (amount === undefined || amount <= 0) {
                 resolve();
-            });
+            } else {
+                const request = credential.asRequest();
+                request["mode"] = "CASTLEBANK_BUY";
+                request["dasu"] = amount;
+                network.sendPostRequest("castle.cgi", request, function () {
+                    resolve();
+                });
+            }
         });
     }
     await doWithdrawFromCastleBank(credential, amount);
