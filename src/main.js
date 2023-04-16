@@ -519,10 +519,10 @@ function postProcessCityRelatedFunctionalities(htmlText) {
     //     htmlText.indexOf("＜＜　□　<b>饰品屋</b>　□　＞＞") !== -1) {
     //     __town_accessoryStore(htmlText);
     // }
-    if (htmlText.indexOf("＜＜　□　<B>物品屋</B>　□　＞＞") !== -1 ||
-        htmlText.indexOf("＜＜　□　<b>物品屋</b>　□　＞＞") !== -1) {
-        __town_itemStore(htmlText);
-    }
+    // if (htmlText.indexOf("＜＜　□　<B>物品屋</B>　□　＞＞") !== -1 ||
+    //     htmlText.indexOf("＜＜　□　<b>物品屋</b>　□　＞＞") !== -1) {
+    //     __town_itemStore(htmlText);
+    // }
     if (htmlText.indexOf(" Gold卖出。") !== -1) {
         // 物品卖出完成
         //__city_itemSold(htmlText);
