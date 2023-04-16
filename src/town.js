@@ -253,7 +253,9 @@ class TownWeaponStore {
             npc.message("<li><a href='javascript:void(0)' id='withdrawBuy' style='color: lightyellow'>取钱买</a></li>");
         }
 
-        $("#depositSell").click(function () {
+        $("#sellButton").attr("type", "button");
+        $("#sellButton").attr("value", "物品卖出后自动存钱");
+        $("#sellButton").click(function () {
             const request = {};
             $("#sellButton").parent().find("input:hidden").each(function (_idx, input) {
                 const name = $(input).attr("name");
@@ -267,20 +269,20 @@ class TownWeaponStore {
                 network.sendPostRequest("town.cgi", request, function () {
                     const credential = generateCredential();
                     bank.depositIntoTownBank(credential, undefined).then(() => {
-                        user.loadRole(credential).then(role => {
-                            const town = pocket.findTownByName(role.townName);
-                            $("#returnButton").prepend("<input type='hidden' name='town' value='" + town.id + "'>" +
-                                "<input type='hidden' name='con_str' value='50'>");
-                            $("input:hidden[value='STATUS']").attr("value", "ARM_SHOP");
-                            $("form[action='status.cgi']").attr("action", "town.cgi");
-                            $("#returnButton").trigger("click");
-                        });
+                        const townId = $("input:hidden[name='townid']").val();
+                        $("#returnButton").prepend("<input type='hidden' name='town' value='" + townId + "'>" +
+                            "<input type='hidden' name='con_str' value='50'>");
+                        $("input:hidden[value='STATUS']").attr("value", "ARM_SHOP");
+                        $("form[action='status.cgi']").attr("action", "town.cgi");
+                        $("#returnButton").trigger("click");
                     });
                 });
             }
         });
-        if ($("#withdrawBuy").length > 0) {
-            $("#withdrawBuy").click(function () {
+        if (!$("#buyButton").prop("disabled")) {
+            $("#buyButton").attr("type", "button");
+            $("#buyButton").attr("value", "自动取钱购买");
+            $("#buyButton").click(function () {
                 const radio = $($("table")[7]).find("input:radio[name='select']:checked");
                 if (radio.val() !== undefined) {
                     const price = parseInt(util.substringBefore($(radio).parent().next().next().text(), " "));
@@ -293,7 +295,21 @@ class TownWeaponStore {
                     const amount = bank.calculateCashDifferenceAmount(cash, totalPrice);
                     const credential = page.generateCredential();
                     bank.withdrawFromTownBank(credential, amount).then(() => {
-                        $("#buyButton").trigger("click");
+                        const request = {};
+                        $($("table")[7]).find("input:hidden").each(function (_idx, input) {
+                            const name = $(input).attr("name");
+                            request[name] = $(input).val();
+                        });
+                        request["select"] = radio.val();
+                        request["num"] = count;
+                        network.sendPostRequest("town.cgi", request, function () {
+                            const townId = $("input:hidden[name='townid']").val();
+                            $("#returnButton").prepend("<input type='hidden' name='town' value='" + townId + "'>" +
+                                "<input type='hidden' name='con_str' value='50'>");
+                            $("input:hidden[value='STATUS']").attr("value", "ARM_SHOP");
+                            $("form[action='status.cgi']").attr("action", "town.cgi");
+                            $("#returnButton").trigger("click");
+                        });
                     });
                 }
             });
