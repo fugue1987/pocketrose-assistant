@@ -153,13 +153,9 @@ class TownInnPostHouse {
                 const amount = bank.calculateCashDifferenceAmount(cash, 100000);
                 bank.withdrawFromTownBank(credential, amount).then(() => {
                     event.publishEvent(event._event_town_withdraw, {"amount": amount});
-                    map.leaveTown(credential).then((scope, mode) => {
-                        const plan = new map.MovePlan();
-                        plan.credential = credential;
+                    map.leaveTown(credential).then(plan => {
                         plan.source = source;
                         plan.destination = destination;
-                        plan.scope = scope;
-                        plan.mode = mode;
                         event.publishEvent(event._event_move_source, {"source": source});
                         event.publishEvent(event._event_move_destination, {"destination": destination});
                         map.executeMovePlan(plan).then(() => {
@@ -208,14 +204,9 @@ class TownInnPostHouse {
             event.publishEvent(event._event_castle_target, {"castle": castleName});
 
             const credential = page.generateCredential();
-            map.leaveTown(credential).then((scope, mode) => {
-                const plan = new map.MovePlan();
-                plan.credential = credential;
+            map.leaveTown(credential).then(plan => {
                 plan.source = source;
                 plan.destination = destination;
-                plan.scope = scope;
-                plan.mode = mode;
-
                 map.executeMovePlan(plan).then(() => {
                     map.enterCastle(credential).then(() => {
                         map.publishEvent(map._event_enter_castle, {"castle": castleName});
@@ -413,13 +404,9 @@ class TownAdventurerGuild {
                     $("#coach_3").prop("disabled", true);
 
                     const credential = page.generateCredential();
-                    map.leaveTown(credential).then((scope, mode) => {
-                        const plan = new map.MovePlan();
-                        plan.credential = credential;
+                    map.leaveTown(credential).then(plan => {
                         plan.source = town.coordinate;
                         plan.destination = new geo.Coordinate(x, y);
-                        plan.scope = scope;
-                        plan.mode = mode;
                         map.executeMovePlan(plan).then(() => {
                             $("#returnButton").attr("value", "摇摇晃晃走下马车");
                             $("#returnButton").prop("disabled", false);

@@ -171,14 +171,9 @@ class CastlePostHouse {
         user.loadRole(credential).then(role => {
             $("#role_name").text(role.name);
 
-            leaveCastle(credential).then((scope, mode) => {
-                const plan = new map.MovePlan();
-                plan.credential = credential;
+            leaveCastle(credential).then(plan => {
                 plan.source = role.coordinate;
                 plan.destination = town.coordinate;
-                plan.scope = scope;
-                plan.mode = mode;
-
                 map.executeMovePlan(plan).then(() => {
                     enterTown(credential, town.id).then(() => {
                         page.publishMessageBoard(role.name + "已经成功到达" + town.name);

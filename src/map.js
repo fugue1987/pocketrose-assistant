@@ -130,7 +130,7 @@ function moveOnPath(credential, pathList, index, callback) {
 /**
  * 离开当前所在城市的行动
  * @param credential 用户凭证
- * @returns {Promise<string, string>}
+ * @returns {Promise<MovePlan>}
  */
 export async function leaveTown(credential) {
     const doLeaveTown = (credential) => {
@@ -152,9 +152,15 @@ export async function leaveTown(credential) {
                         mode = "QUEEN";
                     }
                 });
-                event.publishEvent(event._event_move_mode, {"mode": mode});
                 event.publishEvent(event._event_move_scope, {"scope": scope});
-                resolve(scope, mode);
+                event.publishEvent(event._event_move_mode, {"mode": mode});
+
+                const plan = new MovePlan();
+                plan.credential = credential;
+                plan.scope = scope;
+                plan.mode = mode;
+
+                resolve(plan);
             });
         });
     };
@@ -164,7 +170,7 @@ export async function leaveTown(credential) {
 /**
  * 离开当前所在城堡
  * @param credential 用户凭证
- * @returns {Promise<string, string>}
+ * @returns {Promise<MovePlan>}
  */
 export async function leaveCastle(credential) {
     const doLeaveCastle = (credential) => {
@@ -188,7 +194,11 @@ export async function leaveCastle(credential) {
                 });
                 event.publishEvent(event._event_move_mode, {"mode": mode});
                 event.publishEvent(event._event_move_scope, {"scope": scope});
-                resolve(scope, mode);
+                const plan = new MovePlan();
+                plan.credential = credential;
+                plan.scope = scope;
+                plan.mode = mode;
+                resolve(plan);
             });
         });
     };
