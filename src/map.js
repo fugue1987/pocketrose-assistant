@@ -9,7 +9,6 @@ import * as network from "./network";
 import {sendPostRequest} from "./network";
 import * as util from "./util";
 import {latencyExecute} from "./util";
-import * as page from "./page";
 import * as event from "./message";
 
 /**
@@ -227,7 +226,7 @@ export async function enterTown(credential, townId) {
                         request["givemoney"] = "1";
                         request["mode"] = "MOVE";
                         network.sendPostRequest("status.cgi", request, function () {
-                            publishEvent(_event_enter_town_guard_pass);
+                            event.publishMessage(event._event_town_enter_guard_pass);
                             resolve();
                         });
                     } else {
@@ -252,27 +251,4 @@ export async function enterCastle(credential) {
         });
     };
     await doEnterCastle(credential);
-}
-
-// ============================================================================
-// 移动时相关事件处理功能
-// ============================================================================
-
-export const _event_enter_town_guard_pass = "_event_enter_town_guard_pass";
-
-export function publishEvent(id, data) {
-    if (id === _event_enter_town_guard_pass) {
-        page.publishMessageBoard("门卫通情达理的收取了入城费用放" + player + "入城");
-    }
-}
-
-function readEventData(data, name, defaultValue) {
-    if (data === undefined) {
-        return defaultValue;
-    }
-    const value = data[name];
-    if (value === undefined) {
-        return defaultValue;
-    }
-    return value;
 }
