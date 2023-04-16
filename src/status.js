@@ -2,6 +2,7 @@ import * as bank from "./bank";
 import * as dashboard from "./dashboard";
 import * as page from "./page";
 import * as pocket from "./pocket";
+import {__utilities_checkIfEquipmentFullExperience, isUnavailableTreasureHintMap} from "./pocket";
 import * as util from "./util";
 
 export class StatusRequestInterceptor {
@@ -24,6 +25,9 @@ export class StatusRequestInterceptor {
             } else if (text.includes("领取了") || text.includes("下次领取俸禄还需要等待")) {
                 // 领取薪水
                 new PersonalSalary().process();
+            } else if (text.includes("物品 百宝袋 使用")) {
+                // 进入百宝袋
+                new PersonalTreasureBag().process();
             }
         }
     }
@@ -135,5 +139,37 @@ class PersonalSalary {
             npc.welcome("打、打、打劫。不许笑，我跟这儿打劫呢。IC、IP、IQ卡，通通告诉我密码！");
             npc.message("<a href='javascript:void(0)' id='deposit' style='color: yellow'><b>[溜了溜了]</b></a>");
         }
+    }
+}
+
+class PersonalTreasureBag {
+
+    constructor() {
+    }
+
+    process() {
+        $("input[type='checkbox']").each(function (_idx, input) {
+            let td = $(input).parent();
+            let name = $(td).next().text();
+            let category = $(td).next().next().text();
+            let power = $(td).next().next().next().text();
+            let exp = $(td).next().next().next().next().next().next().next().next().next().text();
+            if (category === "武器" || category === "防具" || category === "饰品") {
+                if (__utilities_checkIfEquipmentFullExperience(name, power, exp)) {
+                    let nameHtml = $(td).next().html();
+                    nameHtml = "<b style='color:red'>[满]</b>" + nameHtml;
+                    $(td).next().html(nameHtml);
+                }
+            }
+            if (category === "物品" && name === "藏宝图") {
+                let x = power;
+                let y = $(td).next().next().next().next().text();
+                if (isUnavailableTreasureHintMap(parseInt(x), parseInt(y))) {
+                    let nameHtml = $(td).next().html();
+                    nameHtml = "<b style='color: red'>[城]</b>" + nameHtml;
+                    $(td).next().html(nameHtml);
+                }
+            }
+        });
     }
 }

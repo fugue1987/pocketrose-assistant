@@ -1245,9 +1245,6 @@ function postProcessPersonalStatusRelatedFunctionalities(htmlText) {
     if (htmlText.indexOf("物品使用．装备") != -1) {
         __personalStatus_equipment(htmlText);
     }
-    if (htmlText.indexOf("物品 百宝袋 使用。") != -1) {
-        __personalStatus_treasureBag(htmlText);
-    }
     if (htmlText.indexOf("* 转职神殿 *") != -1) {
         __personalStatus_transferCareer(htmlText);
     }
@@ -2299,37 +2296,6 @@ function ____use_equipment_set(id, pass,
             $("#returnButton").trigger("click");
         });
     }
-}
-
-/**
- * 百宝袋的界面的增强实现。
- * @param htmlText 原始HTML文本
- * @private
- */
-function __personalStatus_treasureBag(htmlText) {
-    $("input[type='checkbox']").each(function (_idx, input) {
-        let td = $(input).parent();
-        let name = $(td).next().text();
-        let category = $(td).next().next().text();
-        let power = $(td).next().next().next().text();
-        let exp = $(td).next().next().next().next().next().next().next().next().next().text();
-        if (category === "武器" || category === "防具" || category === "饰品") {
-            if (__utilities_checkIfEquipmentFullExperience(name, power, exp)) {
-                let nameHtml = $(td).next().html();
-                nameHtml = "<font color='red'><b>[满]</b></font>" + nameHtml;
-                $(td).next().html(nameHtml);
-            }
-        }
-        if (category === "物品" && name.indexOf("藏宝图") !== -1) {
-            let x = power;
-            let y = $(td).next().next().next().next().text();
-            if (isUnavailableTreasureHintMap(parseInt(x), parseInt(y))) {
-                let nameHtml = $(td).next().html();
-                nameHtml = "<font color='red'><b>[城]</b></font>" + nameHtml;
-                $(td).next().html(nameHtml);
-            }
-        }
-    });
 }
 
 
