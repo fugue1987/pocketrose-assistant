@@ -15,6 +15,10 @@ export const _event_town_withdraw = "_event_town_withdraw";
 
 export const _event_castle_target = "_event_castle_target";
 
+export const _event_move = "_event_move";
+export const _event_move_await = "_event_move_await";
+export const _event_move_mode = "_event_move_mode";
+export const _event_move_scope = "_event_move_scope";
 export const _event_move_path = "_event_move_path";
 
 function getEventHandlers() {
@@ -74,6 +78,35 @@ function getEventHandlers() {
         const player = doGetEventPlayer(data);
         const castle = doGetEventCastle(data);
         page.publishMessageBoard(player + "设定移动目标为" + castle);
+    };
+    // ------------------------------------------------------------------------
+    // MOVE related event handlers
+    // ------------------------------------------------------------------------
+    handlers[_event_move] = function (data) {
+        const player = doGetEventPlayer(data);
+        const direction = data["direction"];
+        const distance = data["distance"];
+        const coordinate = data["coordinate"];
+        page.publishMessageBoard(player + direction + "移动" + distance + "格，到达" + coordinate.longText());
+    };
+    handlers[_event_move_await] = function (data) {
+        const player = doGetEventPlayer(data);
+        const timeout = doGetEventProperty(data, "timeout");
+        if (timeout === undefined) {
+            page.publishMessageBoard(player + "等待移动冷却中......");
+        } else {
+            page.publishMessageBoard(player + "等待移动冷却中......(约" + timeout + "秒)");
+        }
+    };
+    handlers[_event_move_mode] = function (data) {
+        const player = doGetEventPlayer(data);
+        const mode = doGetEventProperty(data, "mode");
+        page.publishMessageBoard(player + "确定移动模式" + mode);
+    };
+    handlers[_event_move_scope] = function (data) {
+        const player = doGetEventPlayer(data);
+        const scope = doGetEventProperty(data, "scope");
+        page.publishMessageBoard(player + "确定移动范围" + scope);
     };
     handlers[_event_move_path] = function (data) {
         const pathList = doGetEventProperty(data, "pathList");

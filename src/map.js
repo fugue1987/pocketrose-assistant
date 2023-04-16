@@ -101,7 +101,7 @@ function moveOnPath(credential, pathList, index, callback) {
         // 已经移动到最后一个点
         callback();
     } else {
-        publishEvent(_event_move_await, {"timeout": 55});
+        event.publishEvent(event._event_move_await, {"timeout": 55});
         util.latencyExecute(55000, function () {
             const from = pathList[index];
             const to = pathList[index + 1];
@@ -116,7 +116,7 @@ function moveOnPath(credential, pathList, index, callback) {
             request["direct"] = direction.code;
             request["chara_m"] = distance;
             network.sendPostRequest("map.cgi", request, function () {
-                publishEvent(_event_move, {
+                event.publishEvent(event._event_move, {
                     "direction": direction.name,
                     "distance": distance,
                     "coordinate": to
@@ -152,8 +152,8 @@ export async function leaveTown(credential) {
                         mode = "QUEEN";
                     }
                 });
-                publishEvent(_event_move_mode, {"mode": mode});
-                publishEvent(_event_move_scope, {"scope": scope});
+                event.publishEvent(event._event_move_mode, {"mode": mode});
+                event.publishEvent(event._event_move_scope, {"scope": scope});
                 resolve(scope, mode);
             });
         });
@@ -186,8 +186,8 @@ export async function leaveCastle(credential) {
                         mode = "QUEEN";
                     }
                 });
-                publishEvent(_event_move_mode, {"mode": mode});
-                publishEvent(_event_move_scope, {"scope": scope});
+                event.publishEvent(event._event_move_mode, {"mode": mode});
+                event.publishEvent(event._event_move_scope, {"scope": scope});
                 resolve(scope, mode);
             });
         });
@@ -256,10 +256,6 @@ export const _event_enter_town_guard = "_event_enter_town_guard";
 export const _event_enter_town_guard_pass = "_event_enter_town_guard_pass";
 export const _event_leave_castle = "_event_leave_castle";
 export const _event_leave_town = "_event_leave_town";
-export const _event_move = "_event_move";
-export const _event_move_await = "_event_move_await";
-export const _event_move_mode = "_event_move_mode";
-export const _event_move_scope = "_event_move_scope";
 
 export function publishEvent(id, data) {
     const player = readEventData(data, "player", "你");
@@ -310,28 +306,6 @@ export function publishEvent(id, data) {
             town = "<b style='color:darkorange'>" + town + "</b>";
         }
         page.publishMessageBoard(player + "已经离开了" + town);
-    }
-    if (id === _event_move) {
-        const direction = data["direction"];
-        const distance = data["distance"];
-        const coordinate = data["coordinate"];
-        page.publishMessageBoard(player + direction + "移动" + distance + "格，到达" + coordinate.longText());
-    }
-    if (id === _event_move_await) {
-        const timeout = readEventData(data, "timeout");
-        if (timeout === undefined) {
-            page.publishMessageBoard(player + "等待移动冷却中......");
-        } else {
-            page.publishMessageBoard(player + "等待移动冷却中......(约" + timeout + "秒)");
-        }
-    }
-    if (id === _event_move_mode) {
-        const mode = readEventData(data, "mode");
-        page.publishMessageBoard(player + "确定移动模式" + mode);
-    }
-    if (id === _event_move_scope) {
-        const scope = readEventData(data, "scope");
-        page.publishMessageBoard(player + "确定移动范围" + scope);
     }
 }
 
