@@ -36,6 +36,7 @@ export const _message_move_source = "_message_move_source";
 export const _message_move_destination = "_message_move_destination";
 export const _message_move_path = "_message_move_path";
 
+export const _message_treasure_stay_put = "_message_treasure_stay_put";
 export const _message_treasure_await = "_message_treasure_await";
 export const _message_treasure_path = "_message_treasure_path";
 export const _message_treasure_3bt = "_message_treasure_3bt";
@@ -227,6 +228,10 @@ function getMessageHandlers() {
     // ------------------------------------------------------------------------
     // TREASURE related message handlers
     // ------------------------------------------------------------------------
+    handlers[_message_treasure_stay_put] = function (data) {
+        const player = getPlayer(data);
+        writeMessageBoard("兔子骷髅对" + player + "说：运气真好，原地可以继续探险");
+    };
     handlers[_message_treasure_await] = function (data) {
         const player = getPlayer(data);
         const timeout = getProperty(data, "timeout");
