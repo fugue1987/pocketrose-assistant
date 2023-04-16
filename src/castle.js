@@ -176,7 +176,6 @@ class CastlePostHouse {
                             "town": town.name
                         });
                         finance.depositIntoTownBank(credential, undefined).then(() => {
-                            message.publishMessageBoard(message._message_town_deposit, {"player": role.name});
                             $("form[action='castlestatus.cgi']").attr("action", "status.cgi");
                             $("input:hidden[value='CASTLESTATUS']").attr("value", "STATUS");
                             $("input:submit[value='返回城堡']").prop("disabled", false);

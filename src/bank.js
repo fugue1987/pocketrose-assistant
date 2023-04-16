@@ -34,14 +34,23 @@ export async function depositIntoTownBank(credential, amount) {
         return new Promise((resolve) => {
             const request = credential.asRequest();
             request["mode"] = "BANK_SELL";
-            if (amount !== undefined) {
-                request["azukeru"] = amount;
-            } else {
+            if (amount === undefined) {
                 request["azukeru"] = "all";
+                network.sendPostRequest("town.cgi", request, function () {
+                    message.publishMessageBoard(message._message_town_deposit);
+                    resolve();
+                });
+            } else {
+                if (amount <= 0) {
+                    resolve();
+                } else {
+                    request["azukeru"] = amount;
+                    network.sendPostRequest("town.cgi", request, function () {
+                        message.publishMessageBoard(message._message_town_deposit, {"amount": amount});
+                        resolve();
+                    });
+                }
             }
-            network.sendPostRequest("town.cgi", request, function () {
-                resolve();
-            });
         });
     };
     await doDeposit(credential, amount);
