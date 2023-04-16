@@ -10,10 +10,6 @@
 import * as page from "./page";
 
 export const EVENT_DEPOSIT_AT_TOWN = "EVENT_DEPOSIT_AT_TOWN";
-export const EVENT_ENTER_TOWN = "EVENT_ENTER_TOWN";
-export const EVENT_ENTER_TOWN_AWAIT = "EVENT_ENTER_TOWN_AWAIT";
-export const EVENT_ENTER_TOWN_GUARD = "EVENT_ENTER_TOWN_GUARD";
-export const EVENT_ENTER_TOWN_GUARD_PASS = "EVENT_ENTER_TOWN_GUARD_PASS";
 export const EVENT_MOVE = "EVENT_MOVE";
 export const EVENT_MOVE_AWAIT = "EVENT_MOVE_AWAIT";
 export const EVENT_TARGET_CASTLE = "EVENT_TARGET_CASTLE";
@@ -24,21 +20,6 @@ export function createEventHandler(role) {
     return function (id, data) {
         if (id === EVENT_DEPOSIT_AT_TOWN) {
             page.publishMessageBoard(role.name + "把身上全部现金存入了银行");
-        }
-        if (id === EVENT_ENTER_TOWN) {
-            const townName = data["townName"];
-            if (townName !== undefined) {
-                page.publishMessageBoard(role.name + "进入了<b style='color:darkorange'>" + townName + "</b>");
-            }
-        }
-        if (id === EVENT_ENTER_TOWN_AWAIT) {
-            page.publishMessageBoard(role.name + "等待进城冷却中......(约55秒)");
-        }
-        if (id === EVENT_ENTER_TOWN_GUARD) {
-            page.publishMessageBoard(role.name + "与门卫交涉中......");
-        }
-        if (id === EVENT_ENTER_TOWN_GUARD_PASS) {
-            page.publishMessageBoard("门卫通情达理的收取了入城费用放" + role.name + "入城");
         }
         if (id === EVENT_MOVE) {
             const direction = data["direction"];

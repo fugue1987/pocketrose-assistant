@@ -214,26 +214,20 @@ export async function leaveCastle(credential, eventHandler) {
 export async function enterTown(credential, townId, eventHandler) {
     const doEnterTown = (credential, townId, eventHandler) => {
         return new Promise((resolve) => {
-            if (eventHandler !== undefined) {
-                eventHandler(event.EVENT_ENTER_TOWN_AWAIT);
-            }
+            publishEvent(_event_enter_town_await);
             latencyExecute(55000, function () {
                 const request = credential.asRequest();
                 request["townid"] = townId;
                 request["mode"] = "MOVE";
                 sendPostRequest("status.cgi", request, function (html) {
                     if ($(html).text().includes("战胜门卫。")) {
-                        if (eventHandler !== undefined) {
-                            eventHandler(event.EVENT_ENTER_TOWN_GUARD);
-                        }
+                        publishEvent(_event_enter_town_guard);
                         const request = credential.asRequest();
                         request["townid"] = townId;
                         request["givemoney"] = "1";
                         request["mode"] = "MOVE";
                         network.sendPostRequest("status.cgi", request, function () {
-                            if (eventHandler !== undefined) {
-                                eventHandler(event.EVENT_ENTER_TOWN_GUARD_PASS);
-                            }
+                            publishEvent(_event_enter_town_guard_pass);
                             resolve();
                         });
                     } else {
@@ -264,13 +258,17 @@ export async function enterCastle(credential, eventHandler) {
 // 移动时相关事件处理功能
 // ============================================================================
 
-export const _event_enter_castle = 1;
-export const _event_enter_castle_entry = 2;
-export const _event_leave_castle = 3;
-export const _event_leave_town = 4;
-export const _event_move_mode = 5;
-export const _event_move_scope = 6;
-export const _event_path = 7;
+export const _event_enter_castle = "_event_enter_castle";
+export const _event_enter_castle_entry = "_event_enter_castle_entry";
+export const _event_enter_town = "_event_enter_town";
+export const _event_enter_town_await = "_event_enter_town_await";
+export const _event_enter_town_guard = "_event_enter_town_guard";
+export const _event_enter_town_guard_pass = "_event_enter_town_guard_pass";
+export const _event_leave_castle = "_event_leave_castle";
+export const _event_leave_town = "_event_leave_town";
+export const _event_move_mode = "_event_move_mode";
+export const _event_move_scope = "_event_move_scope";
+export const _event_path = "_event_path";
 
 export function publishEvent(id, data) {
     const player = readEventData(data, "player", "你");
@@ -285,6 +283,24 @@ export function publishEvent(id, data) {
     }
     if (id === _event_enter_castle_entry) {
         page.publishMessageBoard(player + "来到城堡入口");
+    }
+    if (id === _event_enter_town) {
+        let town = readEventData(data, "town");
+        if (town === undefined) {
+            town = "目的城市";
+        } else {
+            town = "<b style='color:darkorange'>" + town + "</b>";
+        }
+        page.publishMessageBoard(player + "进入了" + town);
+    }
+    if (id === _event_enter_town_await) {
+        page.publishMessageBoard(player + "等待进城冷却中......(约55秒)");
+    }
+    if (id === _event_enter_town_guard) {
+        page.publishMessageBoard(player + "与门卫交涉中......");
+    }
+    if (id === _event_enter_town_guard_pass) {
+        page.publishMessageBoard("门卫通情达理的收取了入城费用放" + player + "入城");
     }
     if (id === _event_leave_castle) {
         let castle = readEventData(data, "castle");

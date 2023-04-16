@@ -167,7 +167,7 @@ class TownInnPostHouse {
                         plan.mode = mode;
                         map.executeMovePlan(plan, eventHandler).then(() => {
                             map.enterTown(credential, destinationTownId, eventHandler).then(() => {
-                                eventHandler(event.EVENT_ENTER_TOWN, {"townName": destinationTown.name});
+                                map.publishEvent(map._event_enter_town, {"town": destinationTown.name});
                                 bank.depositIntoTownBank(credential, undefined).then(() => {
                                     eventHandler(event.EVENT_DEPOSIT_AT_TOWN, {});
                                     $("#returnButton").attr("value", destinationTown.name + "欢迎您的到来");
