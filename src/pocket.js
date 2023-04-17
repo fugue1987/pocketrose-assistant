@@ -730,7 +730,7 @@ export function isProhibitSellingItem(name) {
     }
     for (let i = 0; i < _PROHIBIT_SELLING_ITEM_DICT.length; i++) {
         const it = _PROHIBIT_SELLING_ITEM_DICT[i];
-        if (name.includes(it)) {
+        if (name.endsWith(it)) {
             return true;
         }
     }

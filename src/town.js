@@ -585,39 +585,82 @@ class TownItemExpress {
     }
 
     process() {
-        let cash = 0;
+        $("input:submit[value='发送']").attr("id", "sendButton");
+        $("input:submit[value='返回城市']").attr("id", "returnButton");
+        page.findAndCreateMessageBoard("可以送到任何地方啊。");
         $("td:parent").each(function (_idx, td) {
             if ($(td).text() === "所持金") {
-                cash = parseInt(util.substringBefore($(td).next().text(), " GOLD"));
+                $(td).next().attr("id", "role_cash");
             }
         });
-        const amount = bank.calculateCashDifferenceAmount(cash, 100000);
 
-        this.#renderHTML(cash, amount);
+        $($("table")[5]).find("tbody:first").attr("id", "current_items_table");
+        $($("table")[5]).find("tr:first").attr("class", "current_items");
+        $($("table")[5]).find("input:checkbox").each(function (_idx, input) {
+            $(input).parent().parent().attr("class", "current_items");
+        });
 
-        if ($("#withdrawSend").length > 0) {
-            $("#withdrawSend").click(function () {
-                const credential = page.generateCredential();
-                bank.withdrawFromTownBank(credential, amount).then(() => {
-                    $("#sendButton").trigger("click");
-                });
-            });
-        }
-    }
+        // $("<tr><td>1</td><td>2</td><td></td><td></td><td></td><td></td></tr>").prependTo($("#current_items_table"));
 
-    #renderHTML(cash, amount) {
-        $("input:submit[value='发送']").attr("id", "sendButton");
 
         const npc = page.createFooterNPC("末末");
-        npc.welcome("我来啦！");
-        if (amount === 0) {
-            npc.message("让我看看你都偷偷给人送些啥。");
-        } else {
-            const message = "看起来你身上的钱还差" + amount + "万呀，我可以帮你" +
-                "<a href='javascript:void(0)' id='withdrawSend'><b style='color:yellow'>取钱发送</b></a>" +
-                "。我办事，你放心！";
-            npc.message(message);
+        npc.welcome("我来啦！让我看看你都偷偷给人送些啥。");
+
+        const inst = this;
+        $("#sendButton").attr("type", "button");
+        $("#sendButton").attr("value", "自动取钱发送");
+        $("#sendButton").click(function () {
+            $("#sendButton").prop("disabled", true);
+            const cash = page.getRoleCash();
+            const amount = bank.calculateCashDifferenceAmount(cash, 100000);
+            const credential = page.generateCredential();
+            bank.withdrawFromTownBank(credential, amount).then(() => {
+                const request = credential.asRequest();
+                $("input:checkbox:checked").each(function (_idx, checkbox) {
+                    const name = $(checkbox).attr("name");
+                    request[name] = $(checkbox).attr("value");
+                });
+                request["eid"] = $("select[name='eid']").val();
+                request["mode"] = "ITEM_SEND2";
+                network.sendPostRequest("town.cgi", request, function (html) {
+                    const sendItem = $(html).find("h2:first").text();
+                    message.writeMessageBoard(sendItem);
+                    user.loadRole(credential).then(role => {
+                        const town = pocket.findTownByName(role.townName);
+                        const request = credential.asRequest();
+                        request["town"] = town.id;
+                        request["con_str"] = "50";
+                        request["mode"] = "ITEM_SEND";
+                        network.sendPostRequest("town.cgi", request, function (html) {
+                            inst.#renderHTML(html);
+                            $("#sendButton").prop("disabled", false);
+                        });
+                    });
+                });
+            });
+        });
+    }
+
+    #renderHTML(html) {
+        $(".current_items").remove();
+
+        const rows = [];
+        rows.push("<Th bgcolor=#E8E8D0>选择</Th><Th bgcolor=#E0D0B0>装备</Th><Th bgcolor=#E0D0B0>所持物品</Th>" +
+            "<Th bgcolor=#EFE0C0>种类</Th><Th bgcolor=#E0D0B0>效果</Th><Th bgcolor=#EFE0C0>重量</Th>");
+        $(html).find("input:checkbox").each(function (_idx, input) {
+            rows.push($(input).parent().parent().html());
+        });
+        for (let i = rows.length - 1; i >= 0; i--) {
+            const row = "<tr class='current_items'>" + rows[i] + "</tr>";
+            $(row).prependTo($("#current_items_table"));
         }
+
+        $(html).find("td").each(function (_idx, td) {
+            if ($(td).text() === "所持金") {
+                const cashText = $(td).next().text();
+                $("#role_cash").text(cashText);
+            }
+        });
     }
 }
 
