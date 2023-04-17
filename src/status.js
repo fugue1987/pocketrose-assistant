@@ -4,7 +4,6 @@ import * as page from "./page";
 import * as pocket from "./pocket";
 import {__utilities_checkIfEquipmentFullExperience, isUnavailableTreasureHintMap} from "./pocket";
 import * as util from "./util";
-import * as user from "./user";
 import * as item from "./item";
 
 export class StatusRequestInterceptor {
@@ -165,10 +164,8 @@ class PersonalItems {
                 $("<td colspan='9' id='extMenu'></td>").appendTo($(td).parent());
             }
         });
-        $("#extMenu").append($("<input type='button' id='consecrateButton' style='color:red' value='RP祭奠'>"));
         $("#extMenu").append($("<input type='button' id='treasureBagButton' style='color:blue' value='打开百宝袋'>"));
         $("#extMenu").append($("<input type='button' id='goldenCageButton' style='color:green' value='打开黄金笼子'>"));
-        $("#consecrateButton").prop("disabled", true);
         $("#treasureBagButton").prop("disabled", true);
         $("#goldenCageButton").prop("disabled", true);
 
@@ -196,17 +193,6 @@ class PersonalItems {
             $("#goldenCageButton").prop("disabled", false);
         }
 
-        const credential = page.generateCredential();
-        $("#consecrateButton").click(function () {
-            const cash = page.getRoleCash();
-            const amount = bank.calculateCashDifferenceAmount(cash, 1000000);
-            bank.withdrawFromTownBank(credential, amount).then(() => {
-                $("option[value='USE']").prop("selected", false);
-                $("option[value='CONSECRATE']").prop("selected", true);
-                $("option[value='PUTINBAG']").prop("selected", false);
-                $("#confirmButton").trigger("click");
-            });
-        });
         $("#treasureBagButton").click(function () {
             $("input:checkbox").each(function (_idx, checkbox) {
                 if (_idx === treasureBag.index) {
@@ -232,12 +218,6 @@ class PersonalItems {
             $("option[value='CONSECRATE']").prop("selected", false);
             $("option[value='PUTINBAG']").prop("selected", false);
             $("#confirmButton").trigger("click");
-        });
-
-        user.loadRoleStatus(credential).then(status => {
-            if (status.canConsecrate) {
-                $("#consecrateButton").prop("disabled", false);
-            }
         });
     }
 }
