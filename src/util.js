@@ -46,3 +46,52 @@ export function substringAfterSlash(text) {
     return text;
 }
 
+export function latencyExecute(timeout, handler) {
+    if ($("#count_up_timer").length > 0) {
+        let count = 1;
+        const timer = setInterval(function () {
+            $("#count_up_timer").text(count++);
+        }, 1000);
+        setTimeout(function () {
+            clearInterval(timer);
+            $("#count_up_timer").text("-");
+            handler();
+        }, timeout);
+    } else {
+        setTimeout(handler, timeout);
+    }
+}
+
+/**
+ * Credential data structure for describing id/pass fetched from HTML.
+ */
+export class Credential {
+
+    #id;
+    #pass;
+
+    constructor(id, pass) {
+        this.#id = id;
+        this.#pass = pass;
+    }
+
+    /**
+     * Get credential id property.
+     * @returns {string}
+     */
+    get id() {
+        return this.#id;
+    }
+
+    /**
+     * Get credential pass property.
+     * @returns {string}
+     */
+    get pass() {
+        return this.#pass;
+    }
+
+    asRequest() {
+        return {"id": this.#id, "pass": this.#pass};
+    }
+}

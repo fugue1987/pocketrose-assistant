@@ -4,87 +4,15 @@
  * ============================================================================
  */
 
+import * as message from "./message";
 import * as map from "./map";
-import * as network from "./network";
+import {enterTown, leaveCastle} from "./map";
 import * as page from "./page";
+import {generateCredential} from "./page";
 import * as pocket from "./pocket";
-import * as user from "./user";
 import * as util from "./util";
-import {generateCredential} from "./credential";
-import {Coordinate} from "./geo";
-import * as finance from "./finance";
-
-/**
- * 城堡的数据结构
- */
-export class Castle {
-
-    #name;              // 城堡名字
-    #owner;             // 城堡主人
-    #coordinate;        // 城堡坐标
-
-    constructor(name, owner, coordinate) {
-        this.#name = name;
-        this.#owner = owner;
-        this.#coordinate = coordinate;
-    }
-
-    /**
-     * Get castle name.
-     * @returns {string}
-     */
-    get name() {
-        return this.#name;
-    }
-
-    /**
-     * Get castle owner.
-     * @returns {string}
-     */
-    get owner() {
-        return this.#owner;
-    }
-
-    /**
-     * Get castle _coordinate
-     * @returns {map.Coordinate}
-     */
-    get coordinate() {
-        return this.#coordinate;
-    }
-
-    longText() {
-        return this.#name + "/" + this.#owner + "/" + this.#coordinate.longText();
-    }
-}
-
-/**
- * 读取所有的城堡信息并回调。
- * @param callback 回调函数
- */
-export function getAllCastles(callback) {
-
-    network.sendGetRequest("castle_print.cgi", function (html) {
-
-        const castles = {};
-
-        $(html).find("td").each(function (_idx, td) {
-            const text = $(td).text();
-            if (text.endsWith(" (自购)")) {
-                const name = $(td).prev().text();
-                const owner = text.substring(0, text.indexOf(" (自购)"));
-                let location = $(td).next().text();
-                location = util.substringBetween(location, "(", ")");
-                let x = util.substringBefore(location, ",");
-                let y = util.substringAfter(location, ",");
-                const coordinate = new Coordinate(parseInt(x), parseInt(y));
-                castles[owner] = new Castle(name, owner, coordinate);
-            }
-        });
-
-        callback(castles, {"html": html});
-    });
-}
+import * as finance from "./bank";
+import * as user from "./user";
 
 /**
  * 城堡相关页面的处理入口
@@ -189,8 +117,17 @@ class CastlePostHouse {
                 $(td).attr("style", "color: white");
                 $(td).html("我们已经将城堡中废弃的机车建造厂改造成为了驿站。<br>");
             }
+            if (text === "姓名") {
+                $(td).parent().next().find("td:first").attr("id", "role_name");
+            }
             if (text === "所持金") {
+                $(td).next().attr("id", "role_cash");
                 cash = parseInt(util.substringBefore($(td).next().text(), " GOLD"));
+            }
+            if (text === "铁储备") {
+                $(td).text("计时器");
+                $(td).next().attr("id", "count_up_timer");
+                $(td).next().text("-");
             }
         });
 
@@ -198,7 +135,7 @@ class CastlePostHouse {
         npc.welcome("轮到我啦，上镜+RP，+RP，+RP，重要的事情喊三遍！<br>");
         npc.message("快看看你想去哪里？<br>");
         npc.message("<input type='button' id='returnTown' style='color: blue' value='选好后立刻出发'><br>");
-        npc.message(generateTownSelectionTable());
+        npc.message(page.generateTownSelectionTable());
 
         const postHouse = this;
         $("#returnTown").click(function () {
@@ -210,72 +147,40 @@ class CastlePostHouse {
                 $("input:submit[value='返回城堡']").prop("disabled", true);
                 $("#returnTown").prop("disabled", true);
 
-                page.initializeMessageBoard("开始播报实时动态：<br>");
+                message.initializeMessageBoard("开始播报实时动态：<br>");
                 const town = pocket.getTown(townId);
-                page.publishMessageBoard("目的地设定为‘" + town.name + "’");
+                message.publishMessageBoard(message._message_town_target, {"town": town.name});
 
-                if (cash < 100000) {
-                    const credential = generateCredential();
-                    finance.castleWithdraw(credential, 10).then();
-                    page.publishMessageBoard("从城堡提款机支取了10万现金");
-                } else {
-                    page.publishMessageBoard("身上现金充裕，准备出发");
-                }
-                postHouse.#travelTo(town);
+                const amount = finance.calculateCashDifferenceAmount(cash, 100000);
+                const credential = generateCredential();
+                finance.withdrawFromCastleBank(credential, amount).then(() => {
+                    $("#role_cash").text((cash + amount * 10000) + " GOLD");
+                    postHouse.#travelTo(town);
+                });
             }
         });
     }
 
     #travelTo(town) {
         const credential = generateCredential();
-        const roleLoader = new user.RoleLoader(credential);
-        roleLoader.load(function (role) {
-            map.leaveCastle(credential, role, function (scope, mode) {
-                page.publishMessageBoard(role.name + "已经离开城堡'" + role.castleName + "'");
-                page.publishMessageBoard(role.name + "当前所在坐标" + role.coordinate.longText());
-                page.publishMessageBoard(role.name + "最大移动范围" + scope + "，移动模式" + mode);
+        user.loadRole(credential).then(role => {
+            $("#role_name").text(role.name);
 
-                // 创建行程
-                const journey = new map.Journey();
-                journey.credential = credential;
-                journey.role = role;
-                journey.source = role.coordinate;
-                journey.destination = town.coordinate;
-                journey.scope = scope;
-                journey.mode = mode;
-                journey.start(function () {
-                    map.enterTown(credential, town.id, function () {
-                        page.publishMessageBoard(role.name + "已经成功到达" + town.name);
-                        $("form[action='castlestatus.cgi']").attr("action", "status.cgi");
-                        $("input:hidden[value='CASTLESTATUS']").attr("value", "STATUS");
-                        $("input:submit[value='返回城堡']").prop("disabled", false);
-                        $("input:submit[value='返回城堡']").attr("value", town.name + "欢迎您");
+            leaveCastle(credential).then(plan => {
+                plan.source = role.coordinate;
+                plan.destination = town.coordinate;
+                map.executeMovePlan(plan).then(() => {
+                    enterTown(credential, town.id).then(() => {
+                        finance.depositIntoTownBank(credential, undefined).then(() => {
+                            $("form[action='castlestatus.cgi']").attr("action", "status.cgi");
+                            $("input:hidden[value='CASTLESTATUS']").attr("value", "STATUS");
+                            $("input:submit[value='返回城堡']").prop("disabled", false);
+                            $("input:submit[value='返回城堡']").attr("value", town.name + "欢迎您");
+                        });
                     });
                 });
-            })
-        });
-    }
-}
 
-/**
- * 城堡银行
- */
-class CastleBank {
-
-    #credential;
-
-    constructor(credential) {
-        this.#credential = credential;
-    }
-
-    withdraw(amount, callback) {
-        const request = this.#credential.asRequest();
-        request["mode"] = "CASTLEBANK_BUY";
-        request["dasu"] = amount;
-        network.sendPostRequest("castle.cgi", request, function () {
-            if (callback !== undefined) {
-                callback();
-            }
+            });
         });
     }
 }
@@ -288,47 +193,4 @@ class ConfirmationEliminator {
     returnToCastle() {
         $("input:submit[value='返回城堡']").trigger("click");
     }
-}
-
-function generateTownSelectionTable() {
-    let html = "";
-    html += "<table border='1'><tbody>";
-    html += "<thead><tr>" +
-        "<td style='color: white'>选择</td>" +
-        "<td style='color: white'>目的地</td>" +
-        "<td colspan='2' style='color: white'>坐标</td>" +
-        "<td style='color: white'>选择</td>" +
-        "<td style='color: white'>目的地</td>" +
-        "<td colspan='2' style='color: white'>坐标</td>" +
-        "<td style='color: white'>选择</td>" +
-        "<td style='color: white'>目的地</td>" +
-        "<td colspan='2' style='color: white'>坐标</td>" +
-        "<td style='color: white'>选择</td>" +
-        "<td style='color: white'>目的地</td>" +
-        "<td colspan='2' style='color: white'>坐标</td>" +
-        "</tr></thead>";
-
-    const townList = pocket.getTownsAsList();
-    for (let i = 0; i < 7; i++) {
-        const row = [];
-        row.push(townList[i * 4]);
-        row.push(townList[i * 4 + 1]);
-        row.push(townList[i * 4 + 2]);
-        row.push(townList[i * 4 + 3]);
-
-        html += "<tr>";
-        for (let j = 0; j < row.length; j++) {
-            const town = row[j];
-            html += "<td><input type='radio' class='townClass' name='townId' value='" + town.id + "'></td>";
-            html += "<td style='color: white'>" + town.name + "</td>";
-            html += "<td style='color: white'>" + town.coordinate.x + "</td>";
-            html += "<td style='color: white'>" + town.coordinate.y + "</td>";
-        }
-        html += "</tr>";
-    }
-
-    html += "</tbody></table>";
-    html += "<br>";
-
-    return html;
 }

@@ -62,7 +62,7 @@ export function isSameCoordinate(a, b) {
     return a.x === b.x && a.y === b.y;
 }
 
-export  function calculateMilestone(from, to, mode) {
+export function calculateMilestone(from, to, mode) {
     if (mode === "ROOK") {
         if (from.x === to.x || from.y === to.y) {
             return undefined;
@@ -187,4 +187,34 @@ export function calculateDistance(from, to) {
     const x2 = to.x;
     const y2 = to.y;
     return Math.max(Math.abs(x1 - x2), Math.abs(y1 - y2));
+}
+
+/**
+ * 计算起始坐标到目的坐标之间完整的路径
+ * @param source 起点坐标
+ * @param destination 目的坐标
+ * @param scope 移动范围
+ * @param mode 移动模式
+ * @returns {Coordinate[]}
+ */
+export function calculatePath(source, destination, scope, mode) {
+    const pathList = [];
+    if (isSameCoordinate(source, destination)) {
+        pathList.push(source);
+        return pathList;
+    }
+    const milestone = calculateMilestone(source, destination, mode);
+    if (milestone !== undefined) {
+        const p1 = calculateMilestonePath(source, milestone, scope);
+        const p2 = calculateMilestonePath(milestone, destination, scope);
+        pathList.push(...p1);
+        pathList.push(...p2);
+        pathList.push(destination);
+    } else {
+        const p = calculateMilestonePath(source, destination, scope);
+        pathList.push(...p);
+        pathList.push(destination);
+    }
+
+    return pathList;
 }

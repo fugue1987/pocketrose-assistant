@@ -5,6 +5,10 @@
  */
 
 import {loadNPC} from "./npc";
+import * as util from "./util";
+import {Credential} from "./util";
+import * as pocket from "./pocket";
+import {isProhibitSellingItem} from "./pocket";
 
 export class NPC {
 
@@ -50,14 +54,129 @@ export function createFooterNPC(name) {
 // M E S S A G E   B O A R D
 // ----------------------------------------------------------------------------
 
+export function resetMessageBoard() {
+    if ($("#messageBoard").length > 0) {
+        $("#messageBoard").html("");
+    }
+}
+
 export function initializeMessageBoard(message) {
-    $("#messageBoard").html(message);
+    if ($("#messageBoard").length > 0) {
+        $("#messageBoard").html(message);
+    }
 }
 
 export function publishMessageBoard(message) {
-    let html = $("#messageBoard").html();
-    const now = new Date();
-    const timeHtml = "<font color='#adff2f'>(" + now.toLocaleString() + ")</font>";
-    html = html + "<li>" + timeHtml + " " + message + "</li>";
-    $("#messageBoard").html(html);
+    if ($("#messageBoard").length > 0) {
+        let html = $("#messageBoard").html();
+        const now = new Date();
+        const timeHtml = "<font color='#adff2f'>(" + now.toLocaleString() + ")</font>";
+        html = html + "<li>" + timeHtml + " " + message + "</li>";
+        $("#messageBoard").html(html);
+    }
+}
+
+/**
+ * Generate Credential object from current HTML form.
+ * @returns {Credential}
+ */
+export function generateCredential() {
+    let id = $("input:hidden[name='id']:first").attr("value");
+    let pass = $("input:hidden[name='pass']:first").attr("value");
+    return new Credential(id, pass);
+}
+
+export function generateTownSelectionTable() {
+    let html = "";
+    html += "<table border='1'><tbody>";
+    html += "<thead><tr>" +
+        "<td style='color: white'>选择</td>" +
+        "<td style='color: white'>目的地</td>" +
+        "<td colspan='2' style='color: white'>坐标</td>" +
+        "<td style='color: white'>选择</td>" +
+        "<td style='color: white'>目的地</td>" +
+        "<td colspan='2' style='color: white'>坐标</td>" +
+        "<td style='color: white'>选择</td>" +
+        "<td style='color: white'>目的地</td>" +
+        "<td colspan='2' style='color: white'>坐标</td>" +
+        "<td style='color: white'>选择</td>" +
+        "<td style='color: white'>目的地</td>" +
+        "<td colspan='2' style='color: white'>坐标</td>" +
+        "</tr></thead>";
+
+    const townList = pocket.getTownsAsList();
+    for (let i = 0; i < 7; i++) {
+        const row = [];
+        row.push(townList[i * 4]);
+        row.push(townList[i * 4 + 1]);
+        row.push(townList[i * 4 + 2]);
+        row.push(townList[i * 4 + 3]);
+
+        html += "<tr>";
+        for (let j = 0; j < row.length; j++) {
+            const town = row[j];
+            html += "<td><input type='radio' class='townClass' name='townId' value='" + town.id + "'></td>";
+            html += "<td style='color: white'>" + town.name + "</td>";
+            html += "<td style='color: white'>" + town.coordinate.x + "</td>";
+            html += "<td style='color: white'>" + town.coordinate.y + "</td>";
+        }
+        html += "</tr>";
+    }
+
+    html += "</tbody></table>";
+    html += "<br>";
+
+    return html;
+}
+
+export function findAndCreateMessageBoard(s) {
+    let i = -1;
+    $("td:parent").each(function (_idx, td) {
+        const text = $(td).text();
+        if (text.includes(s)) {
+            i = _idx;
+        }
+    });
+    if (i >= 0) {
+        $("td:parent").each(function (_idx, td) {
+            if (i === _idx) {
+                $(td).attr("id", "messageBoard");
+                $(td).attr("style", "color:white");
+            }
+        });
+    }
+}
+
+export function getRoleName() {
+    let name = "";
+    $("td:parent").each(function (_idx, td) {
+        if ($(td).text() === "姓名") {
+            name = $(td).parent().next().find("td:first").text();
+        }
+    });
+    return name;
+}
+
+export function getRoleCash() {
+    let cash = 0;
+    $("td:parent").each(function (_idx, td) {
+        if ($(td).text() === "所持金") {
+            const text = $(td).next().text();
+            cash = parseInt(util.substringBefore(text, " "));
+        }
+    });
+    return cash;
+}
+
+export function disableProhibitSellingItems(table) {
+    $(table).find("input:radio[name='select']").each(function (idx, radio) {
+        const name = $(radio).parent().next().next().text();
+        if ($(radio).parent().next().text() === "★") {
+            $(radio).prop("disabled", true);
+        } else {
+            if (isProhibitSellingItem(name)) {
+                $(radio).prop("disabled", true);
+            }
+        }
+    });
 }
