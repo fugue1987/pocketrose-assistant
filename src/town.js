@@ -742,7 +742,9 @@ class TownGemStore {
                     reverse.forEach(it => {
                         $("table:eq(7) tr:first").after($(it));
                     });
-                    inst.#fuseWeightGem(name, nameIndex, holeCount, holeIndex + 1);
+                    const nextIndex = holeIndex + 1;
+                    message.writeMessageBoard(name + "还剩余" + (holeCount - nextIndex) + "孔");
+                    inst.#fuseWeightGem(name, nameIndex, holeCount, nextIndex);
                 });
             });
         });
