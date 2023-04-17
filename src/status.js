@@ -4,6 +4,7 @@ import * as page from "./page";
 import * as pocket from "./pocket";
 import {__utilities_checkIfEquipmentFullExperience, isUnavailableTreasureHintMap} from "./pocket";
 import * as util from "./util";
+import * as user from "./user";
 
 export class StatusRequestInterceptor {
 
@@ -25,6 +26,9 @@ export class StatusRequestInterceptor {
             } else if (text.includes("领取了") || text.includes("下次领取俸禄还需要等待")) {
                 // 领取薪水
                 new PersonalSalary().process();
+            } else if (text.includes("＜＜　|||　物品使用．装备　|||　＞＞")) {
+                // 物品使用．装备
+                new PersonalItems().process();
             } else if (text.includes("物品 百宝袋 使用")) {
                 // 进入百宝袋
                 new PersonalTreasureBag().process();
@@ -139,6 +143,44 @@ class PersonalSalary {
             npc.welcome("打、打、打劫。不许笑，我跟这儿打劫呢。IC、IP、IQ卡，通通告诉我密码！");
             npc.message("<a href='javascript:void(0)' id='deposit' style='color: yellow'><b>[溜了溜了]</b></a>");
         }
+    }
+}
+
+class PersonalItems {
+    constructor() {
+    }
+
+    process() {
+        $("input:submit[value='确定']").attr("id", "confirmButton");
+        $("input:submit[value='返回上个画面']").attr("id", "returnButton");
+
+        $("td:parent").each(function (_idx, td) {
+            const text = $(td).text();
+            if (text.startsWith("烟花贺辞")) {
+                $("<td colspan='9' id='extMenu'></td>").appendTo($(td).parent());
+            }
+        });
+        $("#extMenu").append($("<input type='button' id='consecrateButton' style='color:red' value='RP祭奠'>"));
+        $("#consecrateButton").prop("disabled", true);
+
+        const credential = page.generateCredential();
+
+        $("#consecrateButton").click(function () {
+            const cash = page.getRoleCash();
+            const amount = bank.calculateCashDifferenceAmount(cash, 1000000);
+            bank.withdrawFromTownBank(credential, amount).then(() => {
+                $("option[value='USE']").prop("selected", false);
+                $("option[value='CONSECRATE']").prop("selected", true);
+                $("option[value='PUTINBAG']").prop("selected", false);
+                $("#confirmButton").trigger("click");
+            });
+        });
+
+        user.loadRoleStatus(credential).then(status => {
+            if (status.canConsecrate) {
+                $("#consecrateButton").prop("disabled", false);
+            }
+        });
     }
 }
 
