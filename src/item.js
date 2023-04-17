@@ -166,3 +166,23 @@ export function parsePersonalItems() {
     });
     return items;
 }
+
+export function findTreasureBag(items) {
+    for (let i = 0; i < items.length; i++) {
+        const item = items[i];
+        if (item.isTreasureBag) {
+            return item;
+        }
+    }
+    return undefined;
+}
+
+export function findGoldenCage(items) {
+    for (let i = 0; i < items.length; i++) {
+        const item = items[i];
+        if (item.isGoldenCage) {
+            return item;
+        }
+    }
+    return undefined;
+}

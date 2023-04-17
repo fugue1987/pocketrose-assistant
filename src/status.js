@@ -5,6 +5,7 @@ import * as pocket from "./pocket";
 import {__utilities_checkIfEquipmentFullExperience, isUnavailableTreasureHintMap} from "./pocket";
 import * as util from "./util";
 import * as user from "./user";
+import * as item from "./item";
 
 export class StatusRequestInterceptor {
 
@@ -165,16 +166,38 @@ class PersonalItems {
             }
         });
         $("#extMenu").append($("<input type='button' id='consecrateButton' style='color:red' value='RP祭奠'>"));
+        $("#extMenu").append($("<input type='button' id='treasureBagBug' style='color:blue' value='打开百宝袋'>"));
         $("#consecrateButton").prop("disabled", true);
+        $("#treasureBagBug").prop("disabled", true);
+
+        const items = item.parsePersonalItems();
+        const treasureBag = item.findTreasureBag(items);
+        const goldenCage = item.findGoldenCage(items);
+
+        if (treasureBag !== undefined) {
+            $("#treasureBagBug").prop("disabled", false);
+        }
 
         const credential = page.generateCredential();
-
         $("#consecrateButton").click(function () {
             const cash = page.getRoleCash();
             const amount = bank.calculateCashDifferenceAmount(cash, 1000000);
             bank.withdrawFromTownBank(credential, amount).then(() => {
                 $("option[value='USE']").prop("selected", false);
                 $("option[value='CONSECRATE']").prop("selected", true);
+                $("option[value='PUTINBAG']").prop("selected", false);
+                $("#confirmButton").trigger("click");
+            });
+        });
+        $("#treasureBagBug").click(function () {
+            $("input:checkbox").each(function (_idx, checkbox) {
+                if (_idx === treasureBag.index) {
+                    $(checkbox).prop("checked", true);
+                } else {
+                    $(checkbox).prop("checked", false);
+                }
+                $("option[value='USE']").prop("selected", true);
+                $("option[value='CONSECRATE']").prop("selected", false);
                 $("option[value='PUTINBAG']").prop("selected", false);
                 $("#confirmButton").trigger("click");
             });
