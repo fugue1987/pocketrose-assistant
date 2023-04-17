@@ -586,6 +586,7 @@ class TownItemExpress {
 
     process() {
         $("input:submit[value='发送']").attr("id", "sendButton");
+        $("input:submit[value='查找']").attr("id", "searchButton");
         $("input:submit[value='返回城市']").attr("id", "returnButton");
         page.findAndCreateMessageBoard("可以送到任何地方啊。");
         $("td:parent").each(function (_idx, td) {
@@ -600,13 +601,27 @@ class TownItemExpress {
             $(input).parent().parent().attr("class", "current_items");
         });
 
-        // $("<tr><td>1</td><td>2</td><td></td><td></td><td></td><td></td></tr>").prependTo($("#current_items_table"));
-
-
         const npc = page.createFooterNPC("末末");
         npc.welcome("我来啦！让我看看你都偷偷给人送些啥。");
 
-        const inst = this;
+        $("#searchButton").attr("type", "button");
+        $("#searchButton").click(function () {
+            $("#searchButton").prop("disabled", true);
+            const search = $("input:text[name='serch']").val();
+            const credential = page.generateCredential();
+            const request = credential.asRequest();
+            request["serch"] = escape(search);
+            request["mode"] = "ITEM_SEND";
+            network.sendPostRequest("town.cgi", request, function (html) {
+                $("select[name='eid']").find("option").each(function (_idx, option) {
+                    $(option).remove();
+                });
+                const selectHtml = $(html).find("select[name='eid']").html();
+                $(selectHtml).appendTo($("select[name='eid']"));
+                $("#searchButton").prop("disabled", false);
+            });
+        });
+
         $("#sendButton").attr("type", "button");
         $("#sendButton").attr("value", "自动取钱发送");
         $("#sendButton").click(function () {
@@ -632,34 +647,31 @@ class TownItemExpress {
                         request["con_str"] = "50";
                         request["mode"] = "ITEM_SEND";
                         network.sendPostRequest("town.cgi", request, function (html) {
-                            inst.#renderHTML(html);
+                            $(".current_items").remove();
+
+                            const rows = [];
+                            rows.push("<Th bgcolor=#E8E8D0>选择</Th><Th bgcolor=#E0D0B0>装备</Th><Th bgcolor=#E0D0B0>所持物品</Th>" +
+                                "<Th bgcolor=#EFE0C0>种类</Th><Th bgcolor=#E0D0B0>效果</Th><Th bgcolor=#EFE0C0>重量</Th>");
+                            $(html).find("input:checkbox").each(function (_idx, input) {
+                                rows.push($(input).parent().parent().html());
+                            });
+                            for (let i = rows.length - 1; i >= 0; i--) {
+                                const row = "<tr class='current_items'>" + rows[i] + "</tr>";
+                                $(row).prependTo($("#current_items_table"));
+                            }
+
+                            $(html).find("td").each(function (_idx, td) {
+                                if ($(td).text() === "所持金") {
+                                    const cashText = $(td).next().text();
+                                    $("#role_cash").text(cashText);
+                                }
+                            });
+
                             $("#sendButton").prop("disabled", false);
                         });
                     });
                 });
             });
-        });
-    }
-
-    #renderHTML(html) {
-        $(".current_items").remove();
-
-        const rows = [];
-        rows.push("<Th bgcolor=#E8E8D0>选择</Th><Th bgcolor=#E0D0B0>装备</Th><Th bgcolor=#E0D0B0>所持物品</Th>" +
-            "<Th bgcolor=#EFE0C0>种类</Th><Th bgcolor=#E0D0B0>效果</Th><Th bgcolor=#EFE0C0>重量</Th>");
-        $(html).find("input:checkbox").each(function (_idx, input) {
-            rows.push($(input).parent().parent().html());
-        });
-        for (let i = rows.length - 1; i >= 0; i--) {
-            const row = "<tr class='current_items'>" + rows[i] + "</tr>";
-            $(row).prependTo($("#current_items_table"));
-        }
-
-        $(html).find("td").each(function (_idx, td) {
-            if ($(td).text() === "所持金") {
-                const cashText = $(td).next().text();
-                $("#role_cash").text(cashText);
-            }
         });
     }
 }

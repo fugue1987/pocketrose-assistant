@@ -13,6 +13,7 @@ export class TownDashboardProcessor {
         $("option[value='PRO_SHOP']").text("防具屋(v2.0)");
         $("option[value='ACC_SHOP']").text("饰品屋(v2.0)");
         $("option[value='ITEM_SHOP']").text("物品屋(v2.0)");
+        $("option[value='ITEM_SEND']").text("运送屋(v2.0)");
         $("option[value='PET_SEND']").text("宠物赠送(v2.0)");
         $("option[value='LETTER']").text("口袋助手设置");
         $("option[value='LETTER']").attr("style", "background:#20c0ff");
