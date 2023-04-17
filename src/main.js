@@ -54,6 +54,7 @@ import {
 } from "./option";
 import {TownRequestInterceptor} from "./town";
 import {StatusRequestInterceptor} from "./status";
+import {WildRequestInterceptor} from "./wild";
 
 const CGI_MAPPING = {
     "/battle.cgi": new battle.BattleRequestInterceptor(),
@@ -61,7 +62,8 @@ const CGI_MAPPING = {
     "/status.cgi": new StatusRequestInterceptor(),
     "/town.cgi": new TownRequestInterceptor(),
     "/castlestatus.cgi": new castle.CastleRequestInterceptor(),
-    "/castle.cgi": new castle.CastleRequestInterceptor()
+    "/castle.cgi": new castle.CastleRequestInterceptor(),
+    "/map.cgi": new WildRequestInterceptor()
 };
 
 $(function () {

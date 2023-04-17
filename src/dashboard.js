@@ -68,3 +68,11 @@ export class TownDashboardProcessor {
         });
     }
 }
+
+export class WildDashboardProcessor {
+    constructor() {
+    }
+
+    process() {
+    }
+}

@@ -1,5 +1,6 @@
 import * as bank from "./bank";
 import * as dashboard from "./dashboard";
+import {WildDashboardProcessor} from "./dashboard";
 import * as page from "./page";
 import * as pocket from "./pocket";
 import {__utilities_checkIfEquipmentFullExperience, isUnavailableTreasureHintMap} from "./pocket";
@@ -17,6 +18,9 @@ export class StatusRequestInterceptor {
             if (text.includes("城市支配率")) {
                 // 城市主页面
                 new dashboard.TownDashboardProcessor().process();
+            }
+            if (text.includes("请选择移动的格数")) {
+                new WildDashboardProcessor().process();
             }
         }
         if (location.href.includes("/mydata.cgi")) {
