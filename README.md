@@ -1,7 +1,8 @@
 # pocketrose-assistant
+
 pocketrose(某页游)脚本，主要包括调整1-4代宝可梦宠物的中文名等。
 
-npm install --save-dev banner-webpack-plugin
+### 2.0.0.RC2
 
-1. 冒险家公会藏宝图显示城市图标识。
-2. 冒险家公会业务升级，带你一起去探险！
+1. 物品装备升级改造中，实现自动取钱祭奠功能。
+
