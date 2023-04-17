@@ -15,6 +15,7 @@ import {generateCredential} from "./page";
 import * as pocket from "./pocket";
 import * as user from "./user";
 import * as util from "./util";
+import * as npc from "./npc";
 
 /**
  * 用于拦截并处理浏览器访问town.cgi的请求后返回的页面。
@@ -39,6 +40,8 @@ export class TownRequestInterceptor {
             new TownAccessoryStore().process();
         } else if (text.includes("＜＜　□　物品屋　□　＞＞")) {
             new TownItemStore().process();
+        } else if (text.includes("＜＜ * 合 成 屋 *＞＞")) {
+            new TownGemStore().process();
         } else if (text.includes("* 运 送 屋 *")) {
             new TownItemExpress().process();
         } else if (text.includes("* 宠 物 赠 送 屋 *")) {
@@ -573,6 +576,176 @@ class TownItemStore {
                 }
             });
         }
+    }
+}
+
+/**
+ * 合成屋
+ */
+class TownGemStore {
+
+    constructor() {
+    }
+
+    process() {
+        $("input:submit[value='宝石合成']").attr("id", "fuseButton");
+        $("input:submit[value='返回城市']").attr("id", "returnButton");
+
+        page.findAndCreateMessageBoard("您好，这里是合成屋");
+
+        $("img[alt='合成屋']").parent().html(npc.loadNPC("夜苍凉").imageHTML);
+        page.initializeMessageBoard("砸石头这种事儿，难道不是有手就行的？");
+
+        $("input:radio[name='select']").each(function (_idx, radio) {
+            $(radio).parent().parent().attr("class", "itemClass");
+        });
+        $("input:radio[name='baoshi']").each(function (_idx, radio) {
+            $(radio).parent().parent().attr("class", "gemClass");
+        });
+
+        $("table:eq(1)").append($("<tr><td style='background-color:navy;text-align:center' id='buttonContainer'></td></tr>"));
+
+        $("#buttonContainer").append($("<input type='button' id='fuseWeightGem' style='color:green' value='砸光身上所有重量'>"));
+        $("#fuseWeightGem").prop("disabled", true);
+
+        let luckGemCount = 0;
+        let weightGemCount = 0;
+        let powerGemCount = 0;
+        $("input:radio[name='baoshi']").each(function (_idx, radio) {
+            const name = $(radio).parent().next().text();
+            if (name === "幸运宝石") {
+                luckGemCount++;
+            }
+            if (name === "重量宝石") {
+                weightGemCount++;
+            }
+            if (name === "威力宝石") {
+                powerGemCount++;
+            }
+        });
+
+        if (weightGemCount > 0) {
+            $("#fuseWeightGem").prop("disabled", false);
+        }
+
+        const inst = this;
+        $("#fuseWeightGem").click(function () {
+            const item = $("input:radio[name='select']:checked").val();
+            if (item === undefined) {
+                return;
+            }
+            const name = $("input:radio[name='select']:checked").parent().next().next().text();
+            // 位置可能会变，要确认这是同名的第几个
+            let nameCount = 0;
+            let nameIndex = -1;
+            $("input:radio[name='select']").each(function (_idx, radio) {
+                const n = $(radio).parent().next().next().text();
+                if (n === name) {
+                    nameCount++;
+                    if ($(radio).prop("checked")) {
+                        nameIndex = nameCount - 1;
+                    }
+                }
+            });
+            message.writeMessageBoard("选择合成" + name);
+            let holeCount;
+            if (name === "宠物蛋") {
+                holeCount = 20;
+            } else {
+                const holeText = $("input:radio[name='select']:checked").parent().next().next().next().next().next().next().next().text();
+                const h1 = parseInt(util.substringBeforeSlash(holeText));
+                const h2 = parseInt(util.substringAfterSlash(holeText));
+                holeCount = h2 - h1;
+            }
+            if (holeCount === 0) {
+                return;
+            }
+            message.writeMessageBoard(name + "还剩余" + holeCount + "孔");
+
+            inst.#fuseWeightGem(name, nameIndex, holeCount, 0);
+        });
+    }
+
+    #fuseWeightGem(name, nameIndex, holeCount, holeIndex) {
+        if (holeIndex === holeCount) {
+            message.writeMessageBoard(name + "没有孔了，完成");
+            return;
+        }
+        let item = "";
+        let c = 0;
+        $("input:radio[name='select']").each(function (_idx, radio) {
+            const n = $(radio).parent().next().next().text();
+            if (n === name) {
+                c++;
+                if (c - 1 === nameIndex) {
+                    // 就是这个
+                    item = $(radio).val();
+                }
+            }
+        });
+
+        let lastGemIndex = "";
+        $("input:radio[name='baoshi']").each(function (_idx, radio) {
+            const name = $(radio).parent().next().text();
+            if (name === "重量宝石") {
+                lastGemIndex = $(radio).val();
+            }
+        });
+        if (lastGemIndex === "" || lastGemIndex === undefined) {
+            // 没有石头了
+            message.writeMessageBoard("没有石头了，终止");
+            return;
+        }
+        this.#fuseGems(name, nameIndex, item, lastGemIndex, holeCount, holeIndex);
+    }
+
+    #fuseGems(name, nameIndex, item, gemIndex, holeCount, holeIndex) {
+        const inst = this;
+        const credential = page.generateCredential();
+        const request = credential.asRequest();
+        request["select"] = item;
+        request["baoshi"] = gemIndex;
+        request["azukeru"] = "0";
+        request["mode"] = "BAOSHI_MAKE";
+        network.sendPostRequest("town.cgi", request, function (html) {
+            const fuseResult = $(html).find("h2:first").text();
+            message.writeMessageBoard(fuseResult);
+
+            user.loadRole(credential).then(role => {
+                const town = pocket.findTownByName(role.townName);
+                const request = credential.asRequest();
+                request["town"] = town.id;
+                request["con_str"] = "50";
+                request["mode"] = "BAOSHI_SHOP";
+                network.sendPostRequest("town.cgi", request, function (html) {
+                    $(".itemClass").remove();
+                    $(".gemClass").remove();
+
+                    let list = [];
+                    $(html).find("input:radio[name='select']").each(function (_idx, radio) {
+                        const tr = $(radio).parent().parent().html();
+                        const s = "<tr class='itemClass'>" + tr + "</tr>";
+                        list.push(s);
+                    });
+                    let reverse = list.reverse();
+                    reverse.forEach(it => {
+                        $("table:eq(6) tr:first").after($(it));
+                    });
+
+                    list = [];
+                    $(html).find("input:radio[name='baoshi']").each(function (_idx, radio) {
+                        const tr = $(radio).parent().parent().html();
+                        const s = "<tr class='gemClass'>" + tr + "</tr>";
+                        list.push(s);
+                    });
+                    reverse = list.reverse();
+                    reverse.forEach(it => {
+                        $("table:eq(7) tr:first").after($(it));
+                    });
+                    inst.#fuseWeightGem(name, nameIndex, holeCount, holeIndex + 1);
+                });
+            });
+        });
     }
 }
 
