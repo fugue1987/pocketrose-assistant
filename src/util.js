@@ -48,9 +48,9 @@ export function substringAfterSlash(text) {
 
 export function latencyExecute(timeout, handler) {
     if ($("#count_up_timer").length > 0) {
-        let count = 1;
+        let count = timeout / 1000;
         const timer = setInterval(function () {
-            $("#count_up_timer").text(count++);
+            $("#count_up_timer").text(Math.max(count--, 0));
         }, 1000);
         setTimeout(function () {
             clearInterval(timer);
