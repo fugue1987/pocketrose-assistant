@@ -175,6 +175,19 @@ class PersonalItems {
         const items = item.parsePersonalItems();
         const treasureBag = item.findTreasureBag(items);
         const goldenCage = item.findGoldenCage(items);
+        const itemsMap = {};
+        for (let i = 0; i < items.length; i++) {
+            const item = items[i];
+            itemsMap[item.index] = item;
+        }
+        $("input:checkbox").each(function (_idx, checkbox) {
+            const item = itemsMap[_idx];
+            if (item !== undefined && item.isFullExperience) {
+                let nameHTML = $(checkbox).parent().next().next().html();
+                nameHTML = "<b style='color:red'>[满]</b>" + nameHTML;
+                $(checkbox).parent().next().next().html(nameHTML);
+            }
+        });
 
         if (treasureBag !== undefined) {
             $("#treasureBagButton").prop("disabled", false);
