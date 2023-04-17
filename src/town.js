@@ -603,6 +603,14 @@ class TownGemStore {
             $(radio).parent().parent().attr("class", "gemClass");
         });
 
+        $("input:radio[name='select']").each(function (_idx, radio) {
+            const using = $(radio).parent().next().text();
+            const name = $(radio).parent().next().next().text();
+            if (using === "★" && name !== "宠物蛋") {
+                $(radio).prop("disabled", true);
+            }
+        });
+
         $("table:eq(1)").append($("<tr><td style='background-color:navy;text-align:center' id='buttonContainer'></td></tr>"));
 
         $("#buttonContainer").append($("<input type='button' id='fuseLuckGem' style='color:red' value='砸光身上所有幸运'>"));
@@ -771,6 +779,15 @@ class TownGemStore {
                     reverse.forEach(it => {
                         $("table:eq(7) tr:first").after($(it));
                     });
+
+                    $("input:radio[name='select']").each(function (_idx, radio) {
+                        const using = $(radio).parent().next().text();
+                        const name = $(radio).parent().next().next().text();
+                        if (using === "★" && name !== "宠物蛋") {
+                            $(radio).prop("disabled", true);
+                        }
+                    });
+
                     const nextIndex = holeIndex + 1;
                     message.writeMessageBoard(name + "还剩余" + (holeCount - nextIndex) + "孔");
                     inst.#fuseGem(gemName, name, nameIndex, holeCount, nextIndex);
