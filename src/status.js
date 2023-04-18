@@ -9,6 +9,7 @@ import * as item from "./item";
 import * as network from "./network";
 import * as user from "./user";
 import * as pet from "./pet";
+import * as message from "./message";
 
 export class StatusRequestInterceptor {
 
@@ -370,11 +371,18 @@ class PersonPetStatus {
         const p3 = "<font color=\"red\">宠物现在升级时学习新技能情况一览</font>";
         const p4 = util.substringAfter(htmlText, "<font color=\"red\">宠物现在升级时学习新技能情况一览</font>");
         $("body:first").html(p1 + p2 + p3 + p4);
+
+        page.createHeaderNPC("夜九年", "npc_place");
+        message.initializeMessageBoard("全新版宠物管理UI正在建设中，敬请期待。");
     }
 
     #generatePetUI(petList) {
         let html = "";
+        html += "<div id='npc_place'></div>";
         html += "<table style='border-width:0'><tbody>";
+        html += "<tr><td style='text-align:center'>";
+        html += "<h2 style='color: navy'>＜＜　宠 物 管 理 (v2.0)　＞＞</h2>";
+        html += "</td></tr>";
         html += "<tr><td>";
         html += "<table style='border-width:0;background-color:#888888;text-align:center;width:100%'><tbody style='background-color:#F8F0E0'>";
 
