@@ -6,7 +6,6 @@ import * as pocket from "./pocket";
 import {__utilities_checkIfEquipmentFullExperience, isUnavailableTreasureHintMap} from "./pocket";
 import * as util from "./util";
 import * as item from "./item";
-import * as pet from "./pet";
 
 export class StatusRequestInterceptor {
 
@@ -268,6 +267,5 @@ class PersonPetStatus {
     }
 
     process() {
-        pet.getCurrentPetList($("body:first").html());
     }
 }

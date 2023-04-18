@@ -190,35 +190,6 @@ export class Pet {
 }
 
 /**
- * 从指定的页面获取当前身上所有宠物的状态
- * @param html 源页面
- * @returns {Pet[]}
- */
-export function getCurrentPetList(html) {
-    const petList = [];
-    $(html).find("input:radio[name='select']").each(function (_idx, radio) {
-        const index = $(radio).val();
-        if (index >= 0) {
-            // index为-1的意味着“无宠物”那个选项
-            const table = $(radio).closest("table");
-            // pet index & using
-            const pet = new Pet();
-            pet.index = parseInt(index);
-            const usingText = radio.nextSibling.nodeValue;
-            if (usingText === "未使用") {
-                pet.using = false;
-            }
-            if (usingText === "★使用") {
-                pet.using = true;
-            }
-            parsePet(pet, table);
-            petList.push(pet);
-        }
-    });
-    return petList;
-}
-
-/**
  * 寻找正在使用中的宠物
  * @param petList 宠物列表
  * @returns {undefined|Pet}
@@ -243,12 +214,40 @@ export async function loadPets(credential) {
             const request = credential.asRequest();
             request["mode"] = "PETSTATUS";
             network.sendPostRequest("mydata.cgi", request, function (html) {
-                const petList = getCurrentPetList(html);
+                const petList = parsePetList(html);
                 resolve(petList);
             });
         });
     };
     return await doLoadPets(credential);
+}
+
+// ----------------------------------------------------------------------------
+// P R I V A T E   F U N C T I O N S
+// ----------------------------------------------------------------------------
+
+function parsePetList(html) {
+    const petList = [];
+    $(html).find("input:radio[name='select']").each(function (_idx, radio) {
+        const index = $(radio).val();
+        if (index >= 0) {
+            // index为-1的意味着“无宠物”那个选项
+            const table = $(radio).closest("table");
+            // pet index & using
+            const pet = new Pet();
+            pet.index = parseInt(index);
+            const usingText = radio.nextSibling.nodeValue;
+            if (usingText === "未使用") {
+                pet.using = false;
+            }
+            if (usingText === "★使用") {
+                pet.using = true;
+            }
+            parsePet(pet, table);
+            petList.push(pet);
+        }
+    });
+    return petList;
 }
 
 function parsePet(pet, table) {
