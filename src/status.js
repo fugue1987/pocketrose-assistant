@@ -161,6 +161,7 @@ class PersonalItems {
         $("input:submit[value='确定']").attr("id", "confirmButton");
         $("input:submit[value='返回上个画面']").attr("id", "returnButton");
 
+        $("table:first").removeAttr("height");
         $("table:first tr:first").after($("<tr><td style='background-color:#E8E8D0' id='header_npc'></td></tr>"));
         page.createHeaderNPC("末末", "header_npc");
         page.initializeMessageBoard("我在这里说明一下，个人物品装备目前正处于升级改造阶段。")
