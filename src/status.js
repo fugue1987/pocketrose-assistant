@@ -251,9 +251,47 @@ class PersonalItems {
         $("#consecrateButton").prop("disabled", true);
 
         $("#consecrateButton").click(function () {
+            const request = page.generateCredential().asRequest();
+            let usingCount = 0;
+            const itemNames = [];
             $("input:checkbox:checked").each(function (_idx, checkbox) {
-
+                const name = $(checkbox).attr("name");
+                request[name] = $(checkbox).val();
+                if ($(checkbox).parent().next().text() === "★") {
+                    usingCount++;
+                }
+                itemNames.push($(checkbox).parent().next().next().text());
             });
+            if (itemNames.length === 0) {
+                alert("我以为你会知道，至少也要选择一件想要祭奠的装备。");
+                return;
+            }
+            if (usingCount > 0) {
+                alert("对不起，出于安全原因，正在使用中的装备不能祭奠！");
+                return;
+            }
+            request["chara"] = "1";
+            request["mode"] = "CONSECRATE";
+
+            const ret = confirm("请务必确认你将要祭奠的这些装备：" + itemNames.join());
+            if (!ret) {
+                return;
+            }
+
+            const cashText = $("td:contains('所持金')")
+                .filter(function () {
+                    return $(this).text() === "所持金";
+                })
+                .next()
+                .text();
+            const cash = util.substringBefore(cashText, " GOLD");
+            const amount = bank.calculateCashDifferenceAmount(cash, 1000000);
+            bank.withdrawFromTownBank(page.generateCredential(), amount)
+                .then(() => {
+                    network.sendPostRequest("mydata.cgi", request, function (html) {
+                        $("#returnButton").trigger("click");
+                    });
+                });
         });
 
         user.loadRoleStatus(page.generateCredential())
