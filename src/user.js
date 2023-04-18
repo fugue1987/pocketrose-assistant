@@ -34,6 +34,7 @@ export class Role {
     _experience;
     _cash;
     _career;
+    _masterCareerList;
 
     constructor() {
     }
@@ -190,6 +191,14 @@ export class Role {
         this._career = value;
     }
 
+    get masterCareerList() {
+        return this._masterCareerList;
+    }
+
+    set masterCareerList(value) {
+        this._masterCareerList = value;
+    }
+
     asShortText() {
         return this._name + " " + this._level +
             " " + this._health + "/" + this._maxHealth +
@@ -293,8 +302,13 @@ export async function loadRole(credential) {
                 role.career = util.substringAfter(text, "职业：");
             }
             if (text.startsWith("掌握职业：")) {
-                const careerText = util.substringAfter("掌握职业：");
-                careerText.split("");
+                const masterCareerList = [];
+                const careerText = util.substringAfter(text, "掌握职业：");
+                for (const it of careerText.split("】【")) {
+                    const career = util.substringBetween(it, "【", "】");
+                    masterCareerList.push(career);
+                }
+                role.masterCareerList = masterCareerList;
             }
         });
         return role;
