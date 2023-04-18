@@ -2,8 +2,10 @@ import * as bank from "./bank";
 import * as network from "./network";
 import * as page from "./page";
 import * as pet from "./pet";
+import * as pocket from "./pocket";
 import * as user from "./user";
 import * as util from "./util";
+import {Coordinate} from "./geo";
 
 export class TownDashboardProcessor {
 
@@ -45,6 +47,8 @@ export class TownDashboardProcessor {
             .attr("id", "cash_cell");
 
         this.#renderHTML();
+
+        new PocketEventProcessor().process();
 
         const instance = this;
         $("img:first").attr("id", "town_picture");
@@ -187,5 +191,92 @@ export class WildDashboardProcessor {
     }
 
     process() {
+    }
+}
+
+/**
+ * 最近发生的事件
+ */
+class PocketEventProcessor {
+
+    constructor() {
+    }
+
+    process() {
+        const title = $("td:contains('最近发生的事件')")
+            .filter(function () {
+                return $(this).text() === "最近发生的事件";
+            });
+        const td = $(title).closest("table")
+            .find("td:eq(1)");
+
+        $(td).attr("id", "pocket_event");
+
+        const originalEventHtmlList = [];
+        const ss = $(td).html().split("<br>");
+        for (const s of ss) {
+            const c = util.substringAfter(s, "<font color=\"navy\">●</font>");
+            if (c.endsWith(")")) {
+                originalEventHtmlList.push(c);
+            }
+        }
+
+        const processedEventHtmlList = [];
+        for (const s of originalEventHtmlList) {
+            const t = "<td>" + s + "</td>";
+            const text = $(t).text();
+            console.log(s);
+            console.log(text);
+            if (text.startsWith("[萝莉失踪]")) {
+                const secret = util.substringBetween(text, "[萝莉失踪]据说在印有", "描述的城市附近有萝莉失踪！");
+
+                console.log("secret => " + secret);
+                const candidates = pocket.findTownBySecret(secret);
+                let recommendation = "";
+                if (candidates.length === 0) {
+                    recommendation = "没有发现推荐的城市？检查一下城市字典吧，密字[" + secret + "]。";
+                } else {
+                    recommendation = "可能失踪的城市是：";
+                    for (let i = 0; i < candidates.length; i++) {
+                        const town = candidates[i];
+                        recommendation += "<b style='color:red'>" + town.name + "</b>";
+                        recommendation += "其可疑坐标" + this.#generateSuspectCoordinate(town);
+                        if (i !== candidates.length - 1) {
+                            recommendation += "，";
+                        } else {
+                            recommendation += "。";
+                        }
+                    }
+                }
+                let p1 = util.substringBefore(s, "失踪！");
+                let p2 = "失踪！";
+                let p3 = util.substringAfter(s, "失踪！");
+
+                processedEventHtmlList.push(p1 + p2 + recommendation + p3);
+            } else {
+                processedEventHtmlList.push(s);
+            }
+        }
+
+        let formatHTML = "";
+        for (const it of processedEventHtmlList) {
+            formatHTML = formatHTML + "<li>" + it + "</li>";
+        }
+        $("#pocket_event").html(formatHTML);
+    }
+
+    #generateSuspectCoordinate(town) {
+        const locations = [];
+        locations.push(new Coordinate(town.coordinate.x, town.coordinate.y + 1));
+        locations.push(new Coordinate(town.coordinate.x, town.coordinate.y - 1));
+        locations.push(new Coordinate(town.coordinate.x - 1, town.coordinate.y));
+        locations.push(new Coordinate(town.coordinate.x + 1, town.coordinate.y));
+        let s = "";
+        for (const location of locations) {
+            if (location.x >= 0 && location.x <= 15 && location.y >= 0 && location.y <= 15) {
+                s += location.longText();
+            }
+        }
+        return "<b style='color:blue'>" + s + "</b>";
     }
 }
