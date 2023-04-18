@@ -524,7 +524,7 @@ class PersonPetStatus {
             const pet = petList[i];
             let buttonId = "pet_" + pet.index + "_uninstall";
             if (!$("#" + buttonId).prop("disabled")) {
-
+                this.#bindPetUninstallClick(buttonId, pet);
             }
             buttonId = "pet_" + pet.index + "_install";
             if (!$("#" + buttonId).prop("disabled")) {
@@ -551,6 +551,21 @@ class PersonPetStatus {
 
             }
         }
+    }
+
+    #bindPetUninstallClick(buttonId, pet) {
+        const instance = this;
+        $("#" + buttonId).click(function () {
+            const credential = page.generateCredential();
+            const request = credential.asRequest();
+            request["select"] = "-1";
+            request["mode"] = "CHOOSEPET";
+            network.sendPostRequest("mydata.cgi", request, function (html) {
+                const result = $(html).find("h2:first").text();
+                message.writeMessageBoard(result);
+                instance.#finishWithRefresh(credential);
+            });
+        });
     }
 
     #bindPetInstallClick(buttonId, pet) {
