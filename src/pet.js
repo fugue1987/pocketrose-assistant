@@ -29,6 +29,10 @@ export class Pet {
     _usingSpell2;
     _usingSpell3;
     _usingSpell4;
+    _spell1Description;
+    _spell2Description;
+    _spell3Description;
+    _spell4Description;
     _attack;
     _defense;
     _specialAttack;
@@ -171,6 +175,38 @@ export class Pet {
         this._usingSpell4 = value;
     }
 
+    get spell1Description() {
+        return this._spell1Description;
+    }
+
+    set spell1Description(value) {
+        this._spell1Description = value;
+    }
+
+    get spell2Description() {
+        return this._spell2Description;
+    }
+
+    set spell2Description(value) {
+        this._spell2Description = value;
+    }
+
+    get spell3Description() {
+        return this._spell3Description;
+    }
+
+    set spell3Description(value) {
+        this._spell3Description = value;
+    }
+
+    get spell4Description() {
+        return this._spell4Description;
+    }
+
+    set spell4Description(value) {
+        this._spell4Description = value;
+    }
+
     get attack() {
         return this._attack;
     }
@@ -254,6 +290,38 @@ export class Pet {
     get imageHTML() {
         const src = pocket.DOMAIN + "/image/pet/" + this._picture;
         return "<img src='" + src + "' width='64' height='64' alt='" + this._race + "' style='border-width:0'>";
+    }
+
+    get spell1HTML() {
+        if (this._usingSpell1 && this._spell1 !== "通常攻击") {
+            return "<span title='" + this._spell1Description + "' style='color:red'>" + this.spell1 + "</span>";
+        } else {
+            return "<span title='" + this._spell1Description + "'>" + this.spell1 + "</span>";
+        }
+    }
+
+    get spell2HTML() {
+        if (this._usingSpell2 && this._spell2 !== "通常攻击") {
+            return "<span title='" + this._spell2Description + "' style='color:red'>" + this.spell2 + "</span>";
+        } else {
+            return "<span title='" + this._spell2Description + "'>" + this.spell2 + "</span>";
+        }
+    }
+
+    get spell3HTML() {
+        if (this._usingSpell3 && this._spell3 !== "通常攻击") {
+            return "<span title='" + this._spell3Description + "' style='color:red'>" + this.spell3 + "</span>";
+        } else {
+            return "<span title='" + this._spell3Description + "'>" + this.spell3 + "</span>";
+        }
+    }
+
+    get spell4HTML() {
+        if (this._usingSpell4 && this._spell4 !== "通常攻击") {
+            return "<span title='" + this._spell4Description + "' style='color:red'>" + this.spell4 + "</span>";
+        } else {
+            return "<span title='" + this._spell4Description + "'>" + this.spell4 + "</span>";
+        }
     }
 }
 
@@ -353,15 +421,23 @@ function parsePet(pet, table) {
     s = table.find("tr:eq(3) td:eq(1)").text();
     pet.spell1 = util.substringBefore(s, "(威力：");
     pet.usingSpell1 = s.includes("(使用中)");
+    pet.spell1Description = s;
+    pet.spell1Description += " " + table.find("tr:eq(4) td:eq(1)").text();
     s = table.find("tr:eq(5) td:eq(1)").text();
     pet.spell2 = util.substringBefore(s, "(威力：");
     pet.usingSpell2 = s.includes("(使用中)");
+    pet.spell2Description = s;
+    pet.spell2Description += " " + table.find("tr:eq(6) td:eq(1)").text();
     s = table.find("tr:eq(7) td:eq(1)").text();
     pet.spell3 = util.substringBefore(s, "(威力：");
     pet.usingSpell3 = s.includes("(使用中)");
+    pet.spell3Description = s;
+    pet.spell3Description += " " + table.find("tr:eq(8) td:eq(1)").text();
     s = table.find("tr:eq(9) td:eq(1)").text();
     pet.spell4 = util.substringBefore(s, "(威力：");
     pet.usingSpell4 = s.includes("(使用中)");
+    pet.spell4Description = s;
+    pet.spell4Description += " " + table.find("tr:eq(10) td:eq(1)").text();
 
     // pet attack & defense
     s = table.find("tr:eq(11) td:eq(1)").text();

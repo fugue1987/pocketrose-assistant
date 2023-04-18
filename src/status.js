@@ -365,7 +365,6 @@ class PersonPetStatus {
         const htmlText = $("body:first").html();
         const petList = pet.parsePetList(htmlText);
 
-
         const p1 = "<center>";
         const p2 = "<div id='PetUI'>" + this.#generatePetUI(petList) + "</div>";
         const p3 = "<font color=\"red\">宠物现在升级时学习新技能情况一览</font>";
@@ -385,6 +384,7 @@ class PersonPetStatus {
         html += "<td style='background-color:#E8E8D0'>使用</td>";
         html += "<td style='background-color:#E8E8D0'>宠物名</td>";
         html += "<td style='background-color:#E8E8D0'>性别</td>";
+        html += "<td style='background-color:#E8E8D0'>Ｌｖ</td>";
         html += "<td style='background-color:#E8E8D0'>ＨＰ</td>";
         html += "<td style='background-color:#E8E8D0'>攻击力</td>";
         html += "<td style='background-color:#E8E8D0'>防御力</td>";
@@ -419,6 +419,9 @@ class PersonPetStatus {
                 pet.gender +
                 "</td>";
             html += "<td style='background-color:#E8E8D0'>" +
+                pet.level +
+                "</td>";
+            html += "<td style='background-color:#E8E8D0'>" +
                 pet.health + "/" + pet.maxHealth +
                 "</td>";
             html += "<td style='background-color:#E8E8D0'>" +
@@ -437,16 +440,16 @@ class PersonPetStatus {
                 (pet.speed >= 375 ? "<b style='color:red'>" + pet.speed + "</b>" : pet.speed) +
                 "</td>";
             html += "<td style='background-color:#E8E8D0'>" +
-                (pet.usingSpell1 ? "<b style='color:red'>" + pet.spell1 + "</b>" : pet.spell1) +
+                pet.spell1HTML +
                 "</td>";
             html += "<td style='background-color:#E8E8D0'>" +
-                (pet.usingSpell2 ? "<b style='color:red'>" + pet.spell2 + "</b>" : pet.spell2) +
+                pet.spell2HTML +
                 "</td>";
             html += "<td style='background-color:#E8E8D0'>" +
-                (pet.usingSpell3 ? "<b style='color:red'>" + pet.spell3 + "</b>" : pet.spell3) +
+                pet.spell3HTML +
                 "</td>";
             html += "<td style='background-color:#E8E8D0'>" +
-                (pet.usingSpell4 ? "<b style='color:red'>" + pet.spell4 + "</b>" : pet.spell4) +
+                pet.spell4HTML +
                 "</td>";
             html += "<td style='background-color:#E8E8D0'>" +
                 (pet.love >= 100 ? "<b style='color:red'>" + pet.love + "</b>" : pet.love) +
