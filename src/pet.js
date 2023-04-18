@@ -223,8 +223,7 @@ export function getCurrentPetList(html) {
  * @returns {undefined|Pet}
  */
 export function findUsingPet(petList) {
-    for (let i = 0; i < petList.length; i++) {
-        const pet = petList[i];
+    for (const pet of petList) {
         if (pet.using) {
             return pet;
         }
