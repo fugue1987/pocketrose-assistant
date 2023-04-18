@@ -251,12 +251,10 @@ class PersonalItems {
         $("#consecrateButton").prop("disabled", true);
 
         $("#consecrateButton").click(function () {
-            const request = page.generateCredential().asRequest();
             let usingCount = 0;
             const itemNames = [];
             $("input:checkbox:checked").each(function (_idx, checkbox) {
                 const name = $(checkbox).attr("name");
-                request[name] = $(checkbox).val();
                 if ($(checkbox).parent().next().text() === "★") {
                     usingCount++;
                 }
@@ -270,8 +268,6 @@ class PersonalItems {
                 alert("对不起，出于安全原因，正在使用中的装备不能祭奠！");
                 return;
             }
-            request["chara"] = "1";
-            request["mode"] = "CONSECRATE";
 
             const ret = confirm("请务必确认你将要祭奠的这些装备：" + itemNames.join());
             if (!ret) {
@@ -288,9 +284,10 @@ class PersonalItems {
             const amount = bank.calculateCashDifferenceAmount(cash, 1000000);
             bank.withdrawFromTownBank(page.generateCredential(), amount)
                 .then(() => {
-                    network.sendPostRequest("mydata.cgi", request, function (html) {
-                        $("#returnButton").trigger("click");
-                    });
+                    $("option[value='USE']").prop("selected", false);
+                    $("option[value='CONSECRATE']").prop("selected", true);
+                    $("option[value='PUTINBAG']").prop("selected", false);
+                    $("#confirmButton").trigger("click");
                 });
         });
 
