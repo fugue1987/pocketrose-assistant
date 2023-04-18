@@ -225,12 +225,32 @@ class PocketEventProcessor {
         for (const s of originalEventHtmlList) {
             const t = "<td>" + s + "</td>";
             const text = $(t).text();
-            console.log(s);
-            console.log(text);
             if (text.startsWith("[萝莉失踪]")) {
                 const secret = util.substringBetween(text, "[萝莉失踪]据说在印有", "描述的城市附近有萝莉失踪！");
+                const candidates = pocket.findTownBySecret(secret);
+                let recommendation = "";
+                if (candidates.length === 0) {
+                    recommendation = "没有发现推荐的城市？检查一下城市字典吧，密字[" + secret + "]。";
+                } else {
+                    recommendation = "可能失踪的城市是：";
+                    for (let i = 0; i < candidates.length; i++) {
+                        const town = candidates[i];
+                        recommendation += "<b style='color:red'>" + town.name + "</b>";
+                        recommendation += this.#generateSuspectCoordinate(town);
+                        if (i !== candidates.length - 1) {
+                            recommendation += "，";
+                        } else {
+                            recommendation += "。";
+                        }
+                    }
+                }
+                let p1 = util.substringBefore(s, "失踪！");
+                let p2 = "失踪！";
+                let p3 = util.substringAfter(s, "失踪！");
 
-                console.log("secret => " + secret);
+                processedEventHtmlList.push(p1 + p2 + recommendation + p3);
+            } else if (text.startsWith("[正太失踪]")) {
+                const secret = util.substringBetween(text, "[正太失踪]据说在印有", "描述的城市附近有正太失踪！");
                 const candidates = pocket.findTownBySecret(secret);
                 let recommendation = "";
                 if (candidates.length === 0) {

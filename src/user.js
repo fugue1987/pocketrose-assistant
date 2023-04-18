@@ -292,6 +292,10 @@ export async function loadRole(credential) {
             if (text.startsWith("职业：")) {
                 role.career = util.substringAfter(text, "职业：");
             }
+            if (text.startsWith("掌握职业：")) {
+                const careerText = util.substringAfter("掌握职业：");
+
+            }
         });
         return role;
     };
