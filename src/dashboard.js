@@ -197,7 +197,7 @@ export class WildDashboardProcessor {
 /**
  * 最近发生的事件
  */
-class PocketEventProcessor {
+export class PocketEventProcessor {
 
     constructor() {
     }
@@ -216,6 +216,89 @@ class PocketEventProcessor {
         const ss = $(td).html().split("<br>");
         for (const s of ss) {
             const c = util.substringAfter(s, "<font color=\"navy\">●</font>");
+            if (c.endsWith(")")) {
+                originalEventHtmlList.push(c);
+            }
+        }
+
+        const processedEventHtmlList = [];
+        for (const s of originalEventHtmlList) {
+            const t = "<td>" + s + "</td>";
+            const text = $(t).text();
+            if (text.startsWith("[萝莉失踪]")) {
+                const secret = util.substringBetween(text, "[萝莉失踪]据说在印有", "描述的城市附近有萝莉失踪！");
+                const candidates = pocket.findTownBySecret(secret);
+                let recommendation = "";
+                if (candidates.length === 0) {
+                    recommendation = "没有发现推荐的城市？检查一下城市字典吧，密字[" + secret + "]。";
+                } else {
+                    recommendation = "可能失踪的城市是：";
+                    for (let i = 0; i < candidates.length; i++) {
+                        const town = candidates[i];
+                        recommendation += "<b style='color:red'>" + town.name + "</b>";
+                        recommendation += this.#generateSuspectCoordinate(town);
+                        if (i !== candidates.length - 1) {
+                            recommendation += "，";
+                        } else {
+                            recommendation += "。";
+                        }
+                    }
+                }
+                let p1 = util.substringBefore(s, "失踪！");
+                let p2 = "失踪！";
+                let p3 = util.substringAfter(s, "失踪！");
+
+                processedEventHtmlList.push(p1 + p2 + recommendation + p3);
+            } else if (text.startsWith("[正太失踪]")) {
+                const secret = util.substringBetween(text, "[正太失踪]据说在印有", "描述的城市附近有正太失踪！");
+                const candidates = pocket.findTownBySecret(secret);
+                let recommendation = "";
+                if (candidates.length === 0) {
+                    recommendation = "没有发现推荐的城市？检查一下城市字典吧，密字[" + secret + "]。";
+                } else {
+                    recommendation = "可能失踪的城市是：";
+                    for (let i = 0; i < candidates.length; i++) {
+                        const town = candidates[i];
+                        recommendation += "<b style='color:red'>" + town.name + "</b>";
+                        recommendation += this.#generateSuspectCoordinate(town);
+                        if (i !== candidates.length - 1) {
+                            recommendation += "，";
+                        } else {
+                            recommendation += "。";
+                        }
+                    }
+                }
+                let p1 = util.substringBefore(s, "失踪！");
+                let p2 = "失踪！";
+                let p3 = util.substringAfter(s, "失踪！");
+
+                processedEventHtmlList.push(p1 + p2 + recommendation + p3);
+            } else {
+                processedEventHtmlList.push(s);
+            }
+        }
+
+        let formatHTML = "";
+        for (const it of processedEventHtmlList) {
+            formatHTML = formatHTML + "<li>" + it + "</li>";
+        }
+        $("#pocket_event").html(formatHTML);
+    }
+
+    process2() {
+        const title = $("th:contains('最近发生的事件')")
+            .filter(function () {
+                return $(this).text() === "最近发生的事件";
+            });
+        const td = $(title).closest("table")
+            .find("td:eq(0)");
+
+        $(td).attr("id", "pocket_event");
+
+        const originalEventHtmlList = [];
+        const ss = $(td).html().split("<br>");
+        for (const s of ss) {
+            const c = util.substringAfter(s, "<font color=\"green\">●</font>");
             if (c.endsWith(")")) {
                 originalEventHtmlList.push(c);
             }

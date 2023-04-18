@@ -15,6 +15,9 @@ export class WildRequestInterceptor {
             new dashboard.WildDashboardProcessor().process();
         } else if (bodyText.includes("＜＜住所＞＞")) {
             new WildPostHouse().process();
+        } else if (bodyText.includes("各国资料")) {
+            // 查看势力图
+            new dashboard.PocketEventProcessor().process2();
         }
     }
 }
