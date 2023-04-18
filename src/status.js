@@ -369,7 +369,7 @@ class PersonPetStatus {
 
         // 初始化宠物管理页面：删除旧有的内容，用特定的div代替
         const p1 = "<center>";
-        const p2 = "<div id='PetUI'></div>";
+        const p2 = "<div id='npc_place'></div><div id='PetUI'></div>";
         const p3 = "<font color=\"red\">宠物现在升级时学习新技能情况一览</font>";
         const p4 = util.substringAfter(htmlText, "<font color=\"red\">宠物现在升级时学习新技能情况一览</font>");
         $("body:first").html(p1 + p2 + p3 + p4);
@@ -384,7 +384,6 @@ class PersonPetStatus {
 
     #renderPetUI(petList) {
         let html = "";
-        html += "<div id='npc_place'></div>";
         html += "<table style='border-width:0'><tbody>";
         html += "<tr><td style='text-align:center'>";
         html += "<h2 style='color: navy'>＜＜　宠 物 管 理 (v2.0)　＞＞</h2>";
@@ -394,8 +393,7 @@ class PersonPetStatus {
 
         html += "<tr>";
         html += "<td style='background-color:#EFE0C0'></td>";
-        html += "<td style='background-color:#E8E8D0'>选择</td>";
-        html += "<td style='background-color:#E8E8D0'>使用</td>";
+        html += "<td style='background-color:#EFE0C0'>使用</td>";
         html += "<td style='background-color:#E8E8D0'>宠物名</td>";
         html += "<td style='background-color:#E8E8D0'>性别</td>";
         html += "<td style='background-color:#E8E8D0'>Ｌｖ</td>";
@@ -417,13 +415,10 @@ class PersonPetStatus {
 
         for (const pet of petList) {
             html += "<tr>";
-            html += "<td style='background-color:#EFE0C0'>" +
+            html += "<td style='background-color:#EFE0C0' rowspan='2'>" +
                 pet.imageHTML +
                 "</td>";
-            html += "<td style='background-color:#E8E8D0'>" +
-                "<input type='radio' name='select' value='" + pet.index + "'>" +
-                "</td>";
-            html += "<td style='background-color:#E8E8D0'>" +
+            html += "<td style='background-color:#EFE0C0' rowspan='2'>" +
                 (pet.using ? "★" : "") +
                 "</td>";
             html += "<td style='background-color:#E8E8D0'>" +
@@ -478,6 +473,17 @@ class PersonPetStatus {
                 (pet.attribute2 === "无" ? "-" : pet.attribute2) +
                 "</td>";
             html += "</tr>";
+            html += "<tr>";
+            html += "<td colspan='17' style='text-align: left'>";        // 当前宠物的操作位置
+            html += "<input type='button' class='PetUIButton' value='卸下' id='pet_" + pet.index + "_uninstall'>";
+            html += "<input type='button' class='PetUIButton' value='使用' id='pet_" + pet.index + "_install'>";
+            html += "<input type='button' class='PetUIButton' value='入笼' id='pet_" + pet.index + "_cage'>";
+            html += "<input type='button' class='PetUIButton' value='技能' id='pet_" + pet.index + "_spell'>";
+            html += "<input type='button' class='PetUIButton' value='亲密' id='pet_" + pet.index + "_love'>";
+            html += "<input type='button' class='PetUIButton' value='参赛' id='pet_" + pet.index + "_league'>";
+            html += "<input type='button' class='PetUIButton' value='改名' id='pet_" + pet.index + "_rename'>";
+            html += "</td>";
+            html += "</tr>";
         }
 
         html += "</tbody></table>";
@@ -486,6 +492,30 @@ class PersonPetStatus {
 
         // 将新的UI渲染到指定的div
         $("#PetUI").append($(html));
+
+        // 根据宠物状态修改按钮的样式
+        for (let i = 0; i < petList.length; i++) {
+            const pet = petList[i];
+            if (!pet.using) {
+                let buttonId = "pet_" + pet.index + "_uninstall";
+                $("#" + buttonId).prop("disabled", true);
+                $("#" + buttonId).css("color", "grey");
+            }
+            if (pet.using) {
+                let buttonId = "pet_" + pet.index + "_install";
+                $("#" + buttonId).prop("disabled", true);
+                $("#" + buttonId).css("color", "grey");
+
+                buttonId = "pet_" + pet.index + "_cage";
+                $("#" + buttonId).prop("disabled", true);
+                $("#" + buttonId).css("color", "grey");
+            }
+            if (pet.love >= 100) {
+                let buttonId = "pet_" + pet.index + "_love";
+                $("#" + buttonId).prop("disabled", true);
+                $("#" + buttonId).css("color", "grey");
+            }
+        }
     }
 
 }

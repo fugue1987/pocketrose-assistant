@@ -387,6 +387,14 @@ export function parsePetList(html) {
     return petList;
 }
 
+export function petListAsMap(petList) {
+    const petMap = {};
+    for (const pet of petList) {
+        petMap[pet.index] = pet;
+    }
+    return petMap;
+}
+
 // ----------------------------------------------------------------------------
 // P R I V A T E   F U N C T I O N S
 // ----------------------------------------------------------------------------
