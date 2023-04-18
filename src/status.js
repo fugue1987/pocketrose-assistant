@@ -6,6 +6,7 @@ import * as pocket from "./pocket";
 import {__utilities_checkIfEquipmentFullExperience, isUnavailableTreasureHintMap} from "./pocket";
 import * as util from "./util";
 import * as item from "./item";
+import * as pet from "./pet";
 
 export class StatusRequestInterceptor {
 
@@ -36,6 +37,9 @@ export class StatusRequestInterceptor {
             } else if (text.includes("物品 百宝袋 使用")) {
                 // 进入百宝袋
                 new PersonalTreasureBag().process();
+            } else if (text.includes("宠物现在升级时学习新技能情况一览")) {
+                // 宠物状态
+                new PersonPetStatus().process();
             }
         }
     }
@@ -255,5 +259,15 @@ class PersonalTreasureBag {
                 }
             }
         });
+    }
+}
+
+class PersonPetStatus {
+
+    constructor() {
+    }
+
+    process() {
+        pet.getCurrentPetList($("body:first").html());
     }
 }
