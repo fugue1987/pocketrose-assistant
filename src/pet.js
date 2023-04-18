@@ -217,6 +217,21 @@ export function getCurrentPetList(html) {
     return petList;
 }
 
+/**
+ * 寻找正在使用中的宠物
+ * @param petList 宠物列表
+ * @returns {undefined|Pet}
+ */
+export function findUsingPet(petList) {
+    for (let i = 0; i < petList.length; i++) {
+        const pet = petList[i];
+        if (pet.using) {
+            return pet;
+        }
+    }
+    return undefined;
+}
+
 function parsePet(pet, table) {
     // pet name & gender
     const nameCell = table.find("td:first");
