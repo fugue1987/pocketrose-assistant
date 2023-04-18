@@ -6,6 +6,7 @@ import * as pocket from "./pocket";
 import {__utilities_checkIfEquipmentFullExperience, isUnavailableTreasureHintMap} from "./pocket";
 import * as util from "./util";
 import * as item from "./item";
+import * as network from "./network";
 
 export class StatusRequestInterceptor {
 
@@ -273,6 +274,30 @@ class PersonalTreasureBag {
                     $(td).next().html(nameHtml);
                 }
             }
+        });
+        $("input:submit[value='从百宝袋中取出']").attr("id", "takeOutButton");
+        $("#takeOutButton").attr("type", "button");
+        $("input:submit[value='ＯＫ']").attr("id", "returnButton");
+
+        $("#takeOutButton").click(function () {
+            const credential = page.generateCredential();
+            const request = credential.asRequest();
+            let checkedCount = 0;
+            $("input[type='checkbox']:checked").each(function (_idx, checkbox) {
+                checkedCount++;
+                const name = $(checkbox).attr("name");
+                request[name] = $(checkbox).attr("value");
+            });
+            if (checkedCount === 0) {
+                // 没有选择要取出的物品/装备
+                return;
+            }
+            request["mode"] = "GETOUTBAG";
+            network.sendPostRequest("mydata.cgi", request, function () {
+                $("input:hidden[value='STATUS']").attr("value", "USE_ITEM");
+                $("form[action='status.cgi']").attr("action", "mydata.cgi");
+                $("#returnButton").trigger("click");
+            });
         });
     }
 }
