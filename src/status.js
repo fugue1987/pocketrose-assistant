@@ -254,7 +254,6 @@ class PersonalItems {
             let usingCount = 0;
             const itemNames = [];
             $("input:checkbox:checked").each(function (_idx, checkbox) {
-                const name = $(checkbox).attr("name");
                 if ($(checkbox).parent().next().text() === "★") {
                     usingCount++;
                 }
