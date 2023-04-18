@@ -164,8 +164,14 @@ class PersonalItems {
         $("table:first").removeAttr("height");
         $("table:first tr:first").after($("<tr><td style='background-color:#E8E8D0' id='header_npc'></td></tr>"));
         page.createHeaderNPC("末末", "header_npc");
-        page.initializeMessageBoard("我在这里说明一下，个人物品装备目前正处于升级改造阶段。")
+        page.initializeMessageBoard("我在这里说明一下，个人物品装备目前正处于升级改造阶段。");
 
+        // 标记ajax动态修改区域
+        $("input:checkbox").each(function (_idx, checkbox) {
+            $(checkbox).parent().parent().attr("class", "item_class");
+        });
+
+        // 增加扩展菜单区域1
         $("td:parent").each(function (_idx, td) {
             const text = $(td).text();
             if (text.startsWith("烟花贺辞")) {
@@ -176,6 +182,15 @@ class PersonalItems {
         $("#extMenu").append($("<input type='button' id='goldenCageButton' style='color:green' value='打开黄金笼子'>"));
         $("#treasureBagButton").prop("disabled", true);
         $("#goldenCageButton").prop("disabled", true);
+
+        // 增加扩展菜单区域2
+        $("td:contains('所持金')")
+            .filter(function () {
+                return $(this).text() === "所持金";
+            })
+            .closest("table")
+            .find("tbody:first")
+            .append($("<TR><TD colspan='6' style='background-color:#E0D0B0' id='extMenu2'></TD></TR>"));
 
         const items = item.parsePersonalItems();
         const treasureBag = item.findTreasureBag(items);
