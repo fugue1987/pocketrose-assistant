@@ -380,6 +380,7 @@ class PersonPetStatus {
 
         // 渲染宠物管理UI
         this.#renderPetUI(petList);
+        this.#bindPetUIButton(petList);
     }
 
     #renderPetUI(petList) {
@@ -518,4 +519,69 @@ class PersonPetStatus {
         }
     }
 
+    #bindPetUIButton(petList) {
+        for (let i = 0; i < petList.length; i++) {
+            const pet = petList[i];
+            let buttonId = "pet_" + pet.index + "_uninstall";
+            if (!$("#" + buttonId).prop("disabled")) {
+
+            }
+            buttonId = "pet_" + pet.index + "_install";
+            if (!$("#" + buttonId).prop("disabled")) {
+                this.#bindPetInstallClick(buttonId, pet);
+            }
+            buttonId = "pet_" + pet.index + "_cage";
+            if (!$("#" + buttonId).prop("disabled")) {
+
+            }
+            buttonId = "pet_" + pet.index + "_spell";
+            if (!$("#" + buttonId).prop("disabled")) {
+
+            }
+            buttonId = "pet_" + pet.index + "_love";
+            if (!$("#" + buttonId).prop("disabled")) {
+
+            }
+            buttonId = "pet_" + pet.index + "_league";
+            if (!$("#" + buttonId).prop("disabled")) {
+
+            }
+            buttonId = "pet_" + pet.index + "_rename";
+            if (!$("#" + buttonId).prop("disabled")) {
+
+            }
+        }
+    }
+
+    #bindPetInstallClick(buttonId, pet) {
+        const instance = this;
+        $("#" + buttonId).click(function () {
+            const credential = page.generateCredential();
+            const request = credential.asRequest();
+            request["select"] = pet.index;
+            request["mode"] = "CHOOSEPET";
+            network.sendPostRequest("mydata.cgi", request, function (html) {
+                const result = $(html).find("h2:first").text();
+                message.writeMessageBoard(result);
+                instance.#finishWithRefresh(credential);
+            });
+        });
+    }
+
+    #finishWithRefresh(credential) {
+        const instance = this;
+        const request = credential.asRequest();
+        request["mode"] = "PETSTATUS";
+        network.sendPostRequest("mydata.cgi", request, function (html) {
+            // 从新的宠物界面中重新解析宠物状态
+            const petList = pet.parsePetList(html);
+            // 解除当前所有的按钮
+            $(".PetUIButton").unbind("click");
+            // 清除PetUI的内容
+            $("#PetUI").html("");
+            // 使用新的宠物重新渲染PetUI
+            instance.#renderPetUI(petList);
+            instance.#bindPetUIButton(petList);
+        });
+    }
 }
