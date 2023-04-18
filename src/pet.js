@@ -4,6 +4,7 @@
  * ============================================================================
  */
 
+import * as network from "./network";
 import * as util from "./util";
 
 /**
@@ -229,6 +230,25 @@ export function findUsingPet(petList) {
         }
     }
     return undefined;
+}
+
+/**
+ * 加载当前身上宠物列表
+ * @param credential 用户凭证
+ * @returns {Promise<Pet[]>}
+ */
+export async function loadPets(credential) {
+    const doLoadPets = (credential) => {
+        return new Promise((resolve) => {
+            const request = credential.asRequest();
+            request["mode"] = "PETSTATUS";
+            network.sendPostRequest("mydata.cgi", request, function (html) {
+                const petList = getCurrentPetList(html);
+                resolve(petList);
+            });
+        });
+    };
+    return await doLoadPets(credential);
 }
 
 function parsePet(pet, table) {
