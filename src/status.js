@@ -7,6 +7,7 @@ import {__utilities_checkIfEquipmentFullExperience, isUnavailableTreasureHintMap
 import * as util from "./util";
 import * as item from "./item";
 import * as network from "./network";
+import * as user from "./user";
 
 export class StatusRequestInterceptor {
 
@@ -243,6 +244,24 @@ class PersonalItems {
             $("option[value='PUTINBAG']").prop("selected", false);
             $("#confirmButton").trigger("click");
         });
+
+        const npc = page.createFooterNPC("饭饭");
+        npc.welcome("我就要一键祭奠，就要，就要！");
+        npc.message("<input type='button' id='consecrateButton' style='color:darkred' value='祭奠选择的装备'>");
+        $("#consecrateButton").prop("disabled", true);
+
+        $("#consecrateButton").click(function () {
+            $("input:checkbox:checked").each(function (_idx, checkbox) {
+
+            });
+        });
+
+        user.loadRoleStatus(page.generateCredential())
+            .then(status => {
+                if (status.canConsecrate) {
+                    $("#consecrateButton").prop("disabled", false);
+                }
+            });
     }
 }
 
