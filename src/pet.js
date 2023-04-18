@@ -5,6 +5,7 @@
  */
 
 import * as network from "./network";
+import * as pocket from "./pocket";
 import * as util from "./util";
 
 /**
@@ -17,18 +18,25 @@ export class Pet {
     _gender;
     _using;
     _level;
+    _picture;
     _health;
     _maxHealth;
     _spell1;
     _spell2;
     _spell3;
     _spell4;
+    _usingSpell1;
+    _usingSpell2;
+    _usingSpell3;
+    _usingSpell4;
     _attack;
     _defense;
     _specialAttack;
     _specialDefense;
     _speed;
     _love;
+    _attribute1;
+    _attribute2;
     _race;
     _code;
 
@@ -50,7 +58,6 @@ export class Pet {
     set name(value) {
         this._name = value;
     }
-
 
     get gender() {
         return this._gender;
@@ -74,6 +81,14 @@ export class Pet {
 
     set level(value) {
         this._level = value;
+    }
+
+    get picture() {
+        return this._picture;
+    }
+
+    set picture(value) {
+        this._picture = value;
     }
 
     get health() {
@@ -124,6 +139,38 @@ export class Pet {
         this._spell4 = value;
     }
 
+    get usingSpell1() {
+        return this._usingSpell1;
+    }
+
+    set usingSpell1(value) {
+        this._usingSpell1 = value;
+    }
+
+    get usingSpell2() {
+        return this._usingSpell2;
+    }
+
+    set usingSpell2(value) {
+        this._usingSpell2 = value;
+    }
+
+    get usingSpell3() {
+        return this._usingSpell3;
+    }
+
+    set usingSpell3(value) {
+        this._usingSpell3 = value;
+    }
+
+    get usingSpell4() {
+        return this._usingSpell4;
+    }
+
+    set usingSpell4(value) {
+        this._usingSpell4 = value;
+    }
+
     get attack() {
         return this._attack;
     }
@@ -172,6 +219,22 @@ export class Pet {
         this._love = value;
     }
 
+    get attribute1() {
+        return this._attribute1;
+    }
+
+    set attribute1(value) {
+        this._attribute1 = value;
+    }
+
+    get attribute2() {
+        return this._attribute2;
+    }
+
+    set attribute2(value) {
+        this._attribute2 = value;
+    }
+
     get race() {
         return this._race;
     }
@@ -186,6 +249,11 @@ export class Pet {
 
     set code(value) {
         this._code = value;
+    }
+
+    get imageHTML() {
+        const src = pocket.DOMAIN + "/image/pet/" + this._picture;
+        return "<img src='" + src + "' width='64' height='64' alt='" + this._race + "' style='border-width:0'>";
     }
 }
 
@@ -222,11 +290,12 @@ export async function loadPets(credential) {
     return await doLoadPets(credential);
 }
 
-// ----------------------------------------------------------------------------
-// P R I V A T E   F U N C T I O N S
-// ----------------------------------------------------------------------------
-
-function parsePetList(html) {
+/**
+ * 解析页面上所有宠物的信息
+ * @param html HTML
+ * @returns {Pet[]}
+ */
+export function parsePetList(html) {
     const petList = [];
     $(html).find("input:radio[name='select']").each(function (_idx, radio) {
         const index = $(radio).val();
@@ -250,6 +319,10 @@ function parsePetList(html) {
     return petList;
 }
 
+// ----------------------------------------------------------------------------
+// P R I V A T E   F U N C T I O N S
+// ----------------------------------------------------------------------------
+
 function parsePet(pet, table) {
     // pet name & gender
     const nameCell = table.find("td:first");
@@ -269,7 +342,9 @@ function parsePet(pet, table) {
     let s = table.find("tr:eq(1) td:first").text();
     pet.level = parseInt(util.substringAfter(s, "Ｌｖ"));
 
-    // pet health
+    // pet picture & health
+    s = table.find("tr:eq(2) td:eq(0) img").attr("src");
+    pet.picture = s.substring(s.lastIndexOf("/") + 1);
     s = table.find("tr:eq(2) td:eq(2)").text();
     pet.health = parseInt(util.substringBeforeSlash(s));
     pet.maxHealth = parseInt(util.substringAfterSlash(s));
@@ -277,12 +352,16 @@ function parsePet(pet, table) {
     // pet spells
     s = table.find("tr:eq(3) td:eq(1)").text();
     pet.spell1 = util.substringBefore(s, "(威力：");
+    pet.usingSpell1 = s.includes("(使用中)");
     s = table.find("tr:eq(5) td:eq(1)").text();
     pet.spell2 = util.substringBefore(s, "(威力：");
+    pet.usingSpell2 = s.includes("(使用中)");
     s = table.find("tr:eq(7) td:eq(1)").text();
     pet.spell3 = util.substringBefore(s, "(威力：");
+    pet.usingSpell3 = s.includes("(使用中)");
     s = table.find("tr:eq(9) td:eq(1)").text();
     pet.spell4 = util.substringBefore(s, "(威力：");
+    pet.usingSpell4 = s.includes("(使用中)");
 
     // pet attack & defense
     s = table.find("tr:eq(11) td:eq(1)").text();
@@ -302,8 +381,12 @@ function parsePet(pet, table) {
     s = table.find("tr:eq(13) td:eq(3)").text();
     pet.love = parseFloat(s);
 
+    // pet attributes
+    pet.attribute1 = table.find("tr:eq(14) td:eq(1)").text();
+    pet.attribute2 = table.find("tr:eq(14) td:eq(3)").text();
+
     // pet race & code
     s = table.find("tr:eq(16) td:eq(3)").text();
     pet.race = s;
-    pet.code = parseInt(util.substringBetween(s, "(", ")"));
+    pet.code = util.substringBetween(s, "(", ")");
 }

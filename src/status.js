@@ -8,6 +8,7 @@ import * as util from "./util";
 import * as item from "./item";
 import * as network from "./network";
 import * as user from "./user";
+import * as pet from "./pet";
 
 export class StatusRequestInterceptor {
 
@@ -361,5 +362,110 @@ class PersonPetStatus {
     }
 
     process() {
+        const htmlText = $("body:first").html();
+        const petList = pet.parsePetList(htmlText);
+
+
+        const p1 = "<center>";
+        const p2 = "<div id='PetUI'>" + this.#generatePetUI(petList) + "</div>";
+        const p3 = "<font color=\"red\">宠物现在升级时学习新技能情况一览</font>";
+        const p4 = util.substringAfter(htmlText, "<font color=\"red\">宠物现在升级时学习新技能情况一览</font>");
+        $("body:first").html(p1 + p2 + p3 + p4);
+    }
+
+    #generatePetUI(petList) {
+        let html = "";
+        html += "<table style='border-width:0'><tbody>";
+        html += "<tr><td>";
+        html += "<table style='border-width:0;background-color:#888888;text-align:center;width:100%'><tbody style='background-color:#F8F0E0'>";
+
+        html += "<tr>";
+        html += "<td style='background-color:#EFE0C0'></td>";
+        html += "<td style='background-color:#E8E8D0'>选择</td>";
+        html += "<td style='background-color:#E8E8D0'>使用</td>";
+        html += "<td style='background-color:#E8E8D0'>宠物名</td>";
+        html += "<td style='background-color:#E8E8D0'>性别</td>";
+        html += "<td style='background-color:#E8E8D0'>ＨＰ</td>";
+        html += "<td style='background-color:#E8E8D0'>攻击力</td>";
+        html += "<td style='background-color:#E8E8D0'>防御力</td>";
+        html += "<td style='background-color:#E8E8D0'>智力</td>";
+        html += "<td style='background-color:#E8E8D0'>精神力</td>";
+        html += "<td style='background-color:#E8E8D0'>速度</td>";
+        html += "<td style='background-color:#E8E8D0'>技1</td>";
+        html += "<td style='background-color:#E8E8D0'>技2</td>";
+        html += "<td style='background-color:#E8E8D0'>技3</td>";
+        html += "<td style='background-color:#E8E8D0'>技4</td>";
+        html += "<td style='background-color:#E8E8D0'>亲密度</td>";
+        html += "<td style='background-color:#E8E8D0'>种类</td>";
+        html += "<td style='background-color:#E8E8D0'>属性1</td>";
+        html += "<td style='background-color:#E8E8D0'>属性2</td>";
+        html += "</tr>";
+
+        for (const pet of petList) {
+            html += "<tr>";
+            html += "<td style='background-color:#EFE0C0'>" +
+                pet.imageHTML +
+                "</td>";
+            html += "<td style='background-color:#E8E8D0'>" +
+                "<input type='radio' name='select' value='" + pet.index + "'>" +
+                "</td>";
+            html += "<td style='background-color:#E8E8D0'>" +
+                (pet.using ? "★" : "") +
+                "</td>";
+            html += "<td style='background-color:#E8E8D0'>" +
+                "<b>" + pet.name + "</b>" +
+                "</td>";
+            html += "<td style='background-color:#E8E8D0'>" +
+                pet.gender +
+                "</td>";
+            html += "<td style='background-color:#E8E8D0'>" +
+                pet.health + "/" + pet.maxHealth +
+                "</td>";
+            html += "<td style='background-color:#E8E8D0'>" +
+                (pet.attack >= 375 ? "<b style='color:red'>" + pet.attack + "</b>" : pet.attack) +
+                "</td>";
+            html += "<td style='background-color:#E8E8D0'>" +
+                (pet.defense >= 375 ? "<b style='color:red'>" + pet.defense + "</b>" : pet.defense) +
+                "</td>";
+            html += "<td style='background-color:#E8E8D0'>" +
+                (pet.specialAttack >= 375 ? "<b style='color:red'>" + pet.specialAttack + "</b>" : pet.specialAttack) +
+                "</td>";
+            html += "<td style='background-color:#E8E8D0'>" +
+                (pet.specialDefense >= 375 ? "<b style='color:red'>" + pet.specialDefense + "</b>" : pet.specialDefense) +
+                "</td>";
+            html += "<td style='background-color:#E8E8D0'>" +
+                (pet.speed >= 375 ? "<b style='color:red'>" + pet.speed + "</b>" : pet.speed) +
+                "</td>";
+            html += "<td style='background-color:#E8E8D0'>" +
+                (pet.usingSpell1 ? "<b style='color:red'>" + pet.spell1 + "</b>" : pet.spell1) +
+                "</td>";
+            html += "<td style='background-color:#E8E8D0'>" +
+                (pet.usingSpell2 ? "<b style='color:red'>" + pet.spell2 + "</b>" : pet.spell2) +
+                "</td>";
+            html += "<td style='background-color:#E8E8D0'>" +
+                (pet.usingSpell3 ? "<b style='color:red'>" + pet.spell3 + "</b>" : pet.spell3) +
+                "</td>";
+            html += "<td style='background-color:#E8E8D0'>" +
+                (pet.usingSpell4 ? "<b style='color:red'>" + pet.spell4 + "</b>" : pet.spell4) +
+                "</td>";
+            html += "<td style='background-color:#E8E8D0'>" +
+                (pet.love >= 100 ? "<b style='color:red'>" + pet.love + "</b>" : pet.love) +
+                "</td>";
+            html += "<td style='background-color:#E8E8D0'>" +
+                pet.race +
+                "</td>";
+            html += "<td style='background-color:#E8E8D0'>" +
+                pet.attribute1 +
+                "</td>";
+            html += "<td style='background-color:#E8E8D0'>" +
+                (pet.attribute2 === "无" ? "-" : pet.attribute2) +
+                "</td>";
+            html += "</tr>";
+        }
+
+        html += "</tbody></table>";
+        html += "</td></tr>";
+        html += "</tbody></table>";
+        return html;
     }
 }
