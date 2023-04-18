@@ -363,20 +363,26 @@ class PersonPetStatus {
     }
 
     process() {
+        // 读取当前页面的所有宠物信息
         const htmlText = $("body:first").html();
         const petList = pet.parsePetList(htmlText);
 
+        // 初始化宠物管理页面：删除旧有的内容，用特定的div代替
         const p1 = "<center>";
-        const p2 = "<div id='PetUI'>" + this.#generatePetUI(petList) + "</div>";
+        const p2 = "<div id='PetUI'></div>";
         const p3 = "<font color=\"red\">宠物现在升级时学习新技能情况一览</font>";
         const p4 = util.substringAfter(htmlText, "<font color=\"red\">宠物现在升级时学习新技能情况一览</font>");
         $("body:first").html(p1 + p2 + p3 + p4);
 
+        // 创建其余页面组件
         page.createHeaderNPC("夜九年", "npc_place");
         message.initializeMessageBoard("全新版宠物管理UI正在建设中，敬请期待。");
+
+        // 渲染宠物管理UI
+        this.#renderPetUI(petList);
     }
 
-    #generatePetUI(petList) {
+    #renderPetUI(petList) {
         let html = "";
         html += "<div id='npc_place'></div>";
         html += "<table style='border-width:0'><tbody>";
@@ -477,6 +483,9 @@ class PersonPetStatus {
         html += "</tbody></table>";
         html += "</td></tr>";
         html += "</tbody></table>";
-        return html;
+
+        // 将新的UI渲染到指定的div
+        $("#PetUI").append($(html));
     }
+
 }
