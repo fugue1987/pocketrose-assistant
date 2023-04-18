@@ -62,7 +62,7 @@ export class NPC {
 
     get imageHTML() {
         const portrait = pocket.DOMAIN + "/image/head/" + this.#code + ".gif";
-        return "<img src='" + portrait + "' width='64' height='64' alt='" + this.#name + "'>";
+        return "<img src='" + portrait + "' width='64' height='64' id='npc_" + this.#code + "' alt='" + this.#name + "'>";
     }
 }
 
@@ -74,6 +74,7 @@ const NPCS = {
     "白皇": new NPC("白皇", "11134"),
     "七七": new NPC("七七", "1368"),
     "妮可": new NPC("妮可", "4237"),
+    "钱小小": new NPC("钱小小", "1567"),
     "花子": new NPC("花子", "1126"),
     "饭饭": new NPC("饭饭", "3139")
 };

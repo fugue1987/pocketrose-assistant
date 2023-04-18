@@ -592,7 +592,7 @@ class TownGemStore {
 
         page.findAndCreateMessageBoard("您好，这里是合成屋");
 
-        $("img[alt='合成屋']").parent().html(npc.loadNPC("夜苍凉").imageHTML);
+        $("img[alt='合成屋']").parent().html(npc.loadNPC("钱小小").imageHTML);
         page.initializeMessageBoard("砸石头这种事儿，难道不是有手就行的？");
 
         $("input:radio[name='select']").each(function (_idx, radio) {
@@ -618,6 +618,7 @@ class TownGemStore {
         $("#fuseLuckGem").prop("disabled", true);
         $("#fuseWeightGem").prop("disabled", true);
         $("#fusePowerGem").prop("disabled", true);
+        $("#fusePowerGem").hide();
 
         let luckGemCount = 0;
         let weightGemCount = 0;
@@ -654,6 +655,9 @@ class TownGemStore {
         });
         $("#fusePowerGem").click(function () {
             inst.#prepareFuseGem("威力宝石");
+        });
+        $("#npc_1567").dblclick(function () {
+            $("#fusePowerGem").toggle();
         });
     }
 
