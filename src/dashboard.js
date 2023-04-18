@@ -1,13 +1,16 @@
+import * as bank from "./bank";
+import * as network from "./network";
+import * as page from "./page";
+import * as pet from "./pet";
+import * as user from "./user";
+import * as util from "./util";
+
 export class TownDashboardProcessor {
 
     constructor() {
     }
 
     process() {
-        this.#renderHTML();
-    }
-
-    #renderHTML() {
         $("option[value='INN']").text("客栈·驿站");
         $("option[value='ARM_SHOP']").text("武器屋(v2.0)");
         $("option[value='PRO_SHOP']").text("防具屋(v2.0)");
@@ -20,6 +23,116 @@ export class TownDashboardProcessor {
         $("option[value='LETTER']").attr("style", "background:#20c0ff");
         $("option[value='CHANGEMAP']").text("冒险家公会");
 
+        // 为某些支持动态更新的表格设置id
+        // ＨＰ / ＭＰ / 资金
+        $("td:contains('ＨＰ')")
+            .filter(function () {
+                return $(this).text() === "ＨＰ";
+            })
+            .next()
+            .attr("id", "health_cell");
+        $("td:contains('ＭＰ')")
+            .filter(function () {
+                return $(this).text() === "ＭＰ";
+            })
+            .next()
+            .attr("id", "mana_cell");
+        $("td:contains('资金')")
+            .filter(function () {
+                return $(this).text() === "资金";
+            })
+            .next()
+            .attr("id", "cash_cell");
+
+        this.#renderHTML();
+
+        const instance = this;
+        $("img:first").attr("id", "town_picture");
+        $("#town_picture").dblclick(function () {
+            const cashText = $("td:contains('资金')")
+                .filter(function () {
+                    return $(this).text() === "资金";
+                })
+                .next()
+                .text();
+            const cash = parseInt(util.substringBefore(cashText, " Gold"));
+
+            const credential = page.generateCredential();
+            user.lodgeTown(credential)
+                .then(() => {
+                    pet.loadPets(credential)
+                        .then(petList => {
+                            const usingPet = pet.findUsingPet(petList);
+                            if (usingPet !== undefined && usingPet.level >= 100) {
+                                const expect = Math.ceil(100 - usingPet.love) * 10000;
+                                if (expect > 0) {
+                                    const amount = bank.calculateCashDifferenceAmount(cash, expect);
+                                    bank.withdrawFromTownBank(credential, amount)
+                                        .then(() => {
+                                            const request = credential.asRequest();
+                                            request["mode"] = "PETADDLOVE";
+                                            request["select"] = usingPet.index;
+                                            network.sendPostRequest("mydata.cgi", request, function () {
+                                                instance.#depositAndReturn();
+                                            });
+                                        });
+                                } else {
+                                    instance.#depositAndReturn();
+                                }
+                            } else {
+                                instance.#depositAndReturn();
+                            }
+                        });
+                });
+        });
+    }
+
+    #depositAndReturn() {
+        const instance = this;
+        const credential = page.generateCredential();
+        bank.depositIntoTownBank(credential, undefined)
+            .then(() => {
+                instance.#returnAndRefresh();
+            });
+    }
+
+    /**
+     * 返回主页，并且更新HP/MP/资金
+     */
+    #returnAndRefresh() {
+        const credential = page.generateCredential();
+        const request = credential.asRequest();
+        request["mode"] = "STATUS";
+        network.sendPostRequest("status.cgi", request, function (html) {
+            let s = $(html).find("td:contains('ＨＰ')")
+                .filter(function () {
+                    return $(this).text() === "ＨＰ";
+                })
+                .next()
+                .html();
+            $("#health_cell").html(s);
+            s = $(html).find("td:contains('ＭＰ')")
+                .filter(function () {
+                    return $(this).text() === "ＭＰ";
+                })
+                .next()
+                .html();
+            $("#mana_cell").html(s);
+            s = $(html).find("td:contains('资金')")
+                .filter(function () {
+                    return $(this).text() === "资金";
+                })
+                .next()
+                .text();
+            const cash = parseInt(util.substringBefore(s, " Gold"));
+            if (cash < 1000000) {
+                $("#cash_cell").removeAttr("style");
+            }
+            $("#cash_cell").text(s);
+        });
+    }
+
+    #renderHTML() {
         // 读取角色当前的能力值
         const text = $("#c_001").find("table:last").find("td:first").text();
         let idx = text.indexOf("Lv：");
