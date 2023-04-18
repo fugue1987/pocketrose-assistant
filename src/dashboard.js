@@ -240,7 +240,7 @@ class PocketEventProcessor {
                     for (let i = 0; i < candidates.length; i++) {
                         const town = candidates[i];
                         recommendation += "<b style='color:red'>" + town.name + "</b>";
-                        recommendation += "其可疑坐标" + this.#generateSuspectCoordinate(town);
+                        recommendation += this.#generateSuspectCoordinate(town);
                         if (i !== candidates.length - 1) {
                             recommendation += "，";
                         } else {
