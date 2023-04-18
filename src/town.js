@@ -170,7 +170,6 @@ class TownInnPostHouse {
                     map.leaveTown(credential).then(plan => {
                         plan.source = source;
                         plan.destination = destination;
-                        message.publishMessageBoard(message._message_move_source, {"source": source});
                         message.publishMessageBoard(message._message_move_destination, {"destination": destination});
                         map.executeMovePlan(plan).then(() => {
                             map.enterTown(credential, destinationTownId).then(() => {

@@ -140,25 +140,8 @@ export async function leaveTown(credential) {
             request["mode"] = "MAP_MOVE";
             network.sendPostRequest("map.cgi", request, function (html) {
                 message.publishMessageBoard(message._message_town_leave);
-
-                const scope = $(html).find("select[name='chara_m']")
-                    .find("option:last").attr("value");
-                let mode = "ROOK";
-                $(html).find("input:submit").each(function (_idx, input) {
-                    const v = $(input).attr("value");
-                    const d = $(input).attr("disabled");
-                    if (v === "↖" && d === undefined) {
-                        mode = "QUEEN";
-                    }
-                });
-                message.publishMessageBoard(message._message_move_scope, {"scope": scope});
-                message.publishMessageBoard(message._message_move_mode, {"mode": mode});
-
-                const plan = new MovePlan();
+                const plan = initializeMovePlan(html);
                 plan.credential = credential;
-                plan.scope = scope;
-                plan.mode = mode;
-
                 resolve(plan);
             });
         });
@@ -180,23 +163,8 @@ export async function leaveCastle(credential) {
             request["mode"] = "MAP_MOVE";
             network.sendPostRequest("map.cgi", request, function (html) {
                 message.publishMessageBoard(message._message_castle_leave);
-
-                const scope = $(html).find("select[name='chara_m']")
-                    .find("option:last").attr("value");
-                let mode = "ROOK";
-                $(html).find("input:submit").each(function (_idx, input) {
-                    const v = $(input).attr("value");
-                    const d = $(input).attr("disabled");
-                    if (v === "↖" && d === undefined) {
-                        mode = "QUEEN";
-                    }
-                });
-                message.publishMessageBoard(message._message_move_mode, {"mode": mode});
-                message.publishMessageBoard(message._message_move_scope, {"scope": scope});
-                const plan = new MovePlan();
+                const plan = initializeMovePlan(html);
                 plan.credential = credential;
-                plan.scope = scope;
-                plan.mode = mode;
                 resolve(plan);
             });
         });
@@ -299,7 +267,7 @@ export async function explore(credential) {
  * @param html 源HTML
  * @returns {MovePlan}
  */
-function initializeMovePlan(html) {
+export function initializeMovePlan(html) {
     const scope = $(html).find("select[name='chara_m']")
         .find("option:last").attr("value");
     let mode = "ROOK";
@@ -322,6 +290,7 @@ function initializeMovePlan(html) {
     });
     message.publishMessageBoard(message._message_move_mode, {"mode": mode});
     message.publishMessageBoard(message._message_move_scope, {"scope": scope});
+    message.publishMessageBoard(message._message_move_source, {"source": from});
     const plan = new MovePlan();
     plan.scope = scope;
     plan.mode = mode;

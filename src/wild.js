@@ -4,9 +4,6 @@ import * as network from "./network";
 import * as page from "./page";
 import * as pocket from "./pocket";
 import * as map from "./map";
-import {MovePlan} from "./map";
-import * as util from "./util";
-import {Coordinate} from "./geo";
 
 export class WildRequestInterceptor {
     constructor() {
@@ -68,33 +65,8 @@ class WildPostHouse {
                 const request = credential.asRequest();
                 request["mode"] = "STATUS";
                 network.sendPostRequest("status.cgi", request, function (html) {
-                    const scope = $(html).find("select[name='chara_m']")
-                        .find("option:last").attr("value");
-                    let mode = "ROOK";
-                    $(html).find("input:submit").each(function (_idx, input) {
-                        const v = $(input).attr("value");
-                        const d = $(input).attr("disabled");
-                        if (v === "↖" && d === undefined) {
-                            mode = "QUEEN";
-                        }
-                    });
-                    let from = undefined;
-                    $(html).find("td").each(function (_idx, td) {
-                        const text = $(td).text();
-                        if (text.includes("现在位置(") && text.endsWith(")")) {
-                            const s = util.substringBetween(text, "(", ")");
-                            const x = util.substringBefore(s, ",");
-                            const y = util.substringAfter(s, ",");
-                            from = new Coordinate(parseInt(x), parseInt(y));
-                        }
-                    });
-                    message.publishMessageBoard(message._message_move_mode, {"mode": mode});
-                    message.publishMessageBoard(message._message_move_scope, {"scope": scope});
-                    const plan = new MovePlan();
+                    const plan = map.initializeMovePlan(html);
                     plan.credential = credential;
-                    plan.scope = scope;
-                    plan.mode = mode;
-                    plan.source = from;
                     plan.destination = town.coordinate;
                     map.executeMovePlan(plan).then(() => {
                         message.writeMessageBoard("已经到达" + town.name + "城门口，希望下次再见");
