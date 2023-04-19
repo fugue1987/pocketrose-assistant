@@ -12,21 +12,27 @@ import * as util from "./util";
  */
 export class Item {
 
-    _index;
-    _selectable;
-    _using;
-    _name;
-    _star;
-    _nameHTML;
-    _category;
-    _power;
-    _weight;
-    _endure;
-    _experience;
-    _additionalPower;
-    _additionalWeight;
-    _additionalLuck;
-    _attribute;
+    _index;                     // 下标，在物品栏上的顺序
+    _selectable;                // 是否可以选择
+    _using;                     // 是否装备
+    _name;                      // 名字
+    _star;                      // 是否齐心
+    _nameHTML;                  // 名字完整的HTML
+    _category;                  // 种类
+    _power;                     // 效果
+    _weight;                    // 重量
+    _endure;                    // 耐久
+    _requiredCareer;            // 装备需要的职业
+    _requiredAttack;            // 装备需要的攻击力
+    _requiredDefense;           // 装备需要的防御力
+    _requiredSpecialAttack;     // 装备需要的智力
+    _requiredSpecialDefense;    // 装备需要的精神力
+    _requiredSpeed;             // 装备需要的速度
+    _experience;                // 经验
+    _additionalPower;           // 附加威力
+    _additionalWeight;          // 附加重量
+    _additionalLuck;            // 附加幸运
+    _attribute;                 // 属性
 
     constructor() {
     }
@@ -109,6 +115,54 @@ export class Item {
 
     set endure(value) {
         this._endure = value;
+    }
+
+    get requiredCareer() {
+        return this._requiredCareer;
+    }
+
+    set requiredCareer(value) {
+        this._requiredCareer = value;
+    }
+
+    get requiredAttack() {
+        return this._requiredAttack;
+    }
+
+    set requiredAttack(value) {
+        this._requiredAttack = value;
+    }
+
+    get requiredDefense() {
+        return this._requiredDefense;
+    }
+
+    set requiredDefense(value) {
+        this._requiredDefense = value;
+    }
+
+    get requiredSpecialAttack() {
+        return this._requiredSpecialAttack;
+    }
+
+    set requiredSpecialAttack(value) {
+        this._requiredSpecialAttack = value;
+    }
+
+    get requiredSpecialDefense() {
+        return this._requiredSpecialDefense;
+    }
+
+    set requiredSpecialDefense(value) {
+        this._requiredSpecialDefense = value;
+    }
+
+    get requiredSpeed() {
+        return this._requiredSpeed;
+    }
+
+    set requiredSpeed(value) {
+        this._requiredSpeed = value;
     }
 
     get experience() {
