@@ -173,6 +173,7 @@ class PersonalItemStatus {
 
         // 读取页面上装备的所有信息
         const htmlText = $("body:first").html();
+        const itemList = item.parsePersonalItems(htmlText);
 
         // 清理旧的页面内容，添加ItemUI
         $("table:eq(4)").remove();
@@ -183,6 +184,62 @@ class PersonalItemStatus {
         $("table:first tr:first").after($("<tr><td style='background-color:#E8E8D0' id='header_npc'></td></tr>"));
         page.createHeaderNPC("末末", "header_npc");
         page.initializeMessageBoard("我在这里说明一下，个人物品装备目前正处于升级改造阶段。");
+
+        // 重新渲染页面
+        this.#renderHTML(itemList);
+    }
+
+    #renderHTML(itemList) {
+        let html = "";
+        html += "<table style='background-color:#888888;width:100%;text-align:center'>";
+        html += "<thead style='background-color:#F8F0E0'>";
+        html += "<tr>";
+        html += "<th style='background-color:#E8E8D0'>选择</th>";
+        html += "<th style='background-color:#EFE0C0'>装备</th>";
+        html += "<th style='background-color:#E0D0B0'>所持物品</th>";
+        html += "<th style='background-color:#EFE0C0'>种类</th>";
+        html += "<th style='background-color:#E0D0B0'>效果</th>";
+        html += "<th style='background-color:#EFE0C0'>重量</th>";
+        html += "<th style='background-color:#EFE0C0'>耐久</th>";
+        html += "</tr>";
+        html += "</thead>";
+        html += "<tbody style='background-color:#F8F0E0'>";
+        for (const item of itemList) {
+            if (item.isTreasureBag) {
+                continue;
+            }
+            if (item.isGoldenCage) {
+                continue;
+            }
+            html += "<tr>";
+            html += "<td style='background-color:#E8E8D0'>" +
+                "<input type='checkbox' name='item" + item.index + "' value='" + item.index + "'>" +
+                "</td>"
+            html += "<td style='background-color:#EFE0C0'>" +
+                (item.using ? "★" : "") +
+                "</td>";
+            html += "<td style='background-color:#E0D0B0'>" +
+                item.nameHTML +
+                "</td>";
+            html += "<td style='background-color:#EFE0C0'>" +
+                item.category +
+                "</td>";
+            html += "<td style='background-color:#E0D0B0'>" +
+                item.power +
+                "</td>";
+            html += "<td style='background-color:#EFE0C0'>" +
+                item.weight +
+                "</td>";
+            html += "<td style='background-color:#EFE0C0'>" +
+                +item.endure +
+                "</td>";
+            html += "</tr>";
+        }
+        html += "</tbody>";
+        html += "</table>";
+
+        // 将新的UI渲染到指定的div
+        $("#ItemUI").append($(html));
     }
 }
 

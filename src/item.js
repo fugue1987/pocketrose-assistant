@@ -13,14 +13,20 @@ import * as util from "./util";
 export class Item {
 
     _index;
+    _selectable;
     _using;
     _name;
     _star;
+    _nameHTML;
     _category;
     _power;
     _weight;
     _endure;
     _experience;
+    _additionalPower;
+    _additionalWeight;
+    _additionalLuck;
+    _attribute;
 
     constructor() {
     }
@@ -31,6 +37,14 @@ export class Item {
 
     set index(value) {
         this._index = value;
+    }
+
+    get selectable() {
+        return this._selectable;
+    }
+
+    set selectable(value) {
+        this._selectable = value;
     }
 
     get using() {
@@ -55,6 +69,14 @@ export class Item {
 
     set star(value) {
         this._star = value;
+    }
+
+    get nameHTML() {
+        return this._nameHTML;
+    }
+
+    set nameHTML(value) {
+        this._nameHTML = value;
     }
 
     get category() {
@@ -95,6 +117,38 @@ export class Item {
 
     set experience(value) {
         this._experience = value;
+    }
+
+    get additionalPower() {
+        return this._additionalPower;
+    }
+
+    set additionalPower(value) {
+        this._additionalPower = value;
+    }
+
+    get additionalWeight() {
+        return this._additionalWeight;
+    }
+
+    set additionalWeight(value) {
+        this._additionalWeight = value;
+    }
+
+    get additionalLuck() {
+        return this._additionalLuck;
+    }
+
+    set additionalLuck(value) {
+        this._additionalLuck = value;
+    }
+
+    get attribute() {
+        return this._attribute;
+    }
+
+    set attribute(value) {
+        this._attribute = value;
     }
 
     get isWeapon() {
@@ -147,6 +201,7 @@ export function parsePersonalItems(html) {
         const item = new Item();
         item.index = _idx;
         let s = $(checkbox).parent().next().text();
+        item.selectable = !$(checkbox).prop("disabled");
         item.using = s === "★";
         s = $(checkbox).parent().next().next().text();
         if (s.startsWith("齐心★")) {
@@ -156,11 +211,16 @@ export function parsePersonalItems(html) {
             item.star = false;
             item.name = s;
         }
+        item.nameHTML = $(checkbox).parent().next().next().html();
         item.category = $(checkbox).parent().next().next().next().text();
         item.power = parseInt($(checkbox).parent().next().next().next().next().text());
         item.weight = parseInt($(checkbox).parent().next().next().next().next().next().text());
         item.endure = parseInt($(checkbox).parent().next().next().next().next().next().next().text());
+        item.additionalPower = parseInt($(checkbox).parent().next().next().next().next().next().next().next().next().next().next().next().next().next().text());
+        item.additionalWeight = parseInt($(checkbox).parent().next().next().next().next().next().next().next().next().next().next().next().next().next().next().text());
+        item.additionalLuck = parseInt($(checkbox).parent().next().next().next().next().next().next().next().next().next().next().next().next().next().next().next().text());
         item.experience = parseInt($(checkbox).parent().next().next().next().next().next().next().next().next().next().next().next().next().next().next().next().next().text());
+        item.attribute = $(checkbox).parent().next().next().next().next().next().next().next().next().next().next().next().next().next().next().next().next().next().text();
 
         items.push(item);
 
