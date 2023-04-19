@@ -413,6 +413,7 @@ class PersonalPetStatus {
         // 读取当前页面的所有宠物信息
         const htmlText = $("body:first").html();
         const petList = pet.parsePetList(htmlText);
+        const petStudyStatus = pet.parsePetStudyStatus(htmlText);
 
         // 初始化宠物管理页面：删除旧有的内容，用特定的div代替
         const p1 = "<center>";
@@ -444,11 +445,11 @@ class PersonalPetStatus {
         });
 
         // 渲染宠物管理UI
-        this.#renderPetUI(petList);
-        this.#bindPetUIButton(petList);
+        this.#renderPetUI(petList, petStudyStatus);
+        this.#bindPetUIButton(petList, petStudyStatus);
     }
 
-    #renderPetUI(petList) {
+    #renderPetUI(petList, petStudyStatus) {
         let html = "";
         html += "<table style='border-width:0'><tbody>";
         html += "<tr><td style='text-align:center'>";
@@ -548,10 +549,20 @@ class PersonalPetStatus {
             html += "<input type='button' class='PetUIButton' value='亲密' id='pet_" + pet.index + "_love'>";
             html += "<input type='button' class='PetUIButton' value='参赛' id='pet_" + pet.index + "_league'>";
             html += "<input type='button' class='PetUIButton' value='改名' id='pet_" + pet.index + "_rename'>&nbsp;";
-            html += "<input type='text' class='PetUIButton' id='pet_" + pet.index + "_name_text' size='20' maxlength='10'>";
+            html += "<input type='text' id='pet_" + pet.index + "_name_text' size='20' maxlength='10'>";
             html += "</td>";
             html += "</tr>";
         }
+
+        html += "<tr><td style='background-color:#EFE0C0;text-align:center' colspan='19'>";
+        html += "<b style='color:navy'>设置宠物升级时学习技能情况</b>";
+        html += "</td></tr>";
+        html += "<tr><td style='background-color:#E8E8D0;text-align:center' colspan='19'>";
+        html += "<input type='button' class='PetUIButton' value='第１技能位' id='pet_spell_study_1'>";
+        html += "<input type='button' class='PetUIButton' value='第２技能位' id='pet_spell_study_2'>";
+        html += "<input type='button' class='PetUIButton' value='第３技能位' id='pet_spell_study_3'>";
+        html += "<input type='button' class='PetUIButton' value='第４技能位' id='pet_spell_study_4'>";
+        html += "</td></tr>";
 
         html += "</tbody></table>";
         html += "</td></tr>";
@@ -617,9 +628,31 @@ class PersonalPetStatus {
             $("#" + buttonId).prop("disabled", true);
             $("#" + buttonId).css("color", "grey");
         }
+
+        // 设置技能学习位的按钮样式
+        if (petStudyStatus.includes(1)) {
+            $("#pet_spell_study_1").css("color", "blue");
+        } else {
+            $("#pet_spell_study_1").css("color", "grey");
+        }
+        if (petStudyStatus.includes(2)) {
+            $("#pet_spell_study_2").css("color", "blue");
+        } else {
+            $("#pet_spell_study_2").css("color", "grey");
+        }
+        if (petStudyStatus.includes(3)) {
+            $("#pet_spell_study_3").css("color", "blue");
+        } else {
+            $("#pet_spell_study_3").css("color", "grey");
+        }
+        if (petStudyStatus.includes(4)) {
+            $("#pet_spell_study_4").css("color", "blue");
+        } else {
+            $("#pet_spell_study_4").css("color", "grey");
+        }
     }
 
-    #bindPetUIButton(petList) {
+    #bindPetUIButton(petList, petStudyStatus) {
         for (let i = 0; i < petList.length; i++) {
             const pet = petList[i];
             let buttonId = "pet_" + pet.index + "_uninstall";
@@ -697,6 +730,77 @@ class PersonalPetStatus {
                 this.#bindPetRenameClick(buttonId, pet);
             }
         }
+
+        // 设置宠物技能学习位的按钮行为
+        const instance = this;
+        $("#pet_spell_study_1").click(function () {
+            const credential = page.generateCredential();
+            const request = credential.asRequest();
+            const color = $("#pet_spell_study_1").css("color");
+            if (color.toString() === "rgb(128, 128, 128)") {
+                request["study1"] = "1";
+            }
+            if (color.toString() === "rgb(0, 0, 255)") {
+                // 当前是已经设置学习状态
+            }
+            request["mode"] = "STUDY_SET";
+            network.sendPostRequest("mydata.cgi", request, function (html) {
+                const result = $(html).find("h2:first").text();
+                message.writeMessageBoard(result);
+                instance.#finishWithRefresh(credential);
+            });
+        });
+        $("#pet_spell_study_2").click(function () {
+            const credential = page.generateCredential();
+            const request = credential.asRequest();
+            const color = $("#pet_spell_study_2").css("color");
+            if (color.toString() === "rgb(128, 128, 128)") {
+                request["study2"] = "2";
+            }
+            if (color.toString() === "rgb(0, 0, 255)") {
+                // 当前是已经设置学习状态
+            }
+            request["mode"] = "STUDY_SET";
+            network.sendPostRequest("mydata.cgi", request, function (html) {
+                const result = $(html).find("h2:first").text();
+                message.writeMessageBoard(result);
+                instance.#finishWithRefresh(credential);
+            });
+        });
+        $("#pet_spell_study_3").click(function () {
+            const credential = page.generateCredential();
+            const request = credential.asRequest();
+            const color = $("#pet_spell_study_3").css("color");
+            if (color.toString() === "rgb(128, 128, 128)") {
+                request["study3"] = "3";
+            }
+            if (color.toString() === "rgb(0, 0, 255)") {
+                // 当前是已经设置学习状态
+            }
+            request["mode"] = "STUDY_SET";
+            network.sendPostRequest("mydata.cgi", request, function (html) {
+                const result = $(html).find("h2:first").text();
+                message.writeMessageBoard(result);
+                instance.#finishWithRefresh(credential);
+            });
+        });
+        $("#pet_spell_study_4").click(function () {
+            const credential = page.generateCredential();
+            const request = credential.asRequest();
+            const color = $("#pet_spell_study_4").css("color");
+            if (color.toString() === "rgb(128, 128, 128)") {
+                request["study4"] = "4";
+            }
+            if (color.toString() === "rgb(0, 0, 255)") {
+                // 当前是已经设置学习状态
+            }
+            request["mode"] = "STUDY_SET";
+            network.sendPostRequest("mydata.cgi", request, function (html) {
+                const result = $(html).find("h2:first").text();
+                message.writeMessageBoard(result);
+                instance.#finishWithRefresh(credential);
+            });
+        });
     }
 
     #bindPetUninstallClick(buttonId, pet) {
@@ -831,13 +935,14 @@ class PersonalPetStatus {
         network.sendPostRequest("mydata.cgi", request, function (html) {
             // 从新的宠物界面中重新解析宠物状态
             const petList = pet.parsePetList(html);
+            const petStudyStatus = pet.parsePetStudyStatus(html);
             // 解除当前所有的按钮
             $(".PetUIButton").unbind("click");
             // 清除PetUI的内容
             $("#PetUI").html("");
             // 使用新的宠物重新渲染PetUI
-            instance.#renderPetUI(petList);
-            instance.#bindPetUIButton(petList);
+            instance.#renderPetUI(petList, petStudyStatus);
+            instance.#bindPetUIButton(petList, petStudyStatus);
         });
     }
 }
