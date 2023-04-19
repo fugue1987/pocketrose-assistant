@@ -893,14 +893,14 @@ class PersonalPetStatus {
             request["select"] = pet.index;
             request["mode"] = "PETGAME";
             network.sendPostRequest("mydata.cgi", request, function (html) {
-                let result = "";
                 if (html.includes("ERROR !")) {
-                    result = $(html).find("font b").text();
+                    const result = $(html).find("font b").text();
+                    message.writeMessageBoard(result);
+                    instance.#finishWithRefresh(credential);
                 } else {
-                    result = $(html).find("h2:first").text();
+                    // 由于目前登陆宠联的操作不会触发页面刷新，因此直接返回主页面
+                    $("#returnButton").trigger("click");
                 }
-                message.writeMessageBoard(result);
-                instance.#finishWithRefresh(credential);
             });
         });
     }
