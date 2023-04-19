@@ -281,6 +281,12 @@ export function parsePersonalItems(html) {
         item.power = parseInt($(checkbox).parent().next().next().next().next().text());
         item.weight = parseInt($(checkbox).parent().next().next().next().next().next().text());
         item.endure = parseInt($(checkbox).parent().next().next().next().next().next().next().text());
+        item.requiredCareer = $(checkbox).parent().next().next().next().next().next().next().next().text();
+        item.requiredAttack = parseInt($(checkbox).parent().next().next().next().next().next().next().next().next().text());
+        item.requiredDefense = parseInt($(checkbox).parent().next().next().next().next().next().next().next().next().next().text());
+        item.requiredSpecialAttack = parseInt($(checkbox).parent().next().next().next().next().next().next().next().next().next().next().text());
+        item.requiredSpecialDefense = parseInt($(checkbox).parent().next().next().next().next().next().next().next().next().next().next().next().text());
+        item.requiredSpeed = parseInt($(checkbox).parent().next().next().next().next().next().next().next().next().next().next().next().next().text());
         item.additionalPower = parseInt($(checkbox).parent().next().next().next().next().next().next().next().next().next().next().next().next().next().text());
         item.additionalWeight = parseInt($(checkbox).parent().next().next().next().next().next().next().next().next().next().next().next().next().next().next().text());
         item.additionalLuck = parseInt($(checkbox).parent().next().next().next().next().next().next().next().next().next().next().next().next().next().next().next().text());
