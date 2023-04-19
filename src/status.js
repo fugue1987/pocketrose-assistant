@@ -177,7 +177,7 @@ class PersonalItemStatus {
 
         // 清理旧的页面内容，添加ItemUI
         $("table:eq(4)").remove();
-        $("table:first tr:eq(1) td:first").html("<div id='ItemUI'></div>");
+        $("table:first tr:eq(1) td:first").html("<div id='ItemUI'></div><div id='Eden' style='display:none'></div>");
         $("table:first").removeAttr("height");
 
         // 创建页面组件
@@ -187,6 +187,8 @@ class PersonalItemStatus {
 
         // 重新渲染页面
         this.#renderHTML(itemList);
+        // 重新绑定事件
+        this.#bindEventHandler(itemList);
     }
 
     #renderHTML(itemList) {
@@ -216,7 +218,7 @@ class PersonalItemStatus {
             }
             html += "<tr>";
             html += "<td style='background-color:#E8E8D0'>" +
-                "<input type='checkbox' name='item" + item.index + "' value='" + item.index + "'>" +
+                (item.selectable ? "<input type='checkbox' name='item" + item.index + "' value='" + item.index + "'>" : "") +
                 "</td>"
             html += "<td style='background-color:#EFE0C0'>" +
                 (item.using ? "★" : "") +
@@ -253,11 +255,72 @@ class PersonalItemStatus {
                 "</td>";
             html += "</tr>";
         }
+        html += "<tr>";
+        html += "<td style='background-color:#E8E8D0;text-align:left' colspan='12'>" +
+            "<b style='color:navy'>目前剩余空位数：</b><b style='color:red'>" + (20 - itemList.length) + "</b>" +
+            "</td>";
+        html += "</tr>";
+        html += "<tr>";
+        html += "<td style='background-color:#E8E8D0' colspan='12'>" +
+            "<input type='button' class='ItemUIButton' id='treasureBagButton' value='百宝袋'>" +
+            "<input type='button' class='ItemUIButton' id='goldenCageButton' value='黄金笼子'>" +
+            "</td>";
+        html += "</tr>";
         html += "</tbody>";
         html += "</table>";
 
         // 将新的UI渲染到指定的div
         $("#ItemUI").append($(html));
+
+        // 在Eden中添加一些预制的表单
+        const credential = page.generateCredential();
+        $("#Eden").append($("<form action='mydata.cgi'>" +
+            "<input type='hidden' name='chara' value='1'>" +
+            "<input type='hidden' name='' value='' id='treasureBagIndex'>" +
+            "<input type='hidden' name='mode' value='USE'>" +
+            "<input type='hidden' name='id' value='" + credential.id + "'>" +
+            "<input type='hidden' name='pass' value='" + credential.pass + "'>" +
+            "<input type='submit' id='treasureBagSubmit'>" +
+            "</form>"));
+        $("#Eden").append($("<form action='mydata.cgi'>" +
+            "<input type='hidden' name='chara' value='1'>" +
+            "<input type='hidden' name='' value='' id='goldenCageIndex'>" +
+            "<input type='hidden' name='mode' value='USE'>" +
+            "<input type='hidden' name='id' value='" + credential.id + "'>" +
+            "<input type='hidden' name='pass' value='" + credential.pass + "'>" +
+            "<input type='submit' id='goldenCageSubmit'>" +
+            "</form>"));
+
+        // 确定按钮的状态
+        const bag = item.findTreasureBag(itemList);
+        if (bag === undefined) {
+            $("#treasureBagButton").prop("disabled", true);
+            $("#treasureBagButton").css("color", "grey");
+        } else {
+            $("#treasureBagIndex").attr("name", "item" + bag.index);
+            $("#treasureBagIndex").attr("value", bag.index);
+        }
+        const cage = item.findGoldenCage(itemList);
+        if (bag === undefined) {
+            $("#goldenCageButton").prop("disabled", true);
+            $("#goldenCageButton").css("color", "grey");
+        } else {
+            $("#goldenCageIndex").attr("name", "item" + cage.index);
+            $("#goldenCageIndex").attr("value", cage.index);
+        }
+    }
+
+    #bindEventHandler(itemList) {
+        if (!$("#treasureBagButton").prop("disabled")) {
+            $("#treasureBagButton").click(function () {
+                $("#treasureBagSubmit").trigger("click");
+            });
+        }
+        if (!$("#goldenCageButton").prop("disabled")) {
+            $("#goldenCageButton").click(function () {
+                $("#goldenCageSubmit").trigger("click");
+            });
+        }
     }
 }
 
