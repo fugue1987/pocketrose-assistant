@@ -446,7 +446,7 @@ class PersonalPetStatus {
 
         // 渲染宠物管理UI
         this.#renderPetUI(petList, petStudyStatus);
-        this.#bindPetUIButton(petList, petStudyStatus);
+        this.#bindPetUIButton(petList);
     }
 
     #renderPetUI(petList, petStudyStatus) {
@@ -652,12 +652,12 @@ class PersonalPetStatus {
         }
     }
 
-    #bindPetUIButton(petList, petStudyStatus) {
+    #bindPetUIButton(petList) {
         for (let i = 0; i < petList.length; i++) {
             const pet = petList[i];
             let buttonId = "pet_" + pet.index + "_uninstall";
             if (!$("#" + buttonId).prop("disabled")) {
-                this.#bindPetUninstallClick(buttonId, pet);
+                this.#bindPetUninstallClick(buttonId);
             }
             buttonId = "pet_" + pet.index + "_install";
             if (!$("#" + buttonId).prop("disabled")) {
@@ -667,56 +667,8 @@ class PersonalPetStatus {
             if (!$("#" + buttonId).prop("disabled")) {
                 this.#bindPetCageClick(buttonId, pet);
             }
-            const spell_1_id = "pet_" + pet.index + "_spell_1";
-            $("#" + spell_1_id).click(function () {
-                const color = $("#" + spell_1_id).css("color");
-                if (color.toString() === "rgb(128, 128, 128)") {
-                    $("#" + spell_1_id).css("color", "blue");
-                }
-                if (color.toString() === "rgb(0, 0, 255)") {
-                    $("#" + spell_1_id).css("color", "grey");
-                }
-                $("#" + "pet_" + pet.index + "_spell").prop("disabled", false);
-                $("#" + "pet_" + pet.index + "_spell").removeAttr("style");
-            });
-            const spell_2_id = "pet_" + pet.index + "_spell_2";
-            $("#" + spell_2_id).click(function () {
-                const color = $("#" + spell_2_id).css("color");
-                if (color.toString() === "rgb(128, 128, 128)") {
-                    $("#" + spell_2_id).css("color", "blue");
-                }
-                if (color.toString() === "rgb(0, 0, 255)") {
-                    $("#" + spell_2_id).css("color", "grey");
-                }
-                $("#" + "pet_" + pet.index + "_spell").prop("disabled", false);
-                $("#" + "pet_" + pet.index + "_spell").removeAttr("style");
-            });
-            const spell_3_id = "pet_" + pet.index + "_spell_3";
-            $("#" + spell_3_id).click(function () {
-                const color = $("#" + spell_3_id).css("color");
-                if (color.toString() === "rgb(128, 128, 128)") {
-                    $("#" + spell_3_id).css("color", "blue");
-                }
-                if (color.toString() === "rgb(0, 0, 255)") {
-                    $("#" + spell_3_id).css("color", "grey");
-                }
-                $("#" + "pet_" + pet.index + "_spell").prop("disabled", false);
-                $("#" + "pet_" + pet.index + "_spell").removeAttr("style");
-            });
-            const spell_4_id = "pet_" + pet.index + "_spell_4";
-            $("#" + spell_4_id).click(function () {
-                const color = $("#" + spell_4_id).css("color");
-                if (color.toString() === "rgb(128, 128, 128)") {
-                    $("#" + spell_4_id).css("color", "blue");
-                }
-                if (color.toString() === "rgb(0, 0, 255)") {
-                    $("#" + spell_4_id).css("color", "grey");
-                }
-                $("#" + "pet_" + pet.index + "_spell").prop("disabled", false);
-                $("#" + "pet_" + pet.index + "_spell").removeAttr("style");
-            });
-            buttonId = "pet_" + pet.index + "_spell";
-            this.#bindPetSpellClick(buttonId, pet);
+
+            this.#bindPetSpellClick(pet);
 
             buttonId = "pet_" + pet.index + "_love";
             if (!$("#" + buttonId).prop("disabled")) {
@@ -735,7 +687,7 @@ class PersonalPetStatus {
         this.#bindPetStudyClick();
     }
 
-    #bindPetUninstallClick(buttonId, pet) {
+    #bindPetUninstallClick(buttonId) {
         const instance = this;
         $("#" + buttonId).click(function () {
             const credential = page.generateCredential();
@@ -780,32 +732,97 @@ class PersonalPetStatus {
         });
     }
 
-    #bindPetSpellClick(buttonId, pet) {
+    #bindPetSpellClick(pet) {
         const instance = this;
-        $("#" + buttonId).click(function () {
+        $("#" + "pet_" + pet.index + "_spell_1").click(function () {
             const credential = page.generateCredential();
             const request = credential.asRequest();
             request["select"] = pet.index;
             request["mode"] = "PETUSESKILL_SET";
-            let buttonId = "pet_" + pet.index + "_spell_1";
-            let color = $("#" + buttonId).css("color");
-            if (color.toString() === "rgb(0, 0, 255)") {
+            if (page.isColorGrey("pet_" + pet.index + "_spell_1")) {
+                // 启用当前的技能
                 request["use1"] = "1";
             }
-            buttonId = "pet_" + pet.index + "_spell_2";
-            color = $("#" + buttonId).css("color");
-            if (color.toString() === "rgb(0, 0, 255)") {
+            if (page.isColorBlue("pet_" + pet.index + "_spell_2")) {
                 request["use2"] = "2";
             }
-            buttonId = "pet_" + pet.index + "_spell_3";
-            color = $("#" + buttonId).css("color");
-            if (color.toString() === "rgb(0, 0, 255)") {
+            if (page.isColorBlue("pet_" + pet.index + "_spell_3")) {
                 request["use3"] = "3";
             }
-            buttonId = "pet_" + pet.index + "_spell_4";
-            color = $("#" + buttonId).css("color");
-            if (color.toString() === "rgb(0, 0, 255)") {
+            if (page.isColorBlue("pet_" + pet.index + "_spell_4")) {
                 request["use4"] = "4";
+            }
+            network.sendPostRequest("mydata.cgi", request, function (html) {
+                const result = $(html).find("h2:first").text();
+                message.writeMessageBoard(pet.name + "技能" + result);
+                instance.#finishWithRefresh(credential);
+            });
+        });
+        $("#" + "pet_" + pet.index + "_spell_2").click(function () {
+            const credential = page.generateCredential();
+            const request = credential.asRequest();
+            request["select"] = pet.index;
+            request["mode"] = "PETUSESKILL_SET";
+            if (page.isColorGrey("pet_" + pet.index + "_spell_2")) {
+                // 启用当前的技能
+                request["use2"] = "2";
+            }
+            if (page.isColorBlue("pet_" + pet.index + "_spell_1")) {
+                request["use1"] = "1";
+            }
+            if (page.isColorBlue("pet_" + pet.index + "_spell_3")) {
+                request["use3"] = "3";
+            }
+            if (page.isColorBlue("pet_" + pet.index + "_spell_4")) {
+                request["use4"] = "4";
+            }
+            network.sendPostRequest("mydata.cgi", request, function (html) {
+                const result = $(html).find("h2:first").text();
+                message.writeMessageBoard(pet.name + "技能" + result);
+                instance.#finishWithRefresh(credential);
+            });
+        });
+        $("#" + "pet_" + pet.index + "_spell_3").click(function () {
+            const credential = page.generateCredential();
+            const request = credential.asRequest();
+            request["select"] = pet.index;
+            request["mode"] = "PETUSESKILL_SET";
+            if (page.isColorGrey("pet_" + pet.index + "_spell_3")) {
+                // 启用当前的技能
+                request["use3"] = "3";
+            }
+            if (page.isColorBlue("pet_" + pet.index + "_spell_1")) {
+                request["use1"] = "1";
+            }
+            if (page.isColorBlue("pet_" + pet.index + "_spell_2")) {
+                request["use2"] = "2";
+            }
+            if (page.isColorBlue("pet_" + pet.index + "_spell_4")) {
+                request["use4"] = "4";
+            }
+            network.sendPostRequest("mydata.cgi", request, function (html) {
+                const result = $(html).find("h2:first").text();
+                message.writeMessageBoard(pet.name + "技能" + result);
+                instance.#finishWithRefresh(credential);
+            });
+        });
+        $("#" + "pet_" + pet.index + "_spell_4").click(function () {
+            const credential = page.generateCredential();
+            const request = credential.asRequest();
+            request["select"] = pet.index;
+            request["mode"] = "PETUSESKILL_SET";
+            if (page.isColorGrey("pet_" + pet.index + "_spell_4")) {
+                // 启用当前的技能
+                request["use4"] = "4";
+            }
+            if (page.isColorBlue("pet_" + pet.index + "_spell_1")) {
+                request["use1"] = "1";
+            }
+            if (page.isColorBlue("pet_" + pet.index + "_spell_2")) {
+                request["use2"] = "2";
+            }
+            if (page.isColorBlue("pet_" + pet.index + "_spell_3")) {
+                request["use3"] = "3";
             }
             network.sendPostRequest("mydata.cgi", request, function (html) {
                 const result = $(html).find("h2:first").text();
@@ -946,7 +963,7 @@ class PersonalPetStatus {
             $("#PetUI").html("");
             // 使用新的宠物重新渲染PetUI
             instance.#renderPetUI(petList, petStudyStatus);
-            instance.#bindPetUIButton(petList, petStudyStatus);
+            instance.#bindPetUIButton(petList);
         });
     }
 }
