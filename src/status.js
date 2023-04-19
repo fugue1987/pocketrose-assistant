@@ -37,7 +37,9 @@ export class StatusRequestInterceptor {
                 new PersonalSalary().process();
             } else if (text.includes("＜＜　|||　物品使用．装备　|||　＞＞")) {
                 // 物品使用．装备
-                new PersonalItemStatus().process();
+                if (option.__cookie_getEnableNewItemUI()) {
+                    new PersonalItemStatus().process();
+                }
             } else if (text.includes("物品 百宝袋 使用")) {
                 // 进入百宝袋
                 new PersonalTreasureBag().process();

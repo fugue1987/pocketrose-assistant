@@ -24,6 +24,10 @@ export class TownDashboardProcessor {
         $("option[value='PET_SEND']").text("宠物赠送(v2.0)");
         $("option[value='LETTER']").text("口袋助手设置");
         $("option[value='LETTER']").css("background-color", "#20c0ff");
+        if (option.__cookie_getEnableNewItemUI()) {
+            $("option[value='USE_ITEM']").text("装备管理(v2.0)");
+            $("option[value='USE_ITEM']").css("background-color", "yellow");
+        }
         if (option.__cookie_getEnableNewPetUI()) {
             $("option[value='PETSTATUS']").text("宠物管理(v2.0)");
             $("option[value='PETSTATUS']").css("background-color", "yellow");
