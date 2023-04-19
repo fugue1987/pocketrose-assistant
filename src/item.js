@@ -247,3 +247,12 @@ export function findGoldenCage(items) {
     }
     return undefined;
 }
+
+export function itemListAsMap(itemList) {
+    const itemMap = {};
+    for (let i = 0; i < itemList.length; i++) {
+        const item = itemList[i];
+        itemMap[item.index] = item;
+    }
+    return itemMap;
+}

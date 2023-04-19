@@ -264,6 +264,7 @@ class PersonalItemStatus {
         html += "<td style='background-color:#E8E8D0;text-align:left' colspan='12'>" +
             "<input type='button' class='ItemUIButton' id='treasureBagButton' value='百宝袋'>" +
             "<input type='button' class='ItemUIButton' id='goldenCageButton' value='黄金笼子'>" +
+            "<input type='button' class='ItemUIButton' id='useButton' value='使用'>" +
             "</td>";
         html += "</tr>";
         html += "</tbody>";
@@ -311,6 +312,7 @@ class PersonalItemStatus {
     }
 
     #bindEventHandler(itemList) {
+        const itemMap = item.itemListAsMap(itemList);
         if (!$("#treasureBagButton").prop("disabled")) {
             $("#treasureBagButton").click(function () {
                 $("#treasureBagSubmit").trigger("click");
@@ -321,6 +323,47 @@ class PersonalItemStatus {
                 $("#goldenCageSubmit").trigger("click");
             });
         }
+        const instance = this;
+        $("#useButton").click(function () {
+            const credential = page.generateCredential();
+            const request = credential.asRequest();
+            let checkedCount = 0;
+            $("input:checkbox:checked").each(function (_idx, checkbox) {
+                checkedCount++;
+                const name = $(checkbox).attr("name");
+                request[name] = $(checkbox).val();
+            });
+            if (checkedCount === 0) {
+                // 没有选择任何装备物品，忽略
+                return;
+            }
+            request["chara"] = "1";
+            request["mode"] = "USE";
+            network.sendPostRequest("mydata.cgi", request, function (html) {
+                let result = $(html).find("h2:first").html();
+                result = result.replace("<br>", "");
+                result = "<td>" + result + "</td>";
+                message.writeMessageBoard($(result).text());
+                instance.#finishWithRefresh(credential);
+            });
+        });
+    }
+
+    #finishWithRefresh(credential) {
+        const instance = this;
+        const request = credential.asRequest();
+        request["mode"] = "USE_ITEM";
+        network.sendPostRequest("mydata.cgi", request, function (html) {
+            // 从新的界面中重新解析装备状态
+            const itemList = item.parsePersonalItems(html);
+            // 解除当前所有的按钮
+            $(".ItemUIButton").unbind("click");
+            // 清除PetUI的内容
+            $("#ItemUI").html("");
+            // 使用新的重新渲染ItemUI
+            instance.#renderHTML(itemList);
+            instance.#bindEventHandler(itemList);
+        });
     }
 }
 
