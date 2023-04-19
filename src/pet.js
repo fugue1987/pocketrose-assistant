@@ -293,11 +293,12 @@ export class Pet {
     }
 
     get spell1HTML() {
-        if (this._usingSpell1 && this._spell1 !== "通常攻击") {
-            return "<span title='" + this._spell1Description + "' style='color:red'>" + this.spell1 + "</span>";
-        } else {
-            return "<span title='" + this._spell1Description + "'>" + this.spell1 + "</span>";
-        }
+        return "<span title='" + this._spell1Description + "'>" + this.spell1 + "</span>";
+        // if (this._usingSpell1 && this._spell1 !== "通常攻击") {
+        //     return "<span title='" + this._spell1Description + "' style='color:red'>" + this.spell1 + "</span>";
+        // } else {
+        //     return "<span title='" + this._spell1Description + "'>" + this.spell1 + "</span>";
+        // }
     }
 
     get spell2HTML() {
