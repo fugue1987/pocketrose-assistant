@@ -545,7 +545,6 @@ class PersonalPetStatus {
             html += "<input type='button' class='PetUIButton' value='卸下' id='pet_" + pet.index + "_uninstall'>";
             html += "<input type='button' class='PetUIButton' value='使用' id='pet_" + pet.index + "_install'>";
             html += "<input type='button' class='PetUIButton' value='入笼' id='pet_" + pet.index + "_cage'>";
-            html += "<input type='button' class='PetUIButton' value='技能' id='pet_" + pet.index + "_spell'>";
             html += "<input type='button' class='PetUIButton' value='亲密' id='pet_" + pet.index + "_love'>";
             html += "<input type='button' class='PetUIButton' value='参赛' id='pet_" + pet.index + "_league'>";
             html += "<input type='button' class='PetUIButton' value='改名' id='pet_" + pet.index + "_rename'>&nbsp;";
@@ -574,11 +573,15 @@ class PersonalPetStatus {
         // 根据宠物状态修改按钮的样式
         for (let i = 0; i < petList.length; i++) {
             const pet = petList[i];
+
+            // 设置卸下宠物按钮的状态
             if (!pet.using) {
                 let buttonId = "pet_" + pet.index + "_uninstall";
                 $("#" + buttonId).prop("disabled", true);
                 $("#" + buttonId).css("color", "grey");
             }
+
+            // 设置使用宠物按钮的状态
             if (pet.using) {
                 let buttonId = "pet_" + pet.index + "_install";
                 $("#" + buttonId).prop("disabled", true);
@@ -589,34 +592,33 @@ class PersonalPetStatus {
                 $("#" + buttonId).css("color", "grey");
             }
 
-            let buttonId = "pet_" + pet.index + "_spell";
-            $("#" + buttonId).prop("disabled", true);
-            $("#" + buttonId).css("color", "grey");
-            buttonId = "pet_" + pet.index + "_spell_1";
+            // 设置宠物技能按钮的状态
+            let spellButtonId = "pet_" + pet.index + "_spell_1";
             if (pet.usingSpell1) {
-                $("#" + buttonId).css("color", "blue");
+                $("#" + spellButtonId).css("color", "blue");
             } else {
-                $("#" + buttonId).css("color", "grey");
+                $("#" + spellButtonId).css("color", "grey");
             }
-            buttonId = "pet_" + pet.index + "_spell_2";
+            spellButtonId = "pet_" + pet.index + "_spell_2";
             if (pet.usingSpell2) {
-                $("#" + buttonId).css("color", "blue");
+                $("#" + spellButtonId).css("color", "blue");
             } else {
-                $("#" + buttonId).css("color", "grey");
+                $("#" + spellButtonId).css("color", "grey");
             }
-            buttonId = "pet_" + pet.index + "_spell_3";
+            spellButtonId = "pet_" + pet.index + "_spell_3";
             if (pet.usingSpell3) {
-                $("#" + buttonId).css("color", "blue");
+                $("#" + spellButtonId).css("color", "blue");
             } else {
-                $("#" + buttonId).css("color", "grey");
+                $("#" + spellButtonId).css("color", "grey");
             }
-            buttonId = "pet_" + pet.index + "_spell_4";
+            spellButtonId = "pet_" + pet.index + "_spell_4";
             if (pet.usingSpell4) {
-                $("#" + buttonId).css("color", "blue");
+                $("#" + spellButtonId).css("color", "blue");
             } else {
-                $("#" + buttonId).css("color", "grey");
+                $("#" + spellButtonId).css("color", "grey");
             }
 
+            // 设置卸下亲密度按钮的状态
             if (pet.love >= 100) {
                 let buttonId = "pet_" + pet.index + "_love";
                 $("#" + buttonId).prop("disabled", true);
@@ -624,9 +626,9 @@ class PersonalPetStatus {
             }
 
             // 宠物联赛按钮暂时还没有开发
-            buttonId = "pet_" + pet.index + "_league";
-            $("#" + buttonId).prop("disabled", true);
-            $("#" + buttonId).css("color", "grey");
+            const leagueButtonId = "pet_" + pet.index + "_league";
+            $("#" + leagueButtonId).prop("disabled", true);
+            $("#" + leagueButtonId).css("color", "grey");
         }
 
         // 设置技能学习位的按钮样式
