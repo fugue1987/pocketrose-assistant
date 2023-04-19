@@ -185,10 +185,27 @@ class PersonalItemStatus {
         page.createHeaderNPC("末末", "header_npc");
         page.initializeMessageBoard("我在这里说明一下，个人物品装备目前正处于升级改造阶段。");
 
+        // 创建祭奠用NPC
+        const npc = page.createFooterNPC("饭饭");
+        npc.welcome("我就要一键祭奠，就要，就要！");
+        npc.message("<input type='button' id='consecrateButton' style='color:darkred' value='祭奠选择的装备'>");
+        $("#consecrateButton").prop("disabled", true);
+
         // 重新渲染页面
         this.#renderHTML(itemList);
         // 重新绑定事件
         this.#bindEventHandler(itemList);
+
+        // 祭奠按钮事件处理
+        this.#bindConsecrateClickEventHandler();
+
+        // 根据主页面获取的是否可以祭奠的状态更新祭奠按钮
+        user.loadRoleStatus(page.generateCredential())
+            .then(status => {
+                if (status.canConsecrate) {
+                    $("#consecrateButton").prop("disabled", false);
+                }
+            });
     }
 
     #renderHTML(itemList) {
@@ -327,6 +344,14 @@ class PersonalItemStatus {
             "<input type='hidden' name='pass' value='" + credential.pass + "'>" +
             "<input type='submit' id='goldenCageSubmit'>" +
             "</form>"));
+        $("#Eden").append($("<form action='mydata.cgi'>" +
+            "<input type='hidden' name='chara' value='1'>" +
+            "<div id='consecrateItems' style='display:none'></div>" +
+            "<input type='hidden' name='mode' value='CONSECRATE'>" +
+            "<input type='hidden' name='id' value='" + credential.id + "'>" +
+            "<input type='hidden' name='pass' value='" + credential.pass + "'>" +
+            "<input type='submit' id='consecrateSubmit'>" +
+            "</form>"));
 
         // 确定按钮的状态
         const bag = item.findTreasureBag(itemList);
@@ -458,6 +483,51 @@ class PersonalItemStatus {
             // 使用新的重新渲染ItemUI
             instance.#renderHTML(itemList);
             instance.#bindEventHandler(itemList);
+        });
+    }
+
+    #bindConsecrateClickEventHandler() {
+        $("#consecrateButton").click(function () {
+            const candidates = {};
+            let usingCount = 0;
+            const itemNames = [];
+            $("input:checkbox:checked").each(function (_idx, checkbox) {
+                if ($(checkbox).parent().next().text() === "★") {
+                    usingCount++;
+                }
+                itemNames.push($(checkbox).parent().next().next().text());
+                const name = $(checkbox).attr("name");
+                candidates[name] = $(checkbox).val();
+            });
+            if (itemNames.length === 0) {
+                alert("我以为你会知道，至少也要选择一件想要祭奠的装备。");
+                return;
+            }
+            if (usingCount > 0) {
+                alert("对不起，出于安全原因，正在使用中的装备不能祭奠！");
+                return;
+            }
+            const ret = confirm("请务必确认你将要祭奠的这些装备：" + itemNames.join());
+            if (!ret) {
+                return;
+            }
+            const credential = page.generateCredential();
+            user.loadRole(credential)
+                .then(role => {
+                    const cash = role.cash;
+                    const amount = bank.calculateCashDifferenceAmount(cash, 1000000);
+                    bank.withdrawFromTownBank(page.generateCredential(), amount)
+                        .then(() => {
+                            $("#consecrateItems").html("");
+                            const keys = Object.keys(candidates);
+                            for (let i = 0; i < keys.length; i++) {
+                                const key = keys[i];
+                                const value = candidates[key];
+                                $("#consecrateItems").append($("<input type='hidden' name='" + key + "' value='" + value + "'>"));
+                            }
+                            $("#consecrateSubmit").trigger("click");
+                        });
+                });
         });
     }
 }
