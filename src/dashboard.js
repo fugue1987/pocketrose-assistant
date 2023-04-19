@@ -188,6 +188,16 @@ export class TownDashboardProcessor {
                 }
             }
         });
+
+        // 读取战数
+        const battleCount = parseInt($("input:hidden[name='ktotal']").val());
+        $("td:contains('贡献度')")
+            .filter(function () {
+                return $(this).text() === "贡献度";
+            })
+            .closest("table")
+            .find("tr:eq(1)")
+            .before($("<tr><td height='5'>战数</td><th>" + battleCount + " 战</th><td></td><th></th></tr>"));
     }
 }
 
