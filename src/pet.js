@@ -360,6 +360,22 @@ export async function loadPets(credential) {
 }
 
 /**
+ * 解析页面上反馈的宠物技能学习配置情况
+ * @param html HTML
+ * @returns {number[]}
+ */
+export function parsePetStudyStatus(html) {
+    const studyStatus = [];
+    $(html).find("input:checkbox:checked").each(function (_idx, checkbox) {
+        const name = $(checkbox).attr("name");
+        if (name.startsWith("study")) {
+            studyStatus.push(parseInt($(checkbox).val()));
+        }
+    });
+    return studyStatus;
+}
+
+/**
  * 解析页面上所有宠物的信息
  * @param html HTML
  * @returns {Pet[]}
