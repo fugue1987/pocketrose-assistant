@@ -732,75 +732,7 @@ class PersonalPetStatus {
         }
 
         // 设置宠物技能学习位的按钮行为
-        const instance = this;
-        $("#pet_spell_study_1").click(function () {
-            const credential = page.generateCredential();
-            const request = credential.asRequest();
-            const color = $("#pet_spell_study_1").css("color");
-            if (color.toString() === "rgb(128, 128, 128)") {
-                request["study1"] = "1";
-            }
-            if (color.toString() === "rgb(0, 0, 255)") {
-                // 当前是已经设置学习状态
-            }
-            request["mode"] = "STUDY_SET";
-            network.sendPostRequest("mydata.cgi", request, function (html) {
-                const result = $(html).find("h2:first").text();
-                message.writeMessageBoard(result);
-                instance.#finishWithRefresh(credential);
-            });
-        });
-        $("#pet_spell_study_2").click(function () {
-            const credential = page.generateCredential();
-            const request = credential.asRequest();
-            const color = $("#pet_spell_study_2").css("color");
-            if (color.toString() === "rgb(128, 128, 128)") {
-                request["study2"] = "2";
-            }
-            if (color.toString() === "rgb(0, 0, 255)") {
-                // 当前是已经设置学习状态
-            }
-            request["mode"] = "STUDY_SET";
-            network.sendPostRequest("mydata.cgi", request, function (html) {
-                const result = $(html).find("h2:first").text();
-                message.writeMessageBoard(result);
-                instance.#finishWithRefresh(credential);
-            });
-        });
-        $("#pet_spell_study_3").click(function () {
-            const credential = page.generateCredential();
-            const request = credential.asRequest();
-            const color = $("#pet_spell_study_3").css("color");
-            if (color.toString() === "rgb(128, 128, 128)") {
-                request["study3"] = "3";
-            }
-            if (color.toString() === "rgb(0, 0, 255)") {
-                // 当前是已经设置学习状态
-            }
-            request["mode"] = "STUDY_SET";
-            network.sendPostRequest("mydata.cgi", request, function (html) {
-                const result = $(html).find("h2:first").text();
-                message.writeMessageBoard(result);
-                instance.#finishWithRefresh(credential);
-            });
-        });
-        $("#pet_spell_study_4").click(function () {
-            const credential = page.generateCredential();
-            const request = credential.asRequest();
-            const color = $("#pet_spell_study_4").css("color");
-            if (color.toString() === "rgb(128, 128, 128)") {
-                request["study4"] = "4";
-            }
-            if (color.toString() === "rgb(0, 0, 255)") {
-                // 当前是已经设置学习状态
-            }
-            request["mode"] = "STUDY_SET";
-            network.sendPostRequest("mydata.cgi", request, function (html) {
-                const result = $(html).find("h2:first").text();
-                message.writeMessageBoard(result);
-                instance.#finishWithRefresh(credential);
-            });
-        });
+        this.#bindPetStudyClick();
     }
 
     #bindPetUninstallClick(buttonId, pet) {
@@ -925,6 +857,78 @@ class PersonalPetStatus {
                     instance.#finishWithRefresh(credential);
                 });
             }
+        });
+    }
+
+    #bindPetStudyClick() {
+        const instance = this;
+        $("#pet_spell_study_1").click(function () {
+            const credential = page.generateCredential();
+            const request = credential.asRequest();
+            const color = $("#pet_spell_study_1").css("color");
+            if (color.toString() === "rgb(128, 128, 128)") {
+                request["study1"] = "1";
+            }
+            if (color.toString() === "rgb(0, 0, 255)") {
+                // 当前是已经设置学习状态
+            }
+            request["mode"] = "STUDY_SET";
+            network.sendPostRequest("mydata.cgi", request, function (html) {
+                const result = $(html).find("h2:first").text();
+                message.writeMessageBoard(result);
+                instance.#finishWithRefresh(credential);
+            });
+        });
+        $("#pet_spell_study_2").click(function () {
+            const credential = page.generateCredential();
+            const request = credential.asRequest();
+            const color = $("#pet_spell_study_2").css("color");
+            if (color.toString() === "rgb(128, 128, 128)") {
+                request["study2"] = "2";
+            }
+            if (color.toString() === "rgb(0, 0, 255)") {
+                // 当前是已经设置学习状态
+            }
+            request["mode"] = "STUDY_SET";
+            network.sendPostRequest("mydata.cgi", request, function (html) {
+                const result = $(html).find("h2:first").text();
+                message.writeMessageBoard(result);
+                instance.#finishWithRefresh(credential);
+            });
+        });
+        $("#pet_spell_study_3").click(function () {
+            const credential = page.generateCredential();
+            const request = credential.asRequest();
+            const color = $("#pet_spell_study_3").css("color");
+            if (color.toString() === "rgb(128, 128, 128)") {
+                request["study3"] = "3";
+            }
+            if (color.toString() === "rgb(0, 0, 255)") {
+                // 当前是已经设置学习状态
+            }
+            request["mode"] = "STUDY_SET";
+            network.sendPostRequest("mydata.cgi", request, function (html) {
+                const result = $(html).find("h2:first").text();
+                message.writeMessageBoard(result);
+                instance.#finishWithRefresh(credential);
+            });
+        });
+        $("#pet_spell_study_4").click(function () {
+            const credential = page.generateCredential();
+            const request = credential.asRequest();
+            const color = $("#pet_spell_study_4").css("color");
+            if (color.toString() === "rgb(128, 128, 128)") {
+                request["study4"] = "4";
+            }
+            if (color.toString() === "rgb(0, 0, 255)") {
+                // 当前是已经设置学习状态
+            }
+            request["mode"] = "STUDY_SET";
+            network.sendPostRequest("mydata.cgi", request, function (html) {
+                const result = $(html).find("h2:first").text();
+                message.writeMessageBoard(result);
+                instance.#finishWithRefresh(credential);
+            });
         });
     }
 
