@@ -196,7 +196,7 @@ class PersonalItems {
             .find("tbody:first")
             .append($("<TR><TD colspan='6' style='background-color:#E0D0B0' id='extMenu2'></TD></TR>"));
 
-        const items = item.parsePersonalItems();
+        const items = item.parsePersonalItems($("body:first").html());
         const treasureBag = item.findTreasureBag(items);
         const goldenCage = item.findGoldenCage(items);
         const itemsMap = {};
@@ -363,6 +363,8 @@ class PersonPetStatus {
     }
 
     process() {
+        $("input:submit[value='返回城市']").attr("id", "returnButton");
+
         // 读取当前页面的所有宠物信息
         const htmlText = $("body:first").html();
         const petList = pet.parsePetList(htmlText);
@@ -377,6 +379,24 @@ class PersonPetStatus {
         // 创建其余页面组件
         page.createHeaderNPC("夜九年", "npc_place");
         message.initializeMessageBoard("全新版宠物管理UI正在建设中，敬请期待。");
+
+        // 彩蛋：双击NPC头像进入黄金笼子
+        $("#npc_1561").dblclick(function () {
+            const credential = page.generateCredential();
+            const request = credential.asRequest();
+            request["mode"] = "USE_ITEM";
+            network.sendPostRequest("mydata.cgi", request, function (html) {
+                const itemList = item.parsePersonalItems(html);
+                const cage = item.findGoldenCage(itemList);
+                if (cage !== undefined) {
+                    $("form[action='status.cgi']").attr("action", "mydata.cgi");
+                    $("input:hidden[value='STATUS']").attr("value", "USE");
+                    $("#returnButton").prepend("<input type='hidden' name='chara' value='1'>");
+                    $("#returnButton").prepend("<input type='hidden' name='item" + cage.index + "' value='" + cage.index + "'>");
+                    $("#returnButton").trigger("click");
+                }
+            });
+        });
 
         // 渲染宠物管理UI
         this.#renderPetUI(petList);

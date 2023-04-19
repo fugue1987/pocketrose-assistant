@@ -138,11 +138,12 @@ export class Item {
 
 /**
  * 从个人物品装备页面解析
+ * @param html
  * @returns {Item[]}
  */
-export function parsePersonalItems() {
+export function parsePersonalItems(html) {
     const items = [];
-    $("input:checkbox").each(function (_idx, checkbox) {
+    $(html).find("input:checkbox").each(function (_idx, checkbox) {
         const item = new Item();
         item.index = _idx;
         let s = $(checkbox).parent().next().text();
