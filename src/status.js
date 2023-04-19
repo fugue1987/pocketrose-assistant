@@ -10,6 +10,7 @@ import * as network from "./network";
 import * as user from "./user";
 import * as pet from "./pet";
 import * as message from "./message";
+import * as option from "./option";
 
 export class StatusRequestInterceptor {
 
@@ -45,7 +46,9 @@ export class StatusRequestInterceptor {
                 new PersonalGoldenCage().process();
             } else if (text.includes("宠物现在升级时学习新技能情况一览")) {
                 // 宠物状态
-                new PersonalPetStatus().process();
+                if (option.__cookie_getEnableNewPetUI()) {
+                    new PersonalPetStatus().process();
+                }
             }
         }
     }

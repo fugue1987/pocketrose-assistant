@@ -6,6 +6,7 @@ import * as pocket from "./pocket";
 import * as user from "./user";
 import * as util from "./util";
 import {Coordinate} from "./geo";
+import * as option from "./option";
 
 export class TownDashboardProcessor {
 
@@ -22,7 +23,11 @@ export class TownDashboardProcessor {
         $("option[value='ITEM_SEND']").text("运送屋(v2.0)");
         $("option[value='PET_SEND']").text("宠物赠送(v2.0)");
         $("option[value='LETTER']").text("口袋助手设置");
-        $("option[value='LETTER']").attr("style", "background:#20c0ff");
+        $("option[value='LETTER']").css("background-color", "#20c0ff");
+        if (option.__cookie_getEnableNewPetUI()) {
+            $("option[value='PETSTATUS']").text("宠物管理(v2.0)");
+            $("option[value='PETSTATUS']").css("background-color", "yellow");
+        }
         $("option[value='CHANGEMAP']").text("冒险家公会");
 
         // 为某些支持动态更新的表格设置id
