@@ -41,6 +41,7 @@ import {
     __cookie_getDepositButtonText,
     __cookie_getEnableBattleAutoScroll,
     __cookie_getEnableBattleForceRecommendation,
+    __cookie_getEnableNewPetUI,
     __cookie_getEnablePokemonWiki,
     __cookie_getEnableSoldAutoDeposit,
     __cookie_getEnableZodiacFlashBattle,
@@ -707,6 +708,13 @@ function __personalStatus_cookieManagement(htmlText) {
     zodiacSelect += "</select>";
     __page_writeNpcMessage("<li>十二宫极速战斗 " + zodiacSelect + " <a href='javascript:void(0)' id='zodiac' style='color: yellow'>设置</a></li>");
 
+    let newPetUI = __cookie_getEnableNewPetUI();
+    let petUISelect = "<select name='petUISelect' id='petUISelect'>";
+    petUISelect += "<option class='petUISelect_class' value='1'>启用</option>";
+    petUISelect += "<option class='petUISelect_class' value='0'>禁用</option>";
+    petUISelect += "</select>";
+    __page_writeNpcMessage("<li>新宠物管理界面 " + petUISelect + " <a href='javascript:void(0)' id='newPetUI' style='color: yellow'>设置</a></li>");
+
     $(".o1[value='" + Number(b1) + "']").prop("selected", true);
     $(".o2[value='" + Number(b2) + "']").prop("selected", true);
     $(".o3[value='" + b3 + "']").prop("selected", true);
@@ -716,6 +724,7 @@ function __personalStatus_cookieManagement(htmlText) {
     $(".o11[value='" + Number(b11) + "']").prop("selected", true);
     $(".o12[value='" + Number(b12) + "']").prop("selected", true);
     $(".zodiacSelect_class[value='" + Number(zodiac) + "']").prop("selected", true);
+    $(".petUISelect_class[value='" + Number(newPetUI) + "']").prop("selected", true);
 
     __generateOwnEquipmentSelectOptions(id, pass);
 
@@ -903,6 +912,12 @@ function __personalStatus_cookieManagement(htmlText) {
     });
     $("#zodiac").click(function () {
         Cookies.set("_POCKETROSE_ASSISTANT__ENABLE_ZODIAC_FLASH_BATTLE", $("#zodiacSelect").val(), {expires: 36500});
+        $("form[action='status.cgi']").attr("action", "mydata.cgi");
+        $("input:hidden[value='STATUS']").attr("value", "LETTER");
+        $("#returnButton").trigger("click");
+    });
+    $("#newPetUI").click(function () {
+        Cookies.set("_POCKETROSE_ASSISTANT__ENABLE_NEW_PET_UI", $("#petUISelect").val(), {expires: 36500});
         $("form[action='status.cgi']").attr("action", "mydata.cgi");
         $("input:hidden[value='STATUS']").attr("value", "LETTER");
         $("#returnButton").trigger("click");

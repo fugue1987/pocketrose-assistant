@@ -114,6 +114,13 @@ export function __cookie_getEnableZodiacFlashBattle() {
     });
 }
 
+export function __cookie_getEnableNewPetUI() {
+    const cookieKey = "_POCKETROSE_ASSISTANT__ENABLE_NEW_PET_UI";
+    return getAndParseCookie(cookieKey, false, function (value) {
+        return value !== "0";
+    });
+}
+
 /**
  * 读取指定键值的Cookie内容并调用回调函数解析。
  * @param cookieKey Cookie键值
