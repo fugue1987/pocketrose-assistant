@@ -203,6 +203,12 @@ class PersonalItemStatus {
         html += "<th style='background-color:#E0D0B0'>效果</th>";
         html += "<th style='background-color:#EFE0C0'>重量</th>";
         html += "<th style='background-color:#EFE0C0'>耐久</th>";
+        html += "<th style='background-color:#E0D0B0'>职业要求</th>";
+        html += "<th style='background-color:#E0D0B0'>攻击要求</th>";
+        html += "<th style='background-color:#E0D0B0'>防御要求</th>";
+        html += "<th style='background-color:#E0D0B0'>智力要求</th>";
+        html += "<th style='background-color:#E0D0B0'>精神要求</th>";
+        html += "<th style='background-color:#E0D0B0'>速度要求</th>";
         html += "<th style='background-color:#E0D0B0'>附加威力</th>";
         html += "<th style='background-color:#E0D0B0'>附加重量</th>";
         html += "<th style='background-color:#E0D0B0'>附加幸运度</th>";
@@ -239,6 +245,24 @@ class PersonalItemStatus {
                 item.endure +
                 "</td>";
             html += "<td style='background-color:#E0D0B0'>" +
+                (item.requiredCareer === "所有职业" ? "-" : item.requiredCareer) +
+                "</td>";
+            html += "<td style='background-color:#E0D0B0'>" +
+                (item.requiredAttack === 0 ? "-" : item.requiredAttack) +
+                "</td>";
+            html += "<td style='background-color:#E0D0B0'>" +
+                (item.requiredDefense === 0 ? "-" : item.requiredDefense) +
+                "</td>";
+            html += "<td style='background-color:#E0D0B0'>" +
+                (item.requiredSpecialAttack === 0 ? "-" : item.requiredSpecialAttack) +
+                "</td>";
+            html += "<td style='background-color:#E0D0B0'>" +
+                (item.requiredSpecialDefense === 0 ? "-" : item.requiredSpecialDefense) +
+                "</td>";
+            html += "<td style='background-color:#E0D0B0'>" +
+                (item.requiredSpeed === 0 ? "-" : item.requiredSpeed) +
+                "</td>";
+            html += "<td style='background-color:#E0D0B0'>" +
                 (item.isItem ? "-" : item.additionalPower) +
                 "</td>";
             html += "<td style='background-color:#E0D0B0'>" +
@@ -256,12 +280,12 @@ class PersonalItemStatus {
             html += "</tr>";
         }
         html += "<tr>";
-        html += "<td style='background-color:#E8E8D0;text-align:left' colspan='12'>" +
+        html += "<td style='background-color:#E8E8D0;text-align:left' colspan='18'>" +
             "<b style='color:navy'>目前剩余空位数：</b><b style='color:red'>" + (20 - itemList.length) + "</b>" +
             "</td>";
         html += "</tr>";
         html += "<tr>";
-        html += "<td style='background-color:#E8E8D0;text-align:center' colspan='12'>" +
+        html += "<td style='background-color:#E8E8D0;text-align:center' colspan='18'>" +
             "<table style='background-color:#E8E8D0;border-width:0;width:100%'>" +
             "<tbody style='background-color:#E8E8D0'>" +
             "<tr style='background-color:#E8E8D0'>" +
