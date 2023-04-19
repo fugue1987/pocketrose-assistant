@@ -40,9 +40,12 @@ export class StatusRequestInterceptor {
             } else if (text.includes("物品 百宝袋 使用")) {
                 // 进入百宝袋
                 new PersonalTreasureBag().process();
+            } else if (text.includes("物品 黄金笼子 使用")) {
+                // 进入黄金笼子
+                new PersonalGoldenCage().process();
             } else if (text.includes("宠物现在升级时学习新技能情况一览")) {
                 // 宠物状态
-                new PersonPetStatus().process();
+                new PersonalPetStatus().process();
             }
         }
     }
@@ -357,7 +360,46 @@ class PersonalTreasureBag {
     }
 }
 
-class PersonPetStatus {
+class PersonalGoldenCage {
+
+    constructor() {
+    }
+
+    process() {
+        $("input:submit[value='从黄金笼子中取出']").attr("id", "takeOutButton");
+        $("#takeOutButton").attr("type", "button");
+        $("input:submit[value='ＯＫ']").attr("id", "returnButton");
+
+        $("#takeOutButton").click(function () {
+            const credential = page.generateCredential();
+            const request = credential.asRequest();
+            const select = $("input:radio:checked").val();
+            if (select === undefined) {
+                // 没有选择要取出的宠物
+                return;
+            }
+            request["select"] = select;
+            request["mode"] = "GETOUTLONGZI";
+            network.sendPostRequest("mydata.cgi", request, function () {
+                const request = credential.asRequest();
+                request["mode"] = "USE_ITEM";
+                network.sendPostRequest("mydata.cgi", request, function (html) {
+                    const itemList = item.parsePersonalItems(html);
+                    const cage = item.findGoldenCage(itemList);
+                    if (cage === undefined) {
+                        $("#returnButton").trigger("click");
+                    } else {
+                        $("form[action='status.cgi']").attr("action", "mydata.cgi");
+                        $("input:hidden[value='STATUS']").attr("value", "PETSTATUS");
+                        $("#returnButton").trigger("click");
+                    }
+                });
+            });
+        });
+    }
+}
+
+class PersonalPetStatus {
 
     constructor() {
     }
