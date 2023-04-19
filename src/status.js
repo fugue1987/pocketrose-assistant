@@ -248,7 +248,7 @@ class PersonalItemStatus {
                 (item.isItem ? "-" : item.additionalLuck) +
                 "</td>";
             html += "<td style='background-color:#E0D0B0'>" +
-                (item.isItem ? "-" : item.experience) +
+                item.experienceHTML +
                 "</td>";
             html += "<td style='background-color:#EFE0C0'>" +
                 (item.attribute === "无" ? "-" : item.attribute) +
@@ -261,11 +261,22 @@ class PersonalItemStatus {
             "</td>";
         html += "</tr>";
         html += "<tr>";
-        html += "<td style='background-color:#E8E8D0;text-align:left' colspan='12'>" +
-            "<input type='button' class='ItemUIButton' id='treasureBagButton' value='百宝袋'>" +
-            "<input type='button' class='ItemUIButton' id='goldenCageButton' value='黄金笼子'>" +
+        html += "<td style='background-color:#E8E8D0;text-align:center' colspan='12'>" +
+            "<table style='background-color:#E8E8D0;border-width:0;width:100%'>" +
+            "<tbody style='background-color:#E8E8D0'>" +
+            "<tr style='background-color:#E8E8D0'>" +
+            "<td style='text-align:left'>" +
             "<input type='button' class='ItemUIButton' id='useButton' value='使用'>" +
             "<input type='button' class='ItemUIButton' id='putIntoBagButton' value='入袋'>" +
+            "</td>" +
+            "<td style='text-align:right'>" +
+            "<input type='button' class='ItemUIButton' id='treasureBagButton' value='百宝袋'>" +
+            "<input type='button' class='ItemUIButton' id='goldenCageButton' value='黄金笼子'>" +
+            "<input type='button' class='ItemUIButton' id='putAllIntoBagButton' value='全部入袋'>" +
+            "</td>" +
+            "</tr>" +
+            "</tbody>" +
+            "</table>" +
             "</td>";
         html += "</tr>";
         html += "</tbody>";
@@ -298,6 +309,10 @@ class PersonalItemStatus {
         if (bag === undefined) {
             $("#treasureBagButton").prop("disabled", true);
             $("#treasureBagButton").css("display", "none");
+            $("#putAllIntoBagButton").prop("disabled", true);
+            $("#putAllIntoBagButton").css("display", "none");
+            $("#putIntoBagButton").prop("disabled", true);
+            $("#putIntoBagButton").css("display", "none");
         } else {
             $("#treasureBagIndex").attr("name", "item" + bag.index);
             $("#treasureBagIndex").attr("value", bag.index);
@@ -335,11 +350,37 @@ class PersonalItemStatus {
                 request[name] = $(checkbox).val();
             });
             if (checkedCount === 0) {
-                // 没有选择任何装备物品，忽略
+                message.writeMessageBoard("没有选择任何装备或物品，忽略");
                 return;
             }
             request["chara"] = "1";
             request["mode"] = "USE";
+            network.sendPostRequest("mydata.cgi", request, function (html) {
+                let result = $(html).find("h2:first").html();
+                result = result.replace("<br>", "");
+                result = "<td>" + result + "</td>";
+                message.writeMessageBoard($(result).text());
+                instance.#finishWithRefresh(credential);
+            });
+        });
+        $("#putAllIntoBagButton").click(function () {
+            const credential = page.generateCredential();
+            const request = credential.asRequest();
+            let checkedCount = 0;
+            $("input:checkbox").each(function (_idx, checkbox) {
+                const using = $(checkbox).parent().next().text();
+                if (using !== "★") {
+                    checkedCount++;
+                    const name = $(checkbox).attr("name");
+                    request[name] = $(checkbox).val();
+                }
+            });
+            if (checkedCount === 0) {
+                message.writeMessageBoard("没有选择任何装备或物品，忽略");
+                return;
+            }
+            request["chara"] = "1";
+            request["mode"] = "PUTINBAG";
             network.sendPostRequest("mydata.cgi", request, function (html) {
                 let result = $(html).find("h2:first").html();
                 result = result.replace("<br>", "");
@@ -364,7 +405,7 @@ class PersonalItemStatus {
                 }
             });
             if (checkedCount === 0) {
-                // 没有选择任何装备物品，忽略
+                message.writeMessageBoard("没有选择任何装备或物品，忽略");
                 return;
             }
             request["chara"] = "1";

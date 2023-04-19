@@ -188,6 +188,17 @@ export class Item {
         return this.isItem && this._name.endsWith("宝石");
     }
 
+    get experienceHTML() {
+        if (this.isItem) {
+            return "-";
+        }
+        if (this.isFullExperience) {
+            return "<b style='color:red'>MAX</b>";
+        } else {
+            return this.experience;
+        }
+    }
+
 }
 
 /**
