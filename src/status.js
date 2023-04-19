@@ -261,7 +261,7 @@ class PersonalItemStatus {
             "</td>";
         html += "</tr>";
         html += "<tr>";
-        html += "<td style='background-color:#E8E8D0' colspan='12'>" +
+        html += "<td style='background-color:#E8E8D0;text-align:left' colspan='12'>" +
             "<input type='button' class='ItemUIButton' id='treasureBagButton' value='百宝袋'>" +
             "<input type='button' class='ItemUIButton' id='goldenCageButton' value='黄金笼子'>" +
             "</td>";
@@ -295,7 +295,7 @@ class PersonalItemStatus {
         const bag = item.findTreasureBag(itemList);
         if (bag === undefined) {
             $("#treasureBagButton").prop("disabled", true);
-            $("#treasureBagButton").css("color", "grey");
+            $("#treasureBagButton").css("display", "none");
         } else {
             $("#treasureBagIndex").attr("name", "item" + bag.index);
             $("#treasureBagIndex").attr("value", bag.index);
@@ -303,7 +303,7 @@ class PersonalItemStatus {
         const cage = item.findGoldenCage(itemList);
         if (bag === undefined) {
             $("#goldenCageButton").prop("disabled", true);
-            $("#goldenCageButton").css("color", "grey");
+            $("#goldenCageButton").css("display", "none");
         } else {
             $("#goldenCageIndex").attr("name", "item" + cage.index);
             $("#goldenCageIndex").attr("value", cage.index);
