@@ -418,8 +418,8 @@ class PersonalPetStatus {
         // 初始化宠物管理页面：删除旧有的内容，用特定的div代替
         const p1 = "<center>";
         const p2 = "<div id='npc_place'></div><div id='PetUI'></div>";
-        const p3 = "<font color=\"red\">宠物现在升级时学习新技能情况一览</font>";
-        const p4 = util.substringAfter(htmlText, "<font color=\"red\">宠物现在升级时学习新技能情况一览</font>");
+        const p3 = "<center>已登陆宠物联赛的宠物一览";
+        const p4 = util.substringAfter(htmlText, "<center>已登陆宠物联赛的宠物一览");
         $("body:first").html(p1 + p2 + p3 + p4);
 
         // 创建其余页面组件
