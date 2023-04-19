@@ -192,7 +192,7 @@ class PersonalItemStatus {
     #renderHTML(itemList) {
         let html = "";
         html += "<table style='background-color:#888888;width:100%;text-align:center'>";
-        html += "<thead style='background-color:#F8F0E0'>";
+        html += "<tbody style='background-color:#F8F0E0'>";
         html += "<tr>";
         html += "<th style='background-color:#E8E8D0'>选择</th>";
         html += "<th style='background-color:#EFE0C0'>装备</th>";
@@ -201,9 +201,12 @@ class PersonalItemStatus {
         html += "<th style='background-color:#E0D0B0'>效果</th>";
         html += "<th style='background-color:#EFE0C0'>重量</th>";
         html += "<th style='background-color:#EFE0C0'>耐久</th>";
+        html += "<th style='background-color:#E0D0B0'>附加威力</th>";
+        html += "<th style='background-color:#E0D0B0'>附加重量</th>";
+        html += "<th style='background-color:#E0D0B0'>附加幸运度</th>";
+        html += "<th style='background-color:#E0D0B0'>经验</th>";
+        html += "<th style='background-color:#EFE0C0'>属性</th>";
         html += "</tr>";
-        html += "</thead>";
-        html += "<tbody style='background-color:#F8F0E0'>";
         for (const item of itemList) {
             if (item.isTreasureBag) {
                 continue;
@@ -231,7 +234,22 @@ class PersonalItemStatus {
                 item.weight +
                 "</td>";
             html += "<td style='background-color:#EFE0C0'>" +
-                +item.endure +
+                item.endure +
+                "</td>";
+            html += "<td style='background-color:#E0D0B0'>" +
+                (item.isItem ? "-" : item.additionalPower) +
+                "</td>";
+            html += "<td style='background-color:#E0D0B0'>" +
+                (item.isItem ? "-" : item.additionalWeight) +
+                "</td>";
+            html += "<td style='background-color:#E0D0B0'>" +
+                (item.isItem ? "-" : item.additionalLuck) +
+                "</td>";
+            html += "<td style='background-color:#E0D0B0'>" +
+                (item.isItem ? "-" : item.experience) +
+                "</td>";
+            html += "<td style='background-color:#EFE0C0'>" +
+                (item.attribute === "无" ? "-" : item.attribute) +
                 "</td>";
             html += "</tr>";
         }
