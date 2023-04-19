@@ -602,7 +602,7 @@ class PersonalPetStatus {
             }
             buttonId = "pet_" + pet.index + "_love";
             if (!$("#" + buttonId).prop("disabled")) {
-
+                this.#bindPetLoveClick(buttonId, pet);
             }
             buttonId = "pet_" + pet.index + "_league";
             if (!$("#" + buttonId).prop("disabled")) {
@@ -657,6 +657,30 @@ class PersonalPetStatus {
                 message.writeMessageBoard(result);
                 instance.#finishWithRefresh(credential);
             });
+        });
+    }
+
+    #bindPetLoveClick(buttonId, pet) {
+        const instance = this;
+        $("#" + buttonId).click(function () {
+            const expect = Math.ceil(100 - pet.love) * 10000;
+            const credential = page.generateCredential();
+            user.loadRole(credential)
+                .then(role => {
+                    const cash = role.cash;
+                    const amount = bank.calculateCashDifferenceAmount(cash, expect);
+                    bank.withdrawFromTownBank(credential, amount)
+                        .then(() => {
+                            const request = credential.asRequest();
+                            request["mode"] = "PETADDLOVE";
+                            request["select"] = pet.index;
+                            network.sendPostRequest("mydata.cgi", request, function (html) {
+                                const result = $(html).find("h2:first").text();
+                                message.writeMessageBoard(result);
+                                instance.#finishWithRefresh(credential);
+                            });
+                        });
+                });
         });
     }
 
