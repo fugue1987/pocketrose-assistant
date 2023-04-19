@@ -532,7 +532,7 @@ class PersonPetStatus {
             }
             buttonId = "pet_" + pet.index + "_cage";
             if (!$("#" + buttonId).prop("disabled")) {
-
+                this.#bindPetCageClick(buttonId, pet);
             }
             buttonId = "pet_" + pet.index + "_spell";
             if (!$("#" + buttonId).prop("disabled")) {
@@ -575,6 +575,21 @@ class PersonPetStatus {
             const request = credential.asRequest();
             request["select"] = pet.index;
             request["mode"] = "CHOOSEPET";
+            network.sendPostRequest("mydata.cgi", request, function (html) {
+                const result = $(html).find("h2:first").text();
+                message.writeMessageBoard(result);
+                instance.#finishWithRefresh(credential);
+            });
+        });
+    }
+
+    #bindPetCageClick(buttonId, pet) {
+        const instance = this;
+        $("#" + buttonId).click(function () {
+            const credential = page.generateCredential();
+            const request = credential.asRequest();
+            request["select"] = pet.index;
+            request["mode"] = "PUTINLONGZI";
             network.sendPostRequest("mydata.cgi", request, function (html) {
                 const result = $(html).find("h2:first").text();
                 message.writeMessageBoard(result);
