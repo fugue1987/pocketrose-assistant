@@ -607,6 +607,11 @@ class PersonalPetStatus {
                 $("#" + buttonId).prop("disabled", true);
                 $("#" + buttonId).css("color", "grey");
             }
+
+            // 宠物联赛按钮暂时还没有开发
+            buttonId = "pet_" + pet.index + "_league";
+            $("#" + buttonId).prop("disabled", true);
+            $("#" + buttonId).css("color", "grey");
         }
     }
 
