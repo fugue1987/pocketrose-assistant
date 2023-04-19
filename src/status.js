@@ -618,17 +618,19 @@ class PersonalPetStatus {
                 $("#" + spellButtonId).css("color", "grey");
             }
 
-            // 设置卸下亲密度按钮的状态
+            // 设置宠物亲密度按钮的状态
             if (pet.love >= 100) {
                 let buttonId = "pet_" + pet.index + "_love";
                 $("#" + buttonId).prop("disabled", true);
                 $("#" + buttonId).css("color", "grey");
             }
 
-            // 宠物联赛按钮暂时还没有开发
-            const leagueButtonId = "pet_" + pet.index + "_league";
-            $("#" + leagueButtonId).prop("disabled", true);
-            $("#" + leagueButtonId).css("color", "grey");
+            // 设置宠物联赛按钮的状态
+            if (pet.level < 100) {
+                let buttonId = "pet_" + pet.index + "_league";
+                $("#" + buttonId).prop("disabled", true);
+                $("#" + buttonId).css("color", "grey");
+            }
         }
 
         // 设置技能学习位的按钮样式
@@ -682,6 +684,10 @@ class PersonalPetStatus {
             buttonId = "pet_" + pet.index + "_rename";
             if (!$("#" + buttonId).prop("disabled")) {
                 this.#bindPetRenameClick(buttonId, pet);
+            }
+            buttonId = "pet_" + pet.index + "_league";
+            if (!$("#" + buttonId).prop("disabled")) {
+                this.#bindPetLeagueClick(buttonId, pet);
             }
         }
 
@@ -876,6 +882,26 @@ class PersonalPetStatus {
                     instance.#finishWithRefresh(credential);
                 });
             }
+        });
+    }
+
+    #bindPetLeagueClick(buttonId, pet) {
+        const instance = this;
+        $("#" + buttonId).click(function () {
+            const credential = page.generateCredential();
+            const request = credential.asRequest();
+            request["select"] = pet.index;
+            request["mode"] = "PETGAME";
+            network.sendPostRequest("mydata.cgi", request, function (html) {
+                let result = "";
+                if (html.includes("ERROR !")) {
+                    result = $(html).find("font b").text();
+                } else {
+                    result = $(html).find("h2:first").text();
+                }
+                message.writeMessageBoard(result);
+                instance.#finishWithRefresh(credential);
+            });
         });
     }
 
