@@ -265,6 +265,7 @@ class PersonalItemStatus {
             "<input type='button' class='ItemUIButton' id='treasureBagButton' value='百宝袋'>" +
             "<input type='button' class='ItemUIButton' id='goldenCageButton' value='黄金笼子'>" +
             "<input type='button' class='ItemUIButton' id='useButton' value='使用'>" +
+            "<input type='button' class='ItemUIButton' id='putIntoBagButton' value='入袋'>" +
             "</td>";
         html += "</tr>";
         html += "</tbody>";
@@ -339,6 +340,35 @@ class PersonalItemStatus {
             }
             request["chara"] = "1";
             request["mode"] = "USE";
+            network.sendPostRequest("mydata.cgi", request, function (html) {
+                let result = $(html).find("h2:first").html();
+                result = result.replace("<br>", "");
+                result = "<td>" + result + "</td>";
+                message.writeMessageBoard($(result).text());
+                instance.#finishWithRefresh(credential);
+            });
+        });
+        $("#putIntoBagButton").click(function () {
+            const credential = page.generateCredential();
+            const request = credential.asRequest();
+            let checkedCount = 0;
+            $("input:checkbox:checked").each(function (_idx, checkbox) {
+                const using = $(checkbox).parent().next().text();
+                if (using === "★") {
+                    const itemName = $(checkbox).parent().next().next().text();
+                    message.writeMessageBoard(itemName + "正在装备中，无法放入百宝袋，忽略");
+                } else {
+                    checkedCount++;
+                    const name = $(checkbox).attr("name");
+                    request[name] = $(checkbox).val();
+                }
+            });
+            if (checkedCount === 0) {
+                // 没有选择任何装备物品，忽略
+                return;
+            }
+            request["chara"] = "1";
+            request["mode"] = "PUTINBAG";
             network.sendPostRequest("mydata.cgi", request, function (html) {
                 let result = $(html).find("h2:first").html();
                 result = result.replace("<br>", "");
