@@ -37,7 +37,8 @@ export class StatusRequestInterceptor {
                 new PersonalSalary().process();
             } else if (text.includes("＜＜　|||　物品使用．装备　|||　＞＞")) {
                 // 物品使用．装备
-                new PersonalItems().process();
+                //new PersonalItems().process();
+                new PersonalItemStatus().process();
             } else if (text.includes("物品 百宝袋 使用")) {
                 // 进入百宝袋
                 new PersonalTreasureBag().process();
@@ -160,6 +161,28 @@ class PersonalSalary {
             npc.welcome("打、打、打劫。不许笑，我跟这儿打劫呢。IC、IP、IQ卡，通通告诉我密码！");
             npc.message("<a href='javascript:void(0)' id='deposit' style='color: yellow'><b>[溜了溜了]</b></a>");
         }
+    }
+}
+
+class PersonalItemStatus {
+    constructor() {
+    }
+
+    process() {
+        $("input:submit[value='返回上个画面']").attr("id", "returnButton");
+
+        // 读取页面上装备的所有信息
+        const htmlText = $("body:first").html();
+
+        // 清理旧的页面内容，添加ItemUI
+        $("table:eq(4)").remove();
+        $("table:first tr:eq(1) td:first").html("<div id='ItemUI'></div>");
+        $("table:first").removeAttr("height");
+
+        // 创建页面组件
+        $("table:first tr:first").after($("<tr><td style='background-color:#E8E8D0' id='header_npc'></td></tr>"));
+        page.createHeaderNPC("末末", "header_npc");
+        page.initializeMessageBoard("我在这里说明一下，个人物品装备目前正处于升级改造阶段。");
     }
 }
 
