@@ -544,7 +544,8 @@ class PersonalPetStatus {
             html += "<input type='button' class='PetUIButton' value='技能' id='pet_" + pet.index + "_spell'>";
             html += "<input type='button' class='PetUIButton' value='亲密' id='pet_" + pet.index + "_love'>";
             html += "<input type='button' class='PetUIButton' value='参赛' id='pet_" + pet.index + "_league'>";
-            html += "<input type='button' class='PetUIButton' value='改名' id='pet_" + pet.index + "_rename'>";
+            html += "<input type='button' class='PetUIButton' value='改名' id='pet_" + pet.index + "_rename'>&nbsp;";
+            html += "<input type='text' class='PetUIButton' id='pet_" + pet.index + "_name_text' size='20' maxlength='10'>";
             html += "</td>";
             html += "</tr>";
         }
@@ -687,11 +688,10 @@ class PersonalPetStatus {
             }
             buttonId = "pet_" + pet.index + "_league";
             if (!$("#" + buttonId).prop("disabled")) {
-
             }
             buttonId = "pet_" + pet.index + "_rename";
             if (!$("#" + buttonId).prop("disabled")) {
-
+                this.#bindPetRenameClick(buttonId, pet);
             }
         }
     }
@@ -797,6 +797,27 @@ class PersonalPetStatus {
                             });
                         });
                 });
+        });
+    }
+
+    #bindPetRenameClick(buttonId, pet) {
+        const instance = this;
+        $("#" + buttonId).click(function () {
+            const textId = "pet_" + pet.index + "_name_text";
+            let newName = $("#" + textId).val();
+            if (newName !== "") {
+                newName = escape(newName);
+                const credential = page.generateCredential();
+                const request = credential.asRequest();
+                request["select"] = pet.index;
+                request["name"] = newName;
+                request["mode"] = "PETCHANGENAME";
+                network.sendPostRequest("mydata.cgi", request, function (html) {
+                    const result = $(html).find("h2:first").text();
+                    message.writeMessageBoard(result);
+                    instance.#finishWithRefresh(credential);
+                });
+            }
         });
     }
 
