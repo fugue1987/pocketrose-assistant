@@ -354,6 +354,11 @@ class PersonalItemStatus {
         html += "<input type='button' class='ItemUIButton' id='sendItemButton' value='发送'>";
         html += "</td>"
         html += "</tr>";
+        html += "<tr>";
+        html += "<td style='background-color:#E8E8D0;text-align:center' colspan='19'>";
+        html += "<input type='button' class='ItemUIButton' id='refreshButton' value='刷新装备管理界面'>";
+        html += "</td>"
+        html += "</tr>";
         html += "</tr>";
         html += "</tbody>";
         html += "</table>";
@@ -601,6 +606,10 @@ class PersonalItemStatus {
                             });
                     });
                 });
+        });
+        $("#refreshButton").click(function () {
+            const credential = page.generateCredential();
+            instance.#finishWithRefresh(credential);
         });
     }
 
