@@ -23,8 +23,7 @@
 $(function () {
     if (location.href.includes("pocketrose")) {
         $(document).ready(function () {
-            const pageText = $(document).text();
-            console.log($(document).html());
-        })
+            console.log($("body:first").html());
+        });
     }
 });

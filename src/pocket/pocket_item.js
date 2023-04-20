@@ -170,5 +170,51 @@ export function parsePersonalItemList(html) {
 }
 
 export function parseTreasureBagItemList(html) {
+    const itemList = new PocketItemList();
+    $(html).find("input:checkbox").each(function (_idx, checkbox) {
+        const item = new PocketItem();
+        const tr = $(checkbox).parent().parent();
 
+        // index & selectable
+        item.index = parseInt($(checkbox).val());
+        item.selectable = true;
+
+        // name & star
+        let s = $(tr).find("td:eq(1)").text();
+        if (s.startsWith("齐心★")) {
+            item.star = true;
+            item.name = util.substringAfter(s, "齐心★");
+        } else {
+            item.star = false;
+            item.name = s;
+        }
+        item.nameHTML = $(tr).find("td:eq(1)").html();
+
+        // category
+        s = $(tr).find("td:eq(2)").text();
+        item.category = s;
+
+        // power & weight & endure
+        s = $(tr).find("td:eq(3)").text();
+        item.power = parseInt(s);
+        s = $(tr).find("td:eq(4)").text();
+        item.weight = parseInt(s);
+        s = $(tr).find("td:eq(5)").text();
+        item.endure = parseInt(s);
+
+        // additional
+        s = $(tr).find("td:eq(6)").text();
+        item.additionalPower = parseInt(s);
+        s = $(tr).find("td:eq(7)").text();
+        item.additionalWeight = parseInt(s);
+        s = $(tr).find("td:eq(8)").text();
+        item.additionalLuck = parseInt(s);
+
+        // experience
+        s = $(tr).find("td:eq(9)").text();
+        item.experience = parseInt(s);
+
+        itemList.push(item);
+    });
+    return itemList;
 }
