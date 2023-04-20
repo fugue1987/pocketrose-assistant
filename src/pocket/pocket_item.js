@@ -30,6 +30,7 @@ export class PocketItem {
     power;                      // 效果
     weight;                     // 重量
     endure;                     // 耐久
+    maxEndure;                  // 最大耐久
     requiredCareer;             // 装备需要的职业
     requiredAttack;             // 装备需要的攻击力
     requiredDefense;            // 装备需要的防御力
@@ -41,6 +42,8 @@ export class PocketItem {
     additionalWeight;           // 附加重量
     additionalLuck;             // 附加幸运
     attribute;                  // 属性
+    price;                      // 价格
+    priceHTML;                  // 价格HTML代码
 
     get isWeapon() {
         return this.category === CATEGORY_WEAPON;
@@ -95,6 +98,11 @@ export class PocketItemList {
     }
 }
 
+/**
+ * 解析身上的装备
+ * @param html
+ * @returns {PocketItemList}
+ */
 export function parsePersonalItemList(html) {
     const itemList = new PocketItemList();
     $(html).find("input:checkbox").each(function (_idx, checkbox) {
@@ -169,6 +177,11 @@ export function parsePersonalItemList(html) {
     return itemList;
 }
 
+/**
+ * 解析百宝袋的装备
+ * @param html
+ * @returns {PocketItemList}
+ */
 export function parseTreasureBagItemList(html) {
     const itemList = new PocketItemList();
     $(html).find("input:checkbox").each(function (_idx, checkbox) {
@@ -213,6 +226,59 @@ export function parseTreasureBagItemList(html) {
         // experience
         s = $(tr).find("td:eq(9)").text();
         item.experience = parseInt(s);
+
+        itemList.push(item);
+    });
+    return itemList;
+}
+
+/**
+ * 解析武器店的装备
+ * @param html
+ * @returns {PocketItemList}
+ */
+export function parseWeaponStoreItemList(html) {
+    const itemList = new PocketItemList();
+    $(html).find("table:eq(5)").find("input:checkbox").each(function (_idx, checkbox) {
+        const item = new PocketItem();
+        const tr = $(checkbox).parent().parent();
+
+        // index & selectable
+        item.index = parseInt($(checkbox).val());
+        item.selectable = !$(checkbox).prop("disabled");
+
+        // using
+        let s = $(tr).find("th:first").text();
+        item.using = (s === "★");
+
+        // name & star
+        s = $(tr).find("th:eq(1)").text();
+        if (s.startsWith("齐心★")) {
+            item.star = true;
+            item.name = util.substringAfter(s, "齐心★");
+        } else {
+            item.star = false;
+            item.name = s;
+        }
+        item.nameHTML = $(tr).find("td:eq(1)").html();
+
+        // category
+        s = $(tr).find("td:eq(1)").text();
+        item.category = s;
+
+        // power & weight & endure
+        s = $(tr).find("td:eq(2)").text();
+        item.power = parseInt(s);
+        s = $(tr).find("td:eq(3)").text();
+        item.weight = parseInt(s);
+        s = $(tr).find("td:eq(4)").text();
+        item.endure = parseInt(util.substringBeforeSlash(s));
+        item.maxEndure = parseInt(util.substringAfterSlash(s));
+
+        // price
+        s = $(tr).find("td:eq(5)").text();
+        item.price = parseInt(util.substringBefore(s, " Gold"));
+        item.price = $(tr).find("td:eq(5)").html();
 
         itemList.push(item);
     });
