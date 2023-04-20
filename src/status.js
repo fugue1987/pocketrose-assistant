@@ -10,6 +10,7 @@ import * as user from "./user";
 import * as pet from "./pet";
 import * as message from "./message";
 import * as option from "./option";
+import * as service from "./service";
 
 export class StatusRequestInterceptor {
 
@@ -838,6 +839,7 @@ class PersonalPetStatus {
             html += "<input type='button' class='PetUIButton' value='入笼' id='pet_" + pet.index + "_cage'>";
             html += "<input type='button' class='PetUIButton' value='亲密' id='pet_" + pet.index + "_love'>";
             html += "<input type='button' class='PetUIButton' value='参赛' id='pet_" + pet.index + "_league'>";
+            html += "<input type='button' class='PetUIButton' value='献祭' id='pet_" + pet.index + "_consecrate'>";
             html += "<input type='button' class='PetUIButton' value='改名' id='pet_" + pet.index + "_rename'>&nbsp;";
             html += "<input type='text' id='pet_" + pet.index + "_name_text' size='20' maxlength='10'>";
             html += "</td>";
@@ -922,6 +924,13 @@ class PersonalPetStatus {
                 $("#" + buttonId).prop("disabled", true);
                 $("#" + buttonId).css("color", "grey");
             }
+
+            // 设置宠物献祭按钮的状态
+            if (pet.level !== 1) {
+                let buttonId = "pet_" + pet.index + "_consecrate";
+                $("#" + buttonId).prop("disabled", true);
+                $("#" + buttonId).css("color", "grey");
+            }
         }
 
         // 设置技能学习位的按钮样式
@@ -979,6 +988,11 @@ class PersonalPetStatus {
             buttonId = "pet_" + pet.index + "_league";
             if (!$("#" + buttonId).prop("disabled")) {
                 this.#bindPetLeagueClick(buttonId, pet);
+            }
+
+            buttonId = "pet_" + pet.index + "_consecrate";
+            if (!$("#" + buttonId).prop("disabled")) {
+                this.#bindPetConsecrateClick(buttonId, pet);
             }
         }
 
@@ -1193,6 +1207,26 @@ class PersonalPetStatus {
                     $("#returnButton").trigger("click");
                 }
             });
+        });
+    }
+
+    #bindPetConsecrateClick(buttonId, pet) {
+        const instance = this;
+        $("#" + buttonId).click(function () {
+            if (!confirm("你确认要献祭宠物" + pet.name + "吗？")) {
+                return;
+            }
+            const credential = page.generateCredential();
+            bank.withdrawFromTownBank(credential, 1000)
+                .then(() => {
+                    service.consecratePet(credential, pet.index)
+                        .then(() => {
+                            bank.depositIntoTownBank(credential, undefined)
+                                .then(() => {
+                                    instance.#finishWithRefresh(credential);
+                                });
+                        });
+                });
         });
     }
 
