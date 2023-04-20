@@ -34,6 +34,7 @@ export class Role {
     _experience;
     _cash;
     _career;
+    _masterCareerList;
 
     constructor() {
     }
@@ -190,6 +191,14 @@ export class Role {
         this._career = value;
     }
 
+    get masterCareerList() {
+        return this._masterCareerList;
+    }
+
+    set masterCareerList(value) {
+        this._masterCareerList = value;
+    }
+
     asShortText() {
         return this._name + " " + this._level +
             " " + this._health + "/" + this._maxHealth +
@@ -291,6 +300,15 @@ export async function loadRole(credential) {
             }
             if (text.startsWith("职业：")) {
                 role.career = util.substringAfter(text, "职业：");
+            }
+            if (text.startsWith("掌握职业：")) {
+                const masterCareerList = [];
+                const careerText = util.substringAfter(text, "掌握职业：");
+                for (const it of careerText.split("】【")) {
+                    const career = util.substringBetween(it, "【", "】");
+                    masterCareerList.push(career);
+                }
+                role.masterCareerList = masterCareerList;
             }
         });
         return role;
@@ -396,4 +414,62 @@ export async function loadCastle(player) {
         });
     };
     return await doLoadCastle(player);
+}
+
+/**
+ * 描述角色状态的数据结构
+ */
+export class RoleStatus {
+
+    _canConsecrate;         // 是否可祭奠
+
+    constructor() {
+    }
+
+    get canConsecrate() {
+        return this._canConsecrate;
+    }
+
+    set canConsecrate(value) {
+        this._canConsecrate = value;
+    }
+}
+
+/**
+ * 加载角色的状态，从首页解析
+ * @param credential 用户凭证
+ * @returns {Promise<RoleStatus>}
+ */
+export async function loadRoleStatus(credential) {
+    const doLoadRoleStatus = (credential) => {
+        return new Promise((resolve) => {
+            const request = credential.asRequest();
+            request["mode"] = "STATUS";
+            network.sendPostRequest("status.cgi", request, function (html) {
+                const status = new RoleStatus();
+                const text = $(html).text();
+                status.canConsecrate = text.includes("可以进行下次祭奠了");
+                resolve(status);
+            });
+        });
+    };
+    return await doLoadRoleStatus(credential);
+}
+
+/**
+ * 在城市住宿恢复体力和魔力
+ * @param credential 用户凭证
+ * @returns {Promise<void>}
+ */
+export async function lodgeTown(credential) {
+    const doLodgeTown = (credential) => {
+        return new Promise((resolve) => {
+            const request = credential.asRequest();
+            request["mode"] = "RECOVERY";
+            network.sendPostRequest("town.cgi", request, function () {
+                resolve();
+            });
+        });
+    };
+    return await doLodgeTown(credential);
 }

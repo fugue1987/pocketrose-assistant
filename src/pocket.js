@@ -736,3 +736,15 @@ export function isProhibitSellingItem(name) {
     }
     return false;
 }
+
+export function findTownBySecret(secret) {
+    const candidates = [];
+    const townIds = Object.keys(TOWNS);
+    for (const townId of townIds) {
+        const town = TOWNS[townId];
+        if (town.description.includes(secret)) {
+            candidates.push(town);
+        }
+    }
+    return candidates;
+}

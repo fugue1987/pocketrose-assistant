@@ -5,6 +5,7 @@
  */
 
 import * as geo from "./geo";
+import {Coordinate} from "./geo";
 import * as network from "./network";
 import * as util from "./util";
 import * as message from "./message";
@@ -139,25 +140,8 @@ export async function leaveTown(credential) {
             request["mode"] = "MAP_MOVE";
             network.sendPostRequest("map.cgi", request, function (html) {
                 message.publishMessageBoard(message._message_town_leave);
-
-                const scope = $(html).find("select[name='chara_m']")
-                    .find("option:last").attr("value");
-                let mode = "ROOK";
-                $(html).find("input:submit").each(function (_idx, input) {
-                    const v = $(input).attr("value");
-                    const d = $(input).attr("disabled");
-                    if (v === "↖" && d === undefined) {
-                        mode = "QUEEN";
-                    }
-                });
-                message.publishMessageBoard(message._message_move_scope, {"scope": scope});
-                message.publishMessageBoard(message._message_move_mode, {"mode": mode});
-
-                const plan = new MovePlan();
+                const plan = initializeMovePlan(html);
                 plan.credential = credential;
-                plan.scope = scope;
-                plan.mode = mode;
-
                 resolve(plan);
             });
         });
@@ -179,23 +163,8 @@ export async function leaveCastle(credential) {
             request["mode"] = "MAP_MOVE";
             network.sendPostRequest("map.cgi", request, function (html) {
                 message.publishMessageBoard(message._message_castle_leave);
-
-                const scope = $(html).find("select[name='chara_m']")
-                    .find("option:last").attr("value");
-                let mode = "ROOK";
-                $(html).find("input:submit").each(function (_idx, input) {
-                    const v = $(input).attr("value");
-                    const d = $(input).attr("disabled");
-                    if (v === "↖" && d === undefined) {
-                        mode = "QUEEN";
-                    }
-                });
-                message.publishMessageBoard(message._message_move_mode, {"mode": mode});
-                message.publishMessageBoard(message._message_move_scope, {"scope": scope});
-                const plan = new MovePlan();
+                const plan = initializeMovePlan(html);
                 plan.credential = credential;
-                plan.scope = scope;
-                plan.mode = mode;
                 resolve(plan);
             });
         });
@@ -287,4 +256,44 @@ export async function explore(credential) {
         });
     };
     return await doExplore(credential);
+}
+
+/**
+ * 当进入地图模式时，读取地图的信息初始化移动计划。
+ * 有三种方式进入地图：
+ * 1. 出城
+ * 2. 离开城堡
+ * 3. 大地图子菜单中退出
+ * @param html 源HTML
+ * @returns {MovePlan}
+ */
+export function initializeMovePlan(html) {
+    const scope = $(html).find("select[name='chara_m']")
+        .find("option:last").attr("value");
+    let mode = "ROOK";
+    $(html).find("input:submit").each(function (_idx, input) {
+        const v = $(input).attr("value");
+        const d = $(input).attr("disabled");
+        if (v === "↖" && d === undefined) {
+            mode = "QUEEN";
+        }
+    });
+    let from = undefined;
+    $(html).find("td").each(function (_idx, td) {
+        const text = $(td).text();
+        if (text.includes("现在位置(") && text.endsWith(")")) {
+            const s = util.substringBetween(text, "(", ")");
+            const x = util.substringBefore(s, ",");
+            const y = util.substringAfter(s, ",");
+            from = new Coordinate(parseInt(x), parseInt(y));
+        }
+    });
+    message.publishMessageBoard(message._message_move_mode, {"mode": mode});
+    message.publishMessageBoard(message._message_move_scope, {"scope": scope});
+    message.publishMessageBoard(message._message_move_source, {"source": from});
+    const plan = new MovePlan();
+    plan.scope = scope;
+    plan.mode = mode;
+    plan.source = from;
+    return plan;
 }

@@ -50,6 +50,18 @@ export function createFooterNPC(name) {
     return new NPC("footerNPCMessage");
 }
 
+export function createHeaderNPC(name, parentId) {
+    const npc = loadNPC(name);
+    $("#" + parentId).append($("<TABLE WIDTH='100%' bgcolor='#888888'><tbody><tr>" +
+        "<TD bgcolor='#F8F0E0' height='5'>" +
+        "<table bgcolor='#888888' border='0'><tbody><tr>" +
+        "<td bgcolor='#F8F0E0'>" + npc.imageHTML + "</td>" +
+        "<td width='100%' bgcolor='#000000' id='messageBoard' style='color: white'>" +
+        "</td></tr></tbody></table>" +
+        "</TD>" +
+        "</tr></tbody></TABLE>"));
+}
+
 // ----------------------------------------------------------------------------
 // M E S S A G E   B O A R D
 // ----------------------------------------------------------------------------
@@ -179,4 +191,14 @@ export function disableProhibitSellingItems(table) {
             }
         }
     });
+}
+
+export function isColorBlue(id) {
+    const color = $("#" + id).css("color");
+    return color.toString() === "rgb(0, 0, 255)"
+}
+
+export function isColorGrey(id) {
+    const color = $("#" + id).css("color");
+    return color.toString() === "rgb(128, 128, 128)"
 }
