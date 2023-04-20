@@ -239,13 +239,13 @@ export function parseTreasureBagItemList(html) {
  */
 export function parseWeaponStoreItemList(html) {
     const itemList = new PocketItemList();
-    $(html).find("table:eq(5)").find("input:checkbox").each(function (_idx, checkbox) {
+    $(html).find("table:eq(4) input:radio").each(function (_idx, radio) {
         const item = new PocketItem();
-        const tr = $(checkbox).parent().parent();
+        const tr = $(radio).parent().parent();
 
         // index & selectable
-        item.index = parseInt($(checkbox).val());
-        item.selectable = !$(checkbox).prop("disabled");
+        item.index = parseInt($(radio).val());
+        item.selectable = !$(radio).prop("disabled");
 
         // using
         let s = $(tr).find("th:first").text();
@@ -278,7 +278,7 @@ export function parseWeaponStoreItemList(html) {
         // price
         s = $(tr).find("td:eq(5)").text();
         item.price = parseInt(util.substringBefore(s, " Gold"));
-        item.price = $(tr).find("td:eq(5)").html();
+        item.priceHTML = $(tr).find("td:eq(5)").html();
 
         itemList.push(item);
     });
