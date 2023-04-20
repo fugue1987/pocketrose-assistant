@@ -3,7 +3,6 @@ import * as dashboard from "./dashboard";
 import {WildDashboardProcessor} from "./dashboard";
 import * as page from "./page";
 import * as pocket from "./pocket";
-import {__utilities_checkIfEquipmentFullExperience, isUnavailableTreasureHintMap} from "./pocket";
 import * as util from "./util";
 import * as item from "./item";
 import * as network from "./network";
@@ -558,34 +557,20 @@ class PersonalTreasureBag {
     }
 
     process() {
+        const itemList = item.parseTreasureBagItems($("body:first").html());
+        const itemMap = item.itemListAsMap(itemList);
+
         let itemCount = 0;
-        $("input[type='checkbox']").each(function (_idx, input) {
+        $("input:checkbox").each(function (_idx, checkbox) {
             itemCount++;
-            let td = $(input).parent();
-            let name = $(td).next().text();
-            let category = $(td).next().next().text();
-            let power = $(td).next().next().next().text();
-            let exp = $(td).next().next().next().next().next().next().next().next().next().text();
-            if (category === "武器" || category === "防具" || category === "饰品") {
-                if (__utilities_checkIfEquipmentFullExperience(name, power, exp)) {
-                    let nameHtml = $(td).next().html();
-                    nameHtml = "<b style='color:red'>[满]</b>" + nameHtml;
-                    $(td).next().html(nameHtml);
-                }
-            }
-            if (category === "物品" && name === "藏宝图") {
-                let x = power;
-                let y = $(td).next().next().next().next().text();
-                if (isUnavailableTreasureHintMap(parseInt(x), parseInt(y))) {
-                    let nameHtml = $(td).next().html();
-                    nameHtml = "<b style='color: red'>[城]</b>" + nameHtml;
-                    $(td).next().html(nameHtml);
-                }
-            }
+            const index = parseInt($(checkbox).val());
+            const item = itemMap[index];
+            $(checkbox).closest("tr").find("td:eq(9)").html(item.experienceHTML);
         });
         $("input:submit[value='从百宝袋中取出']").attr("id", "takeOutButton");
         $("#takeOutButton").attr("type", "button");
         $("input:submit[value='ＯＫ']").attr("id", "returnButton");
+
 
         $("#takeOutButton").closest("tr")
             .before($("<tr><td colspan='10' style='color:navy'>百宝袋中目前剩余空位数：" +
