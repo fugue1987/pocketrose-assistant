@@ -568,7 +568,7 @@ class PersonalItemStatus {
         });
         $("#sendItemButton").click(function () {
             const eid = $("#receiverCandidates").val();
-            if (eid === undefined) {
+            if (eid === undefined || eid === "") {
                 return;
             }
             const credential = page.generateCredential();
@@ -900,12 +900,18 @@ class PersonalPetStatus {
             html += "<input type='button' class='PetUIButton' value='亲密' id='pet_" + pet.index + "_love'>";
             html += "<input type='button' class='PetUIButton' value='参赛' id='pet_" + pet.index + "_league'>";
             html += "<input type='button' class='PetUIButton' value='献祭' id='pet_" + pet.index + "_consecrate'>";
+            html += "<input type='button' class='PetUIButton' value='发送' id='pet_" + pet.index + "_send'>";
             html += "<input type='button' class='PetUIButton' value='改名' id='pet_" + pet.index + "_rename'>&nbsp;";
             html += "<input type='text' id='pet_" + pet.index + "_name_text' size='15' maxlength='20'>";
             html += "</td>";
             html += "</tr>";
         }
 
+        html += "<tr><td style='background-color:#EFE0C0;text-align:right' colspan='19'>";
+        html += "<input type='text' id='receiverName' size='15' maxlength='20'>";
+        html += "<input type='button' class='PetUIButton' id='searchReceiverButton' value='找人'>";
+        html += "<select name='eid' id='receiverCandidates'><option value=''>选择发送对象</select>";
+        html += "</td></tr>";
         html += "<tr><td style='background-color:#EFE0C0;text-align:center' colspan='19'>";
         html += "<b style='color:navy'>设置宠物升级时学习技能情况</b>";
         html += "</td></tr>";
@@ -991,6 +997,13 @@ class PersonalPetStatus {
                 $("#" + buttonId).prop("disabled", true);
                 $("#" + buttonId).css("color", "grey");
             }
+
+            // 设置宠物发送按钮的状态
+            if (pet.using) {
+                let buttonId = "pet_" + pet.index + "_send";
+                $("#" + buttonId).prop("disabled", true);
+                $("#" + buttonId).css("color", "grey");
+            }
         }
 
         // 设置技能学习位的按钮样式
@@ -1054,10 +1067,18 @@ class PersonalPetStatus {
             if (!$("#" + buttonId).prop("disabled")) {
                 this.#bindPetConsecrateClick(buttonId, pet);
             }
+
+            buttonId = "pet_" + pet.index + "_send";
+            if (!$("#" + buttonId).prop("disabled")) {
+                this.#bindSendPetClickEventHandler(buttonId, pet);
+            }
         }
 
         // 设置宠物技能学习位的按钮行为
         this.#bindPetStudyClick();
+
+        // 设置查找发送对象按钮行为
+        this.#bindSearchReceiverClickEventHandler();
     }
 
     #bindPetUninstallClick(buttonId) {
@@ -1290,6 +1311,33 @@ class PersonalPetStatus {
         });
     }
 
+    #bindSendPetClickEventHandler(buttonId, pet) {
+        const instance = this;
+        $("#" + buttonId).click(function () {
+            const receiver = $("#receiverCandidates").val();
+            if (receiver === undefined || receiver === "") {
+                message.writeMessageBoard("没有选择发送对象");
+                return;
+            }
+            const credential = page.generateCredential();
+            bank.withdrawFromTownBank(credential, 10)
+                .then(() => {
+                    const request = credential.asRequest();
+                    request["mode"] = "PET_SEND2";
+                    request["eid"] = receiver;
+                    request["select"] = pet.index;
+                    network.sendPostRequest("town.cgi", request, function (html) {
+                        const successMessage = $(html).find("h2:first").text();
+                        message.writeMessageBoard(successMessage);
+                        bank.depositIntoTownBank(credential, undefined)
+                            .then(() => {
+                                instance.#finishWithRefresh(credential);
+                            });
+                    });
+                });
+        });
+    }
+
     #bindPetStudyClick() {
         const instance = this;
         $("#pet_spell_study_1").click(function () {
@@ -1358,6 +1406,23 @@ class PersonalPetStatus {
                 const result = $(html).find("h2:first").text();
                 message.writeMessageBoard(result);
                 instance.#finishWithRefresh(credential);
+            });
+        });
+    }
+
+    #bindSearchReceiverClickEventHandler() {
+        $("#searchReceiverButton").click(function () {
+            const search = $("#receiverName").val();
+            if (search.trim() === "") {
+                return;
+            }
+            const credential = page.generateCredential();
+            const request = credential.asRequest();
+            request["mode"] = "PET_SEND";
+            request["serch"] = escape(search.trim());
+            network.sendPostRequest("town.cgi", request, function (html) {
+                const optionHTML = $(html).find("select[name='eid']").html();
+                $("#receiverCandidates").html(optionHTML);
             });
         });
     }
