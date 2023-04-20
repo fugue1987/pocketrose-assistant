@@ -44,6 +44,9 @@ export class PocketItem {
     attribute;                  // 属性
     price;                      // 价格
     priceHTML;                  // 价格HTML代码
+    repairPrice;                // 修理费用
+    gem;                        // 已经镶嵌的宝石数目
+    maxGem;                     // 最大宝石数目
 
     get isWeapon() {
         return this.category === CATEGORY_WEAPON;
