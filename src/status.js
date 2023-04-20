@@ -194,7 +194,8 @@ class PersonalItemStatus {
         // 创建页面组件
         $("table:first tr:first").after($("<tr><td style='background-color:#E8E8D0' id='header_npc'></td></tr>"));
         page.createMessageBoardWithPictureCode(pictureCode, "header_npc");
-        message.initializeMessageBoard("装备管理UI (2.0)，目前正处于不断升级改造中。");
+        message.initializeMessageBoard("装备管理UI (2.0)，目前正处于不断升级改造中。<br>" +
+            "目前新退出了直接发送物品/装备的功能，请记住，运送屋不能发送的这里也不能发送。<br>");
 
         // 创建祭奠用NPC
         const npc = page.createFooterNPC("饭饭");
@@ -345,6 +346,14 @@ class PersonalItemStatus {
             "</tbody>" +
             "</table>" +
             "</td>";
+        html += "<tr>";
+        html += "<td style='background-color:#E8E8D0;text-align:right' colspan='19'>";
+        html += "<input type='text' id='receiverName' size='15' maxlength='20'>";
+        html += "<input type='button' class='ItemUIButton' id='searchReceiverButton' value='找人'>";
+        html += "<select name='eid' id='receiverCandidates'><option value=''>选择发送对象</select>";
+        html += "<input type='button' class='ItemUIButton' id='sendItemButton' value='发送'>";
+        html += "</td>"
+        html += "</tr>";
         html += "</tr>";
         html += "</tbody>";
         html += "</table>";
@@ -542,6 +551,57 @@ class PersonalItemStatus {
                 });
             }
         }
+        $("#searchReceiverButton").click(function () {
+            let receiverName = $("#receiverName").val();
+            if (receiverName.trim() === "") {
+                return;
+            }
+            receiverName = escape(receiverName.trim());
+            const credential = page.generateCredential();
+            const request = credential.asRequest();
+            request["serch"] = receiverName;
+            request["mode"] = "ITEM_SEND";
+            network.sendPostRequest("town.cgi", request, function (html) {
+                const optionHTML = $(html).find("select[name='eid']").html();
+                $("#receiverCandidates").html(optionHTML);
+            });
+        });
+        $("#sendItemButton").click(function () {
+            const eid = $("#receiverCandidates").val();
+            if (eid === undefined) {
+                return;
+            }
+            const credential = page.generateCredential();
+            const request = credential.asRequest();
+            request["eid"] = eid;
+            let checkedCount = 0;
+            $("input:checkbox:checked").each(function (_idx, checkbox) {
+                checkedCount++;
+                const name = $(checkbox).attr("name");
+                request[name] = $(checkbox).val();
+            });
+            if (checkedCount === 0) {
+                return;
+            }
+            request["mode"] = "ITEM_SEND2";
+            bank.withdrawFromTownBank(credential, 10)
+                .then(() => {
+                    network.sendPostRequest("town.cgi", request, function (html) {
+                        if (html.includes("ERROR !")) {
+                            let failureMessage = $(html).find("font b").text();
+                            failureMessage = failureMessage.replace("<br>", "");
+                            message.writeMessageBoard(failureMessage);
+                        } else {
+                            const successMessage = $(html).find("h2:first").text();
+                            message.writeMessageBoard(successMessage);
+                        }
+                        bank.depositIntoTownBank(credential, undefined)
+                            .then(() => {
+                                instance.#finishWithRefresh(credential);
+                            });
+                    });
+                });
+        });
     }
 
     #finishWithRefresh(credential) {
@@ -841,7 +901,7 @@ class PersonalPetStatus {
             html += "<input type='button' class='PetUIButton' value='参赛' id='pet_" + pet.index + "_league'>";
             html += "<input type='button' class='PetUIButton' value='献祭' id='pet_" + pet.index + "_consecrate'>";
             html += "<input type='button' class='PetUIButton' value='改名' id='pet_" + pet.index + "_rename'>&nbsp;";
-            html += "<input type='text' id='pet_" + pet.index + "_name_text' size='20' maxlength='10'>";
+            html += "<input type='text' id='pet_" + pet.index + "_name_text' size='15' maxlength='20'>";
             html += "</td>";
             html += "</tr>";
         }
