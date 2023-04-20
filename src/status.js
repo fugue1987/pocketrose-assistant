@@ -244,9 +244,15 @@ class PersonalItemStatus {
             html += "<td style='background-color:#E8E8D0'>" +
                 (item.selectable ? "<input type='checkbox' name='item" + item.index + "' value='" + item.index + "'>" : "") +
                 "</td>"
-            html += "<td style='background-color:#EFE0C0'>" +
-                (item.using ? "★" : "") +
-                "</td>";
+            if (item.using) {
+                if (item.isFullExperience) {
+                    html += "<td style='background-color:#EFE0C0;color:red'>★</td>";
+                } else {
+                    html += "<td style='background-color:#EFE0C0'>★</td>";
+                }
+            } else {
+                html += "<td style='background-color:#EFE0C0'></td>";
+            }
             html += "<td style='background-color:#E0D0B0'>" +
                 item.nameHTML +
                 "</td>";
