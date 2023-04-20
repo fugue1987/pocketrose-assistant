@@ -234,6 +234,7 @@ class PersonalItemStatus {
         html += "<th style='background-color:#E0D0B0'>附加幸运度</th>";
         html += "<th style='background-color:#E0D0B0'>经验</th>";
         html += "<th style='background-color:#EFE0C0'>属性</th>";
+        html += "<th style='background-color:#EFE0C0'>出售</th>";
         html += "</tr>";
         for (const item of itemList) {
             if (item.isTreasureBag) {
@@ -303,15 +304,20 @@ class PersonalItemStatus {
             html += "<td style='background-color:#EFE0C0'>" +
                 (item.attribute === "无" ? "-" : item.attribute) +
                 "</td>";
+            html += "<td style='background-color:#EFE0C0'>";
+            if (!item.using && !pocket.isProhibitSellingItem(item.name)) {
+                html += "<input type='button' class='ItemUIButton' id='sell_item_" + item.index + "' value='出售'>";
+            }
+            html += "</td>";
             html += "</tr>";
         }
         html += "<tr>";
-        html += "<td style='background-color:#E8E8D0;text-align:left' colspan='18'>" +
+        html += "<td style='background-color:#E8E8D0;text-align:left' colspan='19'>" +
             "<b style='color:navy'>目前剩余空位数：</b><b style='color:red'>" + (20 - itemList.length) + "</b>" +
             "</td>";
         html += "</tr>";
         html += "<tr>";
-        html += "<td style='background-color:#E8E8D0;text-align:center' colspan='18'>" +
+        html += "<td style='background-color:#E8E8D0;text-align:center' colspan='19'>" +
             "<table style='background-color:#E8E8D0;border-width:0;width:100%'>" +
             "<tbody style='background-color:#E8E8D0'>" +
             "<tr style='background-color:#E8E8D0'>" +
@@ -486,6 +492,45 @@ class PersonalItemStatus {
                 instance.#finishWithRefresh(credential);
             });
         });
+        for (let i = 0; i < 20; i++) {
+            const buttonId = "sell_item_" + i;
+            if ($("#" + buttonId).length > 0) {
+                $("#" + buttonId).click(function () {
+                    const index = i;
+                    const credential = page.generateCredential();
+                    const request = credential.asRequest();
+                    request["con_str"] = "50";
+                    request["mode"] = "ARM_SHOP";
+                    network.sendPostRequest("town.cgi", request, function (html) {
+                        const sellable = item.parseSellableItemIndexList(html);
+                        if (!sellable.includes(index)) {
+                            message.writeMessageBoard("选择的物品或者装备不允许出售");
+                            return;
+                        }
+                        if (!confirm("确认要出售" + itemMap[index].fullName + "吗？")) {
+                            message.writeMessageBoard("出售操作取消");
+                            return;
+                        }
+                        const discount = $(html).find("input:hidden[name='val_off']").val();
+                        const request = credential.asRequest();
+                        request["mode"] = "SELL";
+                        request["select"] = index;
+                        if (discount !== undefined) {
+                            request["val_off"] = discount;
+                        }
+                        network.sendPostRequest("town.cgi", request, function (html) {
+                            const successMessage = $(html).find("h2:first").text();
+                            message.writeMessageBoard(successMessage);
+
+                            bank.depositIntoTownBank(credential, undefined)
+                                .then(() => {
+                                    instance.#finishWithRefresh(credential);
+                                });
+                        });
+                    });
+                });
+            }
+        }
     }
 
     #finishWithRefresh(credential) {

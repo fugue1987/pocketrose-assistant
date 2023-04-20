@@ -256,6 +256,13 @@ export class Item {
         return "<span title='" + title + "'>" + progressBar + "</span>"
     }
 
+    get fullName() {
+        if (this._star) {
+            return "齐心★" + this._name;
+        } else {
+            return this._name;
+        }
+    }
 }
 
 /**
@@ -392,14 +399,13 @@ export function itemListAsMap(itemList) {
 export function parseSellableItemIndexList(html) {
     const sellableItemIndexList = [];
     $(html)
-        .find("table:eq(5)")
+        .find("table:eq(4)")
         .find("input:radio")
         .each(function (_idx, radio) {
             const index = parseInt($(radio).val());
             if (!$(radio).prop("disabled")) {
-                const tr = $(radio).closest("tr");
-                if ($(tr).find("td:eq(1)").text() !== "★") {
-                    const name = $(tr).find("td:eq(2)").text();
+                if ($(radio).parent().next().text() !== "★") {
+                    const name = $(radio).parent().next().next().text();
                     if (!pocket.isProhibitSellingItem(name)) {
                         sellableItemIndexList.push(index);
                     }
