@@ -97,78 +97,75 @@ export class PocketItemList {
 
 export function parsePersonalItemList(html) {
     const itemList = new PocketItemList();
-    $(html)
-        .find("table table table:eq(1) input:checkbox")
-        .each(function (_idx, checkbox) {
-            const item = new PocketItem();
-            const tr = $(checkbox).parent().parent();
+    $(html).find("input:checkbox").each(function (_idx, checkbox) {
+        const item = new PocketItem();
+        const tr = $(checkbox).parent().parent();
 
-            // index & selectable
-            item.index = parseInt($(checkbox).val());
-            item.selectable = !$(checkbox).prop("disabled");
+        // index & selectable
+        item.index = parseInt($(checkbox).val());
+        item.selectable = !$(checkbox).prop("disabled");
 
-            // using
-            let s = $(tr).find("th:first").text();
-            item.using = (s === "★");
+        // using
+        let s = $(tr).find("th:first").text();
+        item.using = (s === "★");
 
-            // name & star
-            s = $(tr).find("td:eq(1)").text();
-            if (s.startsWith("齐心★")) {
-                item.star = true;
-                item.name = util.substringAfter(s, "齐心★");
-            } else {
-                item.star = false;
-                item.name = s;
-            }
-            item.nameHTML = $(tr).find("td:eq(1)").html();
+        // name & star
+        s = $(tr).find("td:eq(1)").text();
+        if (s.startsWith("齐心★")) {
+            item.star = true;
+            item.name = util.substringAfter(s, "齐心★");
+        } else {
+            item.star = false;
+            item.name = s;
+        }
+        item.nameHTML = $(tr).find("td:eq(1)").html();
 
-            // category
-            s = $(tr).find("td:eq(2)").text();
-            item.category = s;
+        // category
+        s = $(tr).find("td:eq(2)").text();
+        item.category = s;
 
-            // power & weight & endure
-            s = $(tr).find("td:eq(3)").text();
-            item.power = parseInt(s);
-            s = $(tr).find("td:eq(4)").text();
-            item.weight = parseInt(s);
-            s = $(tr).find("td:eq(5)").text();
-            item.endure = parseInt(s);
+        // power & weight & endure
+        s = $(tr).find("td:eq(3)").text();
+        item.power = parseInt(s);
+        s = $(tr).find("td:eq(4)").text();
+        item.weight = parseInt(s);
+        s = $(tr).find("td:eq(5)").text();
+        item.endure = parseInt(s);
 
-            // required career
-            s = $(tr).find("td:eq(6)").text();
-            item.requiredCareer = s;
+        // required career
+        s = $(tr).find("td:eq(6)").text();
+        item.requiredCareer = s;
 
-            // required stats
-            s = $(tr).find("td:eq(7)").text();
-            item.requiredAttack = parseInt(s);
-            s = $(tr).find("td:eq(8)").text();
-            item.requiredDefense = parseInt(s);
-            s = $(tr).find("td:eq(9)").text();
-            item.requiredSpecialAttack = parseInt(s);
-            s = $(tr).find("td:eq(10)").text();
-            item.requiredSpecialDefense = parseInt(s);
-            s = $(tr).find("td:eq(11)").text();
-            item.requiredSpeed = parseInt(s);
+        // required stats
+        s = $(tr).find("td:eq(7)").text();
+        item.requiredAttack = parseInt(s);
+        s = $(tr).find("td:eq(8)").text();
+        item.requiredDefense = parseInt(s);
+        s = $(tr).find("td:eq(9)").text();
+        item.requiredSpecialAttack = parseInt(s);
+        s = $(tr).find("td:eq(10)").text();
+        item.requiredSpecialDefense = parseInt(s);
+        s = $(tr).find("td:eq(11)").text();
+        item.requiredSpeed = parseInt(s);
 
-            // additional
-            s = $(tr).find("td:eq(12)").text();
-            item.additionalPower = parseInt(s);
-            s = $(tr).find("td:eq(13)").text();
-            item.additionalWeight = parseInt(s);
-            s = $(tr).find("td:eq(14)").text();
-            item.additionalLuck = parseInt(s);
+        // additional
+        s = $(tr).find("td:eq(12)").text();
+        item.additionalPower = parseInt(s);
+        s = $(tr).find("td:eq(13)").text();
+        item.additionalWeight = parseInt(s);
+        s = $(tr).find("td:eq(14)").text();
+        item.additionalLuck = parseInt(s);
 
-            // experience
-            s = $(tr).find("td:eq(15)").text();
-            item.experience = parseInt(s);
+        // experience
+        s = $(tr).find("td:eq(15)").text();
+        item.experience = parseInt(s);
 
-            // attribute
-            s = $(tr).find("td:eq(16)").text();
-            item.attribute = s;
+        // attribute
+        s = $(tr).find("td:eq(16)").text();
+        item.attribute = s;
 
-            itemList.push(item);
-        });
-    console.log(JSON.stringify(itemList.asList()));
+        itemList.push(item);
+    });
     return itemList;
 }
 
