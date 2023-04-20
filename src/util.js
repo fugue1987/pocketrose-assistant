@@ -14,6 +14,12 @@ export function substringBefore(text, searchString) {
     return text.substring(0, idx);
 }
 
+/**
+ * Substring after specified search string.
+ * @param text
+ * @param searchString
+ * @returns {string}
+ */
 export function substringAfter(text, searchString) {
     let idx = text.indexOf(searchString);
     if (idx === -1) {
