@@ -392,7 +392,7 @@ class PersonalItemStatus {
             $("#treasureBagIndex").attr("value", bag.index);
         }
         const cage = item.findGoldenCage(itemList);
-        if (bag === undefined) {
+        if (cage === undefined) {
             $("#goldenCageButton").prop("disabled", true);
             $("#goldenCageButton").css("display", "none");
         } else {
