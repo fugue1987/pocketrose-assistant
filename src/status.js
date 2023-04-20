@@ -338,7 +338,7 @@ class PersonalItemStatus {
 
         // 在Eden中添加一些预制的表单
         const credential = page.generateCredential();
-        $("#Eden").append($("<form action='mydata.cgi'>" +
+        $("#Eden").append($("<form action='mydata.cgi' method='post'>" +
             "<input type='hidden' name='chara' value='1'>" +
             "<input type='hidden' name='' value='' id='treasureBagIndex'>" +
             "<input type='hidden' name='mode' value='USE'>" +
@@ -346,7 +346,7 @@ class PersonalItemStatus {
             "<input type='hidden' name='pass' value='" + credential.pass + "'>" +
             "<input type='submit' id='treasureBagSubmit'>" +
             "</form>"));
-        $("#Eden").append($("<form action='mydata.cgi'>" +
+        $("#Eden").append($("<form action='mydata.cgi' method='post'>" +
             "<input type='hidden' name='chara' value='1'>" +
             "<input type='hidden' name='' value='' id='goldenCageIndex'>" +
             "<input type='hidden' name='mode' value='USE'>" +
@@ -354,7 +354,7 @@ class PersonalItemStatus {
             "<input type='hidden' name='pass' value='" + credential.pass + "'>" +
             "<input type='submit' id='goldenCageSubmit'>" +
             "</form>"));
-        $("#Eden").append($("<form action='mydata.cgi'>" +
+        $("#Eden").append($("<form action='mydata.cgi' method='post'>" +
             "<input type='hidden' name='chara' value='1'>" +
             "<div id='consecrateItems' style='display:none'></div>" +
             "<input type='hidden' name='mode' value='CONSECRATE'>" +
@@ -558,7 +558,9 @@ class PersonalTreasureBag {
     }
 
     process() {
+        let itemCount = 0;
         $("input[type='checkbox']").each(function (_idx, input) {
+            itemCount++;
             let td = $(input).parent();
             let name = $(td).next().text();
             let category = $(td).next().next().text();
@@ -584,6 +586,10 @@ class PersonalTreasureBag {
         $("input:submit[value='从百宝袋中取出']").attr("id", "takeOutButton");
         $("#takeOutButton").attr("type", "button");
         $("input:submit[value='ＯＫ']").attr("id", "returnButton");
+
+        $("#takeOutButton").closest("tr")
+            .before($("<tr><td colspan='10' style='color:navy'>百宝袋中目前剩余空位数：" +
+                "<b style='color:red'>" + (Math.max(0, 50 - itemCount)) + "</b></td></tr>"));
 
         $("#takeOutButton").click(function () {
             const credential = page.generateCredential();
