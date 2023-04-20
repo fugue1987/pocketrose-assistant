@@ -171,6 +171,16 @@ class PersonalItemStatus {
     process() {
         $("input:submit[value='返回上个画面']").attr("id", "returnButton");
 
+        // 找自己的头像
+        let pictureCode = "";
+        $("img").each(function (_idx, img) {
+            const src = $(img).attr("src");
+            if (src.startsWith(pocket.DOMAIN + "/image/head/")) {
+                const s = src.substring(src.lastIndexOf("/") + 1);
+                pictureCode = util.substringBefore(s, ".gif");
+            }
+        });
+
         // 读取页面上装备的所有信息
         const htmlText = $("body:first").html();
         const itemList = item.parsePersonalItems(htmlText);
@@ -182,8 +192,8 @@ class PersonalItemStatus {
 
         // 创建页面组件
         $("table:first tr:first").after($("<tr><td style='background-color:#E8E8D0' id='header_npc'></td></tr>"));
-        page.createHeaderNPC("末末", "header_npc");
-        page.initializeMessageBoard("我在这里说明一下，个人物品装备目前正处于升级改造阶段。");
+        page.createMessageBoardWithPictureCode(pictureCode, "header_npc");
+        message.initializeMessageBoard("装备管理UI (2.0)，目前正处于不断升级改造中。");
 
         // 创建祭奠用NPC
         const npc = page.createFooterNPC("饭饭");
