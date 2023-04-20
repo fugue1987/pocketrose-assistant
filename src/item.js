@@ -251,6 +251,9 @@ export class Item {
         if (ratio < 0) {
             return "-";
         }
+        if (ratio === 1) {
+            return "<b style='color:red'>MAX</b>";
+        }
         const progressBar = page.generateProgressBarHTML(ratio);
         const title = this.isFullExperience ? "MAX" : this.experience;
         return "<span title='" + title + "'>" + progressBar + "</span>"
