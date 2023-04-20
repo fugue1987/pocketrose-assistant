@@ -302,6 +302,59 @@ export function parsePersonalItems(html) {
     return items;
 }
 
+/**
+ * 解析百宝袋中的装备
+ * @param html 百宝袋HTML
+ * @returns {Item[]}
+ */
+export function parseTreasureBagItems(html) {
+    const itemList = [];
+    $(html).find("input:checkbox").each(function (_idx, checkbox) {
+        const item = new Item();
+
+        item.index = parseInt($(checkbox).val());
+        item.selectable = true;
+
+        const tr = $(checkbox).parent().parent();
+        let td = $(tr).find("td:eq(1)");
+        item.nameHTML = $(td).html();
+        if ($(td).text().startsWith("齐心★")) {
+            item.star = true;
+            item.name = util.substringAfter($(td).text(), "齐心★");
+        } else {
+            item.star = false;
+            item.name = $(td).text();
+        }
+
+        td = $(tr).find("td:eq(2)");
+        item.category = $(td).text();
+
+        td = $(tr).find("td:eq(3)");
+        item.power = parseInt($(td).text());
+
+        td = $(tr).find("td:eq(4)");
+        item.weight = parseInt($(td).text());
+
+        td = $(tr).find("td:eq(5)");
+        item.endure = parseInt($(td).text());
+
+        td = $(tr).find("td:eq(6)");
+        item.additionalPower = parseInt($(td).text());
+
+        td = $(tr).find("td:eq(7)");
+        item.additionalWeight = parseInt($(td).text());
+
+        td = $(tr).find("td:eq(8)");
+        item.additionalLuck = parseInt($(td).text());
+
+        td = $(tr).find("td:eq(9)");
+        item.experience = parseInt($(td).text());
+
+        itemList.push(item);
+    });
+    return itemList;
+}
+
 export function findTreasureBag(items) {
     for (let i = 0; i < items.length; i++) {
         const item = items[i];
