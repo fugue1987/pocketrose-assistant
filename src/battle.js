@@ -3,6 +3,7 @@
  * [ 战 斗 功 能 模 块 ]
  * ============================================================================
  */
+
 import {
     __cookie_getDepositBattleNumber,
     __cookie_getDepositButtonText,
@@ -16,6 +17,7 @@ import {
     __cookie_getRepairItemThreshold,
     __cookie_getReturnButtonText
 } from "./option";
+import * as page from "./page";
 import * as util from "./util";
 
 export class BattleRequestInterceptor {
@@ -36,8 +38,32 @@ export class BattleRequestInterceptor {
     }
 
     #doProcess() {
-        const text = $("body").text();
-        __battle(text);
+        const htmlText = $("body").text();
+        if (htmlText.includes("入手！")) {
+            this.#processHarvestingIfNecessary();
+        }
+        __battle(htmlText);
+    }
+
+    #processHarvestingIfNecessary() {
+        const candidates = [];
+        $("p").each(function (_idx, p) {
+            if ($(p).text().includes("入手！")) {
+                const html = $(p).html();
+                html.split("<br>").forEach(it => {
+                    if (it.endsWith("入手！")) {
+                        candidates.push(it);
+                    }
+                });
+            }
+        });
+        if (candidates.length > 0) {
+            const npc = page.createFooterNPC("Hind");
+            for (const it of candidates) {
+                npc.message(it + "<br>");
+            }
+            npc.message("哎呦，你出货了，赶紧收藏好的，不然Hind要来a了......");
+        }
     }
 }
 
