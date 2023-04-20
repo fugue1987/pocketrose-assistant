@@ -921,7 +921,9 @@ class PersonalPetStatus {
         html += "<input type='button' class='PetUIButton' value='第３技能位' id='pet_spell_study_3'>";
         html += "<input type='button' class='PetUIButton' value='第４技能位' id='pet_spell_study_4'>";
         html += "</td></tr>";
-
+        html += "<tr><td style='background-color:#E8E8D0;text-align:center' colspan='19'>";
+        html += "<input type='button' class='PetUIButton' value='刷新宠物管理界面' id='refreshButton'>";
+        html += "</td></tr>";
         html += "</tbody></table>";
         html += "</td></tr>";
         html += "</tbody></table>";
@@ -1079,6 +1081,9 @@ class PersonalPetStatus {
 
         // 设置查找发送对象按钮行为
         this.#bindSearchReceiverClickEventHandler();
+
+        // 设置更新按钮行为
+        this.#bindRefreshClickEventHandler();
     }
 
     #bindPetUninstallClick(buttonId) {
@@ -1424,6 +1429,14 @@ class PersonalPetStatus {
                 const optionHTML = $(html).find("select[name='eid']").html();
                 $("#receiverCandidates").html(optionHTML);
             });
+        });
+    }
+
+    #bindRefreshClickEventHandler() {
+        const instance = this;
+        $("#refreshButton").click(function () {
+            const credential = page.generateCredential();
+            instance.#finishWithRefresh(credential);
         });
     }
 
