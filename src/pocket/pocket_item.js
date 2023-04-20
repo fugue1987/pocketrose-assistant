@@ -260,7 +260,7 @@ export function parseWeaponStoreItemList(html) {
             item.star = false;
             item.name = s;
         }
-        item.nameHTML = $(tr).find("td:eq(1)").html();
+        item.nameHTML = $(tr).find("th:eq(1)").html();
 
         // category
         s = $(tr).find("td:eq(1)").text();
@@ -283,4 +283,13 @@ export function parseWeaponStoreItemList(html) {
         itemList.push(item);
     });
     return itemList;
+}
+
+/**
+ * 解析防具店的装备（与武器店数据保持一致）
+ * @param html
+ * @returns {PocketItemList}
+ */
+export function parseArmorStoreItemList(html) {
+    return parseWeaponStoreItemList(html);
 }
