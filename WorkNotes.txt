@@ -176,3 +176,12 @@ dasu
 id
 pass
 mode    CASTLEBANK_BUY
+
+
+超级封印
+mydata.cgi
+select      index
+id
+pass
+mode        PETBORN6
+
