@@ -56,3 +56,39 @@ export class PocketItem {
         return this.category === CATEGORY_ITEM;
     }
 }
+
+/**
+ * 口袋装备的列表集合数据结构
+ */
+export class PocketItemList {
+
+    #itemList;
+
+    constructor() {
+        this.#itemList = [];
+    }
+
+    push(item) {
+        this.#itemList.push(item);
+    }
+
+    /**
+     * Return pocket items as array.
+     * @returns {PocketItem[]}
+     */
+    asList() {
+        return this.#itemList;
+    }
+
+    /**
+     * Return pocket items as map.
+     * @returns {{number:PocketItem}}
+     */
+    asMap() {
+        const map = {};
+        for (const item of this.#itemList) {
+            map[item.index] = item;
+        }
+        return map;
+    }
+}
