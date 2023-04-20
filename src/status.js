@@ -192,6 +192,9 @@ class PersonalItemStatus {
         npc.message("<input type='button' id='consecrateButton' style='color:darkred' value='祭奠选择的装备'>");
         $("#consecrateButton").prop("disabled", true);
 
+        // 将返回按钮调整到页面中间
+        $("#returnButton").closest("td").css("text-align", "center");
+
         // 重新渲染页面
         this.#renderHTML(itemList);
         // 重新绑定事件
