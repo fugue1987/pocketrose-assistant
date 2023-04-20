@@ -202,3 +202,16 @@ export function isColorGrey(id) {
     const color = $("#" + id).css("color");
     return color.toString() === "rgb(128, 128, 128)"
 }
+
+export function generateProgressBarHTML(ratio) {
+    if (ratio === 0) {
+        return "<img src='" + pocket.DOMAIN + "/image/bg/bar2.gif'  height='7' width='50' alt=''>";
+    }
+    if (ratio === 1) {
+        return "<img src='" + pocket.DOMAIN + "/image/bg/bar1.gif'  height='7' width='50' alt=''>";
+    }
+    const w1 = Math.min(49, Math.ceil(50 * ratio));
+    const w2 = 50 - w1;
+    return "<img src='" + pocket.DOMAIN + "/image/bg/bar1.gif'  height='7' width='" + w1 + "' alt=''>" +
+        "<img src='" + pocket.DOMAIN + "/image/bg/bar2.gif'  height='7' width='" + w2 + "' alt=''>";
+}

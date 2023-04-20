@@ -699,6 +699,30 @@ export function __utilities_checkIfEquipmentFullExperience(name, power, experien
     return experience >= maxExperience;
 }
 
+export function calculateEquipmentFullExperienceRatio(name, power, experience) {
+    if (name === "大师球" || name === "宗师球" || name === "超力怪兽球" || name === "宠物蛋") {
+        return -1;
+    }
+    let maxExperience = 0;
+    if (__utilities_isHeavyArmor(name)) {
+        // 属性重铠满级经验为76000
+        maxExperience = 76000;
+    } else if (power !== 0) {
+        power = Math.abs(power);
+        maxExperience = Math.floor(power * 0.2) * 1000;
+    }
+    if (maxExperience === 0) {
+        return -1;
+    }
+    if (experience >= maxExperience) {
+        return 1;
+    }
+    if (experience === 0) {
+        return 0;
+    }
+    return experience / maxExperience;
+}
+
 function __isCityCoordinate(x, y) {
     let cityIds = Object.keys(_CITY_DICT);
     for (let i = 0; i < cityIds.length; i++) {

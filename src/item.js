@@ -4,6 +4,7 @@
  * ============================================================================
  */
 
+import * as page from "./page";
 import * as pocket from "./pocket";
 import * as util from "./util";
 
@@ -246,11 +247,13 @@ export class Item {
         if (this.isItem) {
             return "-";
         }
-        if (this.isFullExperience) {
-            return "<b style='color:red'>MAX</b>";
-        } else {
-            return this.experience;
+        const ratio = pocket.calculateEquipmentFullExperienceRatio(this._name, this._power, this._experience);
+        if (ratio < 0) {
+            return "-";
         }
+        const progressBar = page.generateProgressBarHTML(ratio);
+        const title = this.isFullExperience ? "MAX" : this.experience;
+        return "<span title='" + title + "'>" + progressBar + "</span>"
     }
 
 }
