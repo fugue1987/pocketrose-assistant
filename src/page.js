@@ -192,3 +192,13 @@ export function disableProhibitSellingItems(table) {
         }
     });
 }
+
+export function isColorBlue(id) {
+    const color = $("#" + id).css("color");
+    return color.toString() === "rgb(0, 0, 255)"
+}
+
+export function isColorGrey(id) {
+    const color = $("#" + id).css("color");
+    return color.toString() === "rgb(128, 128, 128)"
+}

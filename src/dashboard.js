@@ -24,6 +24,10 @@ export class TownDashboardProcessor {
         $("option[value='PET_SEND']").text("宠物赠送(v2.0)");
         $("option[value='LETTER']").text("口袋助手设置");
         $("option[value='LETTER']").css("background-color", "#20c0ff");
+        if (option.__cookie_getEnableNewItemUI()) {
+            $("option[value='USE_ITEM']").text("装备管理(v2.0)");
+            $("option[value='USE_ITEM']").css("background-color", "yellow");
+        }
         if (option.__cookie_getEnableNewPetUI()) {
             $("option[value='PETSTATUS']").text("宠物管理(v2.0)");
             $("option[value='PETSTATUS']").css("background-color", "yellow");
@@ -188,6 +192,25 @@ export class TownDashboardProcessor {
                 }
             }
         });
+
+        // 读取战数
+        const battleCount = parseInt($("input:hidden[name='ktotal']").val());
+        $("td:contains('贡献度')")
+            .filter(function () {
+                return $(this).text() === "贡献度";
+            })
+            .closest("table")
+            .find("th:first")
+            .find("font:first")
+            .text(function (_idx, text) {
+                const name = util.substringBefore(text, "(");
+                const unit = util.substringBetween(text, "(", "军)");
+                if (unit.includes("无所属")) {
+                    return name + " " + battleCount + "战";
+                } else {
+                    return name + "(" + unit + ")" + " " + battleCount + "战";
+                }
+            });
     }
 }
 
