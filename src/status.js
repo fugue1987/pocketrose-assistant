@@ -441,10 +441,15 @@ class PersonalItemStatus {
             request["chara"] = "1";
             request["mode"] = "PUTINBAG";
             network.sendPostRequest("mydata.cgi", request, function (html) {
-                let result = $(html).find("h2:first").html();
-                result = result.replace("<br>", "");
-                result = "<td>" + result + "</td>";
-                message.writeMessageBoard($(result).text());
+                if ($(html).text().includes("ERROR !")) {
+                    const errorMessage = $(html).find("font b").text();
+                    message.writeMessageBoard("<b style='color:red'>" + errorMessage + "</b>");
+                } else {
+                    let successMessage = $(html).find("h2:first").html();
+                    successMessage = successMessage.replace("<br>", "");
+                    successMessage = "<td>" + successMessage + "</td>";
+                    message.writeMessageBoard($(successMessage).text());
+                }
                 instance.#finishWithRefresh(credential);
             });
         });
@@ -470,10 +475,15 @@ class PersonalItemStatus {
             request["chara"] = "1";
             request["mode"] = "PUTINBAG";
             network.sendPostRequest("mydata.cgi", request, function (html) {
-                let result = $(html).find("h2:first").html();
-                result = result.replace("<br>", "");
-                result = "<td>" + result + "</td>";
-                message.writeMessageBoard($(result).text());
+                if ($(html).text().includes("ERROR !")) {
+                    const errorMessage = $(html).find("font b").text();
+                    message.writeMessageBoard("<b style='color:red'>" + errorMessage + "</b>");
+                } else {
+                    let successMessage = $(html).find("h2:first").html();
+                    successMessage = successMessage.replace("<br>", "");
+                    successMessage = "<td>" + successMessage + "</td>";
+                    message.writeMessageBoard($(successMessage).text());
+                }
                 instance.#finishWithRefresh(credential);
             });
         });
