@@ -383,3 +383,28 @@ export function itemListAsMap(itemList) {
     }
     return itemMap;
 }
+
+/**
+ * 从武器店的页面解析允许出售的装备的下标。
+ * @param html
+ * @returns {number[]}
+ */
+export function parseSellableItemIndexList(html) {
+    const sellableItemIndexList = [];
+    $(html)
+        .find("table:eq(5)")
+        .find("input:radio")
+        .each(function (_idx, radio) {
+            const index = parseInt($(radio).val());
+            if (!$(radio).prop("disabled")) {
+                const tr = $(radio).closest("tr");
+                if ($(tr).find("td:eq(1)").text() !== "★") {
+                    const name = $(tr).find("td:eq(2)").text();
+                    if (!pocket.isProhibitSellingItem(name)) {
+                        sellableItemIndexList.push(index);
+                    }
+                }
+            }
+        });
+    return sellableItemIndexList;
+}
