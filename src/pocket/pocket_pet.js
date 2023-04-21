@@ -125,6 +125,22 @@ export function parsePersonalPetList(html) {
     return petList;
 }
 
+/**
+ * 解析页面上反馈的宠物技能学习配置情况
+ * @param html HTML
+ * @returns {number[]}
+ */
+export function parsePersonalPetStudyStatus(html) {
+    const studyStatus = [];
+    $(html).find("input:checkbox:checked").each(function (_idx, checkbox) {
+        const name = $(checkbox).attr("name");
+        if (name.startsWith("study")) {
+            studyStatus.push(parseInt($(checkbox).val()));
+        }
+    });
+    return studyStatus;
+}
+
 // ----------------------------------------------------------------------------
 // P R I V A T E   F U N C T I O N S
 // ----------------------------------------------------------------------------
