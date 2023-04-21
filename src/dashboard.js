@@ -53,8 +53,6 @@ export class TownDashboardProcessor {
         $("option[value='ACC_SHOP']").text("饰品屋(v2.0)");
         $("option[value='ITEM_SHOP']").text("物品屋(v2.0)");
         $("option[value='BAOSHI_SHOP']").text("合成屋(v2.0)");
-        $("option[value='ITEM_SEND']").text("运送屋(v2.0)");
-        $("option[value='PET_SEND']").text("宠物赠送(v2.0)");
         $("option[value='LETTER']").text("口袋助手设置");
         $("option[value='LETTER']").css("background-color", "#20c0ff");
         if (option.__cookie_getEnableNewItemUI()) {

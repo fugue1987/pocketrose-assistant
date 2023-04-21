@@ -42,8 +42,6 @@ export class TownRequestInterceptor {
             new TownItemStore().process();
         } else if (text.includes("＜＜ * 合 成 屋 *＞＞")) {
             new TownGemStore().process();
-        } else if (text.includes("* 宠 物 赠 送 屋 *")) {
-            new TownPetExpress().process();
         } else if (text.includes("*  藏宝图以旧换新业务 *")) {
             new TownAdventurerGuild().process();
         }
@@ -792,46 +790,6 @@ class TownGemStore {
                     const nextIndex = holeIndex + 1;
                     message.writeMessageBoard(name + "还剩余" + (holeCount - nextIndex) + "孔");
                     inst.#fuseGem(gemName, name, nameIndex, holeCount, nextIndex);
-                });
-            });
-        });
-    }
-}
-
-
-/**
- * 宠物赠送屋
- */
-class TownPetExpress {
-
-    constructor() {
-    }
-
-    process() {
-        $("input[value='发送']").attr("id", "sendButton");
-        $("input[value='返回城市']").attr("id", "returnButton");
-
-        const npc = page.createFooterNPC("末末");
-        npc.welcome("我来啦！");
-        npc.message("哈哈，我又来啦！没想到吧？这边还是我。");
-
-        $("#sendButton").attr("type", "button");
-        $("#sendButton").attr("value", "自动取钱发送");
-        $("#sendButton").click(function () {
-            const cash = page.getRoleCash();
-            const amount = bank.calculateCashDifferenceAmount(cash, 100000);
-            const credential = generateCredential();
-            bank.withdrawFromTownBank(credential, amount).then(() => {
-                const select = $("input:radio[name='select']:checked").val();
-                const eid = $("select[name='eid']").val();
-                const request = credential.asRequest();
-                request["select"] = select;
-                request["eid"] = eid;
-                request["mode"] = "PET_SEND2";
-                network.sendPostRequest("town.cgi", request, function () {
-                    bank.depositIntoTownBank(credential, undefined).then(() => {
-                        $("#returnButton").trigger("click");
-                    });
                 });
             });
         });
