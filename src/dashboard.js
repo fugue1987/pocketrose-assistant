@@ -1,7 +1,7 @@
 import * as bank from "./bank";
 import * as network from "./network";
 import * as page from "./page";
-import * as pet from "./pet";
+import * as pet from "./pocket/pocket_pet";
 import * as pocket from "./pocket";
 import * as user from "./user";
 import * as util from "./util";
@@ -106,9 +106,9 @@ export class TownDashboardProcessor {
             const credential = page.generateCredential();
             user.lodgeTown(credential)
                 .then(() => {
-                    pet.loadPets(credential)
+                    pet.loadPersonalPetList(credential)
                         .then(petList => {
-                            const usingPet = pet.findUsingPet(petList);
+                            const usingPet = petList.usingPet;
                             if (usingPet !== undefined && usingPet.level >= 100) {
                                 const expect = Math.ceil(100 - usingPet.love) * 10000;
                                 if (expect > 0) {
