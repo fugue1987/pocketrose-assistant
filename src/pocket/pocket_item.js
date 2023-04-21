@@ -2,7 +2,13 @@
  * ============================================================================
  * [ 口 袋 装 备 通 用 模 块 ]
  * ----------------------------------------------------------------------------
- * 装备和物品的通用数据结构
+ * 1. 装备通用数据结构
+ * 2. 解析装备管理界面的装备数据
+ * 3. 解析百宝袋的装备数据
+ * 4. 解析武器屋的装备数据
+ * 5. 解析防具屋的装备数据
+ * 6. 解析饰品屋的装备数据
+ * 7. 解析物品屋的装备数据
  * ============================================================================
  */
 
@@ -304,4 +310,57 @@ export function parseArmorStoreItemList(html) {
  */
 export function parseAccessoryStoreItemList(html) {
     return parseWeaponStoreItemList(html);
+}
+
+/**
+ * 解析物品店的装备
+ * @param html
+ * @returns {PocketItemList}
+ */
+export function parseItemStoreItemList(html) {
+    const itemList = new PocketItemList();
+    $(html).find("table:eq(2) input:radio").each(function (_idx, radio) {
+        const item = new PocketItem();
+        const tr = $(radio).parent().parent();
+
+        // index & selectable
+        item.index = parseInt($(radio).val());
+        item.selectable = !$(radio).prop("disabled");
+
+        // using
+        let s = $(tr).find("th:first").text();
+        item.using = (s === "★");
+
+        // name & star
+        s = $(tr).find("th:eq(1)").text();
+        if (s.startsWith("齐心★")) {
+            item.star = true;
+            item.name = util.substringAfter(s, "齐心★");
+        } else {
+            item.star = false;
+            item.name = s;
+        }
+        item.nameHTML = $(tr).find("th:eq(1)").html();
+
+        // category
+        s = $(tr).find("td:eq(1)").text();
+        item.category = s;
+
+        // power & weight & endure
+        s = $(tr).find("td:eq(2)").text();
+        item.power = parseInt(s);
+        s = $(tr).find("td:eq(3)").text();
+        item.weight = parseInt(s);
+        s = $(tr).find("td:eq(4)").text();
+        item.endure = parseInt(util.substringBeforeSlash(s));
+        item.maxEndure = parseInt(util.substringAfterSlash(s));
+
+        // price
+        s = $(tr).find("td:eq(5)").text();
+        item.price = parseInt(util.substringBefore(s, " Gold"));
+        item.priceHTML = $(tr).find("td:eq(5)").html();
+
+        itemList.push(item);
+    });
+    return itemList;
 }
