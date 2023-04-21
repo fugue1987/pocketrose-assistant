@@ -14,8 +14,10 @@ import * as page from "../common/common_page";
 
 import * as item from "../pocket/pocket_item";
 
-export function processPersonalItemManagement() {
-    doProcess();
+export class PersonalItemManagement {
+    process() {
+        doProcess();
+    }
 }
 
 function doProcess() {
