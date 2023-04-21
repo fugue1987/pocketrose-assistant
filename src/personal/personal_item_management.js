@@ -19,6 +19,9 @@ export class PersonalItemManagement {
 }
 
 function doProcess() {
+    // 删除最后一个google-analytics的脚本
+    $("script:last").remove();
+
     const credential = page.generateCredential();
     const pageHTML = page.currentPageHTML();
     // 首先从老页面上解析所有的装备信息
@@ -64,8 +67,6 @@ function doProcess() {
     message.createFooterMessage(constant.getNPCImageHTML("饭饭"));
     message.writeFooterMessage("我就要一键祭奠，就要，就要！");
     message.writeFooterMessage("<input type='button' id='consecrateButton' style='color:darkred' value='祭奠选择的装备'>");
-    // 删除最后一个google-analytics的脚本
-    $("script:last").remove();
 
     // 渲染页面并且绑定相应的事件处理
     doRender(itemList);

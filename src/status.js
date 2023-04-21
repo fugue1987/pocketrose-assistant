@@ -11,6 +11,7 @@ import * as pet from "./pet";
 import * as message from "./message";
 import * as option from "./option";
 import * as service from "./service";
+import * as personal_golden_cage from "./personal/personal_golden_cage";
 import * as personal_item_management from "./personal/personal_item_management";
 import * as personal_treasure_bag from "./personal/personal_treasure_bag";
 
@@ -47,7 +48,7 @@ export class StatusRequestInterceptor {
                 new personal_treasure_bag.PersonalTreasureBag().process();
             } else if (text.includes("物品 黄金笼子 使用")) {
                 // 进入黄金笼子
-                new PersonalGoldenCage().process();
+                new personal_golden_cage.PersonalGoldenCage().process();
             } else if (text.includes("宠物现在升级时学习新技能情况一览")) {
                 // 宠物状态
                 if (option.__cookie_getEnableNewPetUI()) {

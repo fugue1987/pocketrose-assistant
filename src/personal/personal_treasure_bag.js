@@ -15,6 +15,9 @@ export class PersonalTreasureBag {
 }
 
 function doProcess() {
+    // 删除最后一个google-analytics的脚本
+    $("script:last").remove();
+
     const pageHTML = page.currentPageHTML();
     const itemList = item.parseTreasureBagItemList(pageHTML);
     const items = itemList.asMap();
