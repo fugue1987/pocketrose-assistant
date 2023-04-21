@@ -244,6 +244,24 @@ export class PocketItemList {
         }
         return map;
     }
+
+    get treasureBag() {
+        for (const item of this.#itemList) {
+            if (item.isTreasureBag) {
+                return item;
+            }
+        }
+        return undefined;
+    }
+
+    get goldenCage() {
+        for (const item of this.#itemList) {
+            if (item.isGoldenCage) {
+                return item;
+            }
+        }
+        return undefined;
+    }
 }
 
 /**

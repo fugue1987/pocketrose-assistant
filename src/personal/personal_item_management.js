@@ -182,12 +182,20 @@ function doRender(itemList) {
     // 渲染装备管理界面
     $("#ItemUI").html(html);
 
+    // 修改按钮的状态，如果有必要的话
+    const treasureBag = itemList.treasureBag;
+    if (treasureBag === undefined) {
+        $("#putIntoBagButton").prop("disabled", true);
+        $("#putIntoBagButton").css("display", "none");
+    }
+
     // 绑定点击事件
     doBind(itemList);
 }
 
 function doBind(itemList) {
     __bindUseButton();
+    __bindPutIntoBugButton(itemList);
 }
 
 function doRefresh(credential) {
@@ -221,6 +229,39 @@ function __bindUseButton() {
         }
         request["chara"] = "1";
         request["mode"] = "USE";
+        network.sendPostRequest("mydata.cgi", request, function (html) {
+            message.processResponseHTML(html);
+            doRefresh(credential);
+        });
+    });
+}
+
+function __bindPutIntoBugButton(itemList) {
+    if ($("#putIntoBagButton").prop("disabled")) {
+        return;
+    }
+    const items = itemList.asMap();
+    $("#putIntoBagButton").click(function () {
+        const credential = page.generateCredential();
+        const request = credential.asRequest();
+        let checkedCount = 0;
+        $("input:checkbox:checked").each(function (_idx, checkbox) {
+            const index = parseInt($(checkbox).val());
+            const item = items[index];
+            if (item.using) {
+                message.publishMessageBoard(item.nameHTML + "正在装备中，无法放入百宝袋");
+            } else {
+                checkedCount++;
+                const name = $(checkbox).attr("name");
+                request[name] = $(checkbox).val();
+            }
+        });
+        if (checkedCount === 0) {
+            message.publishMessageBoard("没有选择任何装备");
+            return;
+        }
+        request["chara"] = "1";
+        request["mode"] = "PUTINBAG";
         network.sendPostRequest("mydata.cgi", request, function (html) {
             message.processResponseHTML(html);
             doRefresh(credential);
