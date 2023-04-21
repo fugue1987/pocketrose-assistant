@@ -176,3 +176,13 @@ dasu
 id
 pass
 mode    CASTLEBANK_BUY
+
+
+超级封印
+mydata.cgi
+select      index
+id
+pass
+mode        PETBORN6
+
+恭喜！封印了宠物 海星星(120)， 得到 热带雷龙(357) 图鉴 以及 一张藏宝图(2,12) ！

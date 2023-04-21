@@ -62,6 +62,19 @@ export function createHeaderNPC(name, parentId) {
         "</tr></tbody></TABLE>"));
 }
 
+export function createMessageBoardWithPictureCode(pictureCode, parentId) {
+    const portrait = pocket.DOMAIN + "/image/head/" + pictureCode + ".gif";
+    const imageHTML = "<img src='" + portrait + "' width='64' height='64' id='npc_" + pictureCode + "' alt='" + pictureCode + "'>";
+    $("#" + parentId).append($("<TABLE WIDTH='100%' bgcolor='#888888'><tbody><tr>" +
+        "<TD bgcolor='#F8F0E0' height='5'>" +
+        "<table bgcolor='#888888' border='0'><tbody><tr>" +
+        "<td bgcolor='#F8F0E0'>" + imageHTML + "</td>" +
+        "<td width='100%' bgcolor='#000000' id='messageBoard' style='color: white'>" +
+        "</td></tr></tbody></table>" +
+        "</TD>" +
+        "</tr></tbody></TABLE>"));
+}
+
 // ----------------------------------------------------------------------------
 // M E S S A G E   B O A R D
 // ----------------------------------------------------------------------------
@@ -201,4 +214,17 @@ export function isColorBlue(id) {
 export function isColorGrey(id) {
     const color = $("#" + id).css("color");
     return color.toString() === "rgb(128, 128, 128)"
+}
+
+export function generateProgressBarHTML(ratio) {
+    if (ratio === 0) {
+        return "<img src='" + pocket.DOMAIN + "/image/bg/bar2.gif'  height='7' width='50' alt=''>";
+    }
+    if (ratio === 1) {
+        return "<img src='" + pocket.DOMAIN + "/image/bg/bar1.gif'  height='7' width='50' alt=''>";
+    }
+    const w1 = Math.min(49, Math.ceil(50 * ratio));
+    const w2 = 50 - w1;
+    return "<img src='" + pocket.DOMAIN + "/image/bg/bar1.gif'  height='7' width='" + w1 + "' alt=''>" +
+        "<img src='" + pocket.DOMAIN + "/image/bg/bar2.gif'  height='7' width='" + w2 + "' alt=''>";
 }

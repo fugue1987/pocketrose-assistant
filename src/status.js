@@ -3,7 +3,6 @@ import * as dashboard from "./dashboard";
 import {WildDashboardProcessor} from "./dashboard";
 import * as page from "./page";
 import * as pocket from "./pocket";
-import {__utilities_checkIfEquipmentFullExperience, isUnavailableTreasureHintMap} from "./pocket";
 import * as util from "./util";
 import * as item from "./item";
 import * as network from "./network";
@@ -11,6 +10,7 @@ import * as user from "./user";
 import * as pet from "./pet";
 import * as message from "./message";
 import * as option from "./option";
+import * as service from "./service";
 
 export class StatusRequestInterceptor {
 
@@ -172,6 +172,16 @@ class PersonalItemStatus {
     process() {
         $("input:submit[value='返回上个画面']").attr("id", "returnButton");
 
+        // 找自己的头像
+        let pictureCode = "";
+        $("img").each(function (_idx, img) {
+            const src = $(img).attr("src");
+            if (src.startsWith(pocket.DOMAIN + "/image/head/")) {
+                const s = src.substring(src.lastIndexOf("/") + 1);
+                pictureCode = util.substringBefore(s, ".gif");
+            }
+        });
+
         // 读取页面上装备的所有信息
         const htmlText = $("body:first").html();
         const itemList = item.parsePersonalItems(htmlText);
@@ -183,14 +193,18 @@ class PersonalItemStatus {
 
         // 创建页面组件
         $("table:first tr:first").after($("<tr><td style='background-color:#E8E8D0' id='header_npc'></td></tr>"));
-        page.createHeaderNPC("末末", "header_npc");
-        page.initializeMessageBoard("我在这里说明一下，个人物品装备目前正处于升级改造阶段。");
+        page.createMessageBoardWithPictureCode(pictureCode, "header_npc");
+        message.initializeMessageBoard("装备管理UI (2.0)，目前正处于不断升级改造中。<br>" +
+            "目前新退出了直接发送物品/装备的功能，请记住，运送屋不能发送的这里也不能发送。<br>");
 
         // 创建祭奠用NPC
         const npc = page.createFooterNPC("饭饭");
         npc.welcome("我就要一键祭奠，就要，就要！");
         npc.message("<input type='button' id='consecrateButton' style='color:darkred' value='祭奠选择的装备'>");
         $("#consecrateButton").prop("disabled", true);
+
+        // 将返回按钮调整到页面中间
+        $("#returnButton").closest("td").css("text-align", "center");
 
         // 重新渲染页面
         this.#renderHTML(itemList);
@@ -232,6 +246,7 @@ class PersonalItemStatus {
         html += "<th style='background-color:#E0D0B0'>附加幸运度</th>";
         html += "<th style='background-color:#E0D0B0'>经验</th>";
         html += "<th style='background-color:#EFE0C0'>属性</th>";
+        html += "<th style='background-color:#EFE0C0'>出售</th>";
         html += "</tr>";
         for (const item of itemList) {
             if (item.isTreasureBag) {
@@ -301,15 +316,20 @@ class PersonalItemStatus {
             html += "<td style='background-color:#EFE0C0'>" +
                 (item.attribute === "无" ? "-" : item.attribute) +
                 "</td>";
+            html += "<td style='background-color:#EFE0C0'>";
+            if (!item.using && !pocket.isProhibitSellingItem(item.name)) {
+                html += "<input type='button' class='ItemUIButton' id='sell_item_" + item.index + "' value='出售'>";
+            }
+            html += "</td>";
             html += "</tr>";
         }
         html += "<tr>";
-        html += "<td style='background-color:#E8E8D0;text-align:left' colspan='18'>" +
+        html += "<td style='background-color:#E8E8D0;text-align:left' colspan='19'>" +
             "<b style='color:navy'>目前剩余空位数：</b><b style='color:red'>" + (20 - itemList.length) + "</b>" +
             "</td>";
         html += "</tr>";
         html += "<tr>";
-        html += "<td style='background-color:#E8E8D0;text-align:center' colspan='18'>" +
+        html += "<td style='background-color:#E8E8D0;text-align:center' colspan='19'>" +
             "<table style='background-color:#E8E8D0;border-width:0;width:100%'>" +
             "<tbody style='background-color:#E8E8D0'>" +
             "<tr style='background-color:#E8E8D0'>" +
@@ -326,6 +346,19 @@ class PersonalItemStatus {
             "</tbody>" +
             "</table>" +
             "</td>";
+        html += "<tr>";
+        html += "<td style='background-color:#E8E8D0;text-align:right' colspan='19'>";
+        html += "<input type='text' id='receiverName' size='15' maxlength='20'>";
+        html += "<input type='button' class='ItemUIButton' id='searchReceiverButton' value='找人'>";
+        html += "<select name='eid' id='receiverCandidates'><option value=''>选择发送对象</select>";
+        html += "<input type='button' class='ItemUIButton' id='sendItemButton' value='发送'>";
+        html += "</td>"
+        html += "</tr>";
+        html += "<tr>";
+        html += "<td style='background-color:#E8E8D0;text-align:center' colspan='19'>";
+        html += "<input type='button' class='ItemUIButton' id='refreshButton' value='刷新装备管理界面'>";
+        html += "</td>"
+        html += "</tr>";
         html += "</tr>";
         html += "</tbody>";
         html += "</table>";
@@ -335,7 +368,7 @@ class PersonalItemStatus {
 
         // 在Eden中添加一些预制的表单
         const credential = page.generateCredential();
-        $("#Eden").append($("<form action='mydata.cgi'>" +
+        $("#Eden").append($("<form action='mydata.cgi' method='post'>" +
             "<input type='hidden' name='chara' value='1'>" +
             "<input type='hidden' name='' value='' id='treasureBagIndex'>" +
             "<input type='hidden' name='mode' value='USE'>" +
@@ -343,7 +376,7 @@ class PersonalItemStatus {
             "<input type='hidden' name='pass' value='" + credential.pass + "'>" +
             "<input type='submit' id='treasureBagSubmit'>" +
             "</form>"));
-        $("#Eden").append($("<form action='mydata.cgi'>" +
+        $("#Eden").append($("<form action='mydata.cgi' method='post'>" +
             "<input type='hidden' name='chara' value='1'>" +
             "<input type='hidden' name='' value='' id='goldenCageIndex'>" +
             "<input type='hidden' name='mode' value='USE'>" +
@@ -351,7 +384,7 @@ class PersonalItemStatus {
             "<input type='hidden' name='pass' value='" + credential.pass + "'>" +
             "<input type='submit' id='goldenCageSubmit'>" +
             "</form>"));
-        $("#Eden").append($("<form action='mydata.cgi'>" +
+        $("#Eden").append($("<form action='mydata.cgi' method='post'>" +
             "<input type='hidden' name='chara' value='1'>" +
             "<div id='consecrateItems' style='display:none'></div>" +
             "<input type='hidden' name='mode' value='CONSECRATE'>" +
@@ -374,7 +407,7 @@ class PersonalItemStatus {
             $("#treasureBagIndex").attr("value", bag.index);
         }
         const cage = item.findGoldenCage(itemList);
-        if (bag === undefined) {
+        if (cage === undefined) {
             $("#goldenCageButton").prop("disabled", true);
             $("#goldenCageButton").css("display", "none");
         } else {
@@ -438,10 +471,15 @@ class PersonalItemStatus {
             request["chara"] = "1";
             request["mode"] = "PUTINBAG";
             network.sendPostRequest("mydata.cgi", request, function (html) {
-                let result = $(html).find("h2:first").html();
-                result = result.replace("<br>", "");
-                result = "<td>" + result + "</td>";
-                message.writeMessageBoard($(result).text());
+                if ($(html).text().includes("ERROR !")) {
+                    const errorMessage = $(html).find("font b").text();
+                    message.writeMessageBoard("<b style='color:red'>" + errorMessage + "</b>");
+                } else {
+                    let successMessage = $(html).find("h2:first").html();
+                    successMessage = successMessage.replace("<br>", "");
+                    successMessage = "<td>" + successMessage + "</td>";
+                    message.writeMessageBoard($(successMessage).text());
+                }
                 instance.#finishWithRefresh(credential);
             });
         });
@@ -467,12 +505,111 @@ class PersonalItemStatus {
             request["chara"] = "1";
             request["mode"] = "PUTINBAG";
             network.sendPostRequest("mydata.cgi", request, function (html) {
-                let result = $(html).find("h2:first").html();
-                result = result.replace("<br>", "");
-                result = "<td>" + result + "</td>";
-                message.writeMessageBoard($(result).text());
+                if ($(html).text().includes("ERROR !")) {
+                    const errorMessage = $(html).find("font b").text();
+                    message.writeMessageBoard("<b style='color:red'>" + errorMessage + "</b>");
+                } else {
+                    let successMessage = $(html).find("h2:first").html();
+                    successMessage = successMessage.replace("<br>", "");
+                    successMessage = "<td>" + successMessage + "</td>";
+                    message.writeMessageBoard($(successMessage).text());
+                }
                 instance.#finishWithRefresh(credential);
             });
+        });
+        for (let i = 0; i < 20; i++) {
+            const buttonId = "sell_item_" + i;
+            if ($("#" + buttonId).length > 0) {
+                $("#" + buttonId).click(function () {
+                    const index = i;
+                    const credential = page.generateCredential();
+                    const request = credential.asRequest();
+                    request["con_str"] = "50";
+                    request["mode"] = "ARM_SHOP";
+                    network.sendPostRequest("town.cgi", request, function (html) {
+                        const sellable = item.parseSellableItemIndexList(html);
+                        if (!sellable.includes(index)) {
+                            message.writeMessageBoard("选择的物品或者装备不允许出售");
+                            return;
+                        }
+                        if (!confirm("确认要出售" + itemMap[index].fullName + "吗？")) {
+                            message.writeMessageBoard("出售操作取消");
+                            return;
+                        }
+                        const discount = $(html).find("input:hidden[name='val_off']").val();
+                        const request = credential.asRequest();
+                        request["mode"] = "SELL";
+                        request["select"] = index;
+                        if (discount !== undefined) {
+                            request["val_off"] = discount;
+                        }
+                        network.sendPostRequest("town.cgi", request, function (html) {
+                            const successMessage = $(html).find("h2:first").text();
+                            message.writeMessageBoard(successMessage);
+
+                            bank.depositIntoTownBank(credential, undefined)
+                                .then(() => {
+                                    instance.#finishWithRefresh(credential);
+                                });
+                        });
+                    });
+                });
+            }
+        }
+        $("#searchReceiverButton").click(function () {
+            let receiverName = $("#receiverName").val();
+            if (receiverName.trim() === "") {
+                return;
+            }
+            receiverName = escape(receiverName.trim());
+            const credential = page.generateCredential();
+            const request = credential.asRequest();
+            request["serch"] = receiverName;
+            request["mode"] = "ITEM_SEND";
+            network.sendPostRequest("town.cgi", request, function (html) {
+                const optionHTML = $(html).find("select[name='eid']").html();
+                $("#receiverCandidates").html(optionHTML);
+            });
+        });
+        $("#sendItemButton").click(function () {
+            const eid = $("#receiverCandidates").val();
+            if (eid === undefined || eid === "") {
+                return;
+            }
+            const credential = page.generateCredential();
+            const request = credential.asRequest();
+            request["eid"] = eid;
+            let checkedCount = 0;
+            $("input:checkbox:checked").each(function (_idx, checkbox) {
+                checkedCount++;
+                const name = $(checkbox).attr("name");
+                request[name] = $(checkbox).val();
+            });
+            if (checkedCount === 0) {
+                return;
+            }
+            request["mode"] = "ITEM_SEND2";
+            bank.withdrawFromTownBank(credential, 10)
+                .then(() => {
+                    network.sendPostRequest("town.cgi", request, function (html) {
+                        if (html.includes("ERROR !")) {
+                            let failureMessage = $(html).find("font b").text();
+                            failureMessage = failureMessage.replace("<br>", "");
+                            message.writeMessageBoard(failureMessage);
+                        } else {
+                            const successMessage = $(html).find("h2:first").text();
+                            message.writeMessageBoard(successMessage);
+                        }
+                        bank.depositIntoTownBank(credential, undefined)
+                            .then(() => {
+                                instance.#finishWithRefresh(credential);
+                            });
+                    });
+                });
+        });
+        $("#refreshButton").click(function () {
+            const credential = page.generateCredential();
+            instance.#finishWithRefresh(credential);
         });
     }
 
@@ -545,32 +682,24 @@ class PersonalTreasureBag {
     }
 
     process() {
-        $("input[type='checkbox']").each(function (_idx, input) {
-            let td = $(input).parent();
-            let name = $(td).next().text();
-            let category = $(td).next().next().text();
-            let power = $(td).next().next().next().text();
-            let exp = $(td).next().next().next().next().next().next().next().next().next().text();
-            if (category === "武器" || category === "防具" || category === "饰品") {
-                if (__utilities_checkIfEquipmentFullExperience(name, power, exp)) {
-                    let nameHtml = $(td).next().html();
-                    nameHtml = "<b style='color:red'>[满]</b>" + nameHtml;
-                    $(td).next().html(nameHtml);
-                }
-            }
-            if (category === "物品" && name === "藏宝图") {
-                let x = power;
-                let y = $(td).next().next().next().next().text();
-                if (isUnavailableTreasureHintMap(parseInt(x), parseInt(y))) {
-                    let nameHtml = $(td).next().html();
-                    nameHtml = "<b style='color: red'>[城]</b>" + nameHtml;
-                    $(td).next().html(nameHtml);
-                }
-            }
+        const itemList = item.parseTreasureBagItems($("body:first").html());
+        const itemMap = item.itemListAsMap(itemList);
+
+        let itemCount = 0;
+        $("input:checkbox").each(function (_idx, checkbox) {
+            itemCount++;
+            const index = parseInt($(checkbox).val());
+            const item = itemMap[index];
+            $(checkbox).closest("tr").find("td:eq(9)").html(item.experienceHTML);
         });
         $("input:submit[value='从百宝袋中取出']").attr("id", "takeOutButton");
         $("#takeOutButton").attr("type", "button");
         $("input:submit[value='ＯＫ']").attr("id", "returnButton");
+
+
+        $("#takeOutButton").closest("tr")
+            .before($("<tr><td colspan='10' style='color:navy'>百宝袋中目前剩余空位数：" +
+                "<b style='color:red'>" + (Math.max(0, 50 - itemCount)) + "</b></td></tr>"));
 
         $("#takeOutButton").click(function () {
             const credential = page.generateCredential();
@@ -779,12 +908,19 @@ class PersonalPetStatus {
             html += "<input type='button' class='PetUIButton' value='入笼' id='pet_" + pet.index + "_cage'>";
             html += "<input type='button' class='PetUIButton' value='亲密' id='pet_" + pet.index + "_love'>";
             html += "<input type='button' class='PetUIButton' value='参赛' id='pet_" + pet.index + "_league'>";
+            html += "<input type='button' class='PetUIButton' value='献祭' id='pet_" + pet.index + "_consecrate'>";
+            html += "<input type='button' class='PetUIButton' value='发送' id='pet_" + pet.index + "_send'>";
             html += "<input type='button' class='PetUIButton' value='改名' id='pet_" + pet.index + "_rename'>&nbsp;";
-            html += "<input type='text' id='pet_" + pet.index + "_name_text' size='20' maxlength='10'>";
+            html += "<input type='text' id='pet_" + pet.index + "_name_text' size='15' maxlength='20'>";
             html += "</td>";
             html += "</tr>";
         }
 
+        html += "<tr><td style='background-color:#EFE0C0;text-align:right' colspan='19'>";
+        html += "<input type='text' id='receiverName' size='15' maxlength='20'>";
+        html += "<input type='button' class='PetUIButton' id='searchReceiverButton' value='找人'>";
+        html += "<select name='eid' id='receiverCandidates'><option value=''>选择发送对象</select>";
+        html += "</td></tr>";
         html += "<tr><td style='background-color:#EFE0C0;text-align:center' colspan='19'>";
         html += "<b style='color:navy'>设置宠物升级时学习技能情况</b>";
         html += "</td></tr>";
@@ -794,7 +930,9 @@ class PersonalPetStatus {
         html += "<input type='button' class='PetUIButton' value='第３技能位' id='pet_spell_study_3'>";
         html += "<input type='button' class='PetUIButton' value='第４技能位' id='pet_spell_study_4'>";
         html += "</td></tr>";
-
+        html += "<tr><td style='background-color:#E8E8D0;text-align:center' colspan='19'>";
+        html += "<input type='button' class='PetUIButton' value='刷新宠物管理界面' id='refreshButton'>";
+        html += "</td></tr>";
         html += "</tbody></table>";
         html += "</td></tr>";
         html += "</tbody></table>";
@@ -863,6 +1001,20 @@ class PersonalPetStatus {
                 $("#" + buttonId).prop("disabled", true);
                 $("#" + buttonId).css("color", "grey");
             }
+
+            // 设置宠物献祭按钮的状态
+            if (pet.level !== 1) {
+                let buttonId = "pet_" + pet.index + "_consecrate";
+                $("#" + buttonId).prop("disabled", true);
+                $("#" + buttonId).css("color", "grey");
+            }
+
+            // 设置宠物发送按钮的状态
+            if (pet.using) {
+                let buttonId = "pet_" + pet.index + "_send";
+                $("#" + buttonId).prop("disabled", true);
+                $("#" + buttonId).css("color", "grey");
+            }
         }
 
         // 设置技能学习位的按钮样式
@@ -921,10 +1073,26 @@ class PersonalPetStatus {
             if (!$("#" + buttonId).prop("disabled")) {
                 this.#bindPetLeagueClick(buttonId, pet);
             }
+
+            buttonId = "pet_" + pet.index + "_consecrate";
+            if (!$("#" + buttonId).prop("disabled")) {
+                this.#bindPetConsecrateClick(buttonId, pet);
+            }
+
+            buttonId = "pet_" + pet.index + "_send";
+            if (!$("#" + buttonId).prop("disabled")) {
+                this.#bindSendPetClickEventHandler(buttonId, pet);
+            }
         }
 
         // 设置宠物技能学习位的按钮行为
         this.#bindPetStudyClick();
+
+        // 设置查找发送对象按钮行为
+        this.#bindSearchReceiverClickEventHandler();
+
+        // 设置更新按钮行为
+        this.#bindRefreshClickEventHandler();
     }
 
     #bindPetUninstallClick(buttonId) {
@@ -1137,6 +1305,53 @@ class PersonalPetStatus {
         });
     }
 
+    #bindPetConsecrateClick(buttonId, pet) {
+        const instance = this;
+        $("#" + buttonId).click(function () {
+            if (!confirm("你确认要献祭宠物" + pet.name + "吗？")) {
+                return;
+            }
+            const credential = page.generateCredential();
+            bank.withdrawFromTownBank(credential, 1000)
+                .then(() => {
+                    service.consecratePet(credential, pet.index)
+                        .then(() => {
+                            bank.depositIntoTownBank(credential, undefined)
+                                .then(() => {
+                                    instance.#finishWithRefresh(credential);
+                                });
+                        });
+                });
+        });
+    }
+
+    #bindSendPetClickEventHandler(buttonId, pet) {
+        const instance = this;
+        $("#" + buttonId).click(function () {
+            const receiver = $("#receiverCandidates").val();
+            if (receiver === undefined || receiver === "") {
+                message.writeMessageBoard("没有选择发送对象");
+                return;
+            }
+            const credential = page.generateCredential();
+            bank.withdrawFromTownBank(credential, 10)
+                .then(() => {
+                    const request = credential.asRequest();
+                    request["mode"] = "PET_SEND2";
+                    request["eid"] = receiver;
+                    request["select"] = pet.index;
+                    network.sendPostRequest("town.cgi", request, function (html) {
+                        const successMessage = $(html).find("h2:first").text();
+                        message.writeMessageBoard(successMessage);
+                        bank.depositIntoTownBank(credential, undefined)
+                            .then(() => {
+                                instance.#finishWithRefresh(credential);
+                            });
+                    });
+                });
+        });
+    }
+
     #bindPetStudyClick() {
         const instance = this;
         $("#pet_spell_study_1").click(function () {
@@ -1206,6 +1421,31 @@ class PersonalPetStatus {
                 message.writeMessageBoard(result);
                 instance.#finishWithRefresh(credential);
             });
+        });
+    }
+
+    #bindSearchReceiverClickEventHandler() {
+        $("#searchReceiverButton").click(function () {
+            const search = $("#receiverName").val();
+            if (search.trim() === "") {
+                return;
+            }
+            const credential = page.generateCredential();
+            const request = credential.asRequest();
+            request["mode"] = "PET_SEND";
+            request["serch"] = escape(search.trim());
+            network.sendPostRequest("town.cgi", request, function (html) {
+                const optionHTML = $(html).find("select[name='eid']").html();
+                $("#receiverCandidates").html(optionHTML);
+            });
+        });
+    }
+
+    #bindRefreshClickEventHandler() {
+        const instance = this;
+        $("#refreshButton").click(function () {
+            const credential = page.generateCredential();
+            instance.#finishWithRefresh(credential);
         });
     }
 
