@@ -4,6 +4,7 @@
  * ============================================================================
  */
 
+import * as bank from "../bank";
 import * as network from "../network";
 
 import * as message from "../common/commons_message";
@@ -220,6 +221,7 @@ function doBind(itemList) {
     __bindGoldenCageButton(itemList.goldenCage);
     __bindPutAllIntoBagButton(itemList);
     __bindSearchButton();
+    __bindSendButton();
 }
 
 function doRefresh(credential) {
@@ -365,5 +367,38 @@ function __bindSearchButton() {
             const optionHTML = $(html).find("select[name='eid']").html();
             $("#receiverSelect").html(optionHTML);
         });
+    });
+}
+
+function __bindSendButton() {
+    $("#sendButton").click(function () {
+        const receiver = $("#receiverSelect").val();
+        if (receiver === undefined || receiver === "") {
+            return;
+        }
+        const credential = page.generateCredential();
+        const request = credential.asRequest();
+        request["eid"] = receiver;
+        let checkedCount = 0;
+        $("input:checkbox:checked").each(function (_idx, checkbox) {
+            checkedCount++;
+            const name = $(checkbox).attr("name");
+            request[name] = $(checkbox).val();
+        });
+        if (checkedCount === 0) {
+            message.publishMessageBoard("你没有选择要发送的装备。");
+            return;
+        }
+        request["mode"] = "ITEM_SEND2";
+        bank.withdrawFromTownBank(credential, 10)
+            .then(() => {
+                network.sendPostRequest("town.cgi", request, function (html) {
+                    message.processResponseHTML(html);
+                    bank.depositIntoTownBank(credential, undefined)
+                        .then(() => {
+                            doRefresh(credential);
+                        });
+                });
+            });
     });
 }
