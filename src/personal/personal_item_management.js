@@ -187,6 +187,9 @@ function doRender(itemList) {
     html += "          </td>"
     html += "       </tr>";
     html += "       <tr>";
+    html += "           <td style='background-color:#E8E8D0;text-align:center' colspan='19'>";
+    html += "           <input type='button' class='ItemUIButton' id='refreshButton' value='刷新装备管理界面'>";
+    html += "           </td>"
     html += "       </tr>";
     html += "   </tbody>";
     html += "</table>";
@@ -222,6 +225,7 @@ function doBind(itemList) {
     __bindPutAllIntoBagButton(itemList);
     __bindSearchButton();
     __bindSendButton();
+    __bindRefreshButton();
 }
 
 function doRefresh(credential) {
@@ -400,5 +404,12 @@ function __bindSendButton() {
                         });
                 });
             });
+    });
+}
+
+function __bindRefreshButton() {
+    $("#refreshButton").click(function () {
+        const credential = page.generateCredential();
+        doRefresh(credential);
     });
 }
