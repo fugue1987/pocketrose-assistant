@@ -85,6 +85,77 @@ function renderPersonalItemManagement(itemList) {
     html += "           <th style='background-color:#EFE0C0'>属性</th>";
     html += "           <th style='background-color:#EFE0C0'>出售</th>";
     html += "       </tr>";
+    for (const item of itemList.asList()) {
+        if (item.isTreasureBag || item.isGoldenCage) {
+            // 百宝袋和黄金笼子不再显示在页面上
+            continue;
+        }
+        html += "<tr>";
+        html += "    <td style='background-color:#E8E8D0'>";
+        html += "    " + item.checkboxHTML;
+        html += "    </td>";
+        html += "    <td style='background-color:#EFE0C0'>";
+        html += "    " + item.usingHTML;
+        html += "    </td>";
+        html += "    <td style='background-color:#E0D0B0'>";
+        html += "    " + item.nameHTML;
+        html += "    </td>";
+        html += "    <td style='background-color:#EFE0C0'>";
+        html += "    " + item.category;
+        html += "    </td>";
+        html += "    <td style='background-color:#E0D0B0'>";
+        html += "    " + item.power;
+        html += "    </td>";
+        html += "    <td style='background-color:#EFE0C0'>";
+        html += "    " + item.weight;
+        html += "    </td>";
+        html += "    <td style='background-color:#EFE0C0'>";
+        html += "    " + item.endure;
+        html += "    </td>";
+        html += "    <td style='background-color:#E0D0B0'>";
+        html += "    " + (item.requiredCareer === "所有职业" ? "-" : item.requiredCareer);
+        html += "    </td>";
+        html += "    <td style='background-color:#E0D0B0'>";
+        html += "    " + (item.requiredAttack === 0 ? "-" : item.requiredAttack);
+        html += "    </td>";
+        html += "    <td style='background-color:#E0D0B0'>";
+        html += "    " + (item.requiredDefense === 0 ? "-" : item.requiredDefense);
+        html += "    </td>";
+        html += "    <td style='background-color:#E0D0B0'>";
+        html += "    " + (item.requiredSpecialAttack === 0 ? "-" : item.requiredSpecialAttack);
+        html += "    </td>";
+        html += "    <td style='background-color:#E0D0B0'>";
+        html += "    " + (item.requiredSpecialDefense === 0 ? "-" : item.requiredSpecialDefense);
+        html += "    </td>";
+        html += "    <td style='background-color:#E0D0B0'>";
+        html += "    " + (item.requiredSpeed === 0 ? "-" : item.requiredSpeed);
+        html += "    </td>";
+        html += "    <td style='background-color:#E0D0B0'>";
+        html += "    " + (item.isItem ? "-" : item.additionalPower);
+        html += "    </td>";
+        html += "    <td style='background-color:#E0D0B0'>";
+        html += "    " + (item.isItem ? "-" : item.additionalWeight);
+        html += "    </td>";
+        html += "    <td style='background-color:#E0D0B0'>";
+        html += "    " + (item.isItem ? "-" : item.additionalLuck);
+        html += "    </td>";
+        html += "    <td style='background-color:#E0D0B0'>";
+        html += "    " + item.experienceHTML;
+        html += "    </td>";
+        html += "    <td style='background-color:#EFE0C0'>";
+        html += "    " + (item.attribute === "无" ? "-" : item.attribute);
+        html += "    </td>";
+        html += "    <td style='background-color:#EFE0C0'>";
+        html += "    ";
+        html += "    </td>";
+        html += "</tr>";
+    }
+    html += "       <tr>";
+    html += "       </tr>";
+    html += "       <tr>";
+    html += "       </tr>";
+    html += "       <tr>";
+    html += "       </tr>";
     html += "   </tbody>";
     html += "</table>";
 

@@ -13,6 +13,7 @@
  */
 
 import * as util from "../util";
+import * as page from "../common/common_page";
 
 // 口袋所有的装备都被分为以下四类：
 
@@ -48,6 +49,31 @@ const PROHIBIT_SELLING_ITEM_LIST = [
     "神冠 灵通",
     "龙",
     "玉佩"
+];
+
+/**
+ * 不计算经验的装备
+ * @type {*[]}
+ */
+const NO_EXPERIENCE_ITEM_LIST = [
+    "大师球",
+    "宗师球",
+    "超力怪兽球",
+    "宠物蛋"
+];
+
+/**
+ * 属性重铠
+ * @type {string[]}
+ */
+const ATTRIBUTE_HEAVY_ARMOR_ITEM_LIST = [
+    "千幻碧水猿洛克奇斯",
+    "地纹玄甲龟斯特奥特斯",
+    "幽冥黑鳞蟒罗尼科斯",
+    "火睛混沌兽哈贝达",
+    "羽翅圣光虎阿基勒斯",
+    "金翅追日鹰庞塔雷斯",
+    "风翼三足凤纳托利斯"
 ];
 
 /**
@@ -111,6 +137,76 @@ export class PocketItem {
 
     get isItem() {
         return this.category === CATEGORY_ITEM;
+    }
+
+    get isTreasureBag() {
+        return this.isItem && this.name === "百宝袋";
+    }
+
+    get isGoldenCage() {
+        return this.isItem && this.name === "黄金笼子";
+    }
+
+    get fullExperienceRatio() {
+        if (this.isItem) {
+            return -1;
+        }
+        if (NO_EXPERIENCE_ITEM_LIST.includes(this.name)) {
+            return -1;
+        }
+        let maxExperience = 0;
+        if (isAttributeHeavyArmor(this.name)) {
+            // 属性重铠满级经验为76000
+            maxExperience = 76000;
+        } else if (this.power !== 0) {
+            const powerForUse = Math.abs(this.power);
+            maxExperience = Math.floor(powerForUse * 0.2) * 1000;
+        }
+        if (maxExperience === 0) {
+            return -1;
+        }
+        if (this.experience >= maxExperience) {
+            return 1;
+        }
+        if (this.experience === 0) {
+            return 0;
+        }
+        return this.experience / maxExperience;
+    }
+
+    get checkboxHTML() {
+        if (this.selectable) {
+            return "<input type='checkbox' name='item" + this.index + "' value='" + this.index + "'>";
+        } else {
+            return "";
+        }
+    }
+
+    get usingHTML() {
+        if (!this.using) {
+            return "";
+        }
+        const ration = this.fullExperienceRatio;
+        if (ration === 1) {
+            return "<span title='装备中' style='color:red'>★</span>";
+        } else {
+            return "<span title='装备中'>★</span>";
+        }
+    }
+
+    get experienceHTML() {
+        if (this.isItem) {
+            return "-";
+        }
+        const ratio = this.fullExperienceRatio;
+        if (ratio < 0) {
+            return "-";
+        }
+        if (ratio === 1) {
+            return "<span style='color:red' title='" + this.experience + "'>MAX</span>";
+        }
+        const progressBar = page.generateProgressBarHTML(ratio);
+        return "<span title='" + this.experience + " (" + (ratio * 100).toFixed(2) + "%)'>" + progressBar + "</span>"
     }
 }
 
@@ -406,4 +502,14 @@ export function parseItemStoreItemList(html) {
         itemList.push(item);
     });
     return itemList;
+}
+
+
+function isAttributeHeavyArmor(name) {
+    for (const it of ATTRIBUTE_HEAVY_ARMOR_ITEM_LIST) {
+        if (name.endsWith(it)) {
+            return true;
+        }
+    }
+    return false;
 }

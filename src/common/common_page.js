@@ -4,8 +4,8 @@
  * ============================================================================
  */
 
-import * as constant from "./common_constant";
 import * as util from "../util";
+import * as constant from "./common_constant";
 
 /**
  * Generate Credential object from current HTML form.
@@ -49,4 +49,17 @@ export function findFirstUserImageHTML(html) {
     } else {
         return "<img src='" + userImage + "' width='64' height='64' id='userImage' alt=''>";
     }
+}
+
+export function generateProgressBarHTML(ratio) {
+    if (ratio === 0) {
+        return "<img src='" + constant.DOMAIN + "/image/bg/bar2.gif'  height='7' width='50' alt=''>";
+    }
+    if (ratio === 1) {
+        return "<img src='" + constant.DOMAIN + "/image/bg/bar1.gif'  height='7' width='50' alt=''>";
+    }
+    const w1 = Math.min(49, Math.ceil(50 * ratio));
+    const w2 = 50 - w1;
+    return "<img src='" + constant.DOMAIN + "/image/bg/bar1.gif'  height='7' width='" + w1 + "' alt=''>" +
+        "<img src='" + constant.DOMAIN + "/image/bg/bar2.gif'  height='7' width='" + w2 + "' alt=''>";
 }
