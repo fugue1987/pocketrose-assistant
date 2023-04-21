@@ -6,7 +6,9 @@
 
 import * as bank from "../bank";
 import * as network from "../network";
+import * as user from "../user";
 
+import * as constant from "../common/common_constant";
 import * as message from "../common/commons_message";
 import * as page from "../common/common_page";
 
@@ -58,11 +60,26 @@ function doProcess() {
         $("#edenFormPayload").html("<input type='hidden' name='mode' value='STATUS'>");
         $("#edenSubmit").trigger("click");
     });
+    // 创建页尾消息
+    message.createFooterMessage(constant.getNPCImageHTML("饭饭"));
+    message.writeFooterMessage("我就要一键祭奠，就要，就要！");
+    message.writeFooterMessage("<input type='button' id='consecrateButton' style='color:darkred' value='祭奠选择的装备'>");
     // 删除最后一个google-analytics的脚本
     $("script:last").remove();
 
     // 渲染页面并且绑定相应的事件处理
     doRender(itemList);
+
+    // 绑定祭奠按钮事件
+    __bindConsecrateButton();
+
+    // 根据主页面获取的是否可以祭奠的状态更新祭奠按钮
+    user.loadRoleStatus(page.generateCredential())
+        .then(status => {
+            if (status.canConsecrate) {
+                $("#consecrateButton").prop("disabled", false);
+            }
+        });
 }
 
 function doRender(itemList) {
@@ -474,5 +491,54 @@ function __bindSellButton(index) {
                     });
             });
         });
+    });
+}
+
+function __bindConsecrateButton() {
+    $("#consecrateButton").click(function () {
+        const candidates = {};
+        let usingCount = 0;
+        const itemNames = [];
+        $("input:checkbox:checked").each(function (_idx, checkbox) {
+            if ($(checkbox).parent().next().text().trim() === "★") {
+                usingCount++;
+            }
+            itemNames.push($(checkbox).parent().next().next().text().trim());
+            const name = $(checkbox).attr("name");
+            candidates[name] = $(checkbox).val();
+        });
+        if (itemNames.length === 0) {
+            alert("我以为你会知道，至少也要选择一件想要祭奠的装备。");
+            return;
+        }
+        if (usingCount > 0) {
+            alert("对不起，出于安全原因，正在使用中的装备不能祭奠！");
+            return;
+        }
+        const ret = confirm("请务必确认你将要祭奠的这些装备：" + itemNames.join());
+        if (!ret) {
+            return;
+        }
+        const credential = page.generateCredential();
+        user.loadRole(credential)
+            .then(role => {
+                const cash = role.cash;
+                const amount = bank.calculateCashDifferenceAmount(cash, 1000000);
+                bank.withdrawFromTownBank(page.generateCredential(), amount)
+                    .then(() => {
+                        let payload = "";
+                        const keys = Object.keys(candidates);
+                        for (let i = 0; i < keys.length; i++) {
+                            const key = keys[i];
+                            const value = candidates[key];
+                            payload += "<input type='hidden' name='" + key + "' value='" + value + "'>";
+                        }
+                        payload += "<input type='hidden' name='chara' value='1'>";
+                        payload += "<input type='hidden' name='mode' value='CONSECRATE'>";
+                        $("#edenFormPayload").html(payload);
+                        $("#edenForm").attr("action", "mydata.cgi");
+                        $("#edenSubmit").trigger("click");
+                    });
+            });
     });
 }

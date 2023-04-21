@@ -51,3 +51,35 @@ export function processResponseHTML(html) {
         publishMessageBoard($(successMessage).text());
     }
 }
+
+export function createFooterMessage(imageHTML) {
+    if (imageHTML === undefined) {
+        imageHTML = constant.getNPCImageHTML("老板娘");
+    }
+    const messageBoardHTML = "" +
+        "<table style='background-color:#888888;width:100%'>" +
+        "    <tbody>" +
+        "    <tr>" +
+        "        <td style='background-color:#F8F0E0'>" +
+        "            <table style='background-color:#888888;border-width:0'>" +
+        "                <tbody>" +
+        "                <tr>" +
+        "                    <td style='background-color:#F8F0E0'>" + imageHTML + "</td>" +
+        "                    <td style='background-color:#000000;color:white;width:100%' id='footerMessage'></td>" +
+        "                </tr>" +
+        "                </tbody>" +
+        "            </table>" +
+        "        </td>" +
+        "    </tr>" +
+        "    </tbody>" +
+        "</table>";
+    $("div:last").prepend($(messageBoardHTML));
+}
+
+export function writeFooterMessage(message) {
+    if ($("#footerMessage").length > 0) {
+        let html = $("#footerMessage").html();
+        html += message;
+        $("#footerMessage").html(html);
+    }
+}
