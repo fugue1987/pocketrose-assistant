@@ -48,7 +48,8 @@ const PROHIBIT_SELLING_ITEM_LIST = [
     "魔盔 虚无",
     "神冠 灵通",
     "龙",
-    "玉佩"
+    "玉佩",
+    "宠物蛋"
 ];
 
 /**

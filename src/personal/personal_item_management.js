@@ -178,6 +178,14 @@ function doRender(itemList) {
     html += "           </td>";
     html += "       </tr>";
     html += "       <tr>";
+    html += "          <td style='background-color:#E8E8D0;text-align:right' colspan='19'>";
+    html += "              <input type='text' id='receiver' size='15' maxlength='20'>";
+    html += "              <input type='button' class='ItemUIButton' id='searchButton' value='找人'>";
+    html += "              <select id='receiverSelect'><option value=''>选择发送对象</select>";
+    html += "              <input type='button' class='ItemUIButton' id='sendButton' value='发送'>";
+    html += "          </td>"
+    html += "       </tr>";
+    html += "       <tr>";
     html += "       </tr>";
     html += "   </tbody>";
     html += "</table>";
@@ -211,6 +219,7 @@ function doBind(itemList) {
     __bindTreasureBagButton(itemList.treasureBag);
     __bindGoldenCageButton(itemList.goldenCage);
     __bindPutAllIntoBagButton(itemList);
+    __bindSearchButton();
 }
 
 function doRefresh(credential) {
@@ -337,6 +346,24 @@ function __bindPutAllIntoBagButton(itemList) {
         network.sendPostRequest("mydata.cgi", request, function (html) {
             message.processResponseHTML(html);
             doRefresh(credential);
+        });
+    });
+}
+
+function __bindSearchButton() {
+    $("#searchButton").click(function () {
+        let receiver = $("#receiver").val();
+        if (receiver === undefined | receiver.trim() === "") {
+            return;
+        }
+        receiver = escape(receiver.trim());
+        const credential = page.generateCredential();
+        const request = credential.asRequest();
+        request["serch"] = receiver;
+        request["mode"] = "ITEM_SEND";
+        network.sendPostRequest("town.cgi", request, function (html) {
+            const optionHTML = $(html).find("select[name='eid']").html();
+            $("#receiverSelect").html(optionHTML);
         });
     });
 }
