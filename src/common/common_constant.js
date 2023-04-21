@@ -2,6 +2,7 @@ export const DOMAIN = "https://pocketrose.itsns.net.cn/pocketrose";
 
 const POCKET_NPC_IMAGES = {
     "老板娘": DOMAIN + "/image/etc/30.gif",
+    "骷髅": DOMAIN + "/image/head/1160.gif",
     "饭饭": DOMAIN + "/image/head/3139.gif"
 };
 

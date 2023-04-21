@@ -17,8 +17,9 @@ import {
     __cookie_getRepairItemThreshold,
     __cookie_getReturnButtonText
 } from "./option";
-import * as page from "./page";
 import * as util from "./util";
+import * as common_constant from "./common/common_constant";
+import * as common_message from "./common/common_message";
 
 export class BattleRequestInterceptor {
 
@@ -58,11 +59,13 @@ export class BattleRequestInterceptor {
             }
         });
         if (candidates.length > 0) {
-            const npc = page.createFooterNPC("Hind");
+            const imageHTML = common_constant.getNPCImageHTML("骷髅");
+            common_message.createFooterMessage(imageHTML);
+
             for (const it of candidates) {
-                npc.message(it + "<br>");
+                common_message.writeFooterMessage(it + "<br>");
             }
-            npc.message("哎呦，你出货了，赶紧收藏好的，不然Hind要来a了......");
+            common_message.writeFooterMessage("哎呦，你出货了，赶紧收藏好的，不然Hind要来a了......");
         }
     }
 }
