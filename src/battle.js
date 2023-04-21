@@ -63,7 +63,7 @@ export class BattleRequestInterceptor {
             common_message.createFooterMessage(imageHTML);
 
             for (const it of candidates) {
-                common_message.writeFooterMessage(it + "<br>");
+                common_message.writeFooterMessage("<b style='font-size:150%'>" + it + "</b><br>");
             }
             common_message.writeFooterMessage("哎呦，你出货了，赶紧收藏好的，不然Hind要来a了......");
         }
