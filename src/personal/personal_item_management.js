@@ -496,7 +496,7 @@ function __bindSellButton(index) {
 
 function __bindConsecrateButton() {
     $("#consecrateButton").click(function () {
-        const candidates = {};
+        const consecrateCandidates = [];
         let usingCount = 0;
         const itemNames = [];
         $("input:checkbox:checked").each(function (_idx, checkbox) {
@@ -504,8 +504,7 @@ function __bindConsecrateButton() {
                 usingCount++;
             }
             itemNames.push($(checkbox).parent().next().next().text().trim());
-            const name = $(checkbox).attr("name");
-            candidates[name] = $(checkbox).val();
+            consecrateCandidates.push(parseInt($(checkbox).val()));
         });
         if (itemNames.length === 0) {
             alert("我以为你会知道，至少也要选择一件想要祭奠的装备。");
@@ -527,12 +526,9 @@ function __bindConsecrateButton() {
                 bank.withdrawFromTownBank(page.generateCredential(), amount)
                     .then(() => {
                         let payload = "";
-                        const keys = Object.keys(candidates);
-                        for (let i = 0; i < keys.length; i++) {
-                            const key = keys[i];
-                            const value = candidates[key];
-                            payload += "<input type='hidden' name='" + key + "' value='" + value + "'>";
-                        }
+                        consecrateCandidates.forEach(it => {
+                            payload += "<input type='hidden' name='item" + it + "' value='" + it + "'>";
+                        });
                         payload += "<input type='hidden' name='chara' value='1'>";
                         payload += "<input type='hidden' name='mode' value='CONSECRATE'>";
                         $("#edenFormPayload").html(payload);
