@@ -27,10 +27,12 @@ export class TownDashboardProcessor {
         if (option.__cookie_getEnableNewItemUI()) {
             $("option[value='USE_ITEM']").text("装备管理(v2.0)");
             $("option[value='USE_ITEM']").css("background-color", "yellow");
+            $("option[value='ITEM_SEND']").remove();
         }
         if (option.__cookie_getEnableNewPetUI()) {
             $("option[value='PETSTATUS']").text("宠物管理(v2.0)");
             $("option[value='PETSTATUS']").css("background-color", "yellow");
+            $("option[value='PET_SEND']").remove();
         }
         $("option[value='CHANGEMAP']").text("冒险家公会");
 
