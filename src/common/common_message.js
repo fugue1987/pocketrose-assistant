@@ -64,8 +64,8 @@ export function createFooterMessage(imageHTML) {
         "            <table style='background-color:#888888;border-width:0'>" +
         "                <tbody>" +
         "                <tr>" +
-        "                    <td style='background-color:#F8F0E0'>" + imageHTML + "</td>" +
-        "                    <td style='background-color:#000000;color:white;width:100%' id='footerMessage'></td>" +
+        "                    <td style='background-color:#E8E8D0'>" + imageHTML + "</td>" +
+        "                    <td style='background-color:#E0D0B0;width:100%' id='footerMessage'></td>" +
         "                </tr>" +
         "                </tbody>" +
         "            </table>" +
