@@ -55,13 +55,13 @@ import {
     __cookie_getReturnButtonText
 } from "./option";
 import {TownRequestInterceptor} from "./town";
-import {StatusRequestInterceptor} from "./status";
 import {WildRequestInterceptor} from "./wild";
+import {PersonalRequestInterceptor} from "./personal/personal";
 
 const CGI_MAPPING = {
     "/battle.cgi": new battle.BattleRequestInterceptor(),
-    "/mydata.cgi": new StatusRequestInterceptor(),
-    "/status.cgi": new StatusRequestInterceptor(),
+    "/mydata.cgi": new PersonalRequestInterceptor(),
+    "/status.cgi": new PersonalRequestInterceptor(),
     "/town.cgi": new TownRequestInterceptor(),
     "/castlestatus.cgi": new castle.CastleRequestInterceptor(),
     "/castle.cgi": new castle.CastleRequestInterceptor(),

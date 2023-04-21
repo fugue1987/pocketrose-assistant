@@ -1,14 +1,14 @@
-import * as dashboard from "./dashboard";
-import {WildDashboardProcessor} from "./dashboard";
-import * as option from "./option";
-import * as personal_golden_cage from "./personal/personal_golden_cage";
-import * as personal_item_management from "./personal/personal_item_management";
-import * as personal_pet_management from "./personal/personal_pet_management";
-import * as personal_salary_paid from "./personal/personal_salary_paid";
-import * as personal_status from "./personal/personal_status";
-import * as personal_treasure_bag from "./personal/personal_treasure_bag";
+import * as dashboard from "../dashboard";
+import {WildDashboardProcessor} from "../dashboard";
+import * as personal_status from "./personal_status";
+import * as personal_salary_paid from "./personal_salary_paid";
+import * as option from "../option";
+import * as personal_item_management from "./personal_item_management";
+import * as personal_treasure_bag from "./personal_treasure_bag";
+import * as personal_golden_cage from "./personal_golden_cage";
+import * as personal_pet_management from "./personal_pet_management";
 
-export class StatusRequestInterceptor {
+export class PersonalRequestInterceptor {
 
     constructor() {
     }
