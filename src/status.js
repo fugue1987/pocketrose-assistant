@@ -12,6 +12,7 @@ import * as option from "./option";
 import * as service from "./service";
 import * as personal_golden_cage from "./personal/personal_golden_cage";
 import * as personal_item_management from "./personal/personal_item_management";
+import * as personal_pet_management from "./personal/personal_pet_management";
 import * as personal_salary_paid from "./personal/personal_salary_paid";
 import * as personal_status from "./personal/personal_status";
 import * as personal_treasure_bag from "./personal/personal_treasure_bag";
@@ -53,7 +54,7 @@ export class StatusRequestInterceptor {
             } else if (text.includes("宠物现在升级时学习新技能情况一览")) {
                 // 宠物状态
                 if (option.__cookie_getEnableNewPetUI()) {
-                    new PersonalPetStatus().process();
+                    new personal_pet_management.PersonalPetManagement().process();
                 }
             }
         }

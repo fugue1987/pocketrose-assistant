@@ -63,3 +63,13 @@ export function generateProgressBarHTML(ratio) {
     return "<img src='" + constant.DOMAIN + "/image/bg/bar1.gif'  height='7' width='" + w1 + "' alt=''>" +
         "<img src='" + constant.DOMAIN + "/image/bg/bar2.gif'  height='7' width='" + w2 + "' alt=''>";
 }
+
+export function isColorBlue(id) {
+    const color = $("#" + id).css("color");
+    return color.toString() === "rgb(0, 0, 255)"
+}
+
+export function isColorGrey(id) {
+    const color = $("#" + id).css("color");
+    return color.toString() === "rgb(128, 128, 128)"
+}

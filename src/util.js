@@ -6,6 +6,12 @@
  * ============================================================================
  */
 
+/**
+ * Substring before specified search string.
+ * @param text
+ * @param searchString
+ * @returns {string}
+ */
 export function substringBefore(text, searchString) {
     let idx = text.indexOf(searchString);
     if (idx === -1) {

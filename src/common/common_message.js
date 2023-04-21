@@ -2,7 +2,7 @@ import * as constant from "../common/common_constant";
 
 export function createMessageBoard(imageHTML, containerId) {
     if (imageHTML === undefined) {
-        imageHTML = constant.getNPCImageHTML("老板娘");
+        imageHTML = constant.getNPCImageHTML("武器屋老板娘");
     }
     const messageBoardHTML = "" +
         "<table style='background-color:#888888;width:100%'>" +
@@ -54,7 +54,7 @@ export function processResponseHTML(html) {
 
 export function createFooterMessage(imageHTML) {
     if (imageHTML === undefined) {
-        imageHTML = constant.getNPCImageHTML("老板娘");
+        imageHTML = constant.getNPCImageHTML("客栈老板娘");
     }
     const messageBoardHTML = "" +
         "<table style='background-color:#888888;width:100%'>" +
