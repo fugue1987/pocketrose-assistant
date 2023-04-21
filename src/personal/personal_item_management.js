@@ -222,15 +222,7 @@ function __bindUseButton() {
         request["chara"] = "1";
         request["mode"] = "USE";
         network.sendPostRequest("mydata.cgi", request, function (html) {
-            if ($(html).text().includes("ERROR !")) {
-                const errorMessage = $(html).find("font b").text();
-                message.publishMessageBoard("<b style='color:red'>" + errorMessage + "</b>");
-            } else {
-                let successMessage = $(html).find("h2:first").html();
-                successMessage = successMessage.replace("<br>", "");
-                successMessage = "<td>" + successMessage + "</td>";
-                message.publishMessageBoard($(successMessage).text());
-            }
+            message.processResponseHTML(html);
             doRefresh(credential);
         });
     });

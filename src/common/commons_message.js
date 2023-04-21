@@ -39,3 +39,15 @@ export function publishMessageBoard(message) {
         $("#messageBoard").html(html);
     }
 }
+
+export function processResponseHTML(html) {
+    if ($(html).text().includes("ERROR !")) {
+        const errorMessage = $(html).find("font b").text();
+        publishMessageBoard("<b style='color:red'>" + errorMessage + "</b>");
+    } else {
+        let successMessage = $(html).find("h2:first").html();
+        successMessage = successMessage.replace("<br>", "");
+        successMessage = "<td>" + successMessage + "</td>";
+        publishMessageBoard($(successMessage).text());
+    }
+}
