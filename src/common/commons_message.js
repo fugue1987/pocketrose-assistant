@@ -23,3 +23,19 @@ export function createMessageBoard(imageHTML, containerId) {
         "</table>";
     $("#" + containerId).html(messageBoardHTML);
 }
+
+export function initializeMessageBoard(message) {
+    if ($("#messageBoard").length > 0) {
+        $("#messageBoard").html(message);
+    }
+}
+
+export function publishMessageBoard(message) {
+    if ($("#messageBoard").length > 0) {
+        let html = $("#messageBoard").html();
+        const now = new Date();
+        const timeHtml = "<span style='color:#ADFF2F'>(" + now.toLocaleString() + ")</span>";
+        html = html + "<li>" + timeHtml + " " + message + "</li>";
+        $("#messageBoard").html(html);
+    }
+}

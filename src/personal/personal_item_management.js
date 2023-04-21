@@ -4,15 +4,18 @@
  * ============================================================================
  */
 
+import * as network from "../network";
+
 import * as message from "../common/commons_message";
 import * as page from "../common/common_page";
+
 import * as item from "../pocket/pocket_item";
 
 export function processPersonalItemManagement() {
-    doProcessPersonalItemManagement();
+    doProcess();
 }
 
-function doProcessPersonalItemManagement() {
+function doProcess() {
     const credential = page.generateCredential();
     const pageHTML = page.currentPageHTML();
     // 首先从老页面上解析所有的装备信息
@@ -23,7 +26,7 @@ function doProcessPersonalItemManagement() {
     $("table:first").removeAttr("height");
     $("table:first td:first").css("text-align", "center");
     $("table:first td:first").css("font-size", "150%");
-    $("table:first td:first").css("font-weight", "700");
+    $("table:first td:first").css("font-weight", "bold");
     $("table:first td:first").css("color", "navy");
     $("table:first td:first").html("＜＜　装 备 管 理 (v2.0)　＞＞");
     $("table:first tr:first").after($("<tr><td style='background-color:#E8E8D0' id='messageBoardContainer'></td></tr>"));
@@ -57,10 +60,10 @@ function doProcessPersonalItemManagement() {
     $("script:last").remove();
 
     // 渲染页面并且绑定相应的事件处理
-    renderPersonalItemManagement(itemList);
+    doRender(itemList);
 }
 
-function renderPersonalItemManagement(itemList) {
+function doRender(itemList) {
     let html = "";
     html += "<table style='background-color:#888888;width:100%;text-align:center'>";
     html += "   <tbody style='background-color:#F8F0E0'>";
@@ -151,14 +154,84 @@ function renderPersonalItemManagement(itemList) {
         html += "</tr>";
     }
     html += "       <tr>";
+    html += "           <td style='background-color:#E8E8D0;text-align:left;font-weight:bold' colspan='19'>";
+    html += "               <span style='color:navy'>目前剩余空位数：</span><span style='color:red'>" + (20 - itemList.asList().length) + "</span>";
+    html += "           </td>";
     html += "       </tr>";
     html += "       <tr>";
+    html += "           <td style='background-color:#E8E8D0;text-align:center' colspan='19'>";
+    html += "               <table style='background-color:#E8E8D0;border-width:0;width:100%'>";
+    html += "                   <tbody style='background-color:#E8E8D0'>";
+    html += "                       <tr style='background-color:#E8E8D0'>";
+    html += "                           <td style='text-align:left'>";
+    html += "                           " + "<input type='button' class='ItemUIButton' id='useButton' value='使用'>";
+    html += "                           " + "<input type='button' class='ItemUIButton' id='putIntoBagButton' value='入袋'>";
+    html += "                           </td>";
+    html += "                           <td style='text-align:right'>";
+    html += "                           </td>";
+    html += "                       </tr>";
+    html += "                   </tbody>";
+    html += "               </table>";
+    html += "           </td>";
     html += "       </tr>";
     html += "       <tr>";
     html += "       </tr>";
     html += "   </tbody>";
     html += "</table>";
 
+    // 渲染装备管理界面
     $("#ItemUI").html(html);
+
+    // 绑定点击事件
+    doBind(itemList);
 }
 
+function doBind(itemList) {
+    __bindUseButton();
+}
+
+function doRefresh(credential) {
+    const request = credential.asRequest();
+    request["mode"] = "USE_ITEM";
+    network.sendPostRequest("mydata.cgi", request, function (html) {
+        // 从新的界面中重新解析装备状态
+        const itemList = item.parsePersonalItemList(html);
+        // 解除当前所有的按钮
+        $(".ItemUIButton").unbind("click");
+        // 清除PetUI的内容
+        $("#ItemUI").html("");
+        // 使用新的重新渲染ItemUI并绑定新的按钮
+        doRender(itemList);
+    });
+}
+
+function __bindUseButton() {
+    $("#useButton").click(function () {
+        const credential = page.generateCredential();
+        const request = credential.asRequest();
+        let checkedCount = 0;
+        $("input:checkbox:checked").each(function (_idx, checkbox) {
+            checkedCount++;
+            const name = $(checkbox).attr("name");
+            request[name] = $(checkbox).val();
+        });
+        if (checkedCount === 0) {
+            message.publishMessageBoard("没有选择任何装备");
+            return;
+        }
+        request["chara"] = "1";
+        request["mode"] = "USE";
+        network.sendPostRequest("mydata.cgi", request, function (html) {
+            if ($(html).text().includes("ERROR !")) {
+                const errorMessage = $(html).find("font b").text();
+                message.publishMessageBoard("<b style='color:red'>" + errorMessage + "</b>");
+            } else {
+                let successMessage = $(html).find("h2:first").html();
+                successMessage = successMessage.replace("<br>", "");
+                successMessage = "<td>" + successMessage + "</td>";
+                message.publishMessageBoard($(successMessage).text());
+            }
+            doRefresh(credential);
+        });
+    });
+}
