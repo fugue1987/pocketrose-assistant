@@ -6,6 +6,7 @@
 
 import * as constant from "../common/common_constant";
 import * as util from "../util";
+import * as network from "../network";
 
 /**
  * 描述宠物的通用数据结构。
@@ -139,6 +140,25 @@ export function parsePersonalPetStudyStatus(html) {
         }
     });
     return studyStatus;
+}
+
+/**
+ * 加载当前身上宠物列表
+ * @param credential 用户凭证
+ * @returns {Promise<PocketPetList>}
+ */
+export async function loadPersonalPetList(credential) {
+    const doLoadPets = (credential) => {
+        return new Promise((resolve) => {
+            const request = credential.asRequest();
+            request["mode"] = "PETSTATUS";
+            network.sendPostRequest("mydata.cgi", request, function (html) {
+                const petList = parsePersonalPetList(html);
+                resolve(petList);
+            });
+        });
+    };
+    return await doLoadPets(credential);
 }
 
 // ----------------------------------------------------------------------------
