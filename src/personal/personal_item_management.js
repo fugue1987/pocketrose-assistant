@@ -32,6 +32,7 @@ function doProcess() {
     $("table:first td:first").html("＜＜　装 备 管 理 (v2.0)　＞＞");
     $("table:first tr:first").after($("<tr><td style='background-color:#E8E8D0' id='messageBoardContainer'></td></tr>"));
     message.createMessageBoard(userImageHTML, "messageBoardContainer");
+    message.initializeMessageBoard("全新装备管理UI目前持续建设中......");
     // 删除旧的页面组件，并且预留新的刷新的位置
     // 预留了两个div，ItemUI用于页面刷新，Eden隐藏用于放置表单以便可以转移到其他的页面
     $("table:first tr:first").next().next()
@@ -221,6 +222,36 @@ function doRender(itemList) {
     __bindSearchButton();
     __bindSendButton();
     __bindRefreshButton();
+
+    // 渲染并且绑定可以出售的装备
+    const credential = page.generateCredential();
+    const request = credential.asRequest();
+    request["con_str"] = "50";
+    request["mode"] = "ARM_SHOP";
+    network.sendPostRequest("town.cgi", request, function (html) {
+        const sellableItems = [];
+        for (let i = 0; i < item.parseWeaponStoreItemList(html).asList().length; i++) {
+            const it = item.parseWeaponStoreItemList(html).asList()[i];
+            if (!it.selectable) {
+                continue;
+            }
+            if (it.using) {
+                continue;
+            }
+            if (item.isProhibitSellingItem(it.name)) {
+                continue;
+            }
+            sellableItems.push(it);
+        }
+        if (sellableItems.length === 0) {
+            return;
+        }
+        sellableItems.forEach(it => {
+            const button = "<input type='button' class='ItemUIButton' id='sellItem_" + it.index + "' value='售'>";
+            $("#sellButtonContainer_" + it.index).html(button);
+            __bindSellButton(it.index);
+        });
+    });
 }
 
 function doRefresh(credential) {
@@ -354,7 +385,7 @@ function __bindPutAllIntoBagButton(itemList) {
 function __bindSearchButton() {
     $("#searchButton").click(function () {
         let receiver = $("#receiver").val();
-        if (receiver === undefined | receiver.trim() === "") {
+        if (receiver === undefined || receiver.trim() === "") {
             return;
         }
         receiver = escape(receiver.trim());
@@ -406,5 +437,42 @@ function __bindRefreshButton() {
     $("#refreshButton").click(function () {
         const credential = page.generateCredential();
         doRefresh(credential);
+    });
+}
+
+function __bindSellButton(index) {
+    $("#sellItem_" + index).click(function () {
+        let candidate = undefined;
+        $("input:checkbox").each(function (_idx, checkbox) {
+            if (candidate === undefined && index === parseInt($(checkbox).val())) {
+                candidate = $(checkbox).parent().next().next().text();
+            }
+        });
+        if (candidate === undefined) {
+            return;
+        }
+        if (!confirm("确认要出售\"" + candidate.trim() + "\"吗？")) {
+            return;
+        }
+        const credential = page.generateCredential();
+        const request = credential.asRequest();
+        request["con_str"] = "50";
+        request["mode"] = "ARM_SHOP";
+        network.sendPostRequest("town.cgi", request, function (html) {
+            const discount = $(html).find("input:hidden[name='val_off']").val();
+            const request = credential.asRequest();
+            request["mode"] = "SELL";
+            request["select"] = index;
+            if (discount !== undefined) {
+                request["val_off"] = discount;
+            }
+            network.sendPostRequest("town.cgi", request, function (html) {
+                message.processResponseHTML(html);
+                bank.depositIntoTownBank(credential, undefined)
+                    .then(() => {
+                        doRefresh(credential);
+                    });
+            });
+        });
     });
 }
