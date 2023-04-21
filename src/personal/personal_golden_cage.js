@@ -8,14 +8,14 @@ import * as network from "../network";
 
 export class PersonalGoldenCage {
     process() {
+        // 删除最后一个google-analytics的脚本
+        $("script:last").remove();
+
         doProcess();
     }
 }
 
 function doProcess() {
-    // 删除最后一个google-analytics的脚本
-    $("script:last").remove();
-
     $("input:submit[value='从黄金笼子中取出']").attr("id", "takeOutButton");
     $("#takeOutButton").attr("type", "button");
     $("input:submit[value='ＯＫ']").attr("id", "returnButton");

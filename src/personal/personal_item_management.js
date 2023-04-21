@@ -14,14 +14,14 @@ import * as item from "../pocket/pocket_item";
 
 export class PersonalItemManagement {
     process() {
+        // 删除最后一个google-analytics的脚本
+        $("script:last").remove();
+
         doProcess();
     }
 }
 
 function doProcess() {
-    // 删除最后一个google-analytics的脚本
-    $("script:last").remove();
-
     const credential = page.generateCredential();
     const pageHTML = page.currentPageHTML();
     // 首先从老页面上解析所有的装备信息

@@ -8,13 +8,14 @@ import * as util from "../util";
 
 export class PersonalStatus {
     process() {
+        // 删除最后一个google-analytics的脚本
+        $("script:last").remove();
+
         doProcess();
     }
 }
 
 function doProcess() {
-    // 删除最后一个google-analytics的脚本
-    $("script:last").remove();
     // 渲染个人状态
     doRender();
 }

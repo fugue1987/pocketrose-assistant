@@ -10,14 +10,14 @@ import * as network from "../network";
 
 export class PersonalTreasureBag {
     process() {
+        // 删除最后一个google-analytics的脚本
+        $("script:last").remove();
+
         doProcess();
     }
 }
 
 function doProcess() {
-    // 删除最后一个google-analytics的脚本
-    $("script:last").remove();
-
     const pageHTML = page.currentPageHTML();
     const itemList = item.parseTreasureBagItemList(pageHTML);
     const items = itemList.asMap();
