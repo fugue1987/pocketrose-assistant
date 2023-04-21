@@ -42,8 +42,6 @@ export class TownRequestInterceptor {
             new TownItemStore().process();
         } else if (text.includes("＜＜ * 合 成 屋 *＞＞")) {
             new TownGemStore().process();
-        } else if (text.includes("* 运 送 屋 *")) {
-            new TownItemExpress().process();
         } else if (text.includes("* 宠 物 赠 送 屋 *")) {
             new TownPetExpress().process();
         } else if (text.includes("*  藏宝图以旧换新业务 *")) {
@@ -800,105 +798,6 @@ class TownGemStore {
     }
 }
 
-/**
- * 运送屋
- */
-class TownItemExpress {
-
-    constructor() {
-    }
-
-    process() {
-        $("input:submit[value='发送']").attr("id", "sendButton");
-        $("input:submit[value='查找']").attr("id", "searchButton");
-        $("input:submit[value='返回城市']").attr("id", "returnButton");
-        page.findAndCreateMessageBoard("可以送到任何地方啊。");
-        $("td:parent").each(function (_idx, td) {
-            if ($(td).text() === "所持金") {
-                $(td).next().attr("id", "role_cash");
-            }
-        });
-
-        $($("table")[5]).find("tbody:first").attr("id", "current_items_table");
-        $($("table")[5]).find("tr:first").attr("class", "current_items");
-        $($("table")[5]).find("input:checkbox").each(function (_idx, input) {
-            $(input).parent().parent().attr("class", "current_items");
-        });
-
-        const npc = page.createFooterNPC("末末");
-        npc.welcome("我来啦！让我看看你都偷偷给人送些啥。");
-
-        $("#searchButton").attr("type", "button");
-        $("#searchButton").click(function () {
-            $("#searchButton").prop("disabled", true);
-            const search = $("input:text[name='serch']").val();
-            const credential = page.generateCredential();
-            const request = credential.asRequest();
-            request["serch"] = escape(search);
-            request["mode"] = "ITEM_SEND";
-            network.sendPostRequest("town.cgi", request, function (html) {
-                $("select[name='eid']").find("option").each(function (_idx, option) {
-                    $(option).remove();
-                });
-                const selectHtml = $(html).find("select[name='eid']").html();
-                $(selectHtml).appendTo($("select[name='eid']"));
-                $("#searchButton").prop("disabled", false);
-            });
-        });
-
-        $("#sendButton").attr("type", "button");
-        $("#sendButton").attr("value", "自动取钱发送");
-        $("#sendButton").click(function () {
-            $("#sendButton").prop("disabled", true);
-            const cash = page.getRoleCash();
-            const amount = bank.calculateCashDifferenceAmount(cash, 100000);
-            const credential = page.generateCredential();
-            bank.withdrawFromTownBank(credential, amount).then(() => {
-                const request = credential.asRequest();
-                $("input:checkbox:checked").each(function (_idx, checkbox) {
-                    const name = $(checkbox).attr("name");
-                    request[name] = $(checkbox).attr("value");
-                });
-                request["eid"] = $("select[name='eid']").val();
-                request["mode"] = "ITEM_SEND2";
-                network.sendPostRequest("town.cgi", request, function (html) {
-                    const sendItem = $(html).find("h2:first").text();
-                    message.writeMessageBoard(sendItem);
-                    user.loadRole(credential).then(role => {
-                        const town = pocket.findTownByName(role.townName);
-                        const request = credential.asRequest();
-                        request["town"] = town.id;
-                        request["con_str"] = "50";
-                        request["mode"] = "ITEM_SEND";
-                        network.sendPostRequest("town.cgi", request, function (html) {
-                            $(".current_items").remove();
-
-                            const rows = [];
-                            rows.push("<Th bgcolor=#E8E8D0>选择</Th><Th bgcolor=#E0D0B0>装备</Th><Th bgcolor=#E0D0B0>所持物品</Th>" +
-                                "<Th bgcolor=#EFE0C0>种类</Th><Th bgcolor=#E0D0B0>效果</Th><Th bgcolor=#EFE0C0>重量</Th>");
-                            $(html).find("input:checkbox").each(function (_idx, input) {
-                                rows.push($(input).parent().parent().html());
-                            });
-                            for (let i = rows.length - 1; i >= 0; i--) {
-                                const row = "<tr class='current_items'>" + rows[i] + "</tr>";
-                                $(row).prependTo($("#current_items_table"));
-                            }
-
-                            $(html).find("td").each(function (_idx, td) {
-                                if ($(td).text() === "所持金") {
-                                    const cashText = $(td).next().text();
-                                    $("#role_cash").text(cashText);
-                                }
-                            });
-
-                            $("#sendButton").prop("disabled", false);
-                        });
-                    });
-                });
-            });
-        });
-    }
-}
 
 /**
  * 宠物赠送屋
