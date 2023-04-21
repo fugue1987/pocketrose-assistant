@@ -34,17 +34,60 @@ function doProcessPersonalItemManagement() {
         .html("<td style='background-color:#F8F0E0'>" +
             "<div id='ItemUI'></div><div id='Eden' style='display:none'></div>" +
             "</td>");
+    // 在Eden里面添加预制的表单
+    $("#Eden").html("" +
+        "<form action='' method='post' id='edenForm'>" +
+        "        <input type='hidden' name='id' value='" + credential.id + "'>" +
+        "        <input type='hidden' name='pass' value='" + credential.pass + "'>" +
+        "        <div id='edenFormPayload' style='display:none'></div>" +
+        "        <input type='submit' id='edenSubmit'>" +
+        "</form>");
+
     // 将返回按钮调整到页面中间，并且删除不需要的内容
     $("table:first tr:first").next().next().next()
         .html("<td style='background-color:#F8F0E0;text-align:center'>" +
-            "    <form action='status.cgi' method='post'>" +
-            "        <input type='hidden' name='id' value='" + credential.id + "'>" +
-            "        <input type='hidden' name='pass' value='" + credential.pass + "'>" +
-            "        <input type='hidden' name='mode' value='STATUS'>" +
-            "        <input type='submit' id='returnButton' value='返回上个画面'>" +
-            "    </form>" +
+            "    <input type='button' id='returnButton' value='返回上个画面'>" +
             "</td>");
+    $("#returnButton").click(function () {
+        $("#edenForm").attr("action", "status.cgi");
+        $("#edenFormPayload").html("<input type='hidden' name='mode' value='STATUS'>");
+        $("#edenSubmit").trigger("click");
+    });
     // 删除最后一个google-analytics的脚本
     $("script:last").remove();
+
+    // 渲染页面并且绑定相应的事件处理
+    renderPersonalItemManagement(itemList);
+}
+
+function renderPersonalItemManagement(itemList) {
+    let html = "";
+    html += "<table style='background-color:#888888;width:100%;text-align:center'>";
+    html += "   <tbody style='background-color:#F8F0E0'>";
+    html += "       <tr>";
+    html += "           <th style='background-color:#E8E8D0'>选择</th>";
+    html += "           <th style='background-color:#EFE0C0'>装备</th>";
+    html += "           <th style='background-color:#E0D0B0'>所持物品</th>";
+    html += "           <th style='background-color:#EFE0C0'>种类</th>";
+    html += "           <th style='background-color:#E0D0B0'>效果</th>";
+    html += "           <th style='background-color:#EFE0C0'>重量</th>";
+    html += "           <th style='background-color:#EFE0C0'>耐久</th>";
+    html += "           <th style='background-color:#E0D0B0'>职业要求</th>";
+    html += "           <th style='background-color:#E0D0B0'>攻击要求</th>";
+    html += "           <th style='background-color:#E0D0B0'>防御要求</th>";
+    html += "           <th style='background-color:#E0D0B0'>智力要求</th>";
+    html += "           <th style='background-color:#E0D0B0'>精神要求</th>";
+    html += "           <th style='background-color:#E0D0B0'>速度要求</th>";
+    html += "           <th style='background-color:#E0D0B0'>附加威力</th>";
+    html += "           <th style='background-color:#E0D0B0'>附加重量</th>";
+    html += "           <th style='background-color:#E0D0B0'>附加幸运度</th>";
+    html += "           <th style='background-color:#E0D0B0'>经验</th>";
+    html += "           <th style='background-color:#EFE0C0'>属性</th>";
+    html += "           <th style='background-color:#EFE0C0'>出售</th>";
+    html += "       </tr>";
+    html += "   </tbody>";
+    html += "</table>";
+
+    $("#ItemUI").html(html);
 }
 
