@@ -96,6 +96,35 @@ export class PocketPetList {
     }
 }
 
+/**
+ * 解析页面上所有宠物的信息
+ * @param html HTML
+ * @returns {PocketPetList}
+ */
+export function parsePersonalPetList(html) {
+    const petList = new PocketPetList();
+    $(html).find("input:radio[name='select']").each(function (_idx, radio) {
+        const index = $(radio).val();
+        if (index >= 0) {
+            // index为-1的意味着“无宠物”那个选项
+            const table = $(radio).closest("table");
+            // pet index & using
+            const pet = new PocketPet();
+            pet.index = parseInt(index);
+            const usingText = radio.nextSibling.nodeValue;
+            if (usingText === "未使用") {
+                pet.using = false;
+            }
+            if (usingText === "★使用") {
+                pet.using = true;
+            }
+            parsePet(pet, table);
+            petList.push(pet);
+        }
+    });
+    return petList;
+}
+
 // ----------------------------------------------------------------------------
 // P R I V A T E   F U N C T I O N S
 // ----------------------------------------------------------------------------
