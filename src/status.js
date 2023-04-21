@@ -12,6 +12,7 @@ import * as message from "./message";
 import * as option from "./option";
 import * as service from "./service";
 import * as personal_item_management from "./personal/personal_item_management";
+import * as personal_treasure_bag from "./personal/personal_treasure_bag";
 
 export class StatusRequestInterceptor {
 
@@ -43,7 +44,7 @@ export class StatusRequestInterceptor {
                 }
             } else if (text.includes("物品 百宝袋 使用")) {
                 // 进入百宝袋
-                new PersonalTreasureBag().process();
+                new personal_treasure_bag.PersonalTreasureBag().process();
             } else if (text.includes("物品 黄金笼子 使用")) {
                 // 进入黄金笼子
                 new PersonalGoldenCage().process();
@@ -163,54 +164,6 @@ class PersonalSalary {
             npc.welcome("打、打、打劫。不许笑，我跟这儿打劫呢。IC、IP、IQ卡，通通告诉我密码！");
             npc.message("<a href='javascript:void(0)' id='deposit' style='color: yellow'><b>[溜了溜了]</b></a>");
         }
-    }
-}
-
-class PersonalTreasureBag {
-
-    constructor() {
-    }
-
-    process() {
-        const itemList = item.parseTreasureBagItems($("body:first").html());
-        const itemMap = item.itemListAsMap(itemList);
-
-        let itemCount = 0;
-        $("input:checkbox").each(function (_idx, checkbox) {
-            itemCount++;
-            const index = parseInt($(checkbox).val());
-            const item = itemMap[index];
-            $(checkbox).closest("tr").find("td:eq(9)").html(item.experienceHTML);
-        });
-        $("input:submit[value='从百宝袋中取出']").attr("id", "takeOutButton");
-        $("#takeOutButton").attr("type", "button");
-        $("input:submit[value='ＯＫ']").attr("id", "returnButton");
-
-
-        $("#takeOutButton").closest("tr")
-            .before($("<tr><td colspan='10' style='color:navy'>百宝袋中目前剩余空位数：" +
-                "<b style='color:red'>" + (Math.max(0, 50 - itemCount)) + "</b></td></tr>"));
-
-        $("#takeOutButton").click(function () {
-            const credential = page.generateCredential();
-            const request = credential.asRequest();
-            let checkedCount = 0;
-            $("input[type='checkbox']:checked").each(function (_idx, checkbox) {
-                checkedCount++;
-                const name = $(checkbox).attr("name");
-                request[name] = $(checkbox).attr("value");
-            });
-            if (checkedCount === 0) {
-                // 没有选择要取出的物品/装备
-                return;
-            }
-            request["mode"] = "GETOUTBAG";
-            network.sendPostRequest("mydata.cgi", request, function () {
-                $("input:hidden[value='STATUS']").attr("value", "USE_ITEM");
-                $("form[action='status.cgi']").attr("action", "mydata.cgi");
-                $("#returnButton").trigger("click");
-            });
-        });
     }
 }
 
