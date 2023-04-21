@@ -5,6 +5,17 @@
  */
 
 import * as constant from "./common_constant";
+import * as util from "../util";
+
+/**
+ * Generate Credential object from current HTML form.
+ * @returns {Credential}
+ */
+export function generateCredential() {
+    let id = $("input:hidden[name='id']:first").attr("value");
+    let pass = $("input:hidden[name='pass']:first").attr("value");
+    return new util.Credential(id, pass);
+}
 
 /**
  * 获取当前页面的HTML代码
@@ -36,6 +47,6 @@ export function findFirstUserImageHTML(html) {
     if (userImage === "") {
         return undefined;
     } else {
-        return "<img src='' width='64' height='64' id='userImage' alt=''>";
+        return "<img src='" + userImage + "' width='64' height='64' id='userImage' alt=''>";
     }
 }

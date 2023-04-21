@@ -11,6 +11,7 @@ import * as pet from "./pet";
 import * as message from "./message";
 import * as option from "./option";
 import * as service from "./service";
+import {processPersonalItemManagement} from "./personal/personal_item_management";
 
 export class StatusRequestInterceptor {
 
@@ -38,7 +39,8 @@ export class StatusRequestInterceptor {
             } else if (text.includes("＜＜　|||　物品使用．装备　|||　＞＞")) {
                 // 物品使用．装备
                 if (option.__cookie_getEnableNewItemUI()) {
-                    new PersonalItemStatus().process();
+                    //new PersonalItemStatus().process();
+                    processPersonalItemManagement();
                 }
             } else if (text.includes("物品 百宝袋 使用")) {
                 // 进入百宝袋

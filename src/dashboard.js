@@ -14,6 +14,39 @@ export class TownDashboardProcessor {
     }
 
     process() {
+        // let formBattle = $("form[action='battle.cgi'");
+        // let selectBattle = formBattle.find('select[name="level"]');
+        // let btnBattle = formBattle.parent().next().find('input');
+        // selectBattle.find('option').each(function() {
+        //     if (!$(this).text().includes('中级之塔') && !$(this).text().includes('秘宝之岛')) {
+        //         $(this).remove(); // 移除不包含特定文本的option
+        //     }
+        // });
+        // let inputDigits = '';
+        // $(document).off('keydown.city').on('keydown.city', function (e) {
+        //     const key = e.key;
+        //     if (!isNaN(parseInt(key))) {
+        //         inputDigits += key;
+        //     }
+        //     if (inputDigits.length === 2) {
+        //         switch (inputDigits) {
+        //             case '11':
+        //                 selectBattle.find('option').eq(0).prop('selected', true);
+        //                 break;
+        //             case '22':
+        //                 selectBattle.find('option').eq(1).prop('selected', true);
+        //                 break;
+        //             default:
+        //                 inputDigits = '';
+        //                 break;
+        //         }
+        //         btnBattle.focus();
+        //         // 重置 inputDigits
+        //         inputDigits = '';
+        //     }
+        // });
+
+
         $("option[value='INN']").text("客栈·驿站");
         $("option[value='ARM_SHOP']").text("武器屋(v2.0)");
         $("option[value='PRO_SHOP']").text("防具屋(v2.0)");
