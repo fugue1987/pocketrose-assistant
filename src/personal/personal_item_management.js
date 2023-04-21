@@ -149,8 +149,7 @@ function doRender(itemList) {
         html += "    <td style='background-color:#EFE0C0'>";
         html += "    " + (item.attribute === "无" ? "-" : item.attribute);
         html += "    </td>";
-        html += "    <td style='background-color:#EFE0C0'>";
-        html += "    ";
+        html += "    <td style='background-color:#EFE0C0' id='sellButtonContainer_" + item.index + "'>";
         html += "    </td>";
         html += "</tr>";
     }
@@ -214,14 +213,10 @@ function doRender(itemList) {
     }
 
     // 绑定点击事件
-    doBind(itemList);
-}
-
-function doBind(itemList) {
     __bindUseButton();
     __bindPutIntoBugButton(itemList);
-    __bindTreasureBagButton(itemList.treasureBag);
-    __bindGoldenCageButton(itemList.goldenCage);
+    __bindTreasureBagButton(treasureBag);
+    __bindGoldenCageButton(goldenCage);
     __bindPutAllIntoBagButton(itemList);
     __bindSearchButton();
     __bindSendButton();
