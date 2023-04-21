@@ -4,6 +4,7 @@
  * ============================================================================
  */
 
+import * as page from "./page";
 import * as pocket from "./pocket";
 import * as util from "./util";
 
@@ -246,13 +247,25 @@ export class Item {
         if (this.isItem) {
             return "-";
         }
-        if (this.isFullExperience) {
-            return "<b style='color:red'>MAX</b>";
-        } else {
-            return this.experience;
+        const ratio = pocket.calculateEquipmentFullExperienceRatio(this._name, this._power, this._experience);
+        if (ratio < 0) {
+            return "-";
         }
+        if (ratio === 1) {
+            return "<b style='color:red'>MAX</b>";
+        }
+        const progressBar = page.generateProgressBarHTML(ratio);
+        const title = this.isFullExperience ? "MAX" : this.experience;
+        return "<span title='" + title + "'>" + progressBar + "</span>"
     }
 
+    get fullName() {
+        if (this._star) {
+            return "齐心★" + this._name;
+        } else {
+            return this._name;
+        }
+    }
 }
 
 /**
@@ -299,6 +312,59 @@ export function parsePersonalItems(html) {
     return items;
 }
 
+/**
+ * 解析百宝袋中的装备
+ * @param html 百宝袋HTML
+ * @returns {Item[]}
+ */
+export function parseTreasureBagItems(html) {
+    const itemList = [];
+    $(html).find("input:checkbox").each(function (_idx, checkbox) {
+        const item = new Item();
+
+        item.index = parseInt($(checkbox).val());
+        item.selectable = true;
+
+        const tr = $(checkbox).parent().parent();
+        let td = $(tr).find("td:eq(1)");
+        item.nameHTML = $(td).html();
+        if ($(td).text().startsWith("齐心★")) {
+            item.star = true;
+            item.name = util.substringAfter($(td).text(), "齐心★");
+        } else {
+            item.star = false;
+            item.name = $(td).text();
+        }
+
+        td = $(tr).find("td:eq(2)");
+        item.category = $(td).text();
+
+        td = $(tr).find("td:eq(3)");
+        item.power = parseInt($(td).text());
+
+        td = $(tr).find("td:eq(4)");
+        item.weight = parseInt($(td).text());
+
+        td = $(tr).find("td:eq(5)");
+        item.endure = parseInt($(td).text());
+
+        td = $(tr).find("td:eq(6)");
+        item.additionalPower = parseInt($(td).text());
+
+        td = $(tr).find("td:eq(7)");
+        item.additionalWeight = parseInt($(td).text());
+
+        td = $(tr).find("td:eq(8)");
+        item.additionalLuck = parseInt($(td).text());
+
+        td = $(tr).find("td:eq(9)");
+        item.experience = parseInt($(td).text());
+
+        itemList.push(item);
+    });
+    return itemList;
+}
+
 export function findTreasureBag(items) {
     for (let i = 0; i < items.length; i++) {
         const item = items[i];
@@ -326,4 +392,28 @@ export function itemListAsMap(itemList) {
         itemMap[item.index] = item;
     }
     return itemMap;
+}
+
+/**
+ * 从武器店的页面解析允许出售的装备的下标。
+ * @param html
+ * @returns {number[]}
+ */
+export function parseSellableItemIndexList(html) {
+    const sellableItemIndexList = [];
+    $(html)
+        .find("table:eq(4)")
+        .find("input:radio")
+        .each(function (_idx, radio) {
+            const index = parseInt($(radio).val());
+            if (!$(radio).prop("disabled")) {
+                if ($(radio).parent().next().text() !== "★") {
+                    const name = $(radio).parent().next().next().text();
+                    if (!pocket.isProhibitSellingItem(name)) {
+                        sellableItemIndexList.push(index);
+                    }
+                }
+            }
+        });
+    return sellableItemIndexList;
 }

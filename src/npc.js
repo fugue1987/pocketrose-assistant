@@ -76,7 +76,8 @@ const NPCS = {
     "妮可": new NPC("妮可", "4237"),
     "钱小小": new NPC("钱小小", "1567"),
     "花子": new NPC("花子", "1126"),
-    "饭饭": new NPC("饭饭", "3139")
+    "饭饭": new NPC("饭饭", "3139"),
+    "Hind": new NPC("Hind", "7179"),
 };
 
 export function loadNPC(name) {
