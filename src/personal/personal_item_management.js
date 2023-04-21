@@ -164,10 +164,12 @@ function doRender(itemList) {
     html += "                   <tbody style='background-color:#E8E8D0'>";
     html += "                       <tr style='background-color:#E8E8D0'>";
     html += "                           <td style='text-align:left'>";
-    html += "                           " + "<input type='button' class='ItemUIButton' id='useButton' value='使用'>";
-    html += "                           " + "<input type='button' class='ItemUIButton' id='putIntoBagButton' value='入袋'>";
+    html += "                               <input type='button' class='ItemUIButton' id='useButton' value='使用'>";
+    html += "                               <input type='button' class='ItemUIButton' id='putIntoBagButton' value='入袋'>";
     html += "                           </td>";
     html += "                           <td style='text-align:right'>";
+    html += "                               <input type='button' class='ItemUIButton' id='treasureBagButton' value='百宝袋'>";
+    html += "                               <input type='button' class='ItemUIButton' id='goldenCageButton' value='黄金笼子'>";
     html += "                           </td>";
     html += "                       </tr>";
     html += "                   </tbody>";
@@ -187,6 +189,13 @@ function doRender(itemList) {
     if (treasureBag === undefined) {
         $("#putIntoBagButton").prop("disabled", true);
         $("#putIntoBagButton").css("display", "none");
+        $("#treasureBagButton").prop("disabled", true);
+        $("#treasureBagButton").css("display", "none");
+    }
+    const goldenCage = itemList.goldenCage;
+    if (goldenCage === undefined) {
+        $("#goldenCageButton").prop("disabled", true);
+        $("#goldenCageButton").css("display", "none");
     }
 
     // 绑定点击事件
@@ -194,6 +203,8 @@ function doRender(itemList) {
 }
 
 function doBind(itemList) {
+    __bindTreasureBagButton(itemList.treasureBag);
+    __bindGoldenCageButton(itemList.goldenCage);
     __bindUseButton();
     __bindPutIntoBugButton(itemList);
 }
@@ -210,6 +221,34 @@ function doRefresh(credential) {
         $("#ItemUI").html("");
         // 使用新的重新渲染ItemUI并绑定新的按钮
         doRender(itemList);
+    });
+}
+
+function __bindTreasureBagButton(treasureBag) {
+    if (treasureBag === undefined) {
+        return;
+    }
+    $("#treasureBagButton").click(function () {
+        $("#edenForm").attr("action", "mydata.cgi");
+        $("#edenFormPayload").html("" +
+            "<input type='hidden' name='chara' value='1'>" +
+            "<input type='hidden' name='item" + treasureBag.index + "' value='" + treasureBag.index + "'>" +
+            "<input type='hidden' name='mode' value='USE'>");
+        $("#edenSubmit").trigger("click");
+    });
+}
+
+function __bindGoldenCageButton(goldenCage) {
+    if (goldenCage === undefined) {
+        return;
+    }
+    $("#goldenCageButton").click(function () {
+        $("#edenForm").attr("action", "mydata.cgi");
+        $("#edenFormPayload").html("" +
+            "<input type='hidden' name='chara' value='1'>" +
+            "<input type='hidden' name='item" + goldenCage.index + "' value='" + goldenCage.index + "'>" +
+            "<input type='hidden' name='mode' value='USE'>");
+        $("#edenSubmit").trigger("click");
     });
 }
 
