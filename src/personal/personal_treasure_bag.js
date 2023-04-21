@@ -34,8 +34,11 @@ function doProcess() {
     $("#takeOutButton").closest("tr")
         .before($("<tr><td colspan='10' style='color:navy'>百宝袋中目前剩余空位数：" +
             "<b style='color:red'>" + (Math.max(0, 50 - itemCount)) + "</b></td></tr>"));
+    $("#takeOutButton").closest("td")
+        .append($("<input type='button' id='itemManagementButton' value='返回装备管理'>"));
 
     __bindTakeOutButton();
+    __bindItemManagementButton();
 }
 
 function __bindTakeOutButton() {
@@ -58,5 +61,13 @@ function __bindTakeOutButton() {
             $("form[action='status.cgi']").attr("action", "mydata.cgi");
             $("#returnButton").trigger("click");
         });
+    });
+}
+
+function __bindItemManagementButton() {
+    $("#itemManagementButton").click(function () {
+        $("input:hidden[value='STATUS']").attr("value", "USE_ITEM");
+        $("form[action='status.cgi']").attr("action", "mydata.cgi");
+        $("#returnButton").trigger("click");
     });
 }
