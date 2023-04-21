@@ -6,15 +6,13 @@
 
 import * as item from "../pocket/pocket_item";
 
-export class PersonalItemManagement {
-    process() {
-        doProcess();
-    }
+export function processPersonalItemManagement() {
+    doProcessPersonalItemManagement();
 }
 
-function doProcess() {
+function doProcessPersonalItemManagement() {
     // 首先从老页面上解析所有的装备信息
     const itemList = item.parsePersonalItemList($("body:first").html());
-    console.log(JSON.stringify(itemList.asMap()));
+
 }
 
