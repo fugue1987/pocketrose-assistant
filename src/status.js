@@ -168,45 +168,6 @@ class PersonalSalary {
     }
 }
 
-class PersonalGoldenCage {
-
-    constructor() {
-    }
-
-    process() {
-        $("input:submit[value='从黄金笼子中取出']").attr("id", "takeOutButton");
-        $("#takeOutButton").attr("type", "button");
-        $("input:submit[value='ＯＫ']").attr("id", "returnButton");
-
-        $("#takeOutButton").click(function () {
-            const credential = page.generateCredential();
-            const request = credential.asRequest();
-            const select = $("input:radio:checked").val();
-            if (select === undefined) {
-                // 没有选择要取出的宠物
-                return;
-            }
-            request["select"] = select;
-            request["mode"] = "GETOUTLONGZI";
-            network.sendPostRequest("mydata.cgi", request, function () {
-                const request = credential.asRequest();
-                request["mode"] = "USE_ITEM";
-                network.sendPostRequest("mydata.cgi", request, function (html) {
-                    const itemList = item.parsePersonalItems(html);
-                    const cage = item.findGoldenCage(itemList);
-                    if (cage === undefined) {
-                        $("#returnButton").trigger("click");
-                    } else {
-                        $("form[action='status.cgi']").attr("action", "mydata.cgi");
-                        $("input:hidden[value='STATUS']").attr("value", "PETSTATUS");
-                        $("#returnButton").trigger("click");
-                    }
-                });
-            });
-        });
-    }
-}
-
 class PersonalPetStatus {
 
     constructor() {
