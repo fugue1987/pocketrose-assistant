@@ -170,6 +170,7 @@ function doRender(itemList) {
     html += "                           <td style='text-align:right'>";
     html += "                               <input type='button' class='ItemUIButton' id='treasureBagButton' value='百宝袋'>";
     html += "                               <input type='button' class='ItemUIButton' id='goldenCageButton' value='黄金笼子'>";
+    html += "                               <input type='button' class='ItemUIButton' id='putAllIntoBagButton' value='全部入袋'>";
     html += "                           </td>";
     html += "                       </tr>";
     html += "                   </tbody>";
@@ -191,6 +192,8 @@ function doRender(itemList) {
         $("#putIntoBagButton").css("display", "none");
         $("#treasureBagButton").prop("disabled", true);
         $("#treasureBagButton").css("display", "none");
+        $("#putAllIntoBagButton").prop("disabled", true);
+        $("#putAllIntoBagButton").css("display", "none");
     }
     const goldenCage = itemList.goldenCage;
     if (goldenCage === undefined) {
@@ -203,10 +206,11 @@ function doRender(itemList) {
 }
 
 function doBind(itemList) {
-    __bindTreasureBagButton(itemList.treasureBag);
-    __bindGoldenCageButton(itemList.goldenCage);
     __bindUseButton();
     __bindPutIntoBugButton(itemList);
+    __bindTreasureBagButton(itemList.treasureBag);
+    __bindGoldenCageButton(itemList.goldenCage);
+    __bindPutAllIntoBagButton(itemList);
 }
 
 function doRefresh(credential) {
@@ -221,34 +225,6 @@ function doRefresh(credential) {
         $("#ItemUI").html("");
         // 使用新的重新渲染ItemUI并绑定新的按钮
         doRender(itemList);
-    });
-}
-
-function __bindTreasureBagButton(treasureBag) {
-    if (treasureBag === undefined) {
-        return;
-    }
-    $("#treasureBagButton").click(function () {
-        $("#edenForm").attr("action", "mydata.cgi");
-        $("#edenFormPayload").html("" +
-            "<input type='hidden' name='chara' value='1'>" +
-            "<input type='hidden' name='item" + treasureBag.index + "' value='" + treasureBag.index + "'>" +
-            "<input type='hidden' name='mode' value='USE'>");
-        $("#edenSubmit").trigger("click");
-    });
-}
-
-function __bindGoldenCageButton(goldenCage) {
-    if (goldenCage === undefined) {
-        return;
-    }
-    $("#goldenCageButton").click(function () {
-        $("#edenForm").attr("action", "mydata.cgi");
-        $("#edenFormPayload").html("" +
-            "<input type='hidden' name='chara' value='1'>" +
-            "<input type='hidden' name='item" + goldenCage.index + "' value='" + goldenCage.index + "'>" +
-            "<input type='hidden' name='mode' value='USE'>");
-        $("#edenSubmit").trigger("click");
     });
 }
 
@@ -287,9 +263,7 @@ function __bindPutIntoBugButton(itemList) {
         $("input:checkbox:checked").each(function (_idx, checkbox) {
             const index = parseInt($(checkbox).val());
             const item = items[index];
-            if (item.using) {
-                message.publishMessageBoard(item.nameHTML + "正在装备中，无法放入百宝袋");
-            } else {
+            if (!item.using) {
                 checkedCount++;
                 const name = $(checkbox).attr("name");
                 request[name] = $(checkbox).val();
@@ -297,6 +271,65 @@ function __bindPutIntoBugButton(itemList) {
         });
         if (checkedCount === 0) {
             message.publishMessageBoard("没有选择任何装备");
+            return;
+        }
+        request["chara"] = "1";
+        request["mode"] = "PUTINBAG";
+        network.sendPostRequest("mydata.cgi", request, function (html) {
+            message.processResponseHTML(html);
+            doRefresh(credential);
+        });
+    });
+}
+
+function __bindTreasureBagButton(treasureBag) {
+    if (treasureBag === undefined) {
+        return;
+    }
+    $("#treasureBagButton").click(function () {
+        $("#edenForm").attr("action", "mydata.cgi");
+        $("#edenFormPayload").html("" +
+            "<input type='hidden' name='chara' value='1'>" +
+            "<input type='hidden' name='item" + treasureBag.index + "' value='" + treasureBag.index + "'>" +
+            "<input type='hidden' name='mode' value='USE'>");
+        $("#edenSubmit").trigger("click");
+    });
+}
+
+function __bindGoldenCageButton(goldenCage) {
+    if (goldenCage === undefined) {
+        return;
+    }
+    $("#goldenCageButton").click(function () {
+        $("#edenForm").attr("action", "mydata.cgi");
+        $("#edenFormPayload").html("" +
+            "<input type='hidden' name='chara' value='1'>" +
+            "<input type='hidden' name='item" + goldenCage.index + "' value='" + goldenCage.index + "'>" +
+            "<input type='hidden' name='mode' value='USE'>");
+        $("#edenSubmit").trigger("click");
+    });
+}
+
+function __bindPutAllIntoBagButton(itemList) {
+    if ($("#putAllIntoBagButton").prop("disabled")) {
+        return;
+    }
+    const items = itemList.asMap();
+    $("#putAllIntoBagButton").click(function () {
+        const credential = page.generateCredential();
+        const request = credential.asRequest();
+        let checkedCount = 0;
+        $("input:checkbox").each(function (_idx, checkbox) {
+            const index = parseInt($(checkbox).val());
+            const item = items[index];
+            if (!item.using) {
+                checkedCount++;
+                const name = $(checkbox).attr("name");
+                request[name] = $(checkbox).val();
+            }
+        });
+        if (checkedCount === 0) {
+            message.publishMessageBoard("目前没有任何装备可以放入百宝袋");
             return;
         }
         request["chara"] = "1";
