@@ -296,3 +296,12 @@ export function parseWeaponStoreItemList(html) {
 export function parseArmorStoreItemList(html) {
     return parseWeaponStoreItemList(html);
 }
+
+/**
+ * 解析饰品店的装备（与武器店数据保持一致）
+ * @param html
+ * @returns {PocketItemList}
+ */
+export function parseAccessoryStoreItemList(html) {
+    return parseWeaponStoreItemList(html);
+}
