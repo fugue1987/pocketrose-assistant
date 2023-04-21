@@ -22,6 +22,49 @@ const CATEGORY_ACCESSORY = "饰品";
 const CATEGORY_ITEM = "物品";
 
 /**
+ * 禁售装备清单定义
+ * @type {string[]}
+ */
+const PROHIBIT_SELLING_ITEM_LIST = [
+    "千与千寻",
+    "勿忘我",
+    "神枪 永恒",
+    "霸邪斧 天煌",
+    "魔刀 哭杀",
+    "神器 苍穹",
+    "魔神器 幻空",
+    "真·圣剑 苍白的正义",
+    "双经斩",
+    "千幻碧水猿洛克奇斯",
+    "地纹玄甲龟斯特奥特斯",
+    "幽冥黑鳞蟒罗尼科斯",
+    "火睛混沌兽哈贝达",
+    "羽翅圣光虎阿基勒斯",
+    "金翅追日鹰庞塔雷斯",
+    "风翼三足凤纳托利斯",
+    "圣皇铠甲 天威",
+    "薄翼甲",
+    "魔盔 虚无",
+    "神冠 灵通",
+    "龙",
+    "玉佩"
+];
+
+/**
+ * 检查指定的装备是否禁售
+ * @param name
+ * @returns {boolean}
+ */
+export function isProhibitSellingItem(name) {
+    for (const it of PROHIBIT_SELLING_ITEM_LIST) {
+        if (name.endsWith(it)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+/**
  * 描述口袋装备的数据结构定义
  */
 export class PocketItem {
