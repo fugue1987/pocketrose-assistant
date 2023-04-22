@@ -8,7 +8,7 @@ import * as util from "./common/common_util";
 import {calculateDirection, calculateDistance, calculatePath, Coordinate} from "./common/common_util";
 import * as network from "./common/common_network";
 import * as message from "./message";
-import * as pocket from "./pocket";
+import {getTown} from "./pocket/pocket_town";
 
 /**
  * 用于描述移动计划的数据结构。表述了谁从哪里移动到哪里，怎么样的移动方式。
@@ -194,14 +194,14 @@ export async function enterTown(credential, townId) {
                         request["mode"] = "MOVE";
                         network.sendPostRequest("status.cgi", request, function () {
                             message.publishMessageBoard(message._message_town_enter_guard_pass);
-                            const town = pocket.getTown(townId);
+                            const town = getTown(townId);
                             if (town !== undefined) {
                                 message.publishMessageBoard(message._message_town_enter, {"town": town.name});
                             }
                             resolve();
                         });
                     } else {
-                        const town = pocket.getTown(townId);
+                        const town = getTown(townId);
                         if (town !== undefined) {
                             message.publishMessageBoard(message._message_town_enter, {"town": town.name});
                         }

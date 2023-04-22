@@ -2,8 +2,8 @@ import * as dashboard from "./dashboard";
 import * as message from "./message";
 import * as network from "./common/common_network";
 import * as page from "./page";
-import * as pocket from "./pocket";
 import * as map from "./map";
+import {getTown} from "./pocket/pocket_town";
 
 export class WildRequestInterceptor {
     constructor() {
@@ -61,7 +61,7 @@ class WildPostHouse {
                 $("select[name='mode']").prop("disabled", true);
                 $("table:eq(7)").remove();
 
-                const town = pocket.getTown(townId);
+                const town = getTown(townId);
                 message.publishMessageBoard(message._message_town_target, {"town": town.name});
 
                 const credential = page.generateCredential();

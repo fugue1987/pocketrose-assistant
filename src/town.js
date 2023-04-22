@@ -17,6 +17,7 @@ import * as util from "./common/common_util";
 import {Coordinate} from "./common/common_util";
 import * as npc from "./npc";
 import * as castle from "./pocket/pocket_castle";
+import {findTownByName, getTown} from "./pocket/pocket_town";
 
 /**
  * 用于拦截并处理浏览器访问town.cgi的请求后返回的页面。
@@ -62,7 +63,7 @@ class TownInnPostHouse {
 
         const credential = page.generateCredential();
         user.loadRole(credential).then(role => {
-            const town = pocket.findTownByName(role.townName);
+            const town = findTownByName(role.townName);
             $(".townClass[value='" + town.id + "']").prop("disabled", true);
             $("#player").text(role.name);
             $("#townId").text(town.id);
@@ -144,10 +145,10 @@ class TownInnPostHouse {
 
                 message.initializeMessageBoard("我们将实时为你播报旅途的动态：<br>");
                 const townId = $("#townId").text();
-                const town = pocket.getTown(townId)
+                const town = getTown(townId)
                 const source = town.coordinate;
 
-                const destinationTown = pocket.getTown(destinationTownId);
+                const destinationTown = getTown(destinationTownId);
                 const destination = destinationTown.coordinate;
 
                 message.publishMessageBoard(message._message_town_target, {"town": destinationTown.name});
@@ -195,7 +196,7 @@ class TownInnPostHouse {
 
             message.initializeMessageBoard("我们将实时为你播报旅途的动态：<br>");
             const townId = $("#townId").text();
-            const town = pocket.getTown(townId)
+            const town = getTown(townId)
             const source = town.coordinate;
 
             const castleText = $("#castle").text();
@@ -749,7 +750,7 @@ class TownGemStore {
             message.writeMessageBoard("<b style='color:red'>" + fuseResult + "</b>");
 
             user.loadRole(credential).then(role => {
-                const town = pocket.findTownByName(role.townName);
+                const town = findTownByName(role.townName);
                 const request = credential.asRequest();
                 request["town"] = town.id;
                 request["con_str"] = "50";
@@ -827,7 +828,7 @@ class TownAdventurerGuild {
         const credential = page.generateCredential();
         user.loadRole(credential).then(role => {
             $("#player").text(role.name);
-            const town = pocket.findTownByName(role.townName);
+            const town = findTownByName(role.townName);
             $("#townId").text(town.id);
             $("#coach_1").prop("disabled", false);
             $("#coach_2").prop("disabled", false);
@@ -929,7 +930,7 @@ class TownAdventurerGuild {
                 alert("你知道怎么选择坐标么？");
             } else {
                 const townId = $("#townId").text();
-                const town = pocket.getTown(townId);
+                const town = getTown(townId);
                 if (x === town.coordinate.x && y === town.coordinate.y) {
                     alert("有没有一种可能你现在就在这里？坐标(" + x + "," + y + ")");
                 } else {
@@ -1030,7 +1031,7 @@ class TownAdventurerGuild {
             }
             return ret;
         });
-        const town = pocket.getTown(townId);
+        const town = getTown(townId);
 
         // 这个是要探索的完整路线，从本城开始，回到本城。
         const locationList = [];

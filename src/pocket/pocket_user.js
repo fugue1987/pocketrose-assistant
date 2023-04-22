@@ -7,7 +7,7 @@
 import * as network from "../common/common_network";
 import * as util from "../common/common_util";
 import {Coordinate} from "../common/common_util";
-import * as pocket from "../pocket";
+import {findTownByName} from "./pocket_town";
 
 export class PocketRole {
 
@@ -125,7 +125,7 @@ export async function loadRole(credential) {
                         role.location = "WILD";
                     } else {
                         role.location = "TOWN";
-                        const town = pocket.findTownByName(locationText);
+                        const town = findTownByName(locationText);
                         if (town !== undefined) {
                             role.coordinate = town.coordinate;
                             role.townName = town.name;

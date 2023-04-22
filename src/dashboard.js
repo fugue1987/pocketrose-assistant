@@ -2,11 +2,11 @@ import * as bank from "./bank";
 import * as network from "./common/common_network";
 import * as page from "./page";
 import * as pet from "./pocket/pocket_pet";
-import * as pocket from "./pocket";
 import * as util from "./common/common_util";
 import {Coordinate} from "./common/common_util";
 import * as option from "./option";
 import * as service from "./service";
+import {findTownBySecret} from "./pocket/pocket_town";
 
 export class TownDashboardProcessor {
 
@@ -288,7 +288,7 @@ export class PocketEventProcessor {
             const text = $(t).text();
             if (text.startsWith("[萝莉失踪]")) {
                 const secret = util.substringBetween(text, "[萝莉失踪]据说在印有", "描述的城市附近有萝莉失踪！");
-                const candidates = pocket.findTownBySecret(secret);
+                const candidates = findTownBySecret(secret);
                 let recommendation = "";
                 if (candidates.length === 0) {
                     recommendation = "没有发现推荐的城市？检查一下城市字典吧，密字[" + secret + "]。";
@@ -312,7 +312,7 @@ export class PocketEventProcessor {
                 processedEventHtmlList.push(p1 + p2 + recommendation + p3);
             } else if (text.startsWith("[正太失踪]")) {
                 const secret = util.substringBetween(text, "[正太失踪]据说在印有", "描述的城市附近有正太失踪！");
-                const candidates = pocket.findTownBySecret(secret);
+                const candidates = findTownBySecret(secret);
                 let recommendation = "";
                 if (candidates.length === 0) {
                     recommendation = "没有发现推荐的城市？检查一下城市字典吧，密字[" + secret + "]。";
@@ -371,7 +371,7 @@ export class PocketEventProcessor {
             const text = $(t).text();
             if (text.startsWith("[萝莉失踪]")) {
                 const secret = util.substringBetween(text, "[萝莉失踪]据说在印有", "描述的城市附近有萝莉失踪！");
-                const candidates = pocket.findTownBySecret(secret);
+                const candidates = findTownBySecret(secret);
                 let recommendation = "";
                 if (candidates.length === 0) {
                     recommendation = "没有发现推荐的城市？检查一下城市字典吧，密字[" + secret + "]。";
@@ -395,7 +395,7 @@ export class PocketEventProcessor {
                 processedEventHtmlList.push(p1 + p2 + recommendation + p3);
             } else if (text.startsWith("[正太失踪]")) {
                 const secret = util.substringBetween(text, "[正太失踪]据说在印有", "描述的城市附近有正太失踪！");
-                const candidates = pocket.findTownBySecret(secret);
+                const candidates = findTownBySecret(secret);
                 let recommendation = "";
                 if (candidates.length === 0) {
                     recommendation = "没有发现推荐的城市？检查一下城市字典吧，密字[" + secret + "]。";

@@ -3,8 +3,8 @@
  * [ 个 人 状 态 模 块 ]
  * ============================================================================
  */
-import * as pocket from "../pocket";
 import * as util from "../common/common_util";
+import {findTownByName} from "../pocket/pocket_town";
 
 export class PersonalStatus {
     process() {
@@ -60,7 +60,7 @@ function doRender() {
         }
         if (text === "现在位置") {
             const location = $(td).next().text();
-            const town = pocket.findTownByName(location);
+            const town = findTownByName(location);
             if (town !== undefined) {
                 $(td).next().text(location + " " + town.coordinate.longText());
             }

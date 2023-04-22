@@ -9,10 +9,10 @@ import * as map from "./map";
 import {enterTown, leaveCastle} from "./map";
 import * as page from "./page";
 import {generateCredential} from "./page";
-import * as pocket from "./pocket";
 import * as util from "./common/common_util";
 import * as finance from "./bank";
 import * as user from "./pocket/pocket_user";
+import {getTown} from "./pocket/pocket_town";
 
 /**
  * 城堡相关页面的处理入口
@@ -148,7 +148,7 @@ class CastlePostHouse {
                 $("#returnTown").prop("disabled", true);
 
                 message.initializeMessageBoard("开始播报实时动态：<br>");
-                const town = pocket.getTown(townId);
+                const town = getTown(townId);
                 message.publishMessageBoard(message._message_town_target, {"town": town.name});
 
                 const amount = finance.calculateCashDifferenceAmount(cash, 100000);

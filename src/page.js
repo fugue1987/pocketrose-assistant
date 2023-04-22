@@ -9,6 +9,7 @@ import * as util from "./common/common_util";
 import {Credential} from "./common/common_util";
 import * as pocket from "./pocket";
 import {isProhibitSellingItem} from "./pocket";
+import {getTownsAsList} from "./pocket/pocket_town";
 
 export class NPC {
 
@@ -129,7 +130,7 @@ export function generateTownSelectionTable() {
         "<td colspan='2' style='color: white'>坐标</td>" +
         "</tr></thead>";
 
-    const townList = pocket.getTownsAsList();
+    const townList = getTownsAsList();
     for (let i = 0; i < 7; i++) {
         const row = [];
         row.push(townList[i * 4]);
