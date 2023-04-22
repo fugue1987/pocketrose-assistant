@@ -14,5 +14,21 @@ function doProcess() {
     message.createFooterMessage(imageHTML);
     message.writeFooterMessage("是的，你没有看错，换人了，某幕后黑手不愿意出镜。不过请放心，转职方面我是专业的，毕竟我一直制霸钉耙榜。<br>");
 
-    console.log(page.currentPageHTML());
+    const pageHTML = page.currentPageHTML();
+    const careerCandidateList = doParseCareerCandidateList(pageHTML);
+}
+
+function doParseCareerCandidateList(pageHTML) {
+    const careerCandidateList = [];
+    $(pageHTML)
+        .find("select[name='syoku_no']")
+        .find("option")
+        .each(function (_idx, option) {
+            const value = $(option).val();
+            if (value !== "") {
+                const career = $(option).text().trim();
+                careerCandidateList.push(career);
+            }
+        });
+    return careerCandidateList;
 }
