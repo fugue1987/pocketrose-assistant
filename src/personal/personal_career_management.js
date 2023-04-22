@@ -2,7 +2,7 @@ import * as constant from "../common/common_constant";
 import * as message from "../common/common_message";
 import * as page from "../common/common_page";
 
-export class PersonalTransferCareer {
+export class PersonalCareerManagement {
     process() {
         page.removeGoogleAnalyticsScript();
         doProcess();

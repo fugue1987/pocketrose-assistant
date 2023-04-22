@@ -7,7 +7,7 @@ import * as personal_item_management from "./personal_item_management";
 import * as personal_treasure_bag from "./personal_treasure_bag";
 import * as personal_golden_cage from "./personal_golden_cage";
 import * as personal_pet_management from "./personal_pet_management";
-import {PersonalTransferCareer} from "./personal_transfer_career";
+import {PersonalCareerManagement} from "./personal_career_management";
 
 export class PersonalRequestInterceptor {
 
@@ -50,7 +50,7 @@ export class PersonalRequestInterceptor {
                 }
             } else if (text.includes("* 转职神殿 *")) {
                 // 转职
-                new PersonalTransferCareer().process();
+                new PersonalCareerManagement().process();
             }
         }
     }
