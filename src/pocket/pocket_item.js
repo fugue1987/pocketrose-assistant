@@ -156,7 +156,7 @@ export class PocketItem {
             return -1;
         }
         let maxExperience = 0;
-        if (isAttributeHeavyArmor(this.name)) {
+        if (__isAttributeHeavyArmor(this.name)) {
             // 属性重铠满级经验为76000
             maxExperience = 76000;
         } else if (this.power !== 0) {
@@ -523,8 +523,11 @@ export function parseItemStoreItemList(html) {
     return itemList;
 }
 
+// ----------------------------------------------------------------------------
+// P R I V A T E   F U N C T I O N S
+// ----------------------------------------------------------------------------
 
-function isAttributeHeavyArmor(name) {
+function __isAttributeHeavyArmor(name) {
     for (const it of ATTRIBUTE_HEAVY_ARMOR_ITEM_LIST) {
         if (name.endsWith(it)) {
             return true;
