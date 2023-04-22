@@ -276,6 +276,15 @@ function __doBindCareerButton() {
                 if (!confirm("请确认要转职到" + careerName + "？")) {
                     return;
                 }
+                const credential = page.generateCredential();
+                const request = credential.asRequest();
+                request["chara"] = "1";
+                request["mode"] = "JOB_CHANGE";
+                request["syoku_no"] = careerId;
+                network.sendPostRequest("mydata.cgi", request, function (html) {
+                    message.processResponseHTML(html);
+                    doRefresh(credential);
+                });
             });
         }
     }
