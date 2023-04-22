@@ -36,3 +36,23 @@ export const _CAREER_DICT = {
     "太天位": {"id": 34},
     "终极": {"id": 35}
 };
+
+/**
+ * 解析可以转职的职业名称列表。
+ * @param pageHTML
+ * @returns {string[]}
+ */
+export function parseCareerCandidateList(pageHTML) {
+    const careerCandidateList = [];
+    $(pageHTML)
+        .find("select[name='syoku_no']")
+        .find("option")
+        .each(function (_idx, option) {
+            const value = $(option).val();
+            if (value !== "") {
+                const career = $(option).text().trim();
+                careerCandidateList.push(career);
+            }
+        });
+    return careerCandidateList;
+}
