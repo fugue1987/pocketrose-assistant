@@ -34,7 +34,7 @@ import {
     isUnavailableTreasureHintMap,
     transferCareerRequirementDict
 } from "./pocket";
-import * as pokemon from "./pokemon";
+import * as pokemon from "./pokemon/pokemon";
 import * as util from "./common/common_util";
 import {
     __cookie_getDepositBattleNumber,
