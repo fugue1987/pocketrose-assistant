@@ -7,16 +7,6 @@
 
 export const DOMAIN = "https://pocketrose.itsns.net.cn/pocketrose";
 
-// 属性重铠的名字
-export const heavyArmorNameDict = [
-    "千幻碧水猿洛克奇斯",
-    "地纹玄甲龟斯特奥特斯",
-    "幽冥黑鳞蟒罗尼科斯",
-    "火睛混沌兽哈贝达",
-    "羽翅圣光虎阿基勒斯",
-    "金翅追日鹰庞塔雷斯",
-    "风翼三足凤纳托利斯"
-];
 export const _PROHIBIT_SELLING_ITEM_DICT = [
     "千与千寻",
     "勿忘我",
@@ -427,64 +417,6 @@ export const _ACCESSORY_DICT = [
     "极光之翼",
     "雪的结晶"
 ];
-
-/**
- * 判断指定的名字是否为属性重铠，支持齐心重铠的检查。
- */
-export function __utilities_isHeavyArmor(name) {
-    for (var i = 0; i < heavyArmorNameDict.length; i++) {
-        if (name.indexOf(heavyArmorNameDict[i]) != -1) {
-            return true;
-        }
-    }
-    return false;
-}
-
-/**
- * 检查装备是否已经满经验。
- * @param name 装备名称
- * @param power 装备威力
- * @param experience 装备当前经验
- * @private
- */
-export function __utilities_checkIfEquipmentFullExperience(name, power, experience) {
-    if (name == "大师球" || name == "宗师球" || name == "超力怪兽球" || name == "宠物蛋") {
-        return false;
-    }
-    let maxExperience = 0;
-    if (__utilities_isHeavyArmor(name)) {
-        // 属性重铠满级经验为76000
-        maxExperience = 76000;
-    } else if (power != 0) {
-        power = Math.abs(power);
-        maxExperience = Math.floor(power * 0.2) * 1000;
-    }
-    return experience >= maxExperience;
-}
-
-export function calculateEquipmentFullExperienceRatio(name, power, experience) {
-    if (name === "大师球" || name === "宗师球" || name === "超力怪兽球" || name === "宠物蛋") {
-        return -1;
-    }
-    let maxExperience = 0;
-    if (__utilities_isHeavyArmor(name)) {
-        // 属性重铠满级经验为76000
-        maxExperience = 76000;
-    } else if (power !== 0) {
-        power = Math.abs(power);
-        maxExperience = Math.floor(power * 0.2) * 1000;
-    }
-    if (maxExperience === 0) {
-        return -1;
-    }
-    if (experience >= maxExperience) {
-        return 1;
-    }
-    if (experience === 0) {
-        return 0;
-    }
-    return experience / maxExperience;
-}
 
 function __isCityCoordinate(x, y) {
     let cityIds = Object.keys(_CITY_DICT);

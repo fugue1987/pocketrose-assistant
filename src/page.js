@@ -7,7 +7,6 @@
 import {loadNPC} from "./npc";
 import * as util from "./common/common_util";
 import {Credential} from "./common/common_util";
-import * as pocket from "./pocket";
 import {isProhibitSellingItem} from "./pocket";
 import {getTownsAsList} from "./pocket/pocket_town";
 
@@ -51,40 +50,6 @@ export function createFooterNPC(name) {
     return new NPC("footerNPCMessage");
 }
 
-export function createHeaderNPC(name, parentId) {
-    const npc = loadNPC(name);
-    $("#" + parentId).append($("<TABLE WIDTH='100%' bgcolor='#888888'><tbody><tr>" +
-        "<TD bgcolor='#F8F0E0' height='5'>" +
-        "<table bgcolor='#888888' border='0'><tbody><tr>" +
-        "<td bgcolor='#F8F0E0'>" + npc.imageHTML + "</td>" +
-        "<td width='100%' bgcolor='#000000' id='messageBoard' style='color: white'>" +
-        "</td></tr></tbody></table>" +
-        "</TD>" +
-        "</tr></tbody></TABLE>"));
-}
-
-export function createMessageBoardWithPictureCode(pictureCode, parentId) {
-    const portrait = pocket.DOMAIN + "/image/head/" + pictureCode + ".gif";
-    const imageHTML = "<img src='" + portrait + "' width='64' height='64' id='npc_" + pictureCode + "' alt='" + pictureCode + "'>";
-    $("#" + parentId).append($("<TABLE WIDTH='100%' bgcolor='#888888'><tbody><tr>" +
-        "<TD bgcolor='#F8F0E0' height='5'>" +
-        "<table bgcolor='#888888' border='0'><tbody><tr>" +
-        "<td bgcolor='#F8F0E0'>" + imageHTML + "</td>" +
-        "<td width='100%' bgcolor='#000000' id='messageBoard' style='color: white'>" +
-        "</td></tr></tbody></table>" +
-        "</TD>" +
-        "</tr></tbody></TABLE>"));
-}
-
-// ----------------------------------------------------------------------------
-// M E S S A G E   B O A R D
-// ----------------------------------------------------------------------------
-
-export function resetMessageBoard() {
-    if ($("#messageBoard").length > 0) {
-        $("#messageBoard").html("");
-    }
-}
 
 export function initializeMessageBoard(message) {
     if ($("#messageBoard").length > 0) {
@@ -171,16 +136,6 @@ export function findAndCreateMessageBoard(s) {
             }
         });
     }
-}
-
-export function getRoleName() {
-    let name = "";
-    $("td:parent").each(function (_idx, td) {
-        if ($(td).text() === "姓名") {
-            name = $(td).parent().next().find("td:first").text();
-        }
-    });
-    return name;
 }
 
 export function getRoleCash() {
