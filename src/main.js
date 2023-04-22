@@ -55,7 +55,6 @@ import {
 import {TownRequestInterceptor} from "./town";
 import {WildRequestInterceptor} from "./wild";
 import {PersonalRequestInterceptor} from "./personal/personal";
-import {_CAREER_DICT, transferCareerRequirementDict} from "./pocket/pocket_career";
 
 const CGI_MAPPING = {
     "/battle.cgi": new battle.BattleRequestInterceptor(),
@@ -477,9 +476,6 @@ function postProcessPersonalStatusRelatedFunctionalities(htmlText) {
         // 复用个人接收的信作为Cookie管理的页面
         __personalStatus_cookieManagement(htmlText);
     }
-    //if (htmlText.indexOf("* 转职神殿 *") != -1) {
-    //    __personalStatus_transferCareer(htmlText);
-    //}
 }
 
 function __personalStatus_cookieManagement(htmlText) {
@@ -1556,109 +1552,4 @@ function ____use_equipment_set(id, pass,
             $("#returnButton").trigger("click");
         });
     }
-}
-
-
-// 个人状态 -> 转职
-function __personalStatus_transferCareer(htmlText) {
-    __page_constructNpcMessageTable("白皇");
-    __page_writeNpcMessage("是的，你没有看错，换人了，某幕后黑手不愿意出镜。不过请放心，转职方面我是专业的，毕竟我一直制霸钉耙榜。<br>");
-
-    $('input[value="转职"]').attr('id', 'transferCareerButton');
-
-    let lastTargetCareer = "";
-    $("option[value!='']").each(function (_idx, option) {
-        lastTargetCareer = $(option).attr("value");
-    });
-
-    if (lastTargetCareer === "") {
-        __page_writeNpcMessage("我的天，你甚至连最基础的转职条件都没有满足，那你来这么干什么？我不愿意说粗口，所以我无话可说了，你走吧。<br>");
-        return;
-    }
-
-    let level = $($($("table")[4]).find("td")[7]).text();
-    if (level < 150) {
-        __page_writeNpcMessage("从专业的角度来说，你现在并没有满级，我并不推荐你现在就转职。当然你如果强行要这么做的话，我也不说啥。<br>");
-        return;
-    }
-
-    let id = __page_readIdFromCurrentPage();
-    let pass = __page_readPassFromCurrentPage();
-    // 进入转职页面的时候，读取一下个人信息。把标准的HP/MP和五围读出来
-    __ajax_readPersonalInformation(id, pass, function (information) {
-        var mhp = information["MAX_HP"];
-        var mmp = information["MAX_MP"];
-        var at = information["AT"];
-        var df = information["DF"];
-        var sa = information["SA"];
-        var sd = information["SD"];
-        var sp = information["SP"];
-        var stableCareer = (mhp == 1999 && mmp >= 1000
-            && at >= 300 && df >= 300 && sa >= 300 && sd >= 300 && sp >= 300);
-
-        if (stableCareer) {
-            // 看起来这能力已经可以定型了，给个警告吧，确认是否要转职！
-            var current = information["HP"] + "/" + mhp + " " + information["MP"] + "/" + mmp + " " + at + " " + df + " " + sa + " " + sd + " " + sp;
-            $('#transferCareerButton').attr('value', '看起来你现在满足了最低的定型标准(' + current + ')，你确认要转职吗？');
-        }
-
-        // 是否需要给个转职建议呢？
-        var recommendationCareers = [];
-        var careers = Object.keys(transferCareerRequirementDict);
-        for (var careerIndex = 0; careerIndex < careers.length; careerIndex++) {
-            var career = careers[careerIndex];
-            var requirement = transferCareerRequirementDict[career];
-            if (mmp >= requirement[0] && at >= requirement[1] && df >= requirement[2] &&
-                sa >= requirement[3] && sd >= requirement[4] && sp >= requirement[5]) {
-                // 发现了可以推荐的职业
-                recommendationCareers.push(career);
-            }
-        }
-
-        let autoSuggest = false;
-        let message = "";
-        if (recommendationCareers.length > 0) {
-            message += "我觉得你可以尝试一下这些新职业：";
-            for (let ci = 0; ci < recommendationCareers.length; ci++) {
-                message += "<b>" + recommendationCareers[ci] + "</b> "
-            }
-            message += " 当然，看脸时代的转职成功率你应该心中有数。";
-        } else {
-            autoSuggest = true;
-            message += "不过说实话，你现在的能力，确实爱转啥就转啥吧，区别不大。";
-        }
-        message += "<br>"
-        __page_writeNpcMessage(message);
-
-        if (autoSuggest) {
-            let targetCareer = "";
-            let careerNames = Object.keys(_CAREER_DICT);
-            for (let ci = 0; ci < careerNames.length; ci++) {
-                let careerName = careerNames[ci];
-                let career = _CAREER_DICT[careerName];
-                if (career["id"] == lastTargetCareer) {
-                    targetCareer = careerName;
-                }
-            }
-            if (targetCareer !== "") {
-                __page_writeNpcMessage("嗯，还有另外一种选择，继续转职<b>" + targetCareer + "</b>，如何？" +
-                    "<b>[<a href='javascript:void(0)' id='toTopCareer'>我听你的就转职" + targetCareer + "</a>]</b>");
-                $("#toTopCareer").click(function () {
-                    $("option").each(function (_i, o) {
-                        let optionValue = $(o).attr("value");
-                        if (optionValue != lastTargetCareer) {
-                            $(o).prop("selected", false);
-                        } else {
-                            $(o).prop("selected", true);
-                        }
-                    });
-                    $("input[type='radio']").prop("checked", true);
-                    __ajax_lodgeAtInn(information["id"], information["pass"], function (data) {
-                        // 转职前住宿，保持最佳状态
-                        $("#transferCareerButton").trigger("click");
-                    });
-                });
-            }
-        }
-    });
 }
