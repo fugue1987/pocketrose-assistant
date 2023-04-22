@@ -28,3 +28,21 @@ export async function consecratePet(credential, petIndex) {
     }
     return await doConsecratePet(credential, petIndex);
 }
+
+/**
+ * 在城市住宿恢复体力和魔力
+ * @param credential 用户凭证
+ * @returns {Promise<void>}
+ */
+export async function lodgeTown(credential) {
+    const doLodgeTown = (credential) => {
+        return new Promise((resolve) => {
+            const request = credential.asRequest();
+            request["mode"] = "RECOVERY";
+            network.sendPostRequest("town.cgi", request, function () {
+                resolve();
+            });
+        });
+    };
+    return await doLodgeTown(credential);
+}
