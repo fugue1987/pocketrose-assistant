@@ -15,6 +15,9 @@ export class PersonalCareerManagement {
 }
 
 function doProcess() {
+    $("table:first tr:first").next().find("table:first td:first")
+        .next().next().next().attr("id", "roleStatus");
+
     $("img[alt='神官']").parent().prev().attr("id", "messageBoard");
     $("img[alt='神官']").parent().prev().css("color", "white");
 
@@ -84,6 +87,8 @@ function doRender(careerCandidateList) {
     const credential = page.generateCredential();
     user.loadRole(credential)
         .then(role => {
+
+            doRenderRoleStatus(role);
 
             if (role.level > 50) {
                 doRenderCareer(role, careerCandidateList);
@@ -279,6 +284,42 @@ function doRenderSpell(role, spellList) {
             $("#" + buttonId).prop("disabled", true);
         }
     }
+}
+
+function doRenderRoleStatus(role) {
+    let html = "";
+    html += "<table style='background-color:#888888;border-width:0'>";
+    html += "<tbody>";
+    html += "<tr>";
+    html += "<th style='background-color:#E8E8D0'>姓名</th>"
+    html += "<th style='background-color:#E0D0B0'>ＬＶ</th>"
+    html += "<th style='background-color:#EFE0C0'>ＨＰ</th>"
+    html += "<th style='background-color:#E8E8D0'>ＭＰ</th>"
+    html += "<th style='background-color:#EFE0C0'>攻击</th>"
+    html += "<th style='background-color:#EFE0C0'>防御</th>"
+    html += "<th style='background-color:#EFE0C0'>智力</th>"
+    html += "<th style='background-color:#EFE0C0'>精神</th>"
+    html += "<th style='background-color:#EFE0C0'>速度</th>"
+    html += "<th style='background-color:#E0D0B0'>属性</th>"
+    html += "<th style='background-color:#E8E8D0'>职业</th>"
+    html += "</tr>";
+    html += "<tr>";
+    html += "<td style='background-color:#E8E8D0'>" + role.name + "</td>"
+    html += "<td style='background-color:#E0D0B0'>" + role.level + "</td>"
+    html += "<td style='background-color:#EFE0C0'>" + role.health + "/" + role.maxHealth + "</td>"
+    html += "<td style='background-color:#E8E8D0'>" + role.mana + "/" + role.maxMana + "</td>"
+    html += "<td style='background-color:#EFE0C0'>" + role.attack + "</td>"
+    html += "<td style='background-color:#EFE0C0'>" + role.defense + "</td>"
+    html += "<td style='background-color:#EFE0C0'>" + role.specialAttack + "</td>"
+    html += "<td style='background-color:#EFE0C0'>" + role.specialDefense + "</td>"
+    html += "<td style='background-color:#EFE0C0'>" + role.speed + "</td>"
+    html += "<td style='background-color:#E0D0B0'>" + role.attack + "</td>"
+    html += "<td style='background-color:#E8E8D0'>" + role.career + "</td>"
+    html += "</tr>";
+    html += "</tbody>";
+    html += "</table>";
+
+    $("#roleStatus").html(html);
 }
 
 function doRefresh(credential) {
