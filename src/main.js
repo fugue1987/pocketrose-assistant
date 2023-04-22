@@ -28,7 +28,6 @@ import {
     __utilities_checkIfEquipmentFullExperience,
     _ACCESSORY_DICT,
     _ARMOR_DICT,
-    _CAREER_DICT,
     _CITY_DICT,
     _WEAPON_DICT,
     isUnavailableTreasureHintMap,
@@ -57,6 +56,7 @@ import {
 import {TownRequestInterceptor} from "./town";
 import {WildRequestInterceptor} from "./wild";
 import {PersonalRequestInterceptor} from "./personal/personal";
+import {_CAREER_DICT} from "./pocket/pocket_career";
 
 const CGI_MAPPING = {
     "/battle.cgi": new battle.BattleRequestInterceptor(),
