@@ -107,6 +107,7 @@ function doRender(itemList) {
     html += "           <th style='background-color:#E0D0B0'>经验</th>";
     html += "           <th style='background-color:#EFE0C0'>属性</th>";
     html += "           <th style='background-color:#EFE0C0'>出售</th>";
+    html += "           <th style='background-color:#EFE0C0'>修理</th>";
     html += "       </tr>";
     for (const item of itemList.asList()) {
         if (item.isTreasureBag || item.isGoldenCage) {
@@ -170,15 +171,17 @@ function doRender(itemList) {
         html += "    </td>";
         html += "    <td style='background-color:#EFE0C0' id='sellButtonContainer_" + item.index + "'>";
         html += "    </td>";
+        html += "    <td style='background-color:#EFE0C0'>" + (item.isRepairable ? "<input type='button' class='ItemUIButton' id='repairItem_" + item.index + "' value='修'>" : "");
+        html += "    </td>";
         html += "</tr>";
     }
     html += "       <tr>";
-    html += "           <td style='background-color:#E8E8D0;text-align:left;font-weight:bold' colspan='19'>";
+    html += "           <td style='background-color:#E8E8D0;text-align:left;font-weight:bold' colspan='20'>";
     html += "               <span style='color:navy'>目前剩余空位数：</span><span style='color:red'>" + (20 - itemList.asList().length) + "</span>";
     html += "           </td>";
     html += "       </tr>";
     html += "       <tr>";
-    html += "           <td style='background-color:#E8E8D0;text-align:center' colspan='19'>";
+    html += "           <td style='background-color:#E8E8D0;text-align:center' colspan='20'>";
     html += "               <table style='background-color:#E8E8D0;border-width:0;width:100%'>";
     html += "                   <tbody style='background-color:#E8E8D0'>";
     html += "                       <tr style='background-color:#E8E8D0'>";
@@ -197,7 +200,7 @@ function doRender(itemList) {
     html += "           </td>";
     html += "       </tr>";
     html += "       <tr>";
-    html += "          <td style='background-color:#E8E8D0;text-align:right' colspan='19'>";
+    html += "          <td style='background-color:#E8E8D0;text-align:right' colspan='20'>";
     html += "              <input type='text' id='receiver' size='15' maxlength='20'>";
     html += "              <input type='button' class='ItemUIButton' id='searchButton' value='找人'>";
     html += "              <select id='receiverSelect'><option value=''>选择发送对象</select>";
@@ -205,7 +208,7 @@ function doRender(itemList) {
     html += "          </td>"
     html += "       </tr>";
     html += "       <tr>";
-    html += "           <td style='background-color:#E8E8D0;text-align:center' colspan='19'>";
+    html += "           <td style='background-color:#E8E8D0;text-align:center' colspan='20'>";
     html += "           <input type='button' class='ItemUIButton' id='refreshButton' value='刷新装备管理界面'>";
     html += "           </td>"
     html += "       </tr>";
@@ -270,6 +273,9 @@ function doRender(itemList) {
             __bindSellButton(it.index);
         });
     });
+
+    // 绑定可以修理的装备
+    __bindRepairButton(itemList);
 }
 
 function doRefresh(credential) {
@@ -456,6 +462,25 @@ function __bindRefreshButton() {
         const credential = page.generateCredential();
         doRefresh(credential);
     });
+}
+
+function __bindRepairButton(itemList) {
+    for (const item of itemList.asList()) {
+        const buttonId = "repairItem_" + item.index;
+        if ($("#" + buttonId).length > 0) {
+            $("#" + buttonId).click(function () {
+                const index = $(this).attr("id").split("_")[1];
+                const credential = page.generateCredential();
+                const request = credential.asRequest();
+                request["select"] = index;
+                request["mode"] = "MY_ARM2";
+                network.sendPostRequest("town.cgi", request, function () {
+                    message.publishMessageBoard("选定装备完成了修理。");
+                    doRefresh(credential);
+                });
+            });
+        }
+    }
 }
 
 function __bindSellButton(index) {
