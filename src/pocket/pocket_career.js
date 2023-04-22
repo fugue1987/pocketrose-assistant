@@ -56,3 +56,14 @@ export function parseCareerCandidateList(pageHTML) {
         });
     return careerCandidateList;
 }
+
+export function findCareerNameById(id) {
+    const careerNames = Object.keys(_CAREER_DICT);
+    for (let i = 0; i < careerNames.length; i++) {
+        const careerName = careerNames[i];
+        if (_CAREER_DICT[careerName]["id"] === id) {
+            return careerName;
+        }
+    }
+    return undefined;
+}

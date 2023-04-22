@@ -20,6 +20,7 @@ function doProcess() {
     const imageHTML = constant.getNPCImageHTML("白皇");
     message.createFooterMessage(imageHTML);
     message.writeFooterMessage("是的，你没有看错，换人了，某幕后黑手不愿意出镜。不过请放心，转职方面我是专业的，毕竟我一直制霸钉耙榜。<br>");
+    message.writeFooterMessage("蓝色的职业代表你已经掌握了。我会把为你推荐的职业红色加深标识出来，当然，前提是如果有能推荐的。<br>");
 
     const pageHTML = page.currentPageHTML();
     const careerCandidateList = career.parseCareerCandidateList(pageHTML);
@@ -178,7 +179,7 @@ function doRenderCareer(role, careerCandidateList) {
     $("#careerCell").html(html);
 
     // 已经掌握的职业用蓝色标记
-    // 没有转职的职业用红色标记
+    // 没有掌握的职业用红色标记（满级的情况下）
     // 不在转职列表中的按钮删除
     if (role.masterCareerList.includes("小天位")) {
         $("#career_32").css("color", "blue");
@@ -194,8 +195,10 @@ function doRenderCareer(role, careerCandidateList) {
         if (role.masterCareerList.includes(careerName)) {
             $("#" + buttonId).css("color", "blue");
         } else {
-            $("#" + buttonId).css("color", "red");
-            $("#" + buttonId).css("font-weight", "bold");
+            if (role.level >= 150) {
+                $("#" + buttonId).css("color", "red");
+                $("#" + buttonId).css("font-weight", "bold");
+            }
         }
         if (!careerCandidateList.includes(careerName)) {
             $("#" + buttonId).prop("disabled", true);
@@ -261,7 +264,21 @@ function doRefresh(credential) {
 }
 
 function __doBindCareerButton() {
-
+    const careerNames = Object.keys(career._CAREER_DICT);
+    for (let i = 0; i < careerNames.length; i++) {
+        const careerName = careerNames[i];
+        const careerId = career._CAREER_DICT[careerName]["id"];
+        const buttonId = "career_" + careerId;
+        if ($("#" + buttonId).length > 0 && !$("#" + buttonId).prop("disabled")) {
+            $("#" + buttonId).click(function () {
+                const careerId = parseInt($(this).attr("id").split("_")[1]);
+                const careerName = career.findCareerNameById(careerId);
+                if (!confirm("请确认要转职到" + careerName + "？")) {
+                    return;
+                }
+            });
+        }
+    }
 }
 
 function __doBindSpellButton(spellList) {
