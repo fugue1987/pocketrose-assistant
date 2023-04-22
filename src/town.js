@@ -16,6 +16,7 @@ import * as pocket from "./pocket";
 import * as user from "./user";
 import * as util from "./util";
 import * as npc from "./npc";
+import * as castle from "./pocket/pocket_castle";
 
 /**
  * 用于拦截并处理浏览器访问town.cgi的请求后返回的页面。
@@ -67,7 +68,7 @@ class TownInnPostHouse {
             $("#townId").text(town.id);
             $("#moveToTown").prop("disabled", false);
 
-            user.loadCastle(role.name).then(castle => {
+            castle.loadCastle(role.name).then(castle => {
                 if (castle !== undefined) {
                     const name = castle.name;
                     const x = castle.coordinate.x;
