@@ -33,16 +33,33 @@ function doProcess() {
         .html("<td style='background-color:#F8F0E0'>" +
             "<div id='CareerUI'></div><div id='Eden' style='display:none'></div>" +
             "</td>");
+
+    $("#Eden").html("" +
+        "<form action='' method='post' id='edenForm'>" +
+        "        <input type='hidden' name='id' value='" + credential.id + "'>" +
+        "        <input type='hidden' name='pass' value='" + credential.pass + "'>" +
+        "        <div id='edenFormPayload' style='display:none'></div>" +
+        "        <input type='submit' id='edenSubmit'>" +
+        "</form>");
+
     $("table:first tr:first")
         .next().next().next()
-        .after($("<tr id='lastRow'><td style='background-color:#F8F0E0;text-align:center'>" +
-            "<form action='status.cgi' method='post'>" +
-            "<input type='hidden' name='id' value='" + credential.id + "'>" +
-            "<input type='hidden' name='pass' value='" + credential.pass + "'>" +
-            "<input type='hidden' name='mode' value='STATUS'>" +
-            "<input type='submit' value='返回城市'>" +
-            "</form>" +
+        .after($("<tr><td style='background-color:#F8F0E0;text-align:center'>" +
+            "<input type='button' value='返回城市' id='returnButton'>" +
+            "<input type='button' value='装备管理' id='itemManagementButton'>" +
             "</td></tr>"));
+
+    $("#returnButton").click(function () {
+        $("#edenForm").attr("action", "status.cgi");
+        $("#edenFormPayload").html("<input type='hidden' name='mode' value='STATUS'>");
+        $("#edenSubmit").trigger("click");
+    });
+    $("#itemManagementButton").click(function () {
+        $("#edenForm").attr("action", "mydata.cgi");
+        $("#edenFormPayload").html("<input type='hidden' name='mode' value='USE_ITEM'>");
+        $("#edenSubmit").trigger("click");
+    });
+
 
     doRender(careerCandidateList);
 }
