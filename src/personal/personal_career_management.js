@@ -1,5 +1,6 @@
 import * as constant from "../common/common_constant";
 import * as message from "../common/common_message";
+import * as network from "../common/common_network";
 import * as page from "../common/common_page";
 import * as user from "../pocket/pocket_user";
 import * as util from "../common/common_util";
@@ -74,10 +75,93 @@ function doParseRole(pageHTML) {
     return role;
 }
 
-function doRender(careerCandidateList, role) {
+function doRender(careerCandidateList) {
     const credential = page.generateCredential();
-    spell.loadSpellList(credential)
-        .then((spellList) => {
-            console.log(JSON.stringify(spellList.asList()));
+    user.loadRole(credential)
+        .then(role => {
+            spell.loadSpellList(credential)
+                .then(spellList => {
+
+                    let html = "";
+                    html += "<table style='background-color:#888888;width:100%;text-align:center'>";
+                    html += "<tbody style='background-color:#F8F0E0'>";
+                    html += "<tr>";
+                    html += "<td>";
+                    html += doGenerateSpellHTML(role, spellList);
+                    html += "</td>";
+                    html += "</tr>";
+                    html += "</toby>";
+                    html += "</table>";
+
+                    $("#CareerUI").html(html);
+
+                    __doBindSpellButton(spellList);
+
+                });
         });
+}
+
+function doGenerateSpellHTML(role, spellList) {
+    let html = "";
+    html += "<table style='background-color:#888888;width:100%;text-align:center'>";
+    html += "<tbody style='background-color:#F8F0E0'>";
+    html += "<tr>";
+    html += "<th colspan='7' style='background-color:#E8E8D0;color:navy;text-align:center;font-weight:bold;font-size:120%'>＜＜ 设 置 技 能 ＞＞</th>";
+    html += "</tr>";
+    html += "<tr>";
+    html += "<th style='background-color:#E8E8D0'>使用</th>";
+    html += "<th style='background-color:#EFE0C0'>技能</th>";
+    html += "<th style='background-color:#E0D0B0'>威力</th>";
+    html += "<th style='background-color:#EFE0C0'>确率</th>";
+    html += "<th style='background-color:#E0D0B0'>ＰＰ</th>";
+    html += "<th style='background-color:#EFE0C0'>评分</th>";
+    html += "<th style='background-color:#E0D0B0'>设置</th>";
+    html += "</tr>";
+    for (const spell of spellList.asList()) {
+        const using = spell.name === role.spell;
+        html += "<tr>";
+        html += "<td style='background-color:#E8E8D0'>" + (using ? "★" : "") + "</td>";
+        html += "<td style='background-color:#EFE0C0'>" + spell.name + "</td>";
+        html += "<td style='background-color:#E0D0B0'>" + spell.power + "</td>";
+        html += "<td style='background-color:#EFE0C0'>" + spell.accuracy + "</td>";
+        html += "<td style='background-color:#E0D0B0'>" + spell.pp + "</td>";
+        html += "<td style='background-color:#EFE0C0'>" + spell.score + "</td>";
+        html += "<td style='background-color:#E0D0B0'>" +
+            (using ? "" : "<input type='button' class='CareerUIButton' id='set_spell_" + spell.id + "' value='选择'>") +
+            "</td>";
+        html += "</tr>";
+    }
+    html += "</toby>";
+    html += "</table>";
+    return html;
+}
+
+function doRefresh(credential) {
+    const request = credential.asRequest();
+    request["mode"] = "CHANGE_OCCUPATION";
+    network.sendPostRequest("mydata.cgi", request, function (html) {
+        const careerCandidateList = doParseCareerCandidateList(html);
+        $(".CareerUIButton").unbind("click");
+        $("#CareerUI").html("");
+        doRender(careerCandidateList);
+    });
+}
+
+function __doBindSpellButton(spellList) {
+    for (const spell of spellList.asList()) {
+        const buttonId = "set_spell_" + spell.id;
+        if ($("#" + buttonId).length > 0) {
+            $("#" + buttonId).click(function () {
+                const spellId = $(this).attr("id").split("_")[2];
+                const credential = page.generateCredential();
+                const request = credential.asRequest();
+                request["mode"] = "MAGIC_SET";
+                request["ktec_no"] = spellId;
+                network.sendPostRequest("mydata.cgi", request, function (html) {
+                    message.processResponseHTML(html);
+                    doRefresh(credential);
+                });
+            });
+        }
+    }
 }
