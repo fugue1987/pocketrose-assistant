@@ -17,6 +17,7 @@ export class PocketRole {
     maxHealth;
     mana;
     maxMana;
+    spell;
     attack;
     defense;
     specialAttack;
@@ -90,6 +91,10 @@ export async function loadRole(credential) {
                 const manaText = $(td).next().text();
                 role.mana = parseInt(util.substringBefore(manaText, "/"));
                 role.maxMana = parseInt(util.substringAfter(manaText, "/"));
+            }
+            if (text === "技") {
+                const spellText = $(td).next().text();
+                role.spell = util.substringBefore(spellText, "(");
             }
             if (text === "攻击力" && role.attack < 0) {
                 role.attack = parseInt($(td).next().text());
