@@ -14,6 +14,9 @@ export class PersonalCareerManagement {
 }
 
 function doProcess() {
+    $("img[alt='神官']").parent().prev().attr("id", "messageBoard");
+    $("img[alt='神官']").parent().prev().css("color", "white");
+
     const imageHTML = constant.getNPCImageHTML("白皇");
     message.createFooterMessage(imageHTML);
     message.writeFooterMessage("是的，你没有看错，换人了，某幕后黑手不愿意出镜。不过请放心，转职方面我是专业的，毕竟我一直制霸钉耙榜。<br>");
