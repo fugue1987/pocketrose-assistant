@@ -4,7 +4,7 @@ import * as page from "./page";
 import * as pet from "./pocket/pocket_pet";
 import * as pocket from "./pocket";
 import * as util from "./common/common_util";
-import {Coordinate} from "./geo";
+import {Coordinate} from "./common/common_util";
 import * as option from "./option";
 import * as service from "./service";
 

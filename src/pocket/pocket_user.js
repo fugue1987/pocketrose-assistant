@@ -6,8 +6,8 @@
 
 import * as network from "../network";
 import * as util from "../common/common_util";
+import {Coordinate} from "../common/common_util";
 import * as pocket from "../pocket";
-import * as geo from "../geo";
 
 export class PocketRole {
 
@@ -117,7 +117,7 @@ export async function loadRole(credential) {
                     const s = util.substringBetween(locationText, "(", ")");
                     const x = util.substringBefore(s, ",");
                     const y = util.substringAfter(s, ",");
-                    role.coordinate = new geo.Coordinate(parseInt(x), parseInt(y));
+                    role.coordinate = new Coordinate(parseInt(x), parseInt(y));
                     role.castleName = util.substringBefore(locationText, " (");
                 } else {
                     // 在城市或者野外

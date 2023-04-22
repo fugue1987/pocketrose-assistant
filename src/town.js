@@ -8,13 +8,13 @@ import * as bank from "./bank";
 import * as dashboard from "./dashboard";
 import * as message from "./message";
 import * as network from "./network";
-import * as geo from "./geo";
 import * as map from "./map";
 import * as page from "./page";
 import {generateCredential} from "./page";
 import * as pocket from "./pocket";
 import * as user from "./pocket/pocket_user";
 import * as util from "./common/common_util";
+import {Coordinate} from "./common/common_util";
 import * as npc from "./npc";
 import * as castle from "./pocket/pocket_castle";
 
@@ -203,7 +203,7 @@ class TownInnPostHouse {
             const castleName = util.substringAfter(castleText, " ");
             const x = parseInt(util.substringBefore(location, ","));
             const y = parseInt(util.substringAfter(location, ","));
-            const destination = new geo.Coordinate(x, y);
+            const destination = new Coordinate(x, y);
 
             const role = new user.PocketRole();
             role.name = $("#player").text();
@@ -956,7 +956,7 @@ class TownAdventurerGuild {
 
                     map.leaveTown(credential).then(plan => {
                         plan.source = town.coordinate;
-                        plan.destination = new geo.Coordinate(x, y);
+                        plan.destination = new Coordinate(x, y);
                         map.executeMovePlan(plan).then(() => {
                             message.writeMessageBoard("\"我们到了\"，车夫粗鲁的喊声惊醒了昏昏欲睡的" + player);
                             message.writeMessageBoard(player + "暗暗发誓再也不乘坐这架马车了");
@@ -981,7 +981,7 @@ class TownAdventurerGuild {
                         const mapX = parseInt($(checkbox).parent().next().next().next().next().text());
                         const mapY = parseInt($(checkbox).parent().next().next().next().next().next().text());
                         if (!pocket.isUnavailableTreasureHintMap(mapX, mapY)) {
-                            candidates.push(new geo.Coordinate(mapX, mapY));
+                            candidates.push(new Coordinate(mapX, mapY));
                         }
                     }
                 });

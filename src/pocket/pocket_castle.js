@@ -1,6 +1,6 @@
 import * as network from "../network";
 import * as util from "../common/common_util";
-import * as geo from "../geo";
+import {Coordinate} from "../common/common_util";
 
 /**
  * 城堡的数据结构
@@ -65,7 +65,7 @@ function getAllCastles(callback) {
                 location = util.substringBetween(location, "(", ")");
                 let x = util.substringBefore(location, ",");
                 let y = util.substringAfter(location, ",");
-                const coordinate = new geo.Coordinate(parseInt(x), parseInt(y));
+                const coordinate = new Coordinate(parseInt(x), parseInt(y));
                 castles[owner] = new PocketCastle(name, owner, coordinate);
             }
         });

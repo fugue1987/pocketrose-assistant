@@ -4,10 +4,9 @@
  * ============================================================================
  */
 
-import * as geo from "./geo";
-import {Coordinate} from "./geo";
-import * as network from "./network";
 import * as util from "./common/common_util";
+import {calculateDirection, calculateDistance, calculatePath, Coordinate} from "./common/common_util";
+import * as network from "./network";
 import * as message from "./message";
 import * as pocket from "./pocket";
 
@@ -74,7 +73,7 @@ export class MovePlan {
 export async function executeMovePlan(plan) {
     const doExecuteMovePlan = (plan) => {
         return new Promise((resolve) => {
-            const pathList = geo.calculatePath(
+            const pathList = calculatePath(
                 plan.source,
                 plan.destination,
                 plan.scope,
@@ -105,8 +104,8 @@ function moveOnPath(credential, pathList, index, callback) {
             const from = pathList[index];
             const to = pathList[index + 1];
 
-            const direction = geo.calculateDirection(from, to);
-            const distance = geo.calculateDistance(from, to);
+            const direction = calculateDirection(from, to);
+            const distance = calculateDistance(from, to);
 
             const request = credential.asRequest();
             request["con"] = "2";
