@@ -4,7 +4,7 @@
  * ============================================================================
  */
 
-import * as util from "../util";
+import * as util from "./util";
 import * as constant from "./common_constant";
 
 /**

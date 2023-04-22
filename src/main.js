@@ -35,7 +35,7 @@ import {
     transferCareerRequirementDict
 } from "./pocket";
 import * as pokemon from "./pokemon";
-import * as util from "./util";
+import * as util from "./common/util";
 import {
     __cookie_getDepositBattleNumber,
     __cookie_getDepositButtonText,

@@ -5,7 +5,7 @@
  */
 
 import * as constant from "../common/common_constant";
-import * as util from "../util";
+import * as util from "../common/util";
 import * as network from "../network";
 
 /**

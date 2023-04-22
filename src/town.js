@@ -14,7 +14,7 @@ import * as page from "./page";
 import {generateCredential} from "./page";
 import * as pocket from "./pocket";
 import * as user from "./pocket/pocket_user";
-import * as util from "./util";
+import * as util from "./common/util";
 import * as npc from "./npc";
 import * as castle from "./pocket/pocket_castle";
 

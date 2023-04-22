@@ -12,7 +12,7 @@
  * ============================================================================
  */
 
-import * as util from "../util";
+import * as util from "../common/util";
 import * as page from "../common/common_page";
 
 // 口袋所有的装备都被分为以下四类：
