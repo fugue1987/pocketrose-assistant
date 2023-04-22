@@ -478,12 +478,9 @@ function postProcessPersonalStatusRelatedFunctionalities(htmlText) {
         // 复用个人接收的信作为Cookie管理的页面
         __personalStatus_cookieManagement(htmlText);
     }
-    // if (htmlText.indexOf("物品使用．装备") != -1) {
-    //     __personalStatus_equipment(htmlText);
-    // }
-    if (htmlText.indexOf("* 转职神殿 *") != -1) {
-        __personalStatus_transferCareer(htmlText);
-    }
+    //if (htmlText.indexOf("* 转职神殿 *") != -1) {
+    //    __personalStatus_transferCareer(htmlText);
+    //}
 }
 
 function __personalStatus_cookieManagement(htmlText) {
