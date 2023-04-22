@@ -13,7 +13,7 @@ import * as map from "./map";
 import * as page from "./page";
 import {generateCredential} from "./page";
 import * as pocket from "./pocket";
-import * as user from "./user";
+import * as user from "./pocket/pocket_user";
 import * as util from "./util";
 import * as npc from "./npc";
 import * as castle from "./pocket/pocket_castle";
@@ -205,7 +205,7 @@ class TownInnPostHouse {
             const y = parseInt(util.substringAfter(location, ","));
             const destination = new geo.Coordinate(x, y);
 
-            const role = new user.Role();
+            const role = new user.PocketRole();
             role.name = $("#player").text();
             role.townName = town.name;
             role.coordinate = town.coordinate;

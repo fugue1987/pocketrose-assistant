@@ -12,7 +12,7 @@ import {generateCredential} from "./page";
 import * as pocket from "./pocket";
 import * as util from "./util";
 import * as finance from "./bank";
-import * as user from "./user";
+import * as user from "./pocket/pocket_user";
 
 /**
  * 城堡相关页面的处理入口
