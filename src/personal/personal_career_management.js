@@ -3,6 +3,7 @@ import * as message from "../common/common_message";
 import * as page from "../common/common_page";
 import * as user from "../pocket/pocket_user";
 import * as util from "../common/common_util";
+import * as spell from "../pocket/pocket_spell";
 
 export class PersonalCareerManagement {
     process() {
@@ -29,7 +30,7 @@ function doProcess() {
             "</td>");
     $("table:first tr:first")
         .next().next().next()
-        .after($("<tr><td style='background-color:#F8F0E0;text-align:center'>" +
+        .after($("<tr id='lastRow'><td style='background-color:#F8F0E0;text-align:center'>" +
             "<form action='status.cgi' method='post'>" +
             "<input type='hidden' name='id' value='" + credential.id + "'>" +
             "<input type='hidden' name='pass' value='" + credential.pass + "'>" +
@@ -37,6 +38,8 @@ function doProcess() {
             "<input type='submit' value='返回城市'>" +
             "</form>" +
             "</td></tr>"));
+
+    doRender(careerCandidateList);
 }
 
 function doParseCareerCandidateList(pageHTML) {
@@ -69,4 +72,12 @@ function doParseRole(pageHTML) {
     role.career = $(table).find("tr:eq(1) td:eq(5)").text();
     role.cash = parseInt(util.substringBefore($(table).find("tr:eq(2) td:eq(1)").text(), " GOLD"));
     return role;
+}
+
+function doRender(careerCandidateList, role) {
+    const credential = page.generateCredential();
+    spell.loadSpellList(credential)
+        .then((spellList) => {
+            console.log(JSON.stringify(spellList.asList()));
+        });
 }
