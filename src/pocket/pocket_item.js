@@ -63,6 +63,13 @@ const NO_EXPERIENCE_ITEM_LIST = [
     "宠物蛋"
 ];
 
+const NONE_REPAIRABLE_ITEM_LIST = [
+    "大师球",
+    "宗师球",
+    "超力怪兽球",
+    "宠物蛋"
+];
+
 /**
  * 属性重铠
  * @type {string[]}
@@ -146,6 +153,14 @@ export class PocketItem {
 
     get isGoldenCage() {
         return this.isItem && this.name === "黄金笼子";
+    }
+
+    get isRepairable() {
+        if (this.isItem) {
+            return this.name.includes("(自动)");
+        } else {
+            return !NONE_REPAIRABLE_ITEM_LIST.includes(this.name);
+        }
     }
 
     get fullExperienceRatio() {
