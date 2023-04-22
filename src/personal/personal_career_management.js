@@ -76,32 +76,36 @@ function doParseRole(pageHTML) {
 }
 
 function doRender(careerCandidateList) {
+
+    let html = "";
+    html += "<table style='background-color:#888888;width:100%;text-align:center'>";
+    html += "<tbody style='background-color:#F8F0E0'>";
+    html += "<tr>";
+    html += "<td id='spellCell'>";
+    html += "</td>";
+    html += "</tr>";
+    html += "<tr>";
+    html += "<td id='careerCell'>";
+    html += "</td>";
+    html += "</tr>";
+    html += "</toby>";
+    html += "</table>";
+    $("#CareerUI").html(html);
+
     const credential = page.generateCredential();
     user.loadRole(credential)
         .then(role => {
+
             spell.loadSpellList(credential)
                 .then(spellList => {
-
-                    let html = "";
-                    html += "<table style='background-color:#888888;width:100%;text-align:center'>";
-                    html += "<tbody style='background-color:#F8F0E0'>";
-                    html += "<tr>";
-                    html += "<td>";
-                    html += doGenerateSpellHTML(role, spellList);
-                    html += "</td>";
-                    html += "</tr>";
-                    html += "</toby>";
-                    html += "</table>";
-
-                    $("#CareerUI").html(html);
-
+                    doRenderSpell(role, spellList);
                     __doBindSpellButton(spellList);
 
                 });
         });
 }
 
-function doGenerateSpellHTML(role, spellList) {
+function doRenderSpell(role, spellList) {
     let html = "";
     html += "<table style='background-color:#888888;width:100%;text-align:center'>";
     html += "<tbody style='background-color:#F8F0E0'>";
@@ -127,13 +131,22 @@ function doGenerateSpellHTML(role, spellList) {
         html += "<td style='background-color:#E0D0B0'>" + spell.pp + "</td>";
         html += "<td style='background-color:#EFE0C0'>" + spell.score + "</td>";
         html += "<td style='background-color:#E0D0B0'>" +
-            (using ? "" : "<input type='button' class='CareerUIButton' id='set_spell_" + spell.id + "' value='选择'>") +
+            "<input type='button' class='CareerUIButton' id='set_spell_" + spell.id + "' value='选择'>" +
             "</td>";
         html += "</tr>";
     }
     html += "</toby>";
     html += "</table>";
-    return html;
+
+    $("#spellCell").html(html);
+
+    for (const spell of spellList.asList()) {
+        const using = spell.name === role.spell;
+        if (using) {
+            const buttonId = "set_spell_" + spell.id;
+            $("#" + buttonId).prop("disabled", true);
+        }
+    }
 }
 
 function doRefresh(credential) {
@@ -150,7 +163,7 @@ function doRefresh(credential) {
 function __doBindSpellButton(spellList) {
     for (const spell of spellList.asList()) {
         const buttonId = "set_spell_" + spell.id;
-        if ($("#" + buttonId).length > 0) {
+        if ($("#" + buttonId).length > 0 && !$("#" + buttonId).prop("disabled")) {
             $("#" + buttonId).click(function () {
                 const spellId = $(this).attr("id").split("_")[2];
                 const credential = page.generateCredential();
