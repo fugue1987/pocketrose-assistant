@@ -1,5 +1,5 @@
 import * as network from "../network";
-import * as util from "../common/util";
+import * as util from "../common/common_util";
 import * as geo from "../geo";
 
 /**

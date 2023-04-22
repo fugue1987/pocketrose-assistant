@@ -5,7 +5,7 @@
  */
 
 import * as network from "../network";
-import * as util from "../common/util";
+import * as util from "../common/common_util";
 import * as pocket from "../pocket";
 import * as geo from "../geo";
 

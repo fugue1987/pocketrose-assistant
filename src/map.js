@@ -7,7 +7,7 @@
 import * as geo from "./geo";
 import {Coordinate} from "./geo";
 import * as network from "./network";
-import * as util from "./common/util";
+import * as util from "./common/common_util";
 import * as message from "./message";
 import * as pocket from "./pocket";
 

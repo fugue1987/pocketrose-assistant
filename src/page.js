@@ -5,8 +5,8 @@
  */
 
 import {loadNPC} from "./npc";
-import * as util from "./common/util";
-import {Credential} from "./common/util";
+import * as util from "./common/common_util";
+import {Credential} from "./common/common_util";
 import * as pocket from "./pocket";
 import {isProhibitSellingItem} from "./pocket";
 

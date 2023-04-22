@@ -4,7 +4,7 @@
  * ============================================================================
  */
 import * as pocket from "../pocket";
-import * as util from "../common/util";
+import * as util from "../common/common_util";
 
 export class PersonalStatus {
     process() {

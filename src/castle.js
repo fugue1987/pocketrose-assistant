@@ -10,7 +10,7 @@ import {enterTown, leaveCastle} from "./map";
 import * as page from "./page";
 import {generateCredential} from "./page";
 import * as pocket from "./pocket";
-import * as util from "./common/util";
+import * as util from "./common/common_util";
 import * as finance from "./bank";
 import * as user from "./pocket/pocket_user";
 

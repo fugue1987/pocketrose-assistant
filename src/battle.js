@@ -17,7 +17,7 @@ import {
     __cookie_getRepairItemThreshold,
     __cookie_getReturnButtonText
 } from "./option";
-import * as util from "./common/util";
+import * as util from "./common/common_util";
 import * as common_constant from "./common/common_constant";
 import * as common_message from "./common/common_message";
 
