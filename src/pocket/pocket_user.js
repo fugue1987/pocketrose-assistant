@@ -45,6 +45,15 @@ export class PocketRole {
 }
 
 /**
+ * 描述角色状态的数据结构
+ */
+export class PocketRoleStatus {
+
+    canConsecrate;         // 是否可祭奠
+
+}
+
+/**
  * Load role information by specified credential.
  * @param credential User credential.
  * @returns {Promise<PocketRole>}
@@ -158,4 +167,25 @@ export async function loadRole(credential) {
         });
     };
     return await doLoadRole(credential);
+}
+
+/**
+ * 加载角色的状态，从首页解析
+ * @param credential 用户凭证
+ * @returns {Promise<PocketRoleStatus>}
+ */
+export async function loadRoleStatus(credential) {
+    const doLoadRoleStatus = (credential) => {
+        return new Promise((resolve) => {
+            const request = credential.asRequest();
+            request["mode"] = "STATUS";
+            network.sendPostRequest("status.cgi", request, function (html) {
+                const status = new PocketRoleStatus();
+                const text = $(html).text();
+                status.canConsecrate = text.includes("可以进行下次祭奠了");
+                resolve(status);
+            });
+        });
+    };
+    return await doLoadRoleStatus(credential);
 }
