@@ -1,6 +1,8 @@
 import * as constant from "../common/common_constant";
 import * as message from "../common/common_message";
 import * as page from "../common/common_page";
+import * as user from "../pocket/pocket_user";
+import * as util from "../common/common_util";
 
 export class PersonalCareerManagement {
     process() {
@@ -16,6 +18,7 @@ function doProcess() {
 
     const pageHTML = page.currentPageHTML();
     const careerCandidateList = doParseCareerCandidateList(pageHTML);
+    const role = doParseRole(pageHTML);
 
     const credential = page.generateCredential();
     $("table:first").removeAttr("height");
@@ -49,4 +52,21 @@ function doParseCareerCandidateList(pageHTML) {
             }
         });
     return careerCandidateList;
+}
+
+function doParseRole(pageHTML) {
+    const role = new user.PocketRole();
+    const table = $(pageHTML).find("input:radio").closest("table");
+    role.name = $(table).find("tr:eq(1) td:first").text();
+    role.level = parseInt($(table).find("tr:eq(1) td:eq(1)").text());
+    let s = $(table).find("tr:eq(1) td:eq(2)").text();
+    role.health = parseInt(util.substringBeforeSlash(s));
+    role.maxHealth = parseInt(util.substringAfterSlash(s));
+    s = $(table).find("tr:eq(1) td:eq(3)").text();
+    role.mana = parseInt(util.substringBeforeSlash(s));
+    role.maxMana = parseInt(util.substringAfterSlash(s));
+    role.attribute = $(table).find("tr:eq(1) td:eq(4)").text();
+    role.career = $(table).find("tr:eq(1) td:eq(5)").text();
+    role.cash = parseInt(util.substringBefore($(table).find("tr:eq(2) td:eq(1)").text(), " GOLD"));
+    return role;
 }
