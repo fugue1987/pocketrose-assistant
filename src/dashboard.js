@@ -3,10 +3,10 @@ import * as network from "./network";
 import * as page from "./page";
 import * as pet from "./pocket/pocket_pet";
 import * as pocket from "./pocket";
-import * as user from "./user";
 import * as util from "./util";
 import {Coordinate} from "./geo";
 import * as option from "./option";
+import * as service from "./service";
 
 export class TownDashboardProcessor {
 
@@ -104,7 +104,7 @@ export class TownDashboardProcessor {
             const cash = parseInt(util.substringBefore(cashText, " Gold"));
 
             const credential = page.generateCredential();
-            user.lodgeTown(credential)
+            service.lodgeTown(credential)
                 .then(() => {
                     pet.loadPersonalPetList(credential)
                         .then(petList => {
