@@ -313,7 +313,7 @@ function doRenderRoleStatus(role) {
     html += "<td style='background-color:#EFE0C0'>" + role.specialAttack + "</td>"
     html += "<td style='background-color:#EFE0C0'>" + role.specialDefense + "</td>"
     html += "<td style='background-color:#EFE0C0'>" + role.speed + "</td>"
-    html += "<td style='background-color:#E0D0B0'>" + role.attack + "</td>"
+    html += "<td style='background-color:#E0D0B0'>" + role.attribute + "</td>"
     html += "<td style='background-color:#E8E8D0'>" + role.career + "</td>"
     html += "</tr>";
     html += "</tbody>";
