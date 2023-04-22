@@ -5,6 +5,7 @@ import * as page from "../common/common_page";
 import * as user from "../pocket/pocket_user";
 import * as spell from "../pocket/pocket_spell";
 import * as career from "../pocket/pocket_career";
+import {transferCareerRequirementDict} from "../pocket/pocket_career";
 
 export class PersonalCareerManagement {
     process() {
@@ -206,6 +207,17 @@ function doRenderCareer(role, careerCandidateList) {
             $("#" + buttonId).css("font-weight", "normal");
         }
     }
+
+    // 推荐计算
+    const recommendations = __doCalculateRecommendationCareers(role, careerCandidateList);
+    if (recommendations.length > 0) {
+        for (const recommendation of recommendations) {
+            const careerId = career._CAREER_DICT[recommendation]["id"];
+            const buttonId = "career_" + careerId;
+            $("#" + buttonId).css("color", "red");
+            $("#" + buttonId).css("font-weight", "bold");
+        }
+    }
 }
 
 function doRenderSpell(role, spellList) {
@@ -307,4 +319,35 @@ function __doBindSpellButton(spellList) {
             });
         }
     }
+}
+
+function __doCalculateRecommendationCareers(role, careerCandidateList) {
+    // 没有满级，不推荐
+    if (role.level < 150) {
+        return [];
+    }
+    // 没有掌握全部职业，不推荐
+    if (role.masterCareerList.length !== 32) {
+        return [];
+    }
+    const recommendations = [];
+    const targetCareerNames = Object.keys(transferCareerRequirementDict);
+    for (let i = 0; i < targetCareerNames.length; i++) {
+        const name = targetCareerNames[i];
+        const requirement = transferCareerRequirementDict[name];
+        if (role.maxMana >= requirement[0] &&
+            role.attack >= requirement[1] &&
+            role.defense >= requirement[2] &&
+            role.specialAttack >= requirement[3] &&
+            role.specialDefense >= requirement[4] &&
+            role.speed >= requirement[5]) {
+            // 发现了可以推荐的职业
+            recommendations.push(name);
+        }
+    }
+    if (recommendations.length === 0) {
+        // 没有推荐出来，那么就推荐转职列表中的最后一个吧
+        recommendations.push(careerCandidateList[careerCandidateList.length - 1]);
+    }
+    return recommendations;
 }

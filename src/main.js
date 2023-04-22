@@ -30,8 +30,7 @@ import {
     _ARMOR_DICT,
     _CITY_DICT,
     _WEAPON_DICT,
-    isUnavailableTreasureHintMap,
-    transferCareerRequirementDict
+    isUnavailableTreasureHintMap
 } from "./pocket";
 import * as pokemon from "./pokemon/pokemon";
 import * as util from "./common/common_util";
@@ -56,7 +55,7 @@ import {
 import {TownRequestInterceptor} from "./town";
 import {WildRequestInterceptor} from "./wild";
 import {PersonalRequestInterceptor} from "./personal/personal";
-import {_CAREER_DICT} from "./pocket/pocket_career";
+import {_CAREER_DICT, transferCareerRequirementDict} from "./pocket/pocket_career";
 
 const CGI_MAPPING = {
     "/battle.cgi": new battle.BattleRequestInterceptor(),
