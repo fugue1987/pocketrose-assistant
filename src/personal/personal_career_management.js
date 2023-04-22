@@ -68,6 +68,7 @@ function doRender(careerCandidateList) {
 
             if (role.level > 50) {
                 doRenderCareer(role, careerCandidateList);
+                __doBindCareerButton();
             }
 
             spell.loadSpellList(credential)
@@ -90,84 +91,84 @@ function doRenderCareer(role, careerCandidateList) {
     html += "<tr>";
     html += "<th style='background-color:#E8E8D0'>战士系</th>";
     html += "<td style='background-color:#EFE0C0;text-align:left'>" +
-        "<input type='button' id='career_0' value='兵士'>" +
-        "<input type='button' id='career_1' value='武士'>" +
-        "<input type='button' id='career_2' value='剑客'>" +
-        "<input type='button' id='career_3' value='剑侠'>" +
-        "<input type='button' id='career_4' value='魔法剑士'>" +
-        "<input type='button' id='career_5' value='暗黑剑士'>" +
-        "<input type='button' id='career_6' value='奥法剑士'>" +
-        "<input type='button' id='career_7' value='魔导剑士'>" +
-        "<input type='button' id='career_8' value='神圣剑士'>" +
-        "<input type='button' id='career_9' value='圣殿武士'>" +
-        "<input type='button' id='career_10' value='剑圣'>" +
+        "<input type='button' class='CareerUIButton' id='career_0' value='兵士'>" +
+        "<input type='button' class='CareerUIButton' id='career_1' value='武士'>" +
+        "<input type='button' class='CareerUIButton' id='career_2' value='剑客'>" +
+        "<input type='button' class='CareerUIButton' id='career_3' value='剑侠'>" +
+        "<input type='button' class='CareerUIButton' id='career_4' value='魔法剑士'>" +
+        "<input type='button' class='CareerUIButton' id='career_5' value='暗黑剑士'>" +
+        "<input type='button' class='CareerUIButton' id='career_6' value='奥法剑士'>" +
+        "<input type='button' class='CareerUIButton' id='career_7' value='魔导剑士'>" +
+        "<input type='button' class='CareerUIButton' id='career_8' value='神圣剑士'>" +
+        "<input type='button' class='CareerUIButton' id='career_9' value='圣殿武士'>" +
+        "<input type='button' class='CareerUIButton' id='career_10' value='剑圣'>" +
         "</td>";
     html += "</tr>";
 
     html += "<tr>";
     html += "<th style='background-color:#E8E8D0'>枪系</th>";
     html += "<td style='background-color:#EFE0C0;text-align:left'>" +
-        "<input type='button' id='career_11' value='枪战士'>" +
-        "<input type='button' id='career_12' value='重战士'>" +
-        "<input type='button' id='career_13' value='狂战士'>" +
-        "<input type='button' id='career_14' value='龙战士'>" +
+        "<input type='button' class='CareerUIButton' id='career_11' value='枪战士'>" +
+        "<input type='button' class='CareerUIButton' id='career_12' value='重战士'>" +
+        "<input type='button' class='CareerUIButton' id='career_13' value='狂战士'>" +
+        "<input type='button' class='CareerUIButton' id='career_14' value='龙战士'>" +
         "</td>";
     html += "</tr>";
 
     html += "<tr>";
     html += "<th style='background-color:#E8E8D0'>格斗系</th>";
     html += "<td style='background-color:#EFE0C0;text-align:left'>" +
-        "<input type='button' id='career_15' value='武僧'>" +
-        "<input type='button' id='career_16' value='决斗家'>" +
-        "<input type='button' id='career_17' value='拳王'>" +
+        "<input type='button' class='CareerUIButton' id='career_15' value='武僧'>" +
+        "<input type='button' class='CareerUIButton' id='career_16' value='决斗家'>" +
+        "<input type='button' class='CareerUIButton' id='career_17' value='拳王'>" +
         "</td>";
     html += "</tr>";
 
     html += "<tr>";
     html += "<th style='background-color:#E8E8D0'>魔术系</th>";
     html += "<td style='background-color:#EFE0C0;text-align:left'>" +
-        "<input type='button' id='career_18' value='术士'>" +
-        "<input type='button' id='career_19' value='魔法师'>" +
-        "<input type='button' id='career_20' value='咒灵师'>" +
-        "<input type='button' id='career_21' value='大魔导士'>" +
+        "<input type='button' class='CareerUIButton' id='career_18' value='术士'>" +
+        "<input type='button' class='CareerUIButton' id='career_19' value='魔法师'>" +
+        "<input type='button' class='CareerUIButton' id='career_20' value='咒灵师'>" +
+        "<input type='button' class='CareerUIButton' id='career_21' value='大魔导士'>" +
         "</td>";
     html += "</tr>";
 
     html += "<tr>";
     html += "<th style='background-color:#E8E8D0'>祭司系</th>";
     html += "<td style='background-color:#EFE0C0;text-align:left'>" +
-        "<input type='button' id='career_22' value='牧师'>" +
-        "<input type='button' id='career_23' value='德鲁伊'>" +
-        "<input type='button' id='career_24' value='贤者'>" +
+        "<input type='button' class='CareerUIButton' id='career_22' value='牧师'>" +
+        "<input type='button' class='CareerUIButton' id='career_23' value='德鲁伊'>" +
+        "<input type='button' class='CareerUIButton' id='career_24' value='贤者'>" +
         "</td>";
     html += "</tr>";
 
     html += "<tr>";
     html += "<th style='background-color:#E8E8D0'>弓矢系</th>";
     html += "<td style='background-color:#EFE0C0;text-align:left'>" +
-        "<input type='button' id='career_25' value='弓箭士'>" +
-        "<input type='button' id='career_26' value='魔弓手'>" +
-        "<input type='button' id='career_27' value='狙击手'>" +
+        "<input type='button' class='CareerUIButton' id='career_25' value='弓箭士'>" +
+        "<input type='button' class='CareerUIButton' id='career_26' value='魔弓手'>" +
+        "<input type='button' class='CareerUIButton' id='career_27' value='狙击手'>" +
         "</td>";
     html += "</tr>";
 
     html += "<tr>";
     html += "<th style='background-color:#E8E8D0'>游侠系</th>";
     html += "<td style='background-color:#EFE0C0;text-align:left'>" +
-        "<input type='button' id='career_28' value='游侠'>" +
-        "<input type='button' id='career_29' value='巡林客'>" +
-        "<input type='button' id='career_30' value='吟游诗人'>" +
+        "<input type='button' class='CareerUIButton' id='career_28' value='游侠'>" +
+        "<input type='button' class='CareerUIButton' id='career_29' value='巡林客'>" +
+        "<input type='button' class='CareerUIButton' id='career_30' value='吟游诗人'>" +
         "</td>";
     html += "</tr>";
 
     html += "<tr>";
     html += "<th style='background-color:#E8E8D0'>天位系</th>";
     html += "<td style='background-color:#EFE0C0;text-align:left'>" +
-        "<input type='button' id='career_31' value='小天位'>" +
-        "<input type='button' id='career_32' value='强天位'>" +
-        "<input type='button' id='career_33' value='斋天位'>" +
-        "<input type='button' id='career_34' value='太天位'>" +
-        "<input type='button' id='career_35' value='终极'>" +
+        "<input type='button' class='CareerUIButton' id='career_31' value='小天位'>" +
+        "<input type='button' class='CareerUIButton' id='career_32' value='强天位'>" +
+        "<input type='button' class='CareerUIButton' id='career_33' value='斋天位'>" +
+        "<input type='button' class='CareerUIButton' id='career_34' value='太天位'>" +
+        "<input type='button' class='CareerUIButton' id='career_35' value='终极'>" +
         "</td>";
     html += "</tr>";
 
@@ -257,6 +258,10 @@ function doRefresh(credential) {
         $("#CareerUI").html("");
         doRender(careerCandidateList);
     });
+}
+
+function __doBindCareerButton() {
+
 }
 
 function __doBindSpellButton(spellList) {
