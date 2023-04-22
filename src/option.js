@@ -128,6 +128,13 @@ export function __cookie_getEnableNewItemUI() {
     });
 }
 
+export function __cookie_getEnableCareerManagementUI() {
+    const cookieKey = "_POCKETROSE_ASSISTANT__ENABLE_CAREER_MANAGEMENT_UI";
+    return getAndParseCookie(cookieKey, false, function (value) {
+        return value !== "0";
+    });
+}
+
 /**
  * 读取指定键值的Cookie内容并调用回调函数解析。
  * @param cookieKey Cookie键值

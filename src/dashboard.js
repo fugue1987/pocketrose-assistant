@@ -65,6 +65,11 @@ export class TownDashboardProcessor {
             $("option[value='PETSTATUS']").css("background-color", "yellow");
             $("option[value='PET_SEND']").remove();
         }
+        if (option.__cookie_getEnableCareerManagementUI()) {
+            $("option[value='CHANGE_OCCUPATION']").text("职业管理(v2.0)");
+            $("option[value='CHANGE_OCCUPATION']").css("background-color", "yellow");
+            $("option[value='MAGIC']").remove();
+        }
         $("option[value='CHANGEMAP']").text("冒险家公会");
 
         // 为某些支持动态更新的表格设置id

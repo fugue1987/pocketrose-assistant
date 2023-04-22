@@ -31,6 +31,7 @@ import {
     __cookie_getDepositButtonText,
     __cookie_getEnableBattleAutoScroll,
     __cookie_getEnableBattleForceRecommendation,
+    __cookie_getEnableCareerManagementUI,
     __cookie_getEnableNewItemUI,
     __cookie_getEnableNewPetUI,
     __cookie_getEnablePokemonWiki,
@@ -484,6 +485,13 @@ function __personalStatus_cookieManagement(htmlText) {
     itemUISelect += "</select>";
     __page_writeNpcMessage("<li>新装备管理界面 " + itemUISelect + " <a href='javascript:void(0)' id='newItemUI' style='color: yellow'>设置</a></li>");
 
+    let careerManagementUI = __cookie_getEnableCareerManagementUI();
+    let careerManagementUISelect = "<select name='careerManagementUISelect' id='careerManagementUISelect'>";
+    careerManagementUISelect += "<option class='careerManagementUISelect_class' value='1'>启用</option>";
+    careerManagementUISelect += "<option class='careerManagementUISelect_class' value='0'>禁用</option>";
+    careerManagementUISelect += "</select>";
+    __page_writeNpcMessage("<li>新职业管理界面 " + careerManagementUISelect + " <a href='javascript:void(0)' id='careerManagementUI' style='color: yellow'>设置</a></li>");
+
     $(".o1[value='" + Number(b1) + "']").prop("selected", true);
     $(".o2[value='" + Number(b2) + "']").prop("selected", true);
     $(".o3[value='" + b3 + "']").prop("selected", true);
@@ -495,6 +503,7 @@ function __personalStatus_cookieManagement(htmlText) {
     $(".zodiacSelect_class[value='" + Number(zodiac) + "']").prop("selected", true);
     $(".petUISelect_class[value='" + Number(newPetUI) + "']").prop("selected", true);
     $(".itemUISelect_class[value='" + Number(newItemUI) + "']").prop("selected", true);
+    $(".careerManagementUISelect_class[value='" + Number(careerManagementUI) + "']").prop("selected", true);
 
     __generateOwnEquipmentSelectOptions(id, pass);
 
@@ -694,6 +703,12 @@ function __personalStatus_cookieManagement(htmlText) {
     });
     $("#newItemUI").click(function () {
         Cookies.set("_POCKETROSE_ASSISTANT__ENABLE_NEW_ITEM_UI", $("#itemUISelect").val(), {expires: 36500});
+        $("form[action='status.cgi']").attr("action", "mydata.cgi");
+        $("input:hidden[value='STATUS']").attr("value", "LETTER");
+        $("#returnButton").trigger("click");
+    });
+    $("#careerManagementUI").click(function () {
+        Cookies.set("_POCKETROSE_ASSISTANT__ENABLE_CAREER_MANAGEMENT_UI", $("#careerManagementUISelect").val(), {expires: 36500});
         $("form[action='status.cgi']").attr("action", "mydata.cgi");
         $("input:hidden[value='STATUS']").attr("value", "LETTER");
         $("#returnButton").trigger("click");
