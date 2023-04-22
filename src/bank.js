@@ -9,7 +9,7 @@
  */
 
 import * as message from "./message";
-import * as network from "./network";
+import * as network from "./common/common_network";
 
 /**
  * 计算现金和期望值的差额数量（单位万）

@@ -6,7 +6,7 @@
 
 import * as constant from "../common/common_constant";
 import * as util from "../common/common_util";
-import * as network from "../network";
+import * as network from "../common/common_network";
 
 /**
  * 描述宠物的通用数据结构。

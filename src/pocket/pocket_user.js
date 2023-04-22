@@ -4,7 +4,7 @@
  * ============================================================================
  */
 
-import * as network from "../network";
+import * as network from "../common/common_network";
 import * as util from "../common/common_util";
 import {Coordinate} from "../common/common_util";
 import * as pocket from "../pocket";

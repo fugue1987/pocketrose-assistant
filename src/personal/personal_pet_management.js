@@ -8,7 +8,7 @@ import * as message from "../common/common_message";
 import * as page from "../common/common_page";
 import * as pet from "../pocket/pocket_pet";
 import * as util from "../common/common_util";
-import * as network from "../network";
+import * as network from "../common/common_network";
 import * as user from "../pocket/pocket_user";
 import * as bank from "../bank";
 import * as service from "../service";

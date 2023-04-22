@@ -6,7 +6,7 @@
 
 import * as util from "./common/common_util";
 import {calculateDirection, calculateDistance, calculatePath, Coordinate} from "./common/common_util";
-import * as network from "./network";
+import * as network from "./common/common_network";
 import * as message from "./message";
 import * as pocket from "./pocket";
 

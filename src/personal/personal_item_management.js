@@ -5,7 +5,7 @@
  */
 
 import * as bank from "../bank";
-import * as network from "../network";
+import * as network from "../common/common_network";
 import * as user from "../pocket/pocket_user";
 import * as constant from "../common/common_constant";
 import * as message from "../common/common_message";

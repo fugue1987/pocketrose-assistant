@@ -4,7 +4,7 @@
  * ============================================================================
  */
 import * as page from "../page";
-import * as network from "../network";
+import * as network from "../common/common_network";
 
 export class PersonalGoldenCage {
     process() {

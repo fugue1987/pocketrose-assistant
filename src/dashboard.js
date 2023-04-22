@@ -1,5 +1,5 @@
 import * as bank from "./bank";
-import * as network from "./network";
+import * as network from "./common/common_network";
 import * as page from "./page";
 import * as pet from "./pocket/pocket_pet";
 import * as pocket from "./pocket";

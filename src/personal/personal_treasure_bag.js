@@ -6,7 +6,7 @@
 
 import * as item from "../pocket/pocket_item";
 import * as page from "../common/common_page";
-import * as network from "../network";
+import * as network from "../common/common_network";
 
 export class PersonalTreasureBag {
     process() {
