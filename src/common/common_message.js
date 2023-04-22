@@ -45,10 +45,12 @@ export function processResponseHTML(html) {
         const errorMessage = $(html).find("font b").text();
         publishMessageBoard("<b style='color:red'>" + errorMessage + "</b>");
     } else {
-        let successMessage = $(html).find("h2:first").html();
-        successMessage = successMessage.replace("<br>", "");
-        successMessage = "<td>" + successMessage + "</td>";
-        publishMessageBoard($(successMessage).text());
+        $(html).find("h2").each(function (_idx, h2) {
+            let successMessage = $(h2).html();
+            successMessage = successMessage.replace("<br>", "");
+            successMessage = "<td>" + successMessage + "</td>";
+            publishMessageBoard($(successMessage).text());
+        });
     }
 }
 
