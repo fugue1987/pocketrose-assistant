@@ -258,7 +258,7 @@ function __battle_checkIfShouldGoToInn(htmlText, recoverItemEndure) {
         }
     });
     // 生命力低于最大值的配置比例，住宿推荐
-    if (health <= maxHealth * setup.getLodgeHealthLostRatio()) {
+    if (setup.getLodgeHealthLostRatio() > 0 && (health <= maxHealth * setup.getLodgeHealthLostRatio())) {
         return 1;
     }
     // 如果MANA小于50%并且小于配置点数，住宿推荐
