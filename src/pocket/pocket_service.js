@@ -141,3 +141,21 @@ export async function withdrawFromCastleBank(credential, amount) {
     }
     await doWithdrawFromCastleBank(credential, amount);
 }
+
+/**
+ * Return castle warehouse page HTML.
+ * @param credential
+ * @returns {Promise<string>}
+ */
+export async function castleWarehouse(credential) {
+    const action = (credential) => {
+        return new Promise((resolve) => {
+            const request = credential.asRequest();
+            request["mode"] = "CASTLE_ITEM";
+            network.sendPostRequest("castle.cgi", request, function (html) {
+                resolve(html);
+            });
+        });
+    };
+    return await action(credential);
+}
