@@ -18,6 +18,7 @@ import {Coordinate} from "./common/common_util";
 import * as npc from "./npc";
 import * as castle from "./pocket/pocket_castle";
 import {findTownByName, getTown} from "./pocket/pocket_town";
+import {TownPetMapHouse} from "./town/town_pet_map_house";
 
 /**
  * 用于拦截并处理浏览器访问town.cgi的请求后返回的页面。
@@ -46,6 +47,8 @@ export class TownRequestInterceptor {
             new TownGemStore().process();
         } else if (text.includes("*  藏宝图以旧换新业务 *")) {
             new TownAdventurerGuild().process();
+        } else if (text.includes("* 宠物图鉴 *")) {
+            new TownPetMapHouse().process();
         }
     }
 }
