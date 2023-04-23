@@ -34,6 +34,10 @@ export function getDepositBattleCount() {
     return storage.getInteger("_pa_005", 10);
 }
 
+export function isBattleResultAutoScroll() {
+    return storage.getBoolean("_pa_006");
+}
+
 export class PersonalSetup {
 
     process() {

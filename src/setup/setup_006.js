@@ -1,3 +1,5 @@
+import * as storage from "../common/common_storage";
+
 export class SetupItem {
 
     render() {
@@ -8,6 +10,7 @@ export class SetupItem {
 
 const _id = "006";
 const _name = "战斗页自动触底";
+const _key = "_pa_" + _id;
 
 function doRender() {
     let html = "";
@@ -18,15 +21,26 @@ function doRender() {
     html += "</tr>";
 
     $("#SetupItemTable").append($(html));
+
+    const value = storage.getBoolean(_key);
+    $(".Class_" + _id + "[value='" + Number(value) + "']").prop("selected", true);
+
     $("#Setup_" + _id).click(function () {
         __doSaveSetupItem();
     });
 }
 
 function __doGenerateSetupItem() {
-    return "";
+    let selection = "";
+    selection += "<select id='Select_" + _id + "'>";
+    selection += "<option class='Class_" + _id + "' value='1'>启用</option>";
+    selection += "<option class='Class_" + _id + "' value='0'>禁用</option>";
+    selection += "</select>";
+    return selection;
 }
 
 function __doSaveSetupItem() {
+    const value = $("#Select_" + _id).val();
+    storage.set(_key, value);
     $("#refreshButton").trigger("click");
 }

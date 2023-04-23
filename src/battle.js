@@ -6,7 +6,6 @@
 
 import {
     __cookie_getDepositButtonText,
-    __cookie_getEnableBattleAutoScroll,
     __cookie_getEnableBattleForceRecommendation,
     __cookie_getEnableZodiacFlashBattle,
     __cookie_getLodgeButtonText,
@@ -111,7 +110,7 @@ export function __battle(htmlText) {
         if (__cookie_getEnableBattleForceRecommendation()) {
             $("#blacksmithButton").focus();
         }
-        if (__cookie_getEnableBattleAutoScroll()) {
+        if (setup.isBattleResultAutoScroll()) {
             document.getElementById("blacksmithButton").scrollIntoView();
         }
     } else {
@@ -128,7 +127,7 @@ export function __battle(htmlText) {
                 $('#bankButton').parent().remove();
                 $("#innButton").focus();
             }
-            if (__cookie_getEnableBattleAutoScroll()) {
+            if (setup.isBattleResultAutoScroll()) {
                 document.getElementById("innButton").scrollIntoView();
             }
             if (zodiacBattle && __cookie_getEnableZodiacFlashBattle()) {
@@ -143,7 +142,7 @@ export function __battle(htmlText) {
                 $('#innButton').parent().remove();
                 $("#bankButton").focus();
             }
-            if (__cookie_getEnableBattleAutoScroll()) {
+            if (setup.isBattleResultAutoScroll()) {
                 document.getElementById("bankButton").scrollIntoView();
             }
             if (zodiacBattle && __cookie_getEnableZodiacFlashBattle()) {
@@ -158,7 +157,7 @@ export function __battle(htmlText) {
                 $('#bankButton').parent().remove();
                 $("#returnButton").focus();
             }
-            if (__cookie_getEnableBattleAutoScroll()) {
+            if (setup.isBattleResultAutoScroll()) {
                 document.getElementById("returnButton").scrollIntoView();
             }
             if (zodiacBattle && __cookie_getEnableZodiacFlashBattle()) {
