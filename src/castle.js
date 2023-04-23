@@ -5,8 +5,8 @@
  */
 
 import * as message from "./message";
-import * as map from "./common/map";
-import {enterTown, leaveCastle} from "./common/map";
+import * as map from "./common/common_map";
+import {enterTown, leaveCastle} from "./common/common_map";
 import * as page from "./page";
 import {generateCredential} from "./page";
 import * as util from "./common/common_util";

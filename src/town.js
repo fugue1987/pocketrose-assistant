@@ -8,7 +8,7 @@ import * as bank from "./bank";
 import * as dashboard from "./dashboard";
 import * as message from "./message";
 import * as network from "./common/common_network";
-import * as map from "./common/map";
+import * as map from "./common/common_map";
 import * as page from "./page";
 import {generateCredential} from "./page";
 import * as pocket from "./pocket";
