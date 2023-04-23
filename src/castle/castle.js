@@ -13,6 +13,7 @@ import * as util from "../common/common_util";
 import * as user from "../pocket/pocket_user";
 import {getTown} from "../pocket/pocket_town";
 import {calculateCashDifferenceAmount, depositIntoTownBank, withdrawFromCastleBank} from "../pocket/pocket_service";
+import {CastleWarehouse} from "./castle_warehouse";
 
 /**
  * 城堡相关页面的处理入口
@@ -23,26 +24,24 @@ export class CastleRequestInterceptor {
     }
 
     process() {
-        const text = $("body").text();
-        if (text.includes("在网吧的用户请使用这个退出")) {
+        const pageText = $("body:first").text();
+        if (pageText.includes("在网吧的用户请使用这个退出")) {
             // 根据关键字匹配出城堡首页，重新渲染
             new CastleStatusRenderer().render();
-        }
-
-        // 城堡机车建造厂改造成城堡驿站
-        // castle.cgi CASTLE_BUILDMACHINE
-        if (text.includes("＜＜ * 机车建造厂 *＞＞")) {
+        } else if (pageText.includes("＜＜　|||　城堡仓库　|||　＞＞")) {
+            // 城堡仓库
+            new CastleWarehouse().process();
+        } else if (pageText.includes("＜＜ * 机车建造厂 *＞＞")) {
+            // 城堡机车建造厂改造成城堡驿站
             new CastlePostHouse().process();
-        }
-
-        // 城堡有很多中间确认页面，意义不大，平白无故增加了点击的消息
-        // 把这些页面修改为自动确认返回，包括以下操作的确认
-        // 1. 城堡取钱
-        // 2. 城堡存钱
-        if (
-            text.includes("请善加利用，欢迎您再来！") ||
-            text.includes("已经顺利存入您的账户！")
+        } else if (
+            pageText.includes("请善加利用，欢迎您再来！") ||
+            pageText.includes("已经顺利存入您的账户！")
         ) {
+            // 城堡有很多中间确认页面，意义不大，平白无故增加了点击的消息
+            // 把这些页面修改为自动确认返回，包括以下操作的确认
+            // 1. 城堡取钱
+            // 2. 城堡存钱
             new ConfirmationEliminator().returnToCastle();
         }
     }

@@ -538,6 +538,69 @@ export function parseItemStoreItemList(html) {
     return itemList;
 }
 
+/**
+ * 从城堡仓库页面解析仓库里面的所有装备。
+ * @param pageHTML
+ * @returns {PocketItemList}
+ */
+export function parseCastleWarehouseItemList(pageHTML) {
+    const itemList = new PocketItemList();
+    const table = $(pageHTML).find("input:checkbox:last").closest("table");
+    $(table).find("input:checkbox").each(function (_idx, checkbox) {
+        const c1 = $(checkbox).parent();
+        const c2 = $(c1).next();
+        const c3 = $(c2).next();
+        const c4 = $(c3).next();
+        const c5 = $(c4).next();
+        const c6 = $(c5).next();
+        const c7 = $(c6).next();
+        const c8 = $(c7).next();
+        const c9 = $(c8).next();
+        const c10 = $(c9).next();
+        const c11 = $(c10).next();
+        const c12 = $(c11).next();
+        const c13 = $(c12).next();
+        const c14 = $(c13).next();
+        const c15 = $(c14).next();
+        const c16 = $(c15).next();
+        const c17 = $(c16).next();
+        const c18 = $(c17).next();
+
+        const item = new PocketItem();
+
+        item.index = parseInt($(checkbox).val());
+        item.selectable = true;
+        item.using = false;
+        let s = $(c3).text();
+        if (s.startsWith("齐心★")) {
+            item.name = util.substringAfter(s, "齐心★");
+            item.star = true;
+        } else {
+            item.name = s;
+            item.star = false;
+        }
+        item.nameHTML = $(c3).html();
+        item.category = $(c4).text();
+        item.power = parseInt($(c5).text());
+        item.weight = parseInt($(c6).text());
+        item.endure = parseInt($(c7).text());
+        item.requiredCareer = $(c8).text();
+        item.requiredAttack = parseInt($(c9).text());
+        item.requiredDefense = parseInt($(c10).text());
+        item.requiredSpecialAttack = parseInt($(c11).text());
+        item.requiredSpecialDefense = parseInt($(c12).text());
+        item.requiredSpeed = parseInt($(c13).text());
+        item.additionalPower = parseInt($(c14).text());
+        item.additionalWeight = parseInt($(c15).text());
+        item.additionalLuck = parseInt($(c16).text());
+        item.experience = parseInt($(c17).text());
+        item.attribute = $(c18).text();
+
+        itemList.push(item);
+    });
+    return itemList;
+}
+
 // ----------------------------------------------------------------------------
 // P R I V A T E   F U N C T I O N S
 // ----------------------------------------------------------------------------
