@@ -156,6 +156,18 @@ export const TOWNS = {
         new Coordinate(13, 14))
 };
 
+export function getTownByCoordinate(coordinate) {
+    const townIds = Object.keys(TOWNS);
+    for (let i = 0; i < townIds.length; i++) {
+        const townId = townIds[i];
+        const town = TOWNS[townId];
+        if (town.coordinate.equals(coordinate)) {
+            return town;
+        }
+    }
+    return null;
+}
+
 export function getTownsAsList() {
     return Object.values(TOWNS);
 }

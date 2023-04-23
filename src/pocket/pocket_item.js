@@ -14,6 +14,7 @@
 
 import * as util from "../common/common_util";
 import * as page from "../common/common_page";
+import * as town from "./pocket_town";
 
 // 口袋所有的装备都被分为以下四类：
 
@@ -212,7 +213,17 @@ export class PocketItem {
 
     get experienceHTML() {
         if (this.isItem) {
-            return "-";
+            if (this.name === "藏宝图") {
+                const coordinate = new util.Coordinate(this.power, this.weight);
+                const mapTown = town.getTownByCoordinate(coordinate);
+                if (mapTown !== null) {
+                    return "<b style='color:red'>" + mapTown.name + "</b>";
+                } else {
+                    return "-";
+                }
+            } else {
+                return "-";
+            }
         }
         const ratio = this.fullExperienceRatio;
         if (ratio < 0) {

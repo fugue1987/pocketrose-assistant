@@ -154,6 +154,10 @@ export class Coordinate {
     longText() {
         return "(" + this.#x + "," + this.#y + ")";
     }
+
+    equals(other) {
+        return this.#x === other.x && this.#y === other.y;
+    }
 }
 
 export class Direction {
