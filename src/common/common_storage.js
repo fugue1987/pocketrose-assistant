@@ -3,7 +3,7 @@ export function isLocalStorageDisabled() {
 }
 
 export function set(key, value) {
-    if (!window.localStorage) {
+    if (isLocalStorageDisabled()) {
         __setIntoCookie(key, value);
     } else {
         __setIntoLocalStorage(key, value);
@@ -11,18 +11,20 @@ export function set(key, value) {
 }
 
 export function get(key) {
-    let value;
-    if (!window.localStorage) {
-        value = __getFromCookie(key);
+    if (isLocalStorageDisabled()) {
+        return __getFromCookie(key);
     } else {
-        value = __getFromLocalStorage(key);
+        return __getFromLocalStorage(key);
     }
-    return value;
 }
 
 export function getBoolean(key) {
-    const value = get(key);
-    if (value === undefined || value === null || value === "") {
+    const value = localStorage.getItem(key);
+    if (value === undefined ||
+        value === null ||
+        value === "" ||
+        value === "undefined" ||
+        value === "null") {
         return false;
     }
     return value !== "0";
