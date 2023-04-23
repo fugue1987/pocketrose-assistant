@@ -230,3 +230,48 @@ export function parseAccessoryStoreMerchandiseList(pageHTML) {
     });
     return merchandiseList;
 }
+
+/**
+ * Parse merchandise list from item store page HTML.
+ * @param pageHTML
+ * @returns {MerchandiseList}
+ */
+export function parseItemStoreMerchandiseList(pageHTML) {
+    const merchandiseList = new MerchandiseList();
+    const table = $(pageHTML).find("input:radio:last").closest("table");
+    $(table).find("input:radio").each(function (_idx, radio) {
+        const c1 = $(radio).parent();
+        const c2 = $(c1).next();
+        const c3 = $(c2).next();
+        const c4 = $(c3).next();
+        const c5 = $(c4).next();
+        const c6 = $(c5).next();
+        const c7 = $(c6).next();
+
+        const merchandise = new Merchandise();
+        merchandise.id = "ITE_" + $(radio).val();
+
+        merchandise.name = $(c2).text();
+        merchandise.nameHTML = $(c2).html();
+        let s = $(c3).text();
+        s = util.substringBefore(s, " Gold");
+        merchandise.price = parseInt(s);
+        merchandise.power = parseInt($(c4).text());
+        merchandise.weight = parseInt($(c5).text());
+        merchandise.endure = parseInt($(c6).text());
+        merchandise.attribute = $(c7).text();
+
+        merchandise.requiredCareer = "-";
+        merchandise.requiredAttack = 0;
+        merchandise.requiredDefense = 0;
+        merchandise.requiredSpecialAttack = 0;
+        merchandise.requiredSpecialDefense = 0;
+        merchandise.requiredSpeed = 0;
+        merchandise.weaponCategory = "-";
+        merchandise.gemCount = -1;
+        merchandise.speciality = false;
+
+        merchandiseList.push(merchandise);
+    });
+    return merchandiseList;
+}
