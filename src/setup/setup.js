@@ -3,6 +3,16 @@ import * as message from "../common/common_message";
 import * as page from "../common/common_page";
 import * as storage from "../common/common_storage";
 import * as s001 from "./setup_001";
+import * as s002 from "./setup_002";
+import * as s003 from "./setup_003";
+import * as s004 from "./setup_004";
+import * as s005 from "./setup_005";
+import * as s006 from "./setup_006";
+import * as s007 from "./setup_007";
+import * as s008 from "./setup_008";
+import * as s009 from "./setup_009";
+import * as s010 from "./setup_010";
+import * as s011 from "./setup_011";
 
 export class PersonalSetup {
 
@@ -76,7 +86,17 @@ function doProcess() {
 }
 
 const setupItems = [
-    new s001.SetupItem()
+    new s001.SetupItem(),
+    new s002.SetupItem(),
+    new s003.SetupItem(),
+    new s004.SetupItem(),
+    new s005.SetupItem(),
+    new s006.SetupItem(),
+    new s007.SetupItem(),
+    new s008.SetupItem(),
+    new s009.SetupItem(),
+    new s010.SetupItem(),
+    new s011.SetupItem()
 ];
 
 function doRender(credential) {

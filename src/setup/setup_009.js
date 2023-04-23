@@ -6,8 +6,8 @@ export class SetupItem {
 
 }
 
-const _id = "001";
-const _name = "宝可梦百科超链";
+const _id = "009";
+const _name = "新宠物管理界面";
 
 function doRender() {
     let html = "";

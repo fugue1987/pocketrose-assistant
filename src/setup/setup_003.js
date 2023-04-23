@@ -6,8 +6,8 @@ export class SetupItem {
 
 }
 
-const _id = "001";
-const _name = "宝可梦百科超链";
+const _id = "003";
+const _name = "掉魔后自动住宿";
 
 function doRender() {
     let html = "";

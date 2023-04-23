@@ -6,8 +6,8 @@ export class SetupItem {
 
 }
 
-const _id = "001";
-const _name = "宝可梦百科超链";
+const _id = "004";
+const _name = "修理装备耐久限";
 
 function doRender() {
     let html = "";
