@@ -1,4 +1,8 @@
-function set(key, value) {
+export function isLocalStorageDisabled() {
+    return !window.localStorage
+}
+
+export function set(key, value) {
     if (!window.localStorage) {
         __setIntoCookie(key, value);
     } else {
@@ -6,7 +10,7 @@ function set(key, value) {
     }
 }
 
-function get(key) {
+export function get(key) {
     let value;
     if (!window.localStorage) {
         value = __getFromCookie(key);
@@ -16,7 +20,7 @@ function get(key) {
     return value;
 }
 
-function getBoolean(key) {
+export function getBoolean(key) {
     const value = get(key);
     if (value === undefined || value === null || value === "") {
         return false;

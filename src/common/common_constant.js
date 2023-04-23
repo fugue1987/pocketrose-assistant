@@ -6,6 +6,7 @@ const POCKET_NPC_IMAGES = {
 
     "花子": DOMAIN + "/image/head/1126.gif",
     "骷髅": DOMAIN + "/image/head/1160.gif",
+    "夜九年": DOMAIN + "/image/head/1561.gif",
     "饭饭": DOMAIN + "/image/head/3139.gif",
     "白皇": DOMAIN + "/image/head/11134.gif"
 };
