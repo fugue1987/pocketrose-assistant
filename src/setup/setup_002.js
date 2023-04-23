@@ -1,3 +1,5 @@
+import * as storage from "../common/common_storage";
+
 export class SetupItem {
 
     render() {
@@ -8,6 +10,7 @@ export class SetupItem {
 
 const _id = "002";
 const _name = "掉血后自动住宿";
+const _key = "_pa_" + _id;
 
 function doRender() {
     let html = "";
@@ -18,15 +21,33 @@ function doRender() {
     html += "</tr>";
 
     $("#SetupItemTable").append($(html));
+
+    let value = storage.getFloat(_key, 0.6);
+    $(".Class_" + _id + "[value='" + value + "']").prop("selected", true);
+
     $("#Setup_" + _id).click(function () {
         __doSaveSetupItem();
     });
 }
 
 function __doGenerateSetupItem() {
-    return "";
+    let selection = "<select id='Select_" + _id + "'>";
+    selection += "<option class='Class_" + _id + "' value='0.1'>10%</option>";
+    selection += "<option class='Class_" + _id + "' value='0.2'>20%</option>";
+    selection += "<option class='Class_" + _id + "' value='0.3'>30%</option>";
+    selection += "<option class='Class_" + _id + "' value='0.4'>40%</option>";
+    selection += "<option class='Class_" + _id + "' value='0.5'>50%</option>";
+    selection += "<option class='Class_" + _id + "' value='0.6'>60%</option>";
+    selection += "<option class='Class_" + _id + "' value='0.7'>70%</option>";
+    selection += "<option class='Class_" + _id + "' value='0.8'>80%</option>";
+    selection += "<option class='Class_" + _id + "' value='0.9'>90%</option>";
+    selection += "</select>";
+
+    return selection;
 }
 
 function __doSaveSetupItem() {
+    const value = $("#Select_" + _id).val();
+    storage.set(_key, value);
     $("#refreshButton").trigger("click");
 }
