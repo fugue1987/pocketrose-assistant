@@ -18,6 +18,14 @@ export function isPokemonWikiEnabled() {
     return storage.getBoolean("_pa_001");
 }
 
+export function getLodgeHealthLostRatio() {
+    return storage.getFloat("_pa_002", 0.6);
+}
+
+export function getLodgeManaLostPoint() {
+    return storage.getInteger("_pa_003", 100);
+}
+
 export class PersonalSetup {
 
     process() {

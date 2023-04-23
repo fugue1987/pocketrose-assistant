@@ -10,9 +10,7 @@ import {
     __cookie_getEnableBattleAutoScroll,
     __cookie_getEnableBattleForceRecommendation,
     __cookie_getEnableZodiacFlashBattle,
-    __cookie_getHealthLoseAutoLodgeRatio,
     __cookie_getLodgeButtonText,
-    __cookie_getManaLoseAutoLodgePoint,
     __cookie_getRepairButtonText,
     __cookie_getRepairItemThreshold,
     __cookie_getReturnButtonText
@@ -20,6 +18,7 @@ import {
 import * as util from "./common/common_util";
 import * as common_constant from "./common/common_constant";
 import * as common_message from "./common/common_message";
+import * as setup from "./setup/setup";
 
 export class BattleRequestInterceptor {
 
@@ -270,11 +269,11 @@ function __battle_checkIfShouldGoToInn(htmlText, recoverItemEndure) {
         }
     });
     // 生命力低于最大值的配置比例，住宿推荐
-    if (health <= maxHealth * __cookie_getHealthLoseAutoLodgeRatio()) {
+    if (health <= maxHealth * setup.getLodgeHealthLostRatio()) {
         return 1;
     }
     // 如果MANA小于50%并且小于配置点数，住宿推荐
-    if (mana <= maxMana * 0.5 && mana <= __cookie_getManaLoseAutoLodgePoint()) {
+    if (mana <= maxMana * 0.5 && mana <= setup.getLodgeManaLostPoint()) {
         return 1;
     }
     if (__cookie_getDepositBattleNumber() > 0) {
