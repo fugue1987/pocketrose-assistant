@@ -2,13 +2,12 @@ import * as dashboard from "../dashboard";
 import {WildDashboardProcessor} from "../dashboard";
 import * as personal_status from "./personal_status";
 import * as personal_salary_paid from "./personal_salary_paid";
-import * as option from "../option";
 import * as personal_item_management from "./personal_item_management";
 import * as personal_treasure_bag from "./personal_treasure_bag";
 import * as personal_golden_cage from "./personal_golden_cage";
 import * as personal_pet_management from "./personal_pet_management";
 import {PersonalCareerManagement} from "./personal_career_management";
-import {PersonalSetup} from "../setup/setup";
+import * as setup from "../setup/setup";
 
 export class PersonalRequestInterceptor {
 
@@ -35,7 +34,7 @@ export class PersonalRequestInterceptor {
                 new personal_salary_paid.PersonalSalaryPaid().process();
             } else if (text.includes("＜＜　|||　物品使用．装备　|||　＞＞")) {
                 // 装备管理
-                if (option.__cookie_getEnableNewItemUI()) {
+                if (setup.isItemManagementUIEnabled()) {
                     new personal_item_management.PersonalItemManagement().process();
                 }
             } else if (text.includes("物品 百宝袋 使用")) {
@@ -46,15 +45,17 @@ export class PersonalRequestInterceptor {
                 new personal_golden_cage.PersonalGoldenCage().process();
             } else if (text.includes("宠物现在升级时学习新技能情况一览")) {
                 // 宠物管理
-                if (option.__cookie_getEnableNewPetUI()) {
+                if (setup.isPetManagementUIEnabled()) {
                     new personal_pet_management.PersonalPetManagement().process();
                 }
             } else if (text.includes("* 转职神殿 *")) {
                 // 职业管理
-                new PersonalCareerManagement().process();
+                if (setup.isCareerManagementUIEnabled()) {
+                    new PersonalCareerManagement().process();
+                }
             } else if (text.includes("给其他人发送消息")) {
                 // 助手设置
-                new PersonalSetup().process();
+                new setup.PersonalSetup().process();
             }
         }
     }

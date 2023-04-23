@@ -54,6 +54,10 @@ export function isItemManagementUIEnabled() {
     return storage.getBoolean("_pa_010");
 }
 
+export function isCareerManagementUIEnabled() {
+    return storage.getBoolean("_pa_011");
+}
+
 export class PersonalSetup {
 
     process() {

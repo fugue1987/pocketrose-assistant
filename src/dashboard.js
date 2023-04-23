@@ -4,7 +4,6 @@ import * as page from "./page";
 import * as pet from "./pocket/pocket_pet";
 import * as util from "./common/common_util";
 import {Coordinate} from "./common/common_util";
-import * as option from "./option";
 import * as service from "./service";
 import {findTownBySecret} from "./pocket/pocket_town";
 import * as setup from "./setup/setup";
@@ -54,8 +53,8 @@ export class TownDashboardProcessor {
         $("option[value='ACC_SHOP']").text("饰品屋(v2.0)");
         $("option[value='ITEM_SHOP']").text("物品屋(v2.0)");
         $("option[value='BAOSHI_SHOP']").text("合成屋(v2.0)");
-        $("option[value='LETTER']").text("口袋助手设置");
-        $("option[value='LETTER']").css("background-color", "#20c0ff");
+        $("option[value='LETTER']").text("口袋助手设置(v2.0)");
+        $("option[value='LETTER']").css("background-color", "yellow");
         if (setup.isItemManagementUIEnabled()) {
             $("option[value='USE_ITEM']").text("装备管理(v2.0)");
             $("option[value='USE_ITEM']").css("background-color", "yellow");
@@ -66,7 +65,7 @@ export class TownDashboardProcessor {
             $("option[value='PETSTATUS']").css("background-color", "yellow");
             $("option[value='PET_SEND']").remove();
         }
-        if (option.__cookie_getEnableCareerManagementUI()) {
+        if (setup.isCareerManagementUIEnabled()) {
             $("option[value='CHANGE_OCCUPATION']").text("职业管理(v2.0)");
             $("option[value='CHANGE_OCCUPATION']").css("background-color", "yellow");
             $("option[value='MAGIC']").remove();
