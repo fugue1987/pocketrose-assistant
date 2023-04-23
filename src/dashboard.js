@@ -45,6 +45,50 @@ export class TownDashboardProcessor {
         //         inputDigits = '';
         //     }
         // });
+        const credential = page.generateCredential();
+
+        const preference = setup.getBattlePlacePreference(credential.id);
+        if (preference["primary"] || preference["junior"] || preference["senior"] || preference["zodiac"]) {
+            // 设置了战斗场所偏好
+            let keepDelim = true;
+            $("select[name='level']").find("option").each(function (_idx, option) {
+                const text = $(option).text();
+                if (text.startsWith("秘宝之岛")) {
+                    // do nothing, keep
+                } else if (text.startsWith("初级之森")) {
+                    if (!preference["primary"]) {
+                        $(option).hide();
+                        keepDelim = false;
+                    }
+                } else if (text.startsWith("中级之塔")) {
+                    if (!preference["junior"]) {
+                        $(option).hide();
+                        keepDelim = false;
+                    }
+                } else if (text.startsWith("上级之洞")) {
+                    if (!preference["senior"]) {
+                        $(option).hide();
+                        keepDelim = false;
+                    }
+                } else if (text.startsWith("十二神殿")) {
+                    if (!preference["zodiac"]) {
+                        $(option).hide();
+                        keepDelim = false;
+                    }
+                } else if (text.startsWith("极限NPC")) {
+                    $(option).hide();
+                    keepDelim = false;
+                } else if (text.startsWith("------")) {
+                    if (!keepDelim) {
+                        $(option).hide();
+                        keepDelim = true;
+                    }
+                } else {
+                    $(option).hide();
+                }
+
+            });
+        }
 
 
         $("option[value='INN']").text("客栈·驿站");
@@ -108,7 +152,7 @@ export class TownDashboardProcessor {
                 .text();
             const cash = parseInt(util.substringBefore(cashText, " Gold"));
 
-            const credential = page.generateCredential();
+
             service.lodgeTown(credential)
                 .then(() => {
                     pet.loadPersonalPetList(credential)
