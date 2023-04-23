@@ -20,8 +20,8 @@
 // 所有验证码破解的相关领域都设立为禁区，我们绝对不触碰验证码破解！
 // ============================================================================
 
-import * as battle from "./battle";
-import * as castle from "./castle";
+import * as battle from "./battle/battle";
+import * as castle from "./castle/castle";
 import * as pokemon from "./pokemon/pokemon";
 import {TownRequestInterceptor} from "./town";
 import {WildRequestInterceptor} from "./wild";

@@ -4,15 +4,15 @@
  * ============================================================================
  */
 
-import * as message from "./message";
-import * as map from "./common/common_map";
-import {enterTown, leaveCastle} from "./common/common_map";
-import * as page from "./page";
-import {generateCredential} from "./page";
-import * as util from "./common/common_util";
-import * as finance from "./bank";
-import * as user from "./pocket/pocket_user";
-import {getTown} from "./pocket/pocket_town";
+import * as message from "../message";
+import * as map from "../common/common_map";
+import {enterTown, leaveCastle} from "../common/common_map";
+import * as page from "../page";
+import {generateCredential} from "../page";
+import * as util from "../common/common_util";
+import * as finance from "../bank";
+import * as user from "../pocket/pocket_user";
+import {getTown} from "../pocket/pocket_town";
 
 /**
  * 城堡相关页面的处理入口

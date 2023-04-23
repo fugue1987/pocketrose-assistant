@@ -4,10 +4,10 @@
  * ============================================================================
  */
 
-import * as util from "./common/common_util";
-import * as common_constant from "./common/common_constant";
-import * as common_message from "./common/common_message";
-import * as setup from "./setup/setup";
+import * as util from "../common/common_util";
+import * as common_constant from "../common/common_constant";
+import * as common_message from "../common/common_message";
+import * as setup from "../setup/setup";
 
 export class BattleRequestInterceptor {
 
