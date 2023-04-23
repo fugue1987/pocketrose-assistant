@@ -36,13 +36,13 @@ export class CastleRequestInterceptor {
             new CastlePostHouse().process();
         } else if (
             pageText.includes("请善加利用，欢迎您再来！") ||
-            pageText.includes("已经顺利存入您的账户！")
+            pageText.includes("已经顺利存入您的账户！") ||
+            pageText.includes("从城堡仓库中取出。") ||
+            pageText.includes("放入城堡仓库。")
         ) {
             // 城堡有很多中间确认页面，意义不大，平白无故增加了点击的消息
-            // 把这些页面修改为自动确认返回，包括以下操作的确认
-            // 1. 城堡取钱
-            // 2. 城堡存钱
-            new ConfirmationEliminator().returnToCastle();
+            // 把这些页面修改为自动确认返回
+            $("input:submit").trigger("click");
         }
     }
 }
@@ -76,8 +76,10 @@ class CastleStatusRenderer {
             }
         });
 
-        $("option[value='CASTLE_BUILDMACHINE']").attr("style", "background: yellow");
+        $("option[value='CASTLE_BUILDMACHINE']").css("background", "yellow");
         $("option[value='CASTLE_BUILDMACHINE']").text("城堡驿站");
+        $("option[value='LETTER']").css("background", "yellow");
+        $("option[value='LETTER']").text("口袋助手设置");
     }
 }
 
@@ -181,15 +183,5 @@ class CastlePostHouse {
 
             });
         });
-    }
-}
-
-/**
- * 消除冗余的确认页面，直接点击返回城堡按钮。
- */
-class ConfirmationEliminator {
-
-    returnToCastle() {
-        $("input:submit[value='返回城堡']").trigger("click");
     }
 }

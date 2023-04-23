@@ -22,7 +22,13 @@ export class PersonalRequestInterceptor {
                 new dashboard.TownDashboardProcessor().process();
             }
             if (text.includes("请选择移动的格数")) {
+                // 地图主页面
                 new WildDashboardProcessor().process();
+            }
+            if (text.includes("城堡") && text.includes("入口。")) {
+                // 城堡有很多中间确认页面，意义不大，平白无故增加了点击的消息
+                // 把这些页面修改为自动确认返回
+                $("input:submit").trigger("click");
             }
         }
         if (location.href.includes("/mydata.cgi")) {
