@@ -20,8 +20,7 @@ import {findTownByName, getTown} from "../pocket/pocket_town";
 import {TownPetMapHouse} from "./town_pet_map_house";
 import {calculateCashDifferenceAmount, depositIntoTownBank, withdrawFromTownBank} from "../pocket/pocket_service";
 import * as message2 from "../common/common_message";
-
-import * as town_item_store from "./town_item_store";
+import {TownSuperMarket} from "./town_super_market";
 
 /**
  * 用于拦截并处理浏览器访问town.cgi的请求后返回的页面。
@@ -39,14 +38,15 @@ export class TownRequestInterceptor {
         } else if (text.includes("* 宿 屋 *")) {
             new TownInnPostHouse().process();
         } else if (text.includes("＜＜　□　武器屋　□　＞＞")) {
-            new TownWeaponStore().process();
+            new TownSuperMarket().process();
+            //new TownWeaponStore().process();
         } else if (text.includes("＜＜　□　防具屋　□　＞＞")) {
-            new TownArmorStore().process();
+            //new TownArmorStore().process();
         } else if (text.includes("＜＜　□　饰品屋　□　＞＞")) {
-            new TownAccessoryStore().process();
+            //new TownAccessoryStore().process();
         } else if (text.includes("＜＜　□　物品屋　□　＞＞")) {
             //new TownItemStore().process();
-            new town_item_store.TownItemStore().process();
+            //new town_item_store.TownItemStore().process();
         } else if (text.includes("＜＜ * 合 成 屋 *＞＞")) {
             new TownGemStore().process();
         } else if (text.includes("*  藏宝图以旧换新业务 *")) {
