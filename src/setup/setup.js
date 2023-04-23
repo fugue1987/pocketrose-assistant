@@ -183,6 +183,7 @@ function doRender(credential) {
     html += "   <tbody style='background-color:#F8F0E0' id='SetupItemTable'>";
     html += "       <tr>";
     html += "           <th style='background-color:#E8E8D0'>名字</th>";
+    html += "           <th style='background-color:#E8E8D0'>专属</th>";
     html += "           <th style='background-color:#EFE0C0'>设置</th>";
     html += "           <th style='background-color:#E0D0B0'>选择</th>";
     html += "       </tr>";

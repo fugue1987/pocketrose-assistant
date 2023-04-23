@@ -17,6 +17,7 @@ function doRender(id) {
     let html = "";
     html += "<tr id='battleFieldSetup' style='display:none'>";
     html += "<th style='background-color:#E8E8D0'>" + _name + "</th>";
+    html += "<td style='background-color:#E8E8D0'>★</td>";
     html += "<td style='background-color:#EFE0C0'><input type='button' class='SetupUIButton' id='Setup_" + _id + "' value='设置'></td>";
     html += "<td style='background-color:#E0D0B0;text-align:left'>" + __doGenerateSetupItem() + "</td>";
     html += "</tr>";
