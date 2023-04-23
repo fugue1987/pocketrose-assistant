@@ -34,12 +34,16 @@ export function getDepositBattleCount() {
     return storage.getInteger("_pa_005", 10);
 }
 
-export function isBattleResultAutoScroll() {
+export function isBattleResultAutoScrollEnabled() {
     return storage.getBoolean("_pa_006");
 }
 
-export function isBattleForceRecommendation() {
+export function isBattleForceRecommendationEnabled() {
     return storage.getBoolean("_pa_007");
+}
+
+export function isZodiacFlashBattleEnabled() {
+    return storage.getBoolean("_pa_008");
 }
 
 export class PersonalSetup {

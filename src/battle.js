@@ -6,7 +6,6 @@
 
 import {
     __cookie_getDepositButtonText,
-    __cookie_getEnableZodiacFlashBattle,
     __cookie_getLodgeButtonText,
     __cookie_getRepairButtonText,
     __cookie_getReturnButtonText
@@ -106,10 +105,10 @@ export function __battle(htmlText) {
         $('#innButton').parent().remove();
         $('#bankButton').parent().remove();
         $('#returnButton').parent().remove();
-        if (setup.isBattleForceRecommendation()) {
+        if (setup.isBattleForceRecommendationEnabled()) {
             $("#blacksmithButton").focus();
         }
-        if (setup.isBattleResultAutoScroll()) {
+        if (setup.isBattleResultAutoScrollEnabled()) {
             document.getElementById("blacksmithButton").scrollIntoView();
         }
     } else {
@@ -122,14 +121,14 @@ export function __battle(htmlText) {
             // 住宿优先
             $("#innButton").attr('tabIndex', 1);
             $('#returnButton').parent().remove();
-            if (setup.isBattleForceRecommendation()) {
+            if (setup.isBattleForceRecommendationEnabled()) {
                 $('#bankButton').parent().remove();
                 $("#innButton").focus();
             }
-            if (setup.isBattleResultAutoScroll()) {
+            if (setup.isBattleResultAutoScrollEnabled()) {
                 document.getElementById("innButton").scrollIntoView();
             }
-            if (zodiacBattle && __cookie_getEnableZodiacFlashBattle()) {
+            if (zodiacBattle && setup.isZodiacFlashBattleEnabled()) {
                 $("#innButton").trigger("click");
             }
         }
@@ -137,29 +136,29 @@ export function __battle(htmlText) {
             // 存钱优先
             $("#bankButton").attr('tabIndex', 1);
             $('#returnButton').parent().remove();
-            if (setup.isBattleForceRecommendation()) {
+            if (setup.isBattleForceRecommendationEnabled()) {
                 $('#innButton').parent().remove();
                 $("#bankButton").focus();
             }
-            if (setup.isBattleResultAutoScroll()) {
+            if (setup.isBattleResultAutoScrollEnabled()) {
                 document.getElementById("bankButton").scrollIntoView();
             }
-            if (zodiacBattle && __cookie_getEnableZodiacFlashBattle()) {
+            if (zodiacBattle && setup.isZodiacFlashBattleEnabled()) {
                 $("#bankButton").trigger("click");
             }
         }
         if (returnCode === 3) {
             // 返回优先
             $("#returnButton").attr('tabIndex', 1);
-            if (setup.isBattleForceRecommendation()) {
+            if (setup.isBattleForceRecommendationEnabled()) {
                 $('#innButton').parent().remove();
                 $('#bankButton').parent().remove();
                 $("#returnButton").focus();
             }
-            if (setup.isBattleResultAutoScroll()) {
+            if (setup.isBattleResultAutoScrollEnabled()) {
                 document.getElementById("returnButton").scrollIntoView();
             }
-            if (zodiacBattle && __cookie_getEnableZodiacFlashBattle()) {
+            if (zodiacBattle && setup.isZodiacFlashBattleEnabled()) {
                 $("#returnButton").trigger("click");
             }
         }
