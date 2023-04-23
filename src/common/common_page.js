@@ -78,3 +78,9 @@ export function removeGoogleAnalyticsScript() {
     // 删除最后一个google-analytics的脚本
     $("script:last").remove();
 }
+
+export function removeUnusedHyperLinks() {
+    $("div:last").find("a:first").attr("href", "javascript:void(0)");
+    $("div:last").find("a:eq(1)").attr("href", "javascript:void(0)");
+    $("div:last").find("a").attr("tabIndex", "-1");
+}

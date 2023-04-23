@@ -242,10 +242,10 @@ function __town_petMap(htmlText) {
 // 个人状态后续辅助功能
 // ============================================================================
 function postProcessPersonalStatusRelatedFunctionalities(htmlText) {
-    if (htmlText.indexOf("给其他人发送消息") !== -1) {
-        // 复用个人接收的信作为Cookie管理的页面
-        __personalStatus_cookieManagement(htmlText);
-    }
+    //if (htmlText.indexOf("给其他人发送消息") !== -1) {
+    // 复用个人接收的信作为Cookie管理的页面
+    //__personalStatus_cookieManagement(htmlText);
+    //}
 }
 
 function __personalStatus_cookieManagement(htmlText) {

@@ -8,6 +8,7 @@ import * as personal_treasure_bag from "./personal_treasure_bag";
 import * as personal_golden_cage from "./personal_golden_cage";
 import * as personal_pet_management from "./personal_pet_management";
 import {PersonalCareerManagement} from "./personal_career_management";
+import {PersonalSetup} from "../setup/setup";
 
 export class PersonalRequestInterceptor {
 
@@ -33,24 +34,27 @@ export class PersonalRequestInterceptor {
                 // 领取薪水
                 new personal_salary_paid.PersonalSalaryPaid().process();
             } else if (text.includes("＜＜　|||　物品使用．装备　|||　＞＞")) {
-                // 物品使用．装备
+                // 装备管理
                 if (option.__cookie_getEnableNewItemUI()) {
                     new personal_item_management.PersonalItemManagement().process();
                 }
             } else if (text.includes("物品 百宝袋 使用")) {
-                // 进入百宝袋
+                // 百宝袋
                 new personal_treasure_bag.PersonalTreasureBag().process();
             } else if (text.includes("物品 黄金笼子 使用")) {
-                // 进入黄金笼子
+                // 黄金笼子
                 new personal_golden_cage.PersonalGoldenCage().process();
             } else if (text.includes("宠物现在升级时学习新技能情况一览")) {
-                // 宠物状态
+                // 宠物管理
                 if (option.__cookie_getEnableNewPetUI()) {
                     new personal_pet_management.PersonalPetManagement().process();
                 }
             } else if (text.includes("* 转职神殿 *")) {
-                // 转职
+                // 职业管理
                 new PersonalCareerManagement().process();
+            } else if (text.includes("给其他人发送消息")) {
+                // 助手设置
+                new PersonalSetup().process();
             }
         }
     }

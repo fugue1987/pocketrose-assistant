@@ -1,3 +1,34 @@
+import * as page from "../common/common_page";
+
+export class PersonalSetup {
+
+    process() {
+        page.removeGoogleAnalyticsScript();
+        page.removeUnusedHyperLinks();
+        doProcess();
+    }
+}
+
+function doProcess() {
+    // 这个页面很奇怪，被一个form完全包裹了
+    // 我们需要重组整个页面
+    const lastDivHTML = $("div:last").html();
+
+    // 删除旧的页面
+    $("form:first").remove();
+
+    // 重组整个页面
+    let html = "";
+    html += "<hr style='height:0;width:100%'>";
+    html += "<div style='text-align:center'>" + lastDivHTML + "</div>";
+    $("body:first").html(html);
+}
+
+
+// ----------------------------------------------------------------------------
+// P R I V A T E   F U N C T I O N S
+// ----------------------------------------------------------------------------
+
 function __generateLegacyCookieKeyList(id) {
     const cookieKeyList = [];
     cookieKeyList.push("_POCKETROSE_ASSISTANT__ENABLE_POKEMON_WIKI");
