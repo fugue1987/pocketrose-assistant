@@ -306,13 +306,13 @@ export class TownDashboardProcessor {
             .closest("table")
             .find("th:first")
             .find("font:first")
-            .text(function (_idx, text) {
+            .html(function (_idx, text) {
                 const name = util.substringBefore(text, "(");
                 const unit = util.substringBetween(text, "(", "军)");
                 if (unit.includes("无所属")) {
-                    return name + " " + battleCount + "战";
+                    return name + "&nbsp;&nbsp;&nbsp;" + battleCount + "战";
                 } else {
-                    return name + "(" + unit + ")" + " " + battleCount + "战";
+                    return name + "(" + unit + ")" + "&nbsp;&nbsp;&nbsp;" + battleCount + "战";
                 }
             });
     }
