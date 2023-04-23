@@ -56,38 +56,60 @@ export class TownDashboardProcessor {
                 if (text.startsWith("秘宝之岛")) {
                     // do nothing, keep
                 } else if (text.startsWith("初级之森")) {
+                    // do nothing, keep
+                } else if (text.startsWith("中级之塔")) {
+                    // do nothing, keep
+                } else if (text.startsWith("上级之洞")) {
+                    // do nothing, keep
+                } else if (text.startsWith("十二神殿")) {
+                    // do nothing, keep
+                } else if (text.startsWith("------")) {
+                    // do nothing, keep
+                } else {
+                    $(option).remove();
+                }
+            });
+            $("select[name='level']").find("option").each(function (_idx, option) {
+                const text = $(option).text();
+                if (text.startsWith("初级之森")) {
                     if (!preference["primary"]) {
-                        $(option).hide();
-                        keepDelim = false;
+                        $(option).remove();
                     }
                 } else if (text.startsWith("中级之塔")) {
                     if (!preference["junior"]) {
-                        $(option).hide();
-                        keepDelim = false;
+                        $(option).remove();
                     }
                 } else if (text.startsWith("上级之洞")) {
                     if (!preference["senior"]) {
-                        $(option).hide();
-                        keepDelim = false;
+                        $(option).remove();
                     }
                 } else if (text.startsWith("十二神殿")) {
                     if (!preference["zodiac"]) {
-                        $(option).hide();
-                        keepDelim = false;
+                        $(option).remove();
                     }
-                } else if (text.startsWith("极限NPC")) {
-                    $(option).hide();
-                    keepDelim = false;
-                } else if (text.startsWith("------")) {
-                    if (!keepDelim) {
-                        $(option).hide();
-                        keepDelim = true;
+                }
+            });
+            // 删除连续的分隔线
+            let delimMatch = false;
+            $("select[name='level']").find("option").each(function (_idx, option) {
+                const text = $(option).text();
+                if (text.startsWith("------")) {
+                    if (!delimMatch) {
+                        delimMatch = true;
+                    } else {
+                        $(option).remove();
                     }
                 } else {
-                    $(option).hide();
+                    delimMatch = false;
                 }
-
             });
+            // 删除头尾的分隔线
+            if ($("select[name='level']").find("option:last").text().startsWith("------")) {
+                $("select[name='level']").find("option:last").remove();
+            }
+            if ($("select[name='level']").find("option:first").text().startsWith("------")) {
+                $("select[name='level']").find("option:first").remove();
+            }
         }
 
 
