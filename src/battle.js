@@ -4,12 +4,6 @@
  * ============================================================================
  */
 
-import {
-    __cookie_getDepositButtonText,
-    __cookie_getLodgeButtonText,
-    __cookie_getRepairButtonText,
-    __cookie_getReturnButtonText
-} from "./option";
 import * as util from "./common/common_util";
 import * as common_constant from "./common/common_constant";
 import * as common_message from "./common/common_message";
@@ -76,19 +70,19 @@ export function __battle(htmlText) {
 
     // 修改返回修理按钮的行为，直接变成全部修理
     $('#blacksmithButton').parent().prepend('<input type="hidden" name="arm_mode" value="all">');
-    $('#blacksmithButton').attr('value', __cookie_getRepairButtonText());
+    //$('#blacksmithButton').attr('value', __cookie_getRepairButtonText());
     $('input[value="MY_ARM"]').attr('value', 'MY_ARM2');
 
     // 修改返回银行按钮的行为，直接变成全部存入
     $('#bankButton').parent().prepend('<input type="hidden" name="azukeru" value="all">');
-    $('#bankButton').attr('value', __cookie_getDepositButtonText());
+    //$('#bankButton').attr('value', __cookie_getDepositButtonText());
     $('input[value="BANK"]').attr('value', 'BANK_SELL');
 
     // 修改返回住宿按钮
-    $('#innButton').attr('value', __cookie_getLodgeButtonText());
+    //$('#innButton').attr('value', __cookie_getLodgeButtonText());
 
     // 修改返回按钮
-    $('#returnButton').attr('value', __cookie_getReturnButtonText());
+    //$('#returnButton').attr('value', __cookie_getReturnButtonText());
 
     var resultText = $('#ueqtweixin').text();
     // 耐久度初始值10000以下的最大的质数，表示没有发现回血道具
