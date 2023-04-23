@@ -34,6 +34,7 @@ function doRender() {
 
 function __doGenerateSetupItem() {
     let selection = "<select id='Select_" + _id + "'>";
+    selection += "<option class='Class_" + _id + "' value='-1'>禁用</option>";
     selection += "<option class='Class_" + _id + "' value='10'>10PP</option>";
     selection += "<option class='Class_" + _id + "' value='20'>20PP</option>";
     selection += "<option class='Class_" + _id + "' value='50'>50PP</option>";

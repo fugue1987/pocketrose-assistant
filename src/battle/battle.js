@@ -262,7 +262,7 @@ function __battle_checkIfShouldGoToInn(htmlText, recoverItemEndure) {
         return 1;
     }
     // 如果MANA小于50%并且小于配置点数，住宿推荐
-    if (mana <= maxMana * 0.5 && mana <= setup.getLodgeManaLostPoint()) {
+    if (setup.getLodgeManaLostPoint() > 0 && (mana <= maxMana * 0.5 && mana <= setup.getLodgeManaLostPoint())) {
         return 1;
     }
     if (setup.getDepositBattleCount() > 0) {
