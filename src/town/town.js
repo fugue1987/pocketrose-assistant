@@ -21,6 +21,8 @@ import {TownPetMapHouse} from "./town_pet_map_house";
 import {calculateCashDifferenceAmount, depositIntoTownBank, withdrawFromTownBank} from "../pocket/pocket_service";
 import * as message2 from "../common/common_message";
 
+import * as town_item_store from "./town_item_store";
+
 /**
  * 用于拦截并处理浏览器访问town.cgi的请求后返回的页面。
  */
@@ -43,7 +45,8 @@ export class TownRequestInterceptor {
         } else if (text.includes("＜＜　□　饰品屋　□　＞＞")) {
             new TownAccessoryStore().process();
         } else if (text.includes("＜＜　□　物品屋　□　＞＞")) {
-            new TownItemStore().process();
+            //new TownItemStore().process();
+            new town_item_store.TownItemStore().process();
         } else if (text.includes("＜＜ * 合 成 屋 *＞＞")) {
             new TownGemStore().process();
         } else if (text.includes("*  藏宝图以旧换新业务 *")) {
