@@ -238,7 +238,7 @@ export class PocketItem {
     }
 
     get isProhibitSellingItem() {
-        return pocket.isProhibitSellingItem(this.name);
+        return this.using || pocket.isProhibitSellingItem(this.name);
     }
 }
 
