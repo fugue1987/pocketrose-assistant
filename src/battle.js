@@ -6,7 +6,6 @@
 
 import {
     __cookie_getDepositButtonText,
-    __cookie_getEnableBattleForceRecommendation,
     __cookie_getEnableZodiacFlashBattle,
     __cookie_getLodgeButtonText,
     __cookie_getRepairButtonText,
@@ -107,7 +106,7 @@ export function __battle(htmlText) {
         $('#innButton').parent().remove();
         $('#bankButton').parent().remove();
         $('#returnButton').parent().remove();
-        if (__cookie_getEnableBattleForceRecommendation()) {
+        if (setup.isBattleForceRecommendation()) {
             $("#blacksmithButton").focus();
         }
         if (setup.isBattleResultAutoScroll()) {
@@ -123,7 +122,7 @@ export function __battle(htmlText) {
             // 住宿优先
             $("#innButton").attr('tabIndex', 1);
             $('#returnButton').parent().remove();
-            if (__cookie_getEnableBattleForceRecommendation()) {
+            if (setup.isBattleForceRecommendation()) {
                 $('#bankButton').parent().remove();
                 $("#innButton").focus();
             }
@@ -138,7 +137,7 @@ export function __battle(htmlText) {
             // 存钱优先
             $("#bankButton").attr('tabIndex', 1);
             $('#returnButton').parent().remove();
-            if (__cookie_getEnableBattleForceRecommendation()) {
+            if (setup.isBattleForceRecommendation()) {
                 $('#innButton').parent().remove();
                 $("#bankButton").focus();
             }
@@ -152,7 +151,7 @@ export function __battle(htmlText) {
         if (returnCode === 3) {
             // 返回优先
             $("#returnButton").attr('tabIndex', 1);
-            if (__cookie_getEnableBattleForceRecommendation()) {
+            if (setup.isBattleForceRecommendation()) {
                 $('#innButton').parent().remove();
                 $('#bankButton').parent().remove();
                 $("#returnButton").focus();

@@ -38,6 +38,10 @@ export function isBattleResultAutoScroll() {
     return storage.getBoolean("_pa_006");
 }
 
+export function isBattleForceRecommendation() {
+    return storage.getBoolean("_pa_007");
+}
+
 export class PersonalSetup {
 
     process() {
