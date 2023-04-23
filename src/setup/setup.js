@@ -2,6 +2,7 @@ import * as constant from "../common/common_constant";
 import * as message from "../common/common_message";
 import * as page from "../common/common_page";
 import * as storage from "../common/common_storage";
+import * as s001 from "./setup_001";
 
 export class PersonalSetup {
 
@@ -46,6 +47,7 @@ function doProcess() {
     html += "       </tr>";
     html += "       <tr>";
     html += "           <td style='text-align:center'>" +
+        "<input type='button' id='refreshButton' value='刷新助手设置'>" +
         "<input type='button' id='returnButton' value='返回上个画面'>" +
         "</td>";
     html += "       </tr>";
@@ -60,11 +62,44 @@ function doProcess() {
     message.initializeMessageBoard("在这里我来协助各位维护本机（浏览器）的口袋相关设置。<br>" +
         (storage.isLocalStorageDisabled() ? "你的浏览器不支持本地存储，继续使用Cookie存储。" : "看起来你的浏览器支持本地存储，很好，我们可以继续了。"));
 
+    $("#refreshButton").click(function () {
+        const credential = page.generateCredential();
+        doRefresh(credential);
+    });
     $("#returnButton").click(function () {
         $("#EdenForm").attr("action", "status.cgi");
         $("#EdenFormPayload").html("<input type='hidden' name='mode' value='STATUS'>");
         $("#EdenFormSubmit").trigger("click");
     });
+
+    doRender(credential);
+}
+
+const setupItems = [
+    new s001.SetupItem()
+];
+
+function doRender(credential) {
+    let html = "";
+    html += "<table style='background-color:#888888;width:100%;text-align:center'>";
+    html += "   <tbody style='background-color:#F8F0E0' id='SetupItemTable'>";
+    html += "       <tr>";
+    html += "           <th style='background-color:#E8E8D0'>名字</th>";
+    html += "           <th style='background-color:#EFE0C0'>设置</th>";
+    html += "           <th style='background-color:#E0D0B0'>选择</th>";
+    html += "       </tr>";
+    html += "    </tbody>";
+    html += "</table>";
+    $("#SetupUI").html(html);
+    for (const setupItem of setupItems) {
+        setupItem.render();
+    }
+}
+
+function doRefresh(credential) {
+    $("#SetupUI").html("");
+    $(".SetupUIButton").unbind("click");
+    doRender(credential);
 }
 
 
