@@ -1,5 +1,5 @@
-import * as dashboard from "../dashboard";
-import {WildDashboardProcessor} from "../dashboard";
+import * as dashboard from "../dashboard/dashboard";
+import {WildDashboardProcessor} from "../dashboard/dashboard";
 import * as personal_status from "./personal_status";
 import * as personal_salary_paid from "./personal_salary_paid";
 import * as personal_item_management from "./personal_item_management";

@@ -4,7 +4,7 @@
  * ============================================================================
  */
 
-import * as dashboard from "../dashboard";
+import * as dashboard from "../dashboard/dashboard";
 import * as message from "../message";
 import * as network from "../common/common_network";
 import * as map from "../pocket/pocket_map";

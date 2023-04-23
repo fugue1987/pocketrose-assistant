@@ -1,4 +1,4 @@
-import * as dashboard from "../dashboard";
+import * as dashboard from "../dashboard/dashboard";
 import * as message from "../message";
 import * as network from "../common/common_network";
 import * as page from "../page";
