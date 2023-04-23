@@ -46,6 +46,10 @@ export function isZodiacFlashBattleEnabled() {
     return storage.getBoolean("_pa_008");
 }
 
+export function isPetManagementUIEnabled() {
+    return storage.getBoolean("_pa_009");
+}
+
 export class PersonalSetup {
 
     process() {

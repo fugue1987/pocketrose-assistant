@@ -7,6 +7,7 @@ import {Coordinate} from "./common/common_util";
 import * as option from "./option";
 import * as service from "./service";
 import {findTownBySecret} from "./pocket/pocket_town";
+import * as setup from "./setup/setup";
 
 export class TownDashboardProcessor {
 
@@ -60,7 +61,7 @@ export class TownDashboardProcessor {
             $("option[value='USE_ITEM']").css("background-color", "yellow");
             $("option[value='ITEM_SEND']").remove();
         }
-        if (option.__cookie_getEnableNewPetUI()) {
+        if (setup.isPetManagementUIEnabled()) {
             $("option[value='PETSTATUS']").text("宠物管理(v2.0)");
             $("option[value='PETSTATUS']").css("background-color", "yellow");
             $("option[value='PET_SEND']").remove();
