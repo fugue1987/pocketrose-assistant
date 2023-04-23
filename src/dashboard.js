@@ -56,7 +56,7 @@ export class TownDashboardProcessor {
         $("option[value='BAOSHI_SHOP']").text("合成屋(v2.0)");
         $("option[value='LETTER']").text("口袋助手设置");
         $("option[value='LETTER']").css("background-color", "#20c0ff");
-        if (option.__cookie_getEnableNewItemUI()) {
+        if (setup.isItemManagementUIEnabled()) {
             $("option[value='USE_ITEM']").text("装备管理(v2.0)");
             $("option[value='USE_ITEM']").css("background-color", "yellow");
             $("option[value='ITEM_SEND']").remove();

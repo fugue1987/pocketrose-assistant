@@ -50,6 +50,10 @@ export function isPetManagementUIEnabled() {
     return storage.getBoolean("_pa_009");
 }
 
+export function isItemManagementUIEnabled() {
+    return storage.getBoolean("_pa_010");
+}
+
 export class PersonalSetup {
 
     process() {
