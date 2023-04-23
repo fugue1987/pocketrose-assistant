@@ -30,6 +30,18 @@ export function getBoolean(key) {
     return value !== "0";
 }
 
+export function getInteger(key, defaultValue) {
+    const value = localStorage.getItem(key);
+    if (value === undefined ||
+        value === null ||
+        value === "" ||
+        value === "undefined" ||
+        value === "null") {
+        return defaultValue;
+    }
+    return parseInt(value);
+}
+
 export function getFloat(key, defaultValue) {
     const value = localStorage.getItem(key);
     if (value === undefined ||

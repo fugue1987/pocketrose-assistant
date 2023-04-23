@@ -1,3 +1,5 @@
+import * as storage from "../common/common_storage";
+
 export class SetupItem {
 
     render() {
@@ -8,6 +10,7 @@ export class SetupItem {
 
 const _id = "003";
 const _name = "掉魔后自动住宿";
+const _key = "_pa_" + _id;
 
 function doRender() {
     let html = "";
@@ -18,15 +21,29 @@ function doRender() {
     html += "</tr>";
 
     $("#SetupItemTable").append($(html));
+
+    const value = storage.getInteger(_key, 100);
+    $(".Class_" + _id + "[value='" + Number(value) + "']").prop("selected", true);
+
     $("#Setup_" + _id).click(function () {
         __doSaveSetupItem();
     });
 }
 
 function __doGenerateSetupItem() {
-    return "";
+    let selection = "<select id='Select_" + _id + "'>";
+    selection += "<option class='Class_" + _id + "' value='10'>10PP</option>";
+    selection += "<option class='Class_" + _id + "' value='20'>20PP</option>";
+    selection += "<option class='Class_" + _id + "' value='50'>50PP</option>";
+    selection += "<option class='Class_" + _id + "' value='100'>100PP</option>";
+    selection += "<option class='Class_" + _id + "' value='200'>200PP</option>";
+    selection += "<option class='Class_" + _id + "' value='500'>500PP</option>";
+    selection += "</select>";
+    return selection;
 }
 
 function __doSaveSetupItem() {
+    const value = $("#Select_" + _id).val();
+    storage.set(_key, value);
     $("#refreshButton").trigger("click");
 }
