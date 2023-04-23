@@ -173,3 +173,60 @@ export function parseArmorStoreMerchandiseList(pageHTML) {
     });
     return merchandiseList;
 }
+
+/**
+ * Parse merchandise list from accessory store page HTML.
+ * @param pageHTML
+ * @returns {MerchandiseList}
+ */
+export function parseAccessoryStoreMerchandiseList(pageHTML) {
+    const merchandiseList = new MerchandiseList();
+    const table = $(pageHTML).find("input:radio:last").closest("table");
+    let specialityMatch = false;
+    $(table).find("tr").each(function (_idx, tr) {
+        const c1 = $(tr).find(":first-child");
+        const radio = $(c1).find("input:radio:first");
+        if (radio.length > 0) {
+            const merchandise = new Merchandise();
+            merchandise.id = "ACC_" + $(radio).val();
+
+            const c2 = $(c1).next();
+            const c3 = $(c2).next();
+            const c4 = $(c3).next();
+            const c5 = $(c4).next();
+            const c6 = $(c5).next();
+            const c7 = $(c6).next();
+            const c8 = $(c7).next();
+            const c9 = $(c8).next();
+            const c10 = $(c9).next();
+            const c11 = $(c10).next();
+            const c12 = $(c11).next();
+            const c13 = $(c12).next();
+            const c14 = $(c13).next();
+
+            merchandise.name = $(c2).text();
+            merchandise.nameHTML = $(c2).html();
+            let s = $(c3).text();
+            s = util.substringBefore(s, " Gold");
+            merchandise.price = parseInt(s);
+            merchandise.power = parseInt($(c4).text());
+            merchandise.weight = parseInt($(c5).text());
+            merchandise.endure = parseInt($(c6).text());
+            merchandise.attribute = $(c7).text();
+            merchandise.requiredCareer = $(c8).text();
+            merchandise.requiredAttack = parseInt($(c9).text());
+            merchandise.requiredDefense = parseInt($(c10).text());
+            merchandise.requiredSpecialAttack = parseInt($(c11).text());
+            merchandise.requiredSpecialDefense = parseInt($(c12).text());
+            merchandise.requiredSpeed = parseInt($(c13).text());
+            merchandise.weaponCategory = "-";
+            merchandise.gemCount = parseInt($(c14).text());
+            merchandise.speciality = specialityMatch;
+
+            merchandiseList.push(merchandise);
+        } else if ($(c1).text() === "== 特产饰品 ==") {
+            specialityMatch = true;
+        }
+    });
+    return merchandiseList;
+}
