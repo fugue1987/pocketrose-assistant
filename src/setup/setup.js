@@ -14,6 +14,10 @@ import * as s009 from "./setup_009";
 import * as s010 from "./setup_010";
 import * as s011 from "./setup_011";
 
+export function isPokemonWikiEnabled() {
+    return storage.getBoolean("_pa_001");
+}
+
 export class PersonalSetup {
 
     process() {

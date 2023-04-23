@@ -48,6 +48,7 @@ import {
 import {TownRequestInterceptor} from "./town";
 import {WildRequestInterceptor} from "./wild";
 import {PersonalRequestInterceptor} from "./personal/personal";
+import * as setup from "./setup/setup";
 
 const CGI_MAPPING = {
     "/battle.cgi": new battle.BattleRequestInterceptor(),
@@ -66,7 +67,7 @@ $(function () {
 function replacePkm(page) {
     if (location.href.includes(page)) {
         $(document).ready(function () {
-            if (__cookie_getEnablePokemonWiki()) {
+            if (setup.isPokemonWikiEnabled()) {
                 pokemon.processPokemonWikiReplacement();
             }
             if (location.href.includes("/town.cgi")) {
