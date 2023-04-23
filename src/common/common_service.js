@@ -1,15 +1,51 @@
 /**
  * ============================================================================
- * [ 资 金 相 关 模 块 ]
- * ----------------------------------------------------------------------------
- * # depositIntoTownBank = 存入城市银行
- * # withdrawFromTownBank = 从城市银行取钱
- * # withdrawFromCastleBank = 从城堡取钱
+ * [ 口 袋 服 务 模 块 ]
  * ============================================================================
  */
 
-import * as message from "./message";
-import * as network from "./common/common_network";
+import * as message from "../message";
+import * as network from "./common_network";
+
+/**
+ * 献祭宠物（超级封印）
+ * @param credential 用户凭证
+ * @param petIndex 宠物所在下标
+ * @returns {Promise<void>}
+ */
+export async function consecratePet(credential, petIndex) {
+    const doConsecratePet = function (credential, petIndex) {
+        return new Promise((resolve) => {
+            const request = credential.asRequest();
+            request["select"] = petIndex;
+            request["mode"] = "PETBORN6";
+            network.sendPostRequest("mydata.cgi", request, function (html) {
+                const successMessage = $(html).find("h2:first").text();
+                message.writeMessageBoard(successMessage);
+                resolve();
+            });
+        });
+    }
+    return await doConsecratePet(credential, petIndex);
+}
+
+/**
+ * 在城市住宿恢复体力和魔力
+ * @param credential 用户凭证
+ * @returns {Promise<void>}
+ */
+export async function lodgeTown(credential) {
+    const doLodgeTown = (credential) => {
+        return new Promise((resolve) => {
+            const request = credential.asRequest();
+            request["mode"] = "RECOVERY";
+            network.sendPostRequest("town.cgi", request, function () {
+                resolve();
+            });
+        });
+    };
+    return await doLodgeTown(credential);
+}
 
 /**
  * 计算现金和期望值的差额数量（单位万）

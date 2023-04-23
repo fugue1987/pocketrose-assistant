@@ -1,4 +1,4 @@
-import * as constant from "../common/common_constant";
+import * as constant from "../common/common_pocket";
 import * as message from "../common/common_message";
 import * as page from "../common/common_page";
 import * as storage from "../common/common_storage";

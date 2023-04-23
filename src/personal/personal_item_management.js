@@ -4,13 +4,13 @@
  * ============================================================================
  */
 
-import * as bank from "../bank";
 import * as network from "../common/common_network";
 import * as user from "../pocket/pocket_user";
-import * as constant from "../common/common_constant";
+import * as constant from "../common/common_pocket";
 import * as message from "../common/common_message";
 import * as page from "../common/common_page";
 import * as item from "../pocket/pocket_item";
+import {calculateCashDifferenceAmount, depositIntoTownBank, withdrawFromTownBank} from "../common/common_service";
 
 export class PersonalItemManagement {
     process() {
@@ -450,11 +450,11 @@ function __bindSendButton() {
             return;
         }
         request["mode"] = "ITEM_SEND2";
-        bank.withdrawFromTownBank(credential, 10)
+        withdrawFromTownBank(credential, 10)
             .then(() => {
                 network.sendPostRequest("town.cgi", request, function (html) {
                     message.processResponseHTML(html);
-                    bank.depositIntoTownBank(credential, undefined)
+                    depositIntoTownBank(credential, undefined)
                         .then(() => {
                             doRefresh(credential);
                         });
@@ -517,7 +517,7 @@ function __bindSellButton(index) {
             }
             network.sendPostRequest("town.cgi", request, function (html) {
                 message.processResponseHTML(html);
-                bank.depositIntoTownBank(credential, undefined)
+                depositIntoTownBank(credential, undefined)
                     .then(() => {
                         doRefresh(credential);
                     });
@@ -554,8 +554,8 @@ function __bindConsecrateButton() {
         user.loadRole(credential)
             .then(role => {
                 const cash = role.cash;
-                const amount = bank.calculateCashDifferenceAmount(cash, 1000000);
-                bank.withdrawFromTownBank(page.generateCredential(), amount)
+                const amount = calculateCashDifferenceAmount(cash, 1000000);
+                withdrawFromTownBank(page.generateCredential(), amount)
                     .then(() => {
                         let payload = "";
                         consecrateCandidates.forEach(it => {

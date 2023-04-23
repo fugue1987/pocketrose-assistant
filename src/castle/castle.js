@@ -10,9 +10,9 @@ import {enterTown, leaveCastle} from "../common/common_map";
 import * as page from "../page";
 import {generateCredential} from "../page";
 import * as util from "../common/common_util";
-import * as finance from "../bank";
 import * as user from "../pocket/pocket_user";
 import {getTown} from "../pocket/pocket_town";
+import {calculateCashDifferenceAmount, depositIntoTownBank, withdrawFromCastleBank} from "../common/common_service";
 
 /**
  * 城堡相关页面的处理入口
@@ -151,9 +151,9 @@ class CastlePostHouse {
                 const town = getTown(townId);
                 message.publishMessageBoard(message._message_town_target, {"town": town.name});
 
-                const amount = finance.calculateCashDifferenceAmount(cash, 100000);
+                const amount = calculateCashDifferenceAmount(cash, 100000);
                 const credential = generateCredential();
-                finance.withdrawFromCastleBank(credential, amount).then(() => {
+                withdrawFromCastleBank(credential, amount).then(() => {
                     $("#role_cash").text((cash + amount * 10000) + " GOLD");
                     postHouse.#travelTo(town);
                 });
@@ -171,7 +171,7 @@ class CastlePostHouse {
                 plan.destination = town.coordinate;
                 map.executeMovePlan(plan).then(() => {
                     enterTown(credential, town.id).then(() => {
-                        finance.depositIntoTownBank(credential, undefined).then(() => {
+                        depositIntoTownBank(credential, undefined).then(() => {
                             $("form[action='castlestatus.cgi']").attr("action", "status.cgi");
                             $("input:hidden[value='CASTLESTATUS']").attr("value", "STATUS");
                             $("input:submit[value='返回城堡']").prop("disabled", false);

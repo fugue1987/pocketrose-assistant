@@ -1,10 +1,10 @@
-import * as bank from "./bank";
 import * as network from "./common/common_network";
 import * as page from "./page";
 import * as pet from "./pocket/pocket_pet";
 import * as util from "./common/common_util";
 import {Coordinate} from "./common/common_util";
-import * as service from "./service";
+import * as service from "./common/common_service";
+import {calculateCashDifferenceAmount, depositIntoTownBank, withdrawFromTownBank} from "./common/common_service";
 import {findTownBySecret} from "./pocket/pocket_town";
 import * as setup from "./setup/setup";
 
@@ -183,8 +183,8 @@ export class TownDashboardProcessor {
                             if (usingPet !== undefined && usingPet.level >= 100) {
                                 const expect = Math.ceil(100 - usingPet.love) * 10000;
                                 if (expect > 0) {
-                                    const amount = bank.calculateCashDifferenceAmount(cash, expect);
-                                    bank.withdrawFromTownBank(credential, amount)
+                                    const amount = calculateCashDifferenceAmount(cash, expect);
+                                    withdrawFromTownBank(credential, amount)
                                         .then(() => {
                                             const request = credential.asRequest();
                                             request["mode"] = "PETADDLOVE";
@@ -207,7 +207,7 @@ export class TownDashboardProcessor {
     #depositAndReturn() {
         const instance = this;
         const credential = page.generateCredential();
-        bank.depositIntoTownBank(credential, undefined)
+        depositIntoTownBank(credential, undefined)
             .then(() => {
                 instance.#returnAndRefresh();
             });

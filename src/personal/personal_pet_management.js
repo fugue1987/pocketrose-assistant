@@ -10,8 +10,8 @@ import * as pet from "../pocket/pocket_pet";
 import * as util from "../common/common_util";
 import * as network from "../common/common_network";
 import * as user from "../pocket/pocket_user";
-import * as bank from "../bank";
-import * as service from "../service";
+import * as service from "../common/common_service";
+import {calculateCashDifferenceAmount, depositIntoTownBank, withdrawFromTownBank} from "../common/common_service";
 import * as item from "../pocket/pocket_item";
 
 export class PersonalPetManagement {
@@ -509,8 +509,8 @@ function __bindPetLoveButton(buttonId, pet) {
         user.loadRole(credential)
             .then(role => {
                 const cash = role.cash;
-                const amount = bank.calculateCashDifferenceAmount(cash, expect);
-                bank.withdrawFromTownBank(credential, amount)
+                const amount = calculateCashDifferenceAmount(cash, expect);
+                withdrawFromTownBank(credential, amount)
                     .then(() => {
                         const request = credential.asRequest();
                         request["mode"] = "PETADDLOVE";
@@ -568,11 +568,11 @@ function __bindPetConsecrateButton(buttonId, pet) {
             return;
         }
         const credential = page.generateCredential();
-        bank.withdrawFromTownBank(credential, 1000)
+        withdrawFromTownBank(credential, 1000)
             .then(() => {
                 service.consecratePet(credential, pet.index)
                     .then(() => {
-                        bank.depositIntoTownBank(credential, undefined)
+                        depositIntoTownBank(credential, undefined)
                             .then(() => {
                                 doRefresh(credential);
                             });
@@ -589,7 +589,7 @@ function __bindPetSendButton(buttonId, pet) {
             return;
         }
         const credential = page.generateCredential();
-        bank.withdrawFromTownBank(credential, 10)
+        withdrawFromTownBank(credential, 10)
             .then(() => {
                 const request = credential.asRequest();
                 request["mode"] = "PET_SEND2";
@@ -597,7 +597,7 @@ function __bindPetSendButton(buttonId, pet) {
                 request["select"] = pet.index;
                 network.sendPostRequest("town.cgi", request, function (html) {
                     message.processResponseHTML(html);
-                    bank.depositIntoTownBank(credential, undefined)
+                    depositIntoTownBank(credential, undefined)
                         .then(() => {
                             doRefresh(credential);
                         });

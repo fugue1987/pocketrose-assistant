@@ -5,7 +5,7 @@
  */
 
 import * as page from "../common/common_page";
-import * as constant from "../common/common_constant";
+import * as constant from "../common/common_pocket";
 
 export class TownPetMapHouse {
 

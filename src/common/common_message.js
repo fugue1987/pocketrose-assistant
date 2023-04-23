@@ -1,4 +1,4 @@
-import * as constant from "../common/common_constant";
+import * as constant from "./common_pocket";
 
 export function createMessageBoard(imageHTML, containerId) {
     if (imageHTML === undefined) {

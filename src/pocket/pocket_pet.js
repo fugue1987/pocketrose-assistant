@@ -4,7 +4,7 @@
  * ============================================================================
  */
 
-import * as constant from "../common/common_constant";
+import * as constant from "../common/common_pocket";
 import * as util from "../common/common_util";
 import * as network from "../common/common_network";
 

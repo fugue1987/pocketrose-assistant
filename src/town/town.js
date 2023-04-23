@@ -4,7 +4,6 @@
  * ============================================================================
  */
 
-import * as bank from "../bank";
 import * as dashboard from "../dashboard";
 import * as message from "../message";
 import * as network from "../common/common_network";
@@ -19,6 +18,7 @@ import * as npc from "../npc";
 import * as castle from "../pocket/pocket_castle";
 import {findTownByName, getTown} from "../pocket/pocket_town";
 import {TownPetMapHouse} from "./town_pet_map_house";
+import {calculateCashDifferenceAmount, depositIntoTownBank, withdrawFromTownBank} from "../common/common_service";
 
 /**
  * 用于拦截并处理浏览器访问town.cgi的请求后返回的页面。
@@ -166,15 +166,15 @@ class TownInnPostHouse {
                         $(td).next().attr("id", "cash");
                     }
                 });
-                const amount = bank.calculateCashDifferenceAmount(cash, 100000);
-                bank.withdrawFromTownBank(credential, amount).then(() => {
+                const amount = calculateCashDifferenceAmount(cash, 100000);
+                withdrawFromTownBank(credential, amount).then(() => {
                     map.leaveTown(credential).then(plan => {
                         plan.source = source;
                         plan.destination = destination;
                         message.publishMessageBoard(message._message_move_destination, {"destination": destination});
                         map.executeMovePlan(plan).then(() => {
                             map.enterTown(credential, destinationTownId).then(() => {
-                                bank.depositIntoTownBank(credential, undefined).then(() => {
+                                depositIntoTownBank(credential, undefined).then(() => {
                                     $("#returnButton").attr("value", destinationTown.name + "欢迎您的到来");
                                     $("#returnButton").removeAttr("style");
                                     $("#returnButton").prop("disabled", false);
@@ -272,7 +272,7 @@ class TownWeaponStore {
             if (request["select"] !== undefined) {
                 network.sendPostRequest("town.cgi", request, function () {
                     const credential = generateCredential();
-                    bank.depositIntoTownBank(credential, undefined).then(() => {
+                    depositIntoTownBank(credential, undefined).then(() => {
                         const townId = $("input:hidden[name='townid']").val();
                         $("#returnButton").prepend("<input type='hidden' name='town' value='" + townId + "'>" +
                             "<input type='hidden' name='con_str' value='50'>");
@@ -296,9 +296,9 @@ class TownWeaponStore {
                         totalPrice = Math.max(10000, totalPrice);
                     }
                     const cash = page.getRoleCash();
-                    const amount = bank.calculateCashDifferenceAmount(cash, totalPrice);
+                    const amount = calculateCashDifferenceAmount(cash, totalPrice);
                     const credential = page.generateCredential();
-                    bank.withdrawFromTownBank(credential, amount).then(() => {
+                    withdrawFromTownBank(credential, amount).then(() => {
                         const request = {};
                         $($("table")[7]).find("input:hidden").each(function (_idx, input) {
                             const name = $(input).attr("name");
@@ -358,7 +358,7 @@ class TownArmorStore {
             if (request["select"] !== undefined) {
                 network.sendPostRequest("town.cgi", request, function () {
                     const credential = generateCredential();
-                    bank.depositIntoTownBank(credential, undefined).then(() => {
+                    depositIntoTownBank(credential, undefined).then(() => {
                         const townId = $("input:hidden[name='townid']").val();
                         $("#returnButton").prepend("<input type='hidden' name='town' value='" + townId + "'>" +
                             "<input type='hidden' name='con_str' value='50'>");
@@ -382,9 +382,9 @@ class TownArmorStore {
                         totalPrice = Math.max(10000, totalPrice);
                     }
                     const cash = page.getRoleCash();
-                    const amount = bank.calculateCashDifferenceAmount(cash, totalPrice);
+                    const amount = calculateCashDifferenceAmount(cash, totalPrice);
                     const credential = page.generateCredential();
-                    bank.withdrawFromTownBank(credential, amount).then(() => {
+                    withdrawFromTownBank(credential, amount).then(() => {
                         const request = {};
                         $($("table")[7]).find("input:hidden").each(function (_idx, input) {
                             const name = $(input).attr("name");
@@ -444,7 +444,7 @@ class TownAccessoryStore {
             if (request["select"] !== undefined) {
                 network.sendPostRequest("town.cgi", request, function () {
                     const credential = generateCredential();
-                    bank.depositIntoTownBank(credential, undefined).then(() => {
+                    depositIntoTownBank(credential, undefined).then(() => {
                         const townId = $("input:hidden[name='townid']").val();
                         $("#returnButton").prepend("<input type='hidden' name='town' value='" + townId + "'>" +
                             "<input type='hidden' name='con_str' value='50'>");
@@ -468,9 +468,9 @@ class TownAccessoryStore {
                         totalPrice = Math.max(10000, totalPrice);
                     }
                     const cash = page.getRoleCash();
-                    const amount = bank.calculateCashDifferenceAmount(cash, totalPrice);
+                    const amount = calculateCashDifferenceAmount(cash, totalPrice);
                     const credential = page.generateCredential();
-                    bank.withdrawFromTownBank(credential, amount).then(() => {
+                    withdrawFromTownBank(credential, amount).then(() => {
                         const request = {};
                         $($("table")[7]).find("input:hidden").each(function (_idx, input) {
                             const name = $(input).attr("name");
@@ -530,7 +530,7 @@ class TownItemStore {
             if (request["select"] !== undefined) {
                 network.sendPostRequest("town.cgi", request, function () {
                     const credential = generateCredential();
-                    bank.depositIntoTownBank(credential, undefined).then(() => {
+                    depositIntoTownBank(credential, undefined).then(() => {
                         const townId = $("input:hidden[name='townid']").val();
                         $("#returnButton").prepend("<input type='hidden' name='town' value='" + townId + "'>" +
                             "<input type='hidden' name='con_str' value='50'>");
@@ -554,9 +554,9 @@ class TownItemStore {
                         totalPrice = Math.max(10000, totalPrice);
                     }
                     const cash = page.getRoleCash();
-                    const amount = bank.calculateCashDifferenceAmount(cash, totalPrice);
+                    const amount = calculateCashDifferenceAmount(cash, totalPrice);
                     const credential = page.generateCredential();
-                    bank.withdrawFromTownBank(credential, amount).then(() => {
+                    withdrawFromTownBank(credential, amount).then(() => {
                         const request = {};
                         $($("table")[5]).find("input:hidden").each(function (_idx, input) {
                             const name = $(input).attr("name");
@@ -1013,9 +1013,9 @@ class TownAdventurerGuild {
                             cash = parseInt(util.substringBefore($(td).next().text(), " GOLD"));
                         }
                     });
-                    const amount = bank.calculateCashDifferenceAmount(cash, 1100000);
+                    const amount = calculateCashDifferenceAmount(cash, 1100000);
                     const credential = page.generateCredential();
-                    bank.withdrawFromTownBank(credential, amount).then(() => {
+                    withdrawFromTownBank(credential, amount).then(() => {
                         const player = $("#player").text();
                         const townId = $("#townId").text();
                         inst.#startTreasureSeeking(credential, player, townId, candidates);
@@ -1090,7 +1090,7 @@ class TownAdventurerGuild {
             plan.mode = mode;
             map.executeMovePlan(plan).then(() => {
                 map.enterTown(credential, town.id).then(() => {
-                    bank.depositIntoTownBank(credential, undefined).then(() => {
+                    depositIntoTownBank(credential, undefined).then(() => {
                         message.publishMessageBoard(message._message_treasure_finish, {
                             "player": player,
                             "foundList": foundList

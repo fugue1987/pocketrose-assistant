@@ -5,7 +5,7 @@
  */
 
 import * as util from "./common_util";
-import * as constant from "./common_constant";
+import * as constant from "./common_pocket";
 
 /**
  * Generate Credential object from current HTML form.
