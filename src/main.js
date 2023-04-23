@@ -23,8 +23,8 @@
 import * as battle from "./battle/battle";
 import * as castle from "./castle/castle";
 import * as pokemon from "./pokemon/pokemon";
-import {TownRequestInterceptor} from "./town";
-import {WildRequestInterceptor} from "./wild";
+import {TownRequestInterceptor} from "./town/town";
+import {WildRequestInterceptor} from "./map/map";
 import {PersonalRequestInterceptor} from "./personal/personal";
 import * as setup from "./setup/setup";
 

@@ -4,21 +4,21 @@
  * ============================================================================
  */
 
-import * as bank from "./bank";
-import * as dashboard from "./dashboard";
-import * as message from "./message";
-import * as network from "./common/common_network";
-import * as map from "./common/common_map";
-import * as page from "./page";
-import {generateCredential} from "./page";
-import * as pocket from "./pocket";
-import * as user from "./pocket/pocket_user";
-import * as util from "./common/common_util";
-import {Coordinate} from "./common/common_util";
-import * as npc from "./npc";
-import * as castle from "./pocket/pocket_castle";
-import {findTownByName, getTown} from "./pocket/pocket_town";
-import {TownPetMapHouse} from "./town/town_pet_map_house";
+import * as bank from "../bank";
+import * as dashboard from "../dashboard";
+import * as message from "../message";
+import * as network from "../common/common_network";
+import * as map from "../common/common_map";
+import * as page from "../page";
+import {generateCredential} from "../page";
+import * as pocket from "../pocket";
+import * as user from "../pocket/pocket_user";
+import * as util from "../common/common_util";
+import {Coordinate} from "../common/common_util";
+import * as npc from "../npc";
+import * as castle from "../pocket/pocket_castle";
+import {findTownByName, getTown} from "../pocket/pocket_town";
+import {TownPetMapHouse} from "./town_pet_map_house";
 
 /**
  * 用于拦截并处理浏览器访问town.cgi的请求后返回的页面。
