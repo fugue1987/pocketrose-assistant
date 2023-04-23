@@ -5,7 +5,7 @@
  */
 
 import * as message from "../message";
-import * as network from "./common_network";
+import * as network from "../common/common_network";
 
 /**
  * 献祭宠物（超级封印）

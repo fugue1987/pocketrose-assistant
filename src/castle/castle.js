@@ -5,14 +5,14 @@
  */
 
 import * as message from "../message";
-import * as map from "../common/common_map";
-import {enterTown, leaveCastle} from "../common/common_map";
+import * as map from "../pocket/pocket_map";
+import {enterTown, leaveCastle} from "../pocket/pocket_map";
 import * as page from "../page";
 import {generateCredential} from "../page";
 import * as util from "../common/common_util";
 import * as user from "../pocket/pocket_user";
 import {getTown} from "../pocket/pocket_town";
-import {calculateCashDifferenceAmount, depositIntoTownBank, withdrawFromCastleBank} from "../common/common_service";
+import {calculateCashDifferenceAmount, depositIntoTownBank, withdrawFromCastleBank} from "../pocket/pocket_service";
 
 /**
  * 城堡相关页面的处理入口

@@ -3,8 +3,8 @@ import * as page from "./page";
 import * as pet from "./pocket/pocket_pet";
 import * as util from "./common/common_util";
 import {Coordinate} from "./common/common_util";
-import * as service from "./common/common_service";
-import {calculateCashDifferenceAmount, depositIntoTownBank, withdrawFromTownBank} from "./common/common_service";
+import * as service from "./pocket/pocket_service";
+import {calculateCashDifferenceAmount, depositIntoTownBank, withdrawFromTownBank} from "./pocket/pocket_service";
 import {findTownBySecret} from "./pocket/pocket_town";
 import * as setup from "./setup/setup";
 

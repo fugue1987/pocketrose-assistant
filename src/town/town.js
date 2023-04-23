@@ -7,7 +7,7 @@
 import * as dashboard from "../dashboard";
 import * as message from "../message";
 import * as network from "../common/common_network";
-import * as map from "../common/common_map";
+import * as map from "../pocket/pocket_map";
 import * as page from "../page";
 import {generateCredential} from "../page";
 import * as pocket from "../pocket";
@@ -18,7 +18,7 @@ import * as npc from "../npc";
 import * as castle from "../pocket/pocket_castle";
 import {findTownByName, getTown} from "../pocket/pocket_town";
 import {TownPetMapHouse} from "./town_pet_map_house";
-import {calculateCashDifferenceAmount, depositIntoTownBank, withdrawFromTownBank} from "../common/common_service";
+import {calculateCashDifferenceAmount, depositIntoTownBank, withdrawFromTownBank} from "../pocket/pocket_service";
 
 /**
  * 用于拦截并处理浏览器访问town.cgi的请求后返回的页面。

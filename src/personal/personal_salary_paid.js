@@ -7,7 +7,7 @@
 import * as constant from "../common/common_pocket";
 import * as message from "../common/common_message";
 import * as page from "../page";
-import {depositIntoTownBank} from "../common/common_service";
+import {depositIntoTownBank} from "../pocket/pocket_service";
 
 export class PersonalSalaryPaid {
     process() {

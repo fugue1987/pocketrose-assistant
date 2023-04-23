@@ -4,11 +4,11 @@
  * ============================================================================
  */
 
-import * as util from "./common_util";
-import {calculateDirection, calculateDistance, calculatePath, Coordinate} from "./common_util";
-import * as network from "./common_network";
+import * as util from "../common/common_util";
+import {calculateDirection, calculateDistance, calculatePath, Coordinate} from "../common/common_util";
+import * as network from "../common/common_network";
 import * as message from "../message";
-import {getTown} from "../pocket/pocket_town";
+import {getTown} from "./pocket_town";
 
 /**
  * 用于描述移动计划的数据结构。表述了谁从哪里移动到哪里，怎么样的移动方式。
