@@ -13,4 +13,15 @@ export class TownItemStore {
 function doProcess() {
     const pageHTML = page.currentPageHTML();
     const itemList = item.parseItemStoreItemList(pageHTML);
+    const itemMap = itemList.asMap();
+    const table = $("input:radio:first").closest("table");
+    $(table).find("input:radio").each(function (_idx, radio) {
+        const index = parseInt($(radio).val());
+        const item = itemMap[index];
+        if (item.using) {
+            $(radio).prop("disabled", true);
+        } else if (item.isProhibitSellingItem) {
+            $(radio).prop("disabled", true);
+        }
+    });
 }

@@ -7,8 +7,8 @@
 import {loadNPC} from "./npc";
 import * as util from "./common/common_util";
 import {Credential} from "./common/common_util";
-import {isProhibitSellingItem} from "./pocket";
 import {getTownsAsList} from "./pocket/pocket_town";
+import {isProhibitSellingItem} from "./common/common_pocket";
 
 export class NPC {
 

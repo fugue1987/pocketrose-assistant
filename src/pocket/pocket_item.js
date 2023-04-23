@@ -14,6 +14,7 @@
 
 import * as util from "../common/common_util";
 import * as page from "../common/common_page";
+import * as pocket from "../common/common_pocket";
 import * as town from "./pocket_town";
 
 // 口袋所有的装备都被分为以下四类：
@@ -234,6 +235,10 @@ export class PocketItem {
         }
         const progressBar = page.generateProgressBarHTML(ratio);
         return "<span title='" + this.experience + " (" + (ratio * 100).toFixed(2) + "%)'>" + progressBar + "</span>"
+    }
+
+    get isProhibitSellingItem() {
+        return pocket.isProhibitSellingItem(this.name);
     }
 }
 
@@ -498,25 +503,27 @@ export function parseAccessoryStoreItemList(html) {
 
 /**
  * 解析物品店的装备
- * @param html
+ * @param pageHTML
  * @returns {PocketItemList}
  */
-export function parseItemStoreItemList(html) {
+export function parseItemStoreItemList(pageHTML) {
     const itemList = new PocketItemList();
-    $(html).find("table:eq(2) input:radio").each(function (_idx, radio) {
-        const item = new PocketItem();
-        const tr = $(radio).parent().parent();
+    const table = $(pageHTML).find("input:radio:first").closest("table");
+    $(table).find("input:radio").each(function (_idx, radio) {
+        const c1 = $(radio).parent();
+        const c2 = $(c1).next();
+        const c3 = $(c2).next();
+        const c4 = $(c3).next();
+        const c5 = $(c4).next();
+        const c6 = $(c5).next();
+        const c7 = $(c6).next();
+        const c8 = $(c7).next();
 
-        // index & selectable
+        const item = new PocketItem();
         item.index = parseInt($(radio).val());
         item.selectable = !$(radio).prop("disabled");
-
-        // using
-        let s = $(tr).find("th:first").text();
-        item.using = (s === "★");
-
-        // name & star
-        s = $(tr).find("th:eq(1)").text();
+        item.using = ($(c2).text() === "★");
+        let s = $(c3).text();
         if (s.startsWith("齐心★")) {
             item.star = true;
             item.name = util.substringAfter(s, "齐心★");
@@ -524,25 +531,15 @@ export function parseItemStoreItemList(html) {
             item.star = false;
             item.name = s;
         }
-        item.nameHTML = $(tr).find("th:eq(1)").html();
-
-        // category
-        s = $(tr).find("td:eq(1)").text();
-        item.category = s;
-
-        // power & weight & endure
-        s = $(tr).find("td:eq(2)").text();
-        item.power = parseInt(s);
-        s = $(tr).find("td:eq(3)").text();
-        item.weight = parseInt(s);
-        s = $(tr).find("td:eq(4)").text();
+        item.nameHTML = $(c3).html();
+        item.category = $(c4).text();
+        item.power = parseInt($(c5).text());
+        item.weight = parseInt($(c6).text());
+        s = $(c7).text();
         item.endure = parseInt(util.substringBeforeSlash(s));
         item.maxEndure = parseInt(util.substringAfterSlash(s));
-
-        // price
-        s = $(tr).find("td:eq(5)").text();
-        item.price = parseInt(util.substringBefore(s, " Gold"));
-        item.priceHTML = $(tr).find("td:eq(5)").html();
+        item.price = parseInt(util.substringBefore($(c8).text(), " "));
+        item.priceHTML = $(c8).html();
 
         itemList.push(item);
     });
