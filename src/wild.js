@@ -2,7 +2,7 @@ import * as dashboard from "./dashboard";
 import * as message from "./message";
 import * as network from "./common/common_network";
 import * as page from "./page";
-import * as map from "./map";
+import * as map from "./common/map";
 import {getTown} from "./pocket/pocket_town";
 
 export class WildRequestInterceptor {
