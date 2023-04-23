@@ -81,6 +81,12 @@ function doProcess() {
                 $("#consecrateButton").prop("disabled", false);
             }
         });
+
+    // 隐藏祭奠按钮，双击出现
+    $("#consecrateButton").hide();
+    $("#p_3139").dblclick(function () {
+        $("#consecrateButton").toggle();
+    });
 }
 
 function doRender(itemList) {

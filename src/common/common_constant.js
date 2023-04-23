@@ -1,3 +1,5 @@
+import * as util from "./common_util";
+
 export const DOMAIN = "https://pocketrose.itsns.net.cn/pocketrose";
 
 const POCKET_NPC_IMAGES = {
@@ -16,5 +18,7 @@ export function getNPCImageHTML(name) {
     if (image === undefined) {
         return undefined;
     }
-    return "<img src='" + image + "' width='64' height='64' alt='" + name + "'>";
+    let s = util.substringAfterLast(image, "/");
+    s = util.substringBefore(s, ".gif");
+    return "<img src='" + image + "' width='64' height='64' alt='" + name + "' id='p_" + s + "'>";
 }

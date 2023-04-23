@@ -13,7 +13,7 @@
  * @returns {string}
  */
 export function substringBefore(text, searchString) {
-    let idx = text.indexOf(searchString);
+    const idx = text.indexOf(searchString);
     if (idx === -1) {
         return text;
     }
@@ -27,7 +27,21 @@ export function substringBefore(text, searchString) {
  * @returns {string}
  */
 export function substringAfter(text, searchString) {
-    let idx = text.indexOf(searchString);
+    const idx = text.indexOf(searchString);
+    if (idx === -1) {
+        return text;
+    }
+    return text.substring(idx + searchString.length);
+}
+
+/**
+ * Substring after last specified search string
+ * @param text
+ * @param searchString
+ * @returns {string}
+ */
+export function substringAfterLast(text, searchString) {
+    const idx = text.lastIndexOf(searchString);
     if (idx === -1) {
         return text;
     }
