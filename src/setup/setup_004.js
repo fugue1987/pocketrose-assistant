@@ -1,3 +1,5 @@
+import * as storage from "../common/common_storage";
+
 export class SetupItem {
 
     render() {
@@ -8,6 +10,7 @@ export class SetupItem {
 
 const _id = "004";
 const _name = "修理装备耐久限";
+const _key = "_pa_" + _id;
 
 function doRender() {
     let html = "";
@@ -18,15 +21,27 @@ function doRender() {
     html += "</tr>";
 
     $("#SetupItemTable").append($(html));
+
+    const value = storage.getInteger(_key, 100);
+    $(".Class_" + _id + "[value='" + value + "']").prop("selected", true);
+
     $("#Setup_" + _id).click(function () {
         __doSaveSetupItem();
     });
 }
 
 function __doGenerateSetupItem() {
-    return "";
+    let selection = "<select id='Select_" + _id + "'>";
+    selection += "<option class='Class_" + _id + "' value='10'>耐久10</option>";
+    selection += "<option class='Class_" + _id + "' value='20'>耐久20</option>";
+    selection += "<option class='Class_" + _id + "' value='50'>耐久50</option>";
+    selection += "<option class='Class_" + _id + "' value='100'>耐久100</option>";
+    selection += "</select>";
+    return selection;
 }
 
 function __doSaveSetupItem() {
+    const value = $("#Select_" + _id).val();
+    storage.set(_key, value);
     $("#refreshButton").trigger("click");
 }

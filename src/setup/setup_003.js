@@ -23,7 +23,7 @@ function doRender() {
     $("#SetupItemTable").append($(html));
 
     const value = storage.getInteger(_key, 100);
-    $(".Class_" + _id + "[value='" + Number(value) + "']").prop("selected", true);
+    $(".Class_" + _id + "[value='" + value + "']").prop("selected", true);
 
     $("#Setup_" + _id).click(function () {
         __doSaveSetupItem();

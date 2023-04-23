@@ -26,6 +26,10 @@ export function getLodgeManaLostPoint() {
     return storage.getInteger("_pa_003", 100);
 }
 
+export function getRepairMinLimitation() {
+    return storage.getInteger("_pa_003", 100);
+}
+
 export class PersonalSetup {
 
     process() {

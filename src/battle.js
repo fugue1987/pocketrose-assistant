@@ -12,7 +12,6 @@ import {
     __cookie_getEnableZodiacFlashBattle,
     __cookie_getLodgeButtonText,
     __cookie_getRepairButtonText,
-    __cookie_getRepairItemThreshold,
     __cookie_getReturnButtonText
 } from "./option";
 import * as util from "./common/common_util";
@@ -197,7 +196,7 @@ function __battle_checkIfShouldGoToBlacksmith(resultText, recoverItemEndure) {
                         number += numbers[k];
                     }
                     numbers = [];
-                    if (number < __cookie_getRepairItemThreshold()) {
+                    if (number < setup.getRepairMinLimitation()) {
                         lowEndures.push(number);
                     }
                     break;
