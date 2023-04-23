@@ -27,7 +27,11 @@ export function getLodgeManaLostPoint() {
 }
 
 export function getRepairMinLimitation() {
-    return storage.getInteger("_pa_003", 100);
+    return storage.getInteger("_pa_004", 100);
+}
+
+export function getDepositBattleCount() {
+    return storage.getInteger("_pa_005", 10);
 }
 
 export class PersonalSetup {

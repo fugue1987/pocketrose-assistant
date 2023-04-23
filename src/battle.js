@@ -5,7 +5,6 @@
  */
 
 import {
-    __cookie_getDepositBattleNumber,
     __cookie_getDepositButtonText,
     __cookie_getEnableBattleAutoScroll,
     __cookie_getEnableBattleForceRecommendation,
@@ -238,7 +237,7 @@ function __battle_checkIfShouldGoToInn(htmlText, recoverItemEndure) {
         // 十二宫和秘宝之岛战斗胜利不需要住宿，直接存钱更好
         return 2;
     }
-    let depositBattleNumber = __cookie_getDepositBattleNumber();
+    let depositBattleNumber = setup.getDepositBattleCount();
     if (depositBattleNumber > 0 && recoverItemEndure % depositBattleNumber == 0) {
         // 存钱战数到了
         return 2;
@@ -275,7 +274,7 @@ function __battle_checkIfShouldGoToInn(htmlText, recoverItemEndure) {
     if (mana <= maxMana * 0.5 && mana <= setup.getLodgeManaLostPoint()) {
         return 1;
     }
-    if (__cookie_getDepositBattleNumber() > 0) {
+    if (setup.getDepositBattleCount() > 0) {
         // 设置了定期存钱，但是没有到战数，那么就直接返回吧
         return 3;
     } else {
