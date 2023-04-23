@@ -1,3 +1,4 @@
+import * as message from "../common/common_message";
 import * as storage from "../common/common_storage";
 
 export class SetupItem {
@@ -43,5 +44,6 @@ function __doGenerateSetupItem() {
 function __doSaveSetupItem() {
     const value = $("#Select_" + _id).val();
     storage.set(_key, value);
+    message.publishMessageBoard("<b style='color:red'>" + _name + "</b>已经设置。");
     $("#refreshButton").trigger("click");
 }
