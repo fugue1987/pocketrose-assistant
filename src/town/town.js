@@ -19,6 +19,7 @@ import * as castle from "../pocket/pocket_castle";
 import {findTownByName, getTown} from "../pocket/pocket_town";
 import {TownPetMapHouse} from "./town_pet_map_house";
 import {calculateCashDifferenceAmount, depositIntoTownBank, withdrawFromTownBank} from "../pocket/pocket_service";
+import * as message2 from "../common/common_message";
 
 /**
  * 用于拦截并处理浏览器访问town.cgi的请求后返回的页面。
@@ -1091,10 +1092,14 @@ class TownAdventurerGuild {
             map.executeMovePlan(plan).then(() => {
                 map.enterTown(credential, town.id).then(() => {
                     depositIntoTownBank(credential, undefined).then(() => {
-                        message.publishMessageBoard(message._message_treasure_finish, {
-                            "player": player,
-                            "foundList": foundList
-                        });
+                        message2.publishMessageBoard("探险完成，在兔子骷髅不怀好意的挥手注视下，你快速离开了。");
+                        if (foundList.length > 0) {
+                            message2.publishMessageBoard("你回到无人处，悄悄检视了下探险的收入：");
+                            for (let i = 0; i < foundList.length; i++) {
+                                message2.publishMessageBoard("<b style='color: yellow'>" + foundList[i] + "</b>");
+                            }
+                        }
+
                         $("#returnButton").prop("disabled", false);
                         $("#returnButton").attr("value", "欢迎回来");
                         $("#returnButton").removeAttr("style");
