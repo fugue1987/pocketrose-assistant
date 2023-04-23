@@ -46,7 +46,7 @@ function doProcess() {
         $(c17).html(item.experienceHTML);
     });
 
-    $("input:submit[value='确定']").closest("tr")
+    $("input:submit[value='确定']:last").closest("tr")
         .before($("<tr><td colspan='18' style='color:navy'>城堡仓库目前容量：<b style='color:red'>" + itemList.asList().length + "</b></td></tr>"));
 
 }
