@@ -13,6 +13,7 @@ import * as s008 from "./setup_008";
 import * as s009 from "./setup_009";
 import * as s010 from "./setup_010";
 import * as s011 from "./setup_011";
+import * as s012 from "./setup_012";
 
 export function isPokemonWikiEnabled() {
     return storage.getBoolean("_pa_001");
@@ -56,6 +57,21 @@ export function isItemManagementUIEnabled() {
 
 export function isCareerManagementUIEnabled() {
     return storage.getBoolean("_pa_011");
+}
+
+export function getBattlePlacePreference(id) {
+    let value;
+    const s = storage.get("_pa_012_" + id);
+    if (s === undefined || s === null || s === "undefined" || s === "null" || s === "") {
+        value = {};
+        value["primary"] = false;
+        value["junior"] = false;
+        value["senior"] = false;
+        value["zodiac"] = false;
+    } else {
+        value = JSON.parse(s);
+    }
+    return value;
 }
 
 export class PersonalSetup {
@@ -137,6 +153,11 @@ function doProcess() {
         }
         message.publishMessageBoard("属于自己的废弃Cookie已经清理。");
     });
+    $("#p_1561").dblclick(function () {
+        if ($("#battleFieldSetup").length > 0) {
+            $("#battleFieldSetup").toggle();
+        }
+    });
 
     doRender(credential);
 }
@@ -152,7 +173,8 @@ const setupItems = [
     new s008.SetupItem(),
     new s009.SetupItem(),
     new s010.SetupItem(),
-    new s011.SetupItem()
+    new s011.SetupItem(),
+    new s012.SetupItem()
 ];
 
 function doRender(credential) {
@@ -168,7 +190,7 @@ function doRender(credential) {
     html += "</table>";
     $("#SetupUI").html(html);
     for (const setupItem of setupItems) {
-        setupItem.render();
+        setupItem.render(credential.id);
     }
 }
 
