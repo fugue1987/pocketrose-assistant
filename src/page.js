@@ -5,10 +5,8 @@
  */
 
 import {loadNPC} from "./npc";
-import * as util from "./common/common_util";
 import {Credential} from "./common/common_util";
 import {getTownsAsList} from "./pocket/pocket_town";
-import {isProhibitSellingItem} from "./common/common_pocket";
 
 export class NPC {
 
@@ -138,26 +136,3 @@ export function findAndCreateMessageBoard(s) {
     }
 }
 
-export function getRoleCash() {
-    let cash = 0;
-    $("td:parent").each(function (_idx, td) {
-        if ($(td).text() === "所持金") {
-            const text = $(td).next().text();
-            cash = parseInt(util.substringBefore(text, " "));
-        }
-    });
-    return cash;
-}
-
-export function disableProhibitSellingItems(table) {
-    $(table).find("input:radio[name='select']").each(function (idx, radio) {
-        const name = $(radio).parent().next().next().text();
-        if ($(radio).parent().next().text() === "★") {
-            $(radio).prop("disabled", true);
-        } else {
-            if (isProhibitSellingItem(name)) {
-                $(radio).prop("disabled", true);
-            }
-        }
-    });
-}
