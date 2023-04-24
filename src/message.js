@@ -30,7 +30,6 @@ export const _message_castle_withdraw = "_message_castle_withdraw";
 
 export const _message_move = "_message_move";
 export const _message_move_await = "_message_move_await";
-export const _message_move_mode = "_message_move_mode";
 
 function getMessageHandlers() {
     const getProperty = (data, name, defaultValue) => {
@@ -173,11 +172,6 @@ function getMessageHandlers() {
         } else {
             page.publishMessageBoard(player + "等待移动冷却中......(约" + timeout + "秒)");
         }
-    };
-    handlers[_message_move_mode] = function (data) {
-        const player = getPlayer(data);
-        const mode = getProperty(data, "mode");
-        page.publishMessageBoard(player + "确定移动模式" + mode);
     };
     return handlers;
 }

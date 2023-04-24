@@ -299,7 +299,7 @@ export function initializeMovePlan(html) {
             from = new Coordinate(parseInt(x), parseInt(y));
         }
     });
-    message.publishMessageBoard(message._message_move_mode, {"mode": mode});
+    message2.publishMessageBoard("你确定移动模式" + mode);
     message2.publishMessageBoard("你确定移动范围" + scope);
     message2.publishMessageBoard("你当前的坐标" + from.longText());
     const plan = new MovePlan();
