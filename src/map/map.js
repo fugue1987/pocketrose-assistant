@@ -4,6 +4,7 @@ import * as network from "../common/common_network";
 import * as page from "../page";
 import * as map from "../pocket/pocket_map";
 import {getTown} from "../pocket/pocket_town";
+import * as message2 from "../common/common_message";
 
 export class WildRequestInterceptor {
     constructor() {
@@ -62,7 +63,7 @@ class WildPostHouse {
                 $("table:eq(7)").remove();
 
                 const town = getTown(townId);
-                message.publishMessageBoard(message._message_town_target, {"town": town.name});
+                message2.publishMessageBoard("你设定移动目标为" + town.name + "。");
 
                 const credential = page.generateCredential();
                 const request = credential.asRequest();

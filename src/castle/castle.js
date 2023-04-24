@@ -14,6 +14,7 @@ import * as user from "../pocket/pocket_user";
 import {getTown} from "../pocket/pocket_town";
 import {calculateCashDifferenceAmount, depositIntoTownBank, withdrawFromCastleBank} from "../pocket/pocket_service";
 import {CastleWarehouse} from "./castle_warehouse";
+import * as message2 from "../common/common_message";
 
 /**
  * 城堡相关页面的处理入口
@@ -150,7 +151,7 @@ class CastlePostHouse {
 
                 message.initializeMessageBoard("开始播报实时动态：<br>");
                 const town = getTown(townId);
-                message.publishMessageBoard(message._message_town_target, {"town": town.name});
+                message2.publishMessageBoard("你设定移动目标为" + town.name + "。");
 
                 const amount = calculateCashDifferenceAmount(cash, 100000);
                 const credential = generateCredential();

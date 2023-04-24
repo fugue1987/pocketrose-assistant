@@ -152,7 +152,7 @@ class TownInnPostHouse {
                 const destinationTown = getTown(destinationTownId);
                 const destination = destinationTown.coordinate;
 
-                message.publishMessageBoard(message._message_town_target, {"town": destinationTown.name});
+                message2.publishMessageBoard("你设定移动目标为" + destinationTown.name + "。");
 
                 const credential = page.generateCredential();
                 let cash = 0;

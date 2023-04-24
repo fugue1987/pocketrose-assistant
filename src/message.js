@@ -18,7 +18,6 @@ export const _message_town_enter_await = "_message_town_enter_await";
 export const _message_town_enter_guard = "_message_town_enter_guard";
 export const _message_town_enter_guard_pass = "_message_town_enter_guard_pass";
 export const _message_town_leave = "_message_town_leave";
-export const _message_town_target = "_message_town_target";
 
 function getMessageHandlers() {
     const getProperty = (data, name, defaultValue) => {
@@ -80,13 +79,6 @@ function getMessageHandlers() {
             town = "所在城市";
         }
         page.publishMessageBoard(player + "已经离开了" + town);
-    };
-    handlers[_message_town_target] = function (data) {
-        const player = getPlayer(data);
-        const town = getTown(data);
-        if (town !== undefined) {
-            page.publishMessageBoard(player + "设定移动目标为" + town);
-        }
     };
     return handlers;
 }
