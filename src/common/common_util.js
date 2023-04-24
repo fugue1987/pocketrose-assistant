@@ -180,10 +180,6 @@ export class Direction {
     }
 }
 
-export function isSameCoordinate(a, b) {
-    return a.x === b.x && a.y === b.y;
-}
-
 export function calculateMilestone(from, to, mode) {
     if (mode === "ROOK") {
         if (from.x === to.x || from.y === to.y) {
@@ -321,7 +317,7 @@ export function calculateDistance(from, to) {
  */
 export function calculatePath(source, destination, scope, mode) {
     const pathList = [];
-    if (isSameCoordinate(source, destination)) {
+    if (source.equals(destination)) {
         pathList.push(source);
         return pathList;
     }
