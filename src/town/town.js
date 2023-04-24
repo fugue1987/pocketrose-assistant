@@ -9,7 +9,6 @@ import {_old_createFooterNPC, generateTownSelectionTable} from "../common/common
 import * as dashboard from "../dashboard/dashboard";
 import * as network from "../common/common_network";
 import * as map from "../pocket/pocket_map";
-import * as pocket from "../pocket";
 import * as user from "../pocket/pocket_user";
 import * as util from "../common/common_util";
 import {Coordinate} from "../common/common_util";
@@ -20,7 +19,7 @@ import {calculateCashDifferenceAmount, depositIntoTownBank, withdrawFromTownBank
 import * as message2 from "../common/common_message";
 import {TownSuperMarket} from "./town_super_market";
 import {isPocketSuperMarketEnabled} from "../setup/setup";
-import {_old_loadNPC} from "../common/common_pocket";
+import {_old_loadNPC, isUnavailableTreasureHintMap} from "../common/common_pocket";
 
 /**
  * 用于拦截并处理浏览器访问town.cgi的请求后返回的页面。
@@ -481,7 +480,7 @@ class TownAdventurerGuild {
             if (checkboxName.startsWith("item")) {
                 const mapX = parseInt($(checkbox).parent().next().next().next().next().text());
                 const mapY = parseInt($(checkbox).parent().next().next().next().next().next().text());
-                if (pocket.isUnavailableTreasureHintMap(mapX, mapY)) {
+                if (isUnavailableTreasureHintMap(mapX, mapY)) {
                     let html = $(checkbox).parent().next().next().html();
                     html = "<b style='color: red'>[城]</b>" + html;
                     $(checkbox).parent().next().next().html(html);
@@ -654,7 +653,7 @@ class TownAdventurerGuild {
                     if (checkboxName.startsWith("item")) {
                         const mapX = parseInt($(checkbox).parent().next().next().next().next().text());
                         const mapY = parseInt($(checkbox).parent().next().next().next().next().next().text());
-                        if (!pocket.isUnavailableTreasureHintMap(mapX, mapY)) {
+                        if (!isUnavailableTreasureHintMap(mapX, mapY)) {
                             candidates.push(new Coordinate(mapX, mapY));
                         }
                     }
