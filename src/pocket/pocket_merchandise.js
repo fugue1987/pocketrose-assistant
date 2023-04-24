@@ -29,6 +29,17 @@ export class Merchandise {
     gemCount;                   // 可镶嵌宝石数
     speciality;                 // 特产商品
 
+    get categoryHTML() {
+        if (this.category === "武器") {
+            return "<span style='color:blue'>" + this.category + "</span>";
+        } else if (this.category === "防具") {
+            return "<span style='color:red'>" + this.category + "</span>";
+        } else if (this.category === "饰品") {
+            return "<span style='color:green'>" + this.category + "</span>";
+        } else {
+            return this.category;
+        }
+    }
 }
 
 export class MerchandiseList {

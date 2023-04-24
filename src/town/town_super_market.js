@@ -93,7 +93,8 @@ function doProcess() {
 
     doPaintRoleStatus(userImage, role);
     message.createMessageBoardStyleB(undefined, "messageBoardContainer");
-    message.initializeMessageBoard("欢迎光临，超市全新改版重新开业。选购点什么土特产？");
+    message.initializeMessageBoard("欢迎光临，超市全新改版重新开业。选购点什么土特产？<br>" +
+        "对了，说一声，我们现在这里不再收你那些破烂了，想卖装备啥的自己回去卖。<br>");
 
     doPaintMerchandiseList(credential, weaponStoreMerchandiseList);
 
@@ -149,14 +150,16 @@ function doPaintRoleStatus(userImage, role) {
     html += "<td style='background-color:#EFE0C0'>ＬＶ</td>";
     html += "<td style='background-color:#E0D0B0'>属性</td>";
     html += "<td style='background-color:#EFE0C0'>职业</td>";
-    html += "<td style='background-color:#E8E8D0'>所持金</td>";
+    html += "<td style='background-color:#E8E8D0'>现金</td>";
+    html += "<td style='background-color:#E8E8D0'>存款</td>";
     html += "</tr>";
     html += "<tr>";
     html += "<td style='background-color:#E0D0B0'>" + role.name + "</td>";
     html += "<td style='background-color:#EFE0C0;text-align:right'>" + role.level + "</td>";
     html += "<td style='background-color:#E0D0B0'>" + role.attribute + "</td>";
     html += "<td style='background-color:#EFE0C0'>" + role.career + "</td>";
-    html += "<td style='background-color:#E8E8D0;text-align:right'><span id='roleCash'>" + role.cash + "</span> GOLD</td>";
+    html += "<td style='background-color:#E8E8D0;text-align:right'><span id='cach_amount'>" + role.cash + "</span> GOLD</td>";
+    html += "<td style='background-color:#E8E8D0;text-align:right'><span id='saving_amount'>-</span> GOLD</td>";
     html += "</tr>";
     html += "</tbody>";
     html += "</table>";
@@ -227,8 +230,9 @@ function doPaintFullMerchandiseList(weaponStoreMerchandiseList,
         }
     }
 
+    const discount = parseFloat($("#Discount").val());
     let html = "";
-    html += "<table style='background-color:#888888;border-width:0'>";
+    html += "<table style='background-color:#888888;border-width:0;width:100%'>";
     html += "<tbody style='background-color:#F8F0E0'>";
     html += "<tr>";
     html += "<th style='background-color:#E8E8D0'>选择</th>";
@@ -248,6 +252,64 @@ function doPaintFullMerchandiseList(weaponStoreMerchandiseList,
     html += "<th style='background-color:#EFE0C0'>武器类型</th>";
     html += "<th style='background-color:#EFE0C0'>可镶宝石数</th>";
     html += "</tr>";
+    html += "<tr>";
+    html += "<th style='background-color:#E8E8D0' colspan='16'>=== 普 通 商 品 ===</th>";
+    html += "</tr>";
+    for (const it of normalList) {
+        html += "<tr>";
+        html += "<td style='background-color:#E8E8D0'><input type='radio' name='select' value='" + it.id + "'></td>";
+        html += "<td style='background-color:#E0D0B0'>" + it.nameHTML + "</td>";
+        html += "<td style='background-color:#E0D0B0'>" + it.categoryHTML + "</td>";
+        if (discount > 1) {
+            html += "<td style='background-color:#EFE0C0;color:red'>" + it.price + " GOLD</td>";
+        } else if (discount < 1) {
+            html += "<td style='background-color:#EFE0C0;color:blue'>" + it.price + " GOLD</td>";
+        } else {
+            html += "<td style='background-color:#EFE0C0'>" + it.price + " GOLD</td>";
+        }
+        html += "<td style='background-color:#E0D0B0'>" + it.power + "</td>";
+        html += "<td style='background-color:#EFE0C0'>" + it.weight + "</td>";
+        html += "<td style='background-color:#EFE0C0'>" + (it.endure === 1 ? "-" : it.endure) + "</td>";
+        html += "<td style='background-color:#E0D0B0'>" + it.attribute + "</td>";
+        html += "<td style='background-color:#E0D0B0'>" + (it.requiredCareer === "所有职业" ? "-" : it.requiredCareer) + "</td>";
+        html += "<td style='background-color:#E0D0B0'>" + (it.requiredAttack === 0 ? "-" : it.requiredAttack) + "</td>";
+        html += "<td style='background-color:#E0D0B0'>" + (it.requiredDefense === 0 ? "-" : it.requiredDefense) + "</td>";
+        html += "<td style='background-color:#E0D0B0'>" + (it.requiredSpecialAttack === 0 ? "-" : it.requiredSpecialAttack) + "</td>";
+        html += "<td style='background-color:#E0D0B0'>" + (it.requiredSpecialDefense === 0 ? "-" : it.requiredSpecialDefense) + "</td>";
+        html += "<td style='background-color:#E0D0B0'>" + (it.requiredSpeed === 0 ? "-" : it.requiredSpeed) + "</td>";
+        html += "<td style='background-color:#EFE0C0'>" + it.weaponCategory + "</td>";
+        html += "<td style='background-color:#EFE0C0'>" + (it.gemCount <= 0 ? "-" : it.gemCount) + "</td>";
+        html += "</tr>";
+    }
+    html += "<tr>";
+    html += "<th style='background-color:#E8E8D0' colspan='16'>=== 城 市 特 产 ===</th>";
+    html += "</tr>";
+    for (const it of specialList) {
+        html += "<tr>";
+        html += "<td style='background-color:#E8E8D0'><input type='radio' name='select' value='" + it.id + "'></td>";
+        html += "<td style='background-color:#E0D0B0'>" + it.nameHTML + "</td>";
+        html += "<td style='background-color:#E0D0B0'>" + it.categoryHTML + "</td>";
+        if (discount > 1) {
+            html += "<td style='background-color:#EFE0C0;color:red'>" + it.price + " GOLD</td>";
+        } else if (discount < 1) {
+            html += "<td style='background-color:#EFE0C0;color:blue'>" + it.price + " GOLD</td>";
+        } else {
+            html += "<td style='background-color:#EFE0C0'>" + it.price + " GOLD</td>";
+        }
+        html += "<td style='background-color:#E0D0B0'>" + it.power + "</td>";
+        html += "<td style='background-color:#EFE0C0'>" + it.weight + "</td>";
+        html += "<td style='background-color:#EFE0C0'>" + (it.endure === 1 ? "-" : it.endure) + "</td>";
+        html += "<td style='background-color:#E0D0B0'>" + it.attribute + "</td>";
+        html += "<td style='background-color:#E0D0B0'>" + (it.requiredCareer === "所有职业" ? "-" : it.requiredCareer) + "</td>";
+        html += "<td style='background-color:#E0D0B0'>" + (it.requiredAttack === 0 ? "-" : it.requiredAttack) + "</td>";
+        html += "<td style='background-color:#E0D0B0'>" + (it.requiredDefense === 0 ? "-" : it.requiredDefense) + "</td>";
+        html += "<td style='background-color:#E0D0B0'>" + (it.requiredSpecialAttack === 0 ? "-" : it.requiredSpecialAttack) + "</td>";
+        html += "<td style='background-color:#E0D0B0'>" + (it.requiredSpecialDefense === 0 ? "-" : it.requiredSpecialDefense) + "</td>";
+        html += "<td style='background-color:#E0D0B0'>" + (it.requiredSpeed === 0 ? "-" : it.requiredSpeed) + "</td>";
+        html += "<td style='background-color:#EFE0C0'>" + it.weaponCategory + "</td>";
+        html += "<td style='background-color:#EFE0C0'>" + (it.gemCount <= 0 ? "-" : it.gemCount) + "</td>";
+        html += "</tr>";
+    }
     html += "</tbody>";
     html += "</table>";
 
