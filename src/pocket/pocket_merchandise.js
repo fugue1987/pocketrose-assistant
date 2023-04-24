@@ -11,6 +11,7 @@ import * as util from "../common/common_util";
 export class Merchandise {
 
     id;
+    category;
     name;
     nameHTML;
     price;
@@ -74,6 +75,7 @@ export function parseWeaponStoreMerchandiseList(pageHTML) {
         if (radio.length > 0) {
             const merchandise = new Merchandise();
             merchandise.id = "WEA_" + $(radio).val();
+            merchandise.category = "武器";
 
             const c2 = $(c1).next();
             const c3 = $(c2).next();
@@ -132,6 +134,7 @@ export function parseArmorStoreMerchandiseList(pageHTML) {
         if (radio.length > 0) {
             const merchandise = new Merchandise();
             merchandise.id = "ARM_" + $(radio).val();
+            merchandise.category = "防具";
 
             const c2 = $(c1).next();
             const c3 = $(c2).next();
@@ -189,6 +192,7 @@ export function parseAccessoryStoreMerchandiseList(pageHTML) {
         if (radio.length > 0) {
             const merchandise = new Merchandise();
             merchandise.id = "ACC_" + $(radio).val();
+            merchandise.category = "饰品";
 
             const c2 = $(c1).next();
             const c3 = $(c2).next();
@@ -250,6 +254,7 @@ export function parseItemStoreMerchandiseList(pageHTML) {
 
         const merchandise = new Merchandise();
         merchandise.id = "ITE_" + $(radio).val();
+        merchandise.category = "物品";
 
         merchandise.name = $(c2).text();
         merchandise.nameHTML = $(c2).html();

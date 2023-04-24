@@ -91,9 +91,11 @@ function doProcess() {
         $("#EdenFormSubmit").trigger("click");
     });
 
-    doGenerateRoleTable(userImage, role);
+    doPaintRoleStatus(userImage, role);
     message.createMessageBoardStyleB(undefined, "messageBoardContainer");
     message.initializeMessageBoard("欢迎光临，超市全新改版重新开业。选购点什么土特产？");
+
+    doPaintMerchandiseList(credential, weaponStoreMerchandiseList);
 
     doRender(personalEquipmentList);
 }
@@ -127,7 +129,7 @@ function doParseDiscount() {
     return parseFloat(value);
 }
 
-function doGenerateRoleTable(userImage, role) {
+function doPaintRoleStatus(userImage, role) {
     let html = "";
     html += "<table style='background-color:#888888;width:100%'>";
     html += "<tbody>";
@@ -160,6 +162,96 @@ function doGenerateRoleTable(userImage, role) {
     html += "</table>";
 
     $("#roleStatus").html(html);
+}
+
+function doPaintMerchandiseList(credential, weaponStoreMerchandiseList) {
+    const request = credential.asRequest();
+    request["town"] = $("#TownId").text();
+    request["con_str"] = "50";
+    request["mode"] = "PRO_SHOP";
+    network.sendPostRequest("town.cgi", request, function (html) {
+        // 进入了防具屋
+        const armorStoreMerchandiseList = merchandise.parseArmorStoreMerchandiseList(html);
+        request["mode"] = "ACC_SHOP";
+        network.sendPostRequest("town.cgi", request, function (html) {
+            // 进入了饰品屋
+            const accessoryStoreMerchandiseList = merchandise.parseAccessoryStoreMerchandiseList(html);
+            request["mode"] = "ITEM_SHOP";
+            network.sendPostRequest("town.cgi", request, function (html) {
+                // 进入了物品屋
+                const itemStoreMerchandiseList = merchandise.parseItemStoreMerchandiseList(html);
+                doPaintFullMerchandiseList(
+                    weaponStoreMerchandiseList,
+                    armorStoreMerchandiseList,
+                    accessoryStoreMerchandiseList,
+                    itemStoreMerchandiseList
+                );
+            });
+        });
+    });
+}
+
+function doPaintFullMerchandiseList(weaponStoreMerchandiseList,
+                                    armorStoreMerchandiseList,
+                                    accessoryStoreMerchandiseList,
+                                    itemStoreMerchandiseList) {
+    const normalList = [];
+    const specialList = [];
+
+    for (const it of weaponStoreMerchandiseList.asList) {
+        if (!it.speciality) {
+            normalList.push(it);
+        } else {
+            specialList.push(it);
+        }
+    }
+    for (const it of armorStoreMerchandiseList.asList) {
+        if (!it.speciality) {
+            normalList.push(it);
+        } else {
+            specialList.push(it);
+        }
+    }
+    for (const it of accessoryStoreMerchandiseList.asList) {
+        if (!it.speciality) {
+            normalList.push(it);
+        } else {
+            specialList.push(it);
+        }
+    }
+    for (const it of itemStoreMerchandiseList.asList) {
+        if (!it.speciality) {
+            normalList.push(it);
+        } else {
+            specialList.push(it);
+        }
+    }
+
+    let html = "";
+    html += "<table style='background-color:#888888;border-width:0'>";
+    html += "<tbody style='background-color:#F8F0E0'>";
+    html += "<tr>";
+    html += "<th style='background-color:#E8E8D0'>选择</th>";
+    html += "<th style='background-color:#E0D0B0'>商品</th>";
+    html += "<th style='background-color:#E0D0B0'>类型</th>";
+    html += "<th style='background-color:#EFE0C0'>价格</th>";
+    html += "<th style='background-color:#E0D0B0'>威力</th>";
+    html += "<th style='background-color:#EFE0C0'>重量</th>";
+    html += "<th style='background-color:#EFE0C0'>耐久</th>";
+    html += "<th style='background-color:#E0D0B0'>属性</th>";
+    html += "<th style='background-color:#E0D0B0'>职业</th>";
+    html += "<th style='background-color:#E0D0B0'>攻击</th>";
+    html += "<th style='background-color:#E0D0B0'>防御</th>";
+    html += "<th style='background-color:#E0D0B0'>智力</th>";
+    html += "<th style='background-color:#E0D0B0'>精神</th>";
+    html += "<th style='background-color:#E0D0B0'>速度</th>";
+    html += "<th style='background-color:#EFE0C0'>武器类型</th>";
+    html += "<th style='background-color:#EFE0C0'>可镶宝石数</th>";
+    html += "</tr>";
+    html += "</tbody>";
+    html += "</table>";
+
+    $("#merchandiseContainer").html(html);
 }
 
 function doRender(personalEquipmentList) {
