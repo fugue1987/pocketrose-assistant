@@ -47,20 +47,3 @@ export function createFooterNPC(name) {
 }
 
 
-export function initializeMessageBoard(message) {
-    if ($("#messageBoard").length > 0) {
-        $("#messageBoard").html(message);
-    }
-}
-
-export function publishMessageBoard(message) {
-    if ($("#messageBoard").length > 0) {
-        let html = $("#messageBoard").html();
-        const now = new Date();
-        const timeHtml = "<font color='#adff2f'>(" + now.toLocaleString() + ")</font>";
-        html = html + "<li>" + timeHtml + " " + message + "</li>";
-        $("#messageBoard").html(html);
-    }
-}
-
-

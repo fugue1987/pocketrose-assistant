@@ -260,7 +260,7 @@ class TownGemStore {
         td.css("color", "white");
 
         $("img[alt='合成屋']").parent().html(npc.loadNPC("钱小小").imageHTML);
-        page.initializeMessageBoard("砸石头这种事儿，难道不是有手就行的？");
+        message2.initializeMessageBoard("砸石头这种事儿，难道不是有手就行的？");
 
         $("input:radio[name='select']").each(function (_idx, radio) {
             $(radio).parent().parent().attr("class", "itemClass");
