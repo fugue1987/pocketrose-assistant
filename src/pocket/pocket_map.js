@@ -195,7 +195,7 @@ export async function enterTown(credential, townId) {
                 request["mode"] = "MOVE";
                 network.sendPostRequest("status.cgi", request, function (html) {
                     if ($(html).text().includes("战胜门卫。")) {
-                        message.publishMessageBoard(message._message_town_enter_guard);
+                        message2.publishMessageBoard("你与门卫交涉中......");
                         const request = credential.asRequest();
                         request["townid"] = townId;
                         request["givemoney"] = "1";

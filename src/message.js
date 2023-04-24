@@ -15,7 +15,6 @@ import * as page from "./page";
 
 export const _message_town_enter = "_message_town_enter";
 export const _message_town_enter_await = "_message_town_enter_await";
-export const _message_town_enter_guard = "_message_town_enter_guard";
 
 function getMessageHandlers() {
     const getProperty = (data, name, defaultValue) => {
@@ -61,10 +60,6 @@ function getMessageHandlers() {
     handlers[_message_town_enter_await] = function (data) {
         const player = getPlayer(data);
         page.publishMessageBoard(player + "等待进城冷却中......(约55秒)");
-    };
-    handlers[_message_town_enter_guard] = function (data) {
-        const player = getPlayer(data);
-        page.publishMessageBoard(player + "与门卫交涉中......");
     };
     return handlers;
 }
