@@ -31,7 +31,8 @@ function doProcess() {
     const weaponStoreMerchandiseList = merchandise.parseWeaponStoreMerchandiseList(pageHTML);
     const credential = page.generateCredential();
     const townId = doParseTownId();
-    const discount = doParseDiscount();
+    const discount = doParseDiscount(pageHTML);
+    const spaceCount = doParseSpaceCount(pageHTML);
 
     // 删除整个旧的页面
     $("table:first").remove();
@@ -54,6 +55,8 @@ function doProcess() {
     html = "<div id='TownId' style='display:none'>" + townId + "</div>";
     $("#PocketSuperMarket").append($(html));
     html = "<div id='Discount' style='display:none'>" + discount + "</div>";
+    $("#PocketSuperMarket").append($(html));
+    html = "<div id='SpaceCount' style='display:none'>" + spaceCount + "</div>";
     $("#PocketSuperMarket").append($(html));
 
     html = "";
@@ -122,12 +125,21 @@ function doParseTownId() {
     return $("input:hidden[name='townid']").val();
 }
 
-function doParseDiscount() {
-    const value = $("input:hidden[name='val_off']").val();
+function doParseDiscount(pageHTML) {
+    const value = $(pageHTML).find("input:hidden[name='val_off']").val();
     if (value === undefined) {
         return 1.0;
     }
     return parseFloat(value);
+}
+
+function doParseSpaceCount(pageHTML) {
+    const select = $(pageHTML).find("select[name='num']");
+    const option = $(select).find("option:last");
+    if (option.length === 0) {
+        return 0;
+    }
+    return parseInt($(option).val());
 }
 
 function doPaintRoleStatus(userImage, role) {
@@ -310,10 +322,29 @@ function doPaintFullMerchandiseList(weaponStoreMerchandiseList,
         html += "<td style='background-color:#EFE0C0'>" + (it.gemCount <= 0 ? "-" : it.gemCount) + "</td>";
         html += "</tr>";
     }
+    html += "<tr>";
+    html += "<td style='background-color:#E8E8D0;text-align:center' colspan='16' id='operationContainer'></td>";
+    html += "</tr>";
     html += "</tbody>";
     html += "</table>";
 
     $("#merchandiseContainer").html(html);
+
+    html = "";
+    const spaceCount = parseInt($("#SpaceCount").text());
+    if (spaceCount > 0) {
+        html += "<select name='num'>";
+        for (let i = 1; i <= spaceCount; i++) {
+            html += "<option value='" + i + "'>" + i + "</option>";
+        }
+        html += "</select>";
+    }
+    html += "<input type='button' id='buyButton' class='dynamicButton' value='买入'>";
+    $("#operationContainer").html(html);
+
+    if (spaceCount === 0) {
+        $("#dynamicButton").prop("disabled", true);
+    }
 }
 
 function doRender(personalEquipmentList) {
@@ -326,7 +357,13 @@ function doRefresh(credential) {
     request["con_str"] = "50";
     request["mode"] = "ARM_SHOP";
     network.sendPostRequest("town.cgi", request, function (html) {
+        $(".dynamicButton").unbind("click");
         $("#equipmentContainer").html("");
+        $("#operationContainer").html("");
+        const discount = doParseDiscount(html);
+        const spaceCount = doParseSpaceCount(html);
+        $("#Discount").text(discount);
+        $("#SpaceCount").text(spaceCount);
         const personalEquipmentList = item.parseWeaponStoreItemList(html);
         doRender(personalEquipmentList);
     });
