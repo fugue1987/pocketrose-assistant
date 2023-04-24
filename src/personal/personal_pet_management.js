@@ -41,8 +41,6 @@ function doProcess() {
     // 创建其余页面组件
     message.createMessageBoardStyleA(undefined, "messageBoardContainer");
     message.initializeMessageBoard("全新宠物管理UI，持续建设中......");
-    $("#messageBoardContainer").find("img:first").attr("id", "goldenCage");
-    __bindGoldCage();
 
     // 渲染宠物管理UI
     doRender(petList, petStudyStatus);
@@ -170,6 +168,7 @@ function doRender(petList, petStudyStatus) {
     html += "</td></tr>";
     html += "<tr><td style='background-color:#E8E8D0;text-align:center' colspan='19'>";
     html += "<input type='button' class='PetUIButton' value='刷新宠物管理界面' id='refreshButton'>";
+    html += "<input type='button' class='PetUIButton' value='跳转进入黄金笼子' id='goldenCageButton'>";
     html += "</td></tr>";
     html += "</tbody></table>";
     html += "</td></tr>";
@@ -331,6 +330,9 @@ function doBind(petList) {
 
     // 设置更新按钮行为
     __bindRefreshButton();
+
+    // 设置黄金笼子按钮的行为
+    __bindGoldenCageButton();
 }
 
 function doRefresh(credential) {
@@ -346,25 +348,6 @@ function doRefresh(credential) {
         $("#PetUI").html("");
         // 使用新的宠物重新渲染PetUI
         doRender(petList, petStudyStatus);
-    });
-}
-
-function __bindGoldCage() {
-    $("#goldenCage").dblclick(function () {
-        const credential = page.generateCredential();
-        const request = credential.asRequest();
-        request["mode"] = "USE_ITEM";
-        network.sendPostRequest("mydata.cgi", request, function (html) {
-            const itemList = item.parsePersonalItemList(html);
-            const cage = itemList.goldenCage;
-            if (cage !== undefined) {
-                $("form[action='status.cgi']").attr("action", "mydata.cgi");
-                $("input:hidden[value='STATUS']").attr("value", "USE");
-                $("#returnButton").prepend("<input type='hidden' name='chara' value='1'>");
-                $("#returnButton").prepend("<input type='hidden' name='item" + cage.index + "' value='" + cage.index + "'>");
-                $("#returnButton").trigger("click");
-            }
-        });
     });
 }
 
@@ -694,5 +677,24 @@ function __bindRefreshButton() {
     $("#refreshButton").click(function () {
         const credential = page.generateCredential();
         doRefresh(credential);
+    });
+}
+
+function __bindGoldenCageButton() {
+    $("#goldenCageButton").click(function () {
+        const credential = page.generateCredential();
+        const request = credential.asRequest();
+        request["mode"] = "USE_ITEM";
+        network.sendPostRequest("mydata.cgi", request, function (html) {
+            const itemList = item.parsePersonalItemList(html);
+            const cage = itemList.goldenCage;
+            if (cage !== undefined) {
+                $("form[action='status.cgi']").attr("action", "mydata.cgi");
+                $("input:hidden[value='STATUS']").attr("value", "USE");
+                $("#returnButton").prepend("<input type='hidden' name='chara' value='1'>");
+                $("#returnButton").prepend("<input type='hidden' name='item" + cage.index + "' value='" + cage.index + "'>");
+                $("#returnButton").trigger("click");
+            }
+        });
     });
 }
