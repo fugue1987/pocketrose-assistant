@@ -228,7 +228,7 @@ export async function enterCastle(credential) {
             const request = credential.asRequest();
             request["mode"] = "CASTLE_ENTRY";
             network.sendPostRequest("map.cgi", request, function () {
-                message.publishMessageBoard(message._message_castle_entry);
+                message2.publishMessageBoard("你来到了城堡入口。");
                 resolve();
             });
         });
