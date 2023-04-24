@@ -1,8 +1,7 @@
 import * as page2 from "../common/common_page";
-import {generateTownSelectionTable} from "../common/common_page";
+import {_old_createFooterNPC, generateTownSelectionTable} from "../common/common_page";
 import * as dashboard from "../dashboard/dashboard";
 import * as network from "../common/common_network";
-import * as page from "../page";
 import * as map from "../pocket/pocket_map";
 import {getTown} from "../pocket/pocket_town";
 import * as message2 from "../common/common_message";
@@ -46,7 +45,7 @@ class WildPostHouse {
             "<TD bgcolor=#E8E8D0 colspan=3 id='count_up_timer' style='color: red;text-align: right'>-</TD>" +
             "</TR>"));
 
-        const npc = page.createFooterNPC("花子");
+        const npc = _old_createFooterNPC("花子");
         npc.welcome("没、没有想到这么快我们又见面了。这、这次我只能把你带到城门口。<br>");
         npc.message("<input type='button' id='moveToTown' style='color: blue' value='选择想去哪个城门口'><br>");
         npc.message(generateTownSelectionTable());

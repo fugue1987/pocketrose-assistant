@@ -5,11 +5,10 @@
  */
 
 import * as page2 from "../common/common_page";
-import {generateTownSelectionTable} from "../common/common_page";
+import {_old_createFooterNPC, generateTownSelectionTable} from "../common/common_page";
 import * as dashboard from "../dashboard/dashboard";
 import * as network from "../common/common_network";
 import * as map from "../pocket/pocket_map";
-import * as page from "../page";
 import * as pocket from "../pocket";
 import * as user from "../pocket/pocket_user";
 import * as util from "../common/common_util";
@@ -120,7 +119,7 @@ class TownInnPostHouse {
             }
         });
 
-        const npc = page.createFooterNPC("夜九年");
+        const npc = _old_createFooterNPC("夜九年");
         npc.welcome("驿站试运营中，先把丑话说在前面。<br>");
         npc.message("你选择我们家驿站服务，我们家免费带你飞。开始旅途后切勿关闭当前页面，这样我们才可以一起浪。<br>" +
             "如果你关闭当前页面则意味着你方毁约，你会处于什么样的位置和状态我们家不会负责。开始旅途后<br>" +
@@ -557,7 +556,7 @@ class TownAdventurerGuild {
         $("input:submit[value='交换']").attr("id", "exchangeButton");
         $("input:submit[value='返回城市']").attr("id", "returnButton");
 
-        const npc = page.createFooterNPC("花子");
+        const npc = _old_createFooterNPC("花子");
         npc.welcome("欢、欢、欢迎光临冒险家公会，等等，你这、这是什么表情？你肯定是认错人了，前几天你领薪水后碰、碰到的绝对" +
             "不、不、不是我！[漫长的沉默中] 你、你怎么不相信我的话，人与人之间基本的信、信任呢？[再次漫长的沉默] 算了，你这次要去哪里？" +
             "我免费让人带你过去。你出门去上、上、上马车吧。<br>");
