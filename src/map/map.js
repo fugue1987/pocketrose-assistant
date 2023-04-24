@@ -1,7 +1,7 @@
 import * as dashboard from "../dashboard/dashboard";
 import {WildPostHouse} from "./map_post_house";
 
-export class WildRequestInterceptor {
+export class MapRequestInterceptor {
     constructor() {
     }
 
