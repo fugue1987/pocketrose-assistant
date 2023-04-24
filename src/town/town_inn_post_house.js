@@ -1,5 +1,6 @@
+import * as pocket from "../common/common_pocket";
 import * as page2 from "../common/common_page";
-import {_old_createFooterNPC, generateTownSelectionTable} from "../common/common_page";
+import {generateTownSelectionTableStyleB} from "../common/common_page";
 import * as user from "../pocket/pocket_user";
 import {findTownByName, getTown} from "../pocket/pocket_town";
 import * as castle from "../pocket/pocket_castle";
@@ -77,18 +78,19 @@ export class TownInnPostHouse {
             }
         });
 
-        const npc = _old_createFooterNPC("夜九年");
-        npc.welcome("驿站试运营中，先把丑话说在前面。<br>");
-        npc.message("你选择我们家驿站服务，我们家免费带你飞。开始旅途后切勿关闭当前页面，这样我们才可以一起浪。<br>" +
+        const imageHTML = pocket.getNPCImageHTML("夜九年");
+        message2.createFooterMessageStyleA(imageHTML);
+        message2.writeFooterMessage("驿站试运营中，先把丑话说在前面。<br>");
+        message2.writeFooterMessage("你选择我们家驿站服务，我们家免费带你飞。开始旅途后切勿关闭当前页面，这样我们才可以一起浪。<br>" +
             "如果你关闭当前页面则意味着你方毁约，你会处于什么样的位置和状态我们家不会负责。开始旅途后<br>" +
             "请耐心等待，到达目的地后欢迎按钮会自动亮起，点击即可进城。<br>");
-        npc.message("<input type='button' id='moveToTown' style='color: blue' value='开始旅途'>");
-        npc.message("<input type='button' id='moveToCastle' style='color: red' value='回到城堡'>");
-        npc.message("<div id='player' style='display: none'></div>");
-        npc.message("<div id='townId' style='display: none'></div>");
-        npc.message("<div id='castle' style='display: none'></div>");
-        npc.message("<br>");
-        npc.message(generateTownSelectionTable());
+        message2.writeFooterMessage("<input type='button' id='moveToTown' style='color: blue' value='开始旅途'>");
+        message2.writeFooterMessage("<input type='button' id='moveToCastle' style='color: red' value='回到城堡'>");
+        message2.writeFooterMessage("<div id='player' style='display: none'></div>");
+        message2.writeFooterMessage("<div id='townId' style='display: none'></div>");
+        message2.writeFooterMessage("<div id='castle' style='display: none'></div>");
+        message2.writeFooterMessage("<br>");
+        message2.writeFooterMessage(generateTownSelectionTableStyleB());
 
         $("#moveToTown").prop("disabled", true);
         $("#moveToCastle").prop("disabled", true);
