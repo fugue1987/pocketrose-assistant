@@ -4,6 +4,7 @@
  * ============================================================================
  */
 
+import * as message2 from "../common/common_message";
 import * as message from "../message";
 import * as network from "../common/common_network";
 
@@ -133,7 +134,7 @@ export async function withdrawFromCastleBank(credential, amount) {
                 request["mode"] = "CASTLEBANK_BUY";
                 request["dasu"] = amount;
                 network.sendPostRequest("castle.cgi", request, function () {
-                    message.publishMessageBoard(message._message_castle_withdraw, {"amount": amount});
+                    message2.publishMessageBoard("你从城堡提款机提取了" + amount + "万现金。");
                     resolve();
                 });
             }
