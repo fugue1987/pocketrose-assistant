@@ -6,8 +6,8 @@
 
 import * as util from "./common_util";
 import * as constant from "./common_pocket";
+import {_old_loadNPC} from "./common_pocket";
 import {getTownsAsList} from "../pocket/pocket_town";
-import {loadNPC} from "../npc";
 
 /**
  * Generate Credential object from current HTML form.
@@ -154,7 +154,7 @@ export class NPC {
  * @param name NPC名字
  */
 export function _old_createFooterNPC(name) {
-    const npc = loadNPC(name);
+    const npc = _old_loadNPC(name);
     if (npc === undefined) {
         return undefined;
     }

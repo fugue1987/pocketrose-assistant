@@ -13,7 +13,6 @@ import * as pocket from "../pocket";
 import * as user from "../pocket/pocket_user";
 import * as util from "../common/common_util";
 import {Coordinate} from "../common/common_util";
-import * as npc from "../npc";
 import * as castle from "../pocket/pocket_castle";
 import {findTownByName, getTown} from "../pocket/pocket_town";
 import {TownPetMapHouse} from "./town_pet_map_house";
@@ -21,6 +20,7 @@ import {calculateCashDifferenceAmount, depositIntoTownBank, withdrawFromTownBank
 import * as message2 from "../common/common_message";
 import {TownSuperMarket} from "./town_super_market";
 import {isPocketSuperMarketEnabled} from "../setup/setup";
+import {_old_loadNPC} from "../common/common_pocket";
 
 /**
  * 用于拦截并处理浏览器访问town.cgi的请求后返回的页面。
@@ -258,7 +258,7 @@ class TownGemStore {
         td.attr("id", "messageBoard");
         td.css("color", "white");
 
-        $("img[alt='合成屋']").parent().html(npc.loadNPC("钱小小").imageHTML);
+        $("img[alt='合成屋']").parent().html(_old_loadNPC("钱小小").imageHTML);
         message2.initializeMessageBoard("砸石头这种事儿，难道不是有手就行的？");
 
         $("input:radio[name='select']").each(function (_idx, radio) {
