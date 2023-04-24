@@ -7,7 +7,6 @@
 import * as util from "../common/common_util";
 import {calculateDirection, calculateDistance, calculatePath, Coordinate} from "../common/common_util";
 import * as network from "../common/common_network";
-import * as message from "../message";
 import {getTown} from "./pocket_town";
 import * as message2 from "../common/common_message";
 
@@ -204,14 +203,14 @@ export async function enterTown(credential, townId) {
                             message2.publishMessageBoard("门卫通情达理的收取了入城费用放你入城。");
                             const town = getTown(townId);
                             if (town !== undefined) {
-                                message.publishMessageBoard(message._message_town_enter, {"town": town.name});
+                                message2.publishMessageBoard("你进入了" + town.name + "。");
                             }
                             resolve();
                         });
                     } else {
                         const town = getTown(townId);
                         if (town !== undefined) {
-                            message.publishMessageBoard(message._message_town_enter, {"town": town.name});
+                            message2.publishMessageBoard("你进入了" + town.name + "。");
                         }
                         resolve();
                     }

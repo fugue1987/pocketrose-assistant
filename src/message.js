@@ -13,8 +13,6 @@ import * as page from "./page";
 // Message id definitions
 // ============================================================================
 
-export const _message_town_enter = "_message_town_enter";
-
 function getMessageHandlers() {
     const getProperty = (data, name, defaultValue) => {
         if (data === undefined) {
@@ -45,17 +43,6 @@ function getMessageHandlers() {
         }
     };
     const handlers = {};
-    // ------------------------------------------------------------------------
-    // TOWN related message handlers
-    // ------------------------------------------------------------------------
-    handlers[_message_town_enter] = function (data) {
-        const player = getPlayer(data);
-        let town = getTown(data);
-        if (town === undefined) {
-            town = "目的城市";
-        }
-        page.publishMessageBoard(player + "进入了" + town);
-    };
     return handlers;
 }
 
