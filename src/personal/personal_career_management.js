@@ -6,6 +6,7 @@ import * as user from "../pocket/pocket_user";
 import * as spell from "../pocket/pocket_spell";
 import * as career from "../pocket/pocket_career";
 import {transferCareerRequirementDict} from "../pocket/pocket_career";
+import * as setup from "../setup/setup";
 
 export class PersonalCareerManagement {
     process() {
@@ -249,6 +250,19 @@ function doRenderCareer(role, careerCandidateList) {
                 $("#" + buttonId).css("color", "red");
                 $("#" + buttonId).css("font-weight", "bold");
             }
+        }
+    }
+
+    const credential = page.generateCredential();
+    if (setup.isDisableCareerEntrance(credential.id)) {
+        // 转职入口被关闭了，那就禁止所有的转职按钮。
+        for (let i = 0; i < careerNames.length; i++) {
+            const careerName = careerNames[i];
+            const careerId = career._CAREER_DICT[careerName]["id"];
+            const buttonId = "career_" + careerId;
+            $("#" + buttonId).prop("disabled", true);
+            $("#" + buttonId).css("color", "grey");
+            $("#" + buttonId).css("font-weight", "normal");
         }
     }
 }
