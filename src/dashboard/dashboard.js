@@ -129,7 +129,9 @@ export class TownDashboardProcessor {
             $("option[value='PETSTATUS']").css("background-color", "yellow");
             $("option[value='PET_SEND']").remove();
         }
-        if (setup.isCareerManagementUIEnabled()) {
+        if (setup.isDisableCareerEntrance()) {
+            $("option[value='CHANGE_OCCUPATION']").remove();
+        } else if (setup.isCareerManagementUIEnabled()) {
             $("option[value='CHANGE_OCCUPATION']").text("职业管理");
             $("option[value='CHANGE_OCCUPATION']").css("background-color", "yellow");
             $("option[value='MAGIC']").remove();
