@@ -36,7 +36,7 @@ function doProcess() {
     $("table:first td:first").css("color", "navy");
     $("table:first td:first").html("＜＜　装 备 管 理 (v2.0)　＞＞");
     $("table:first tr:first").after($("<tr><td style='background-color:#E8E8D0' id='messageBoardContainer'></td></tr>"));
-    message.createMessageBoard(userImageHTML, "messageBoardContainer");
+    message.createMessageBoardStyleA(userImageHTML, "messageBoardContainer");
     message.initializeMessageBoard("全新装备管理UI目前持续建设中......");
     // 删除旧的页面组件，并且预留新的刷新的位置
     // 预留了两个div，ItemUI用于页面刷新，Eden隐藏用于放置表单以便可以转移到其他的页面

@@ -1,6 +1,6 @@
 import * as constant from "./common_pocket";
 
-export function createMessageBoard(imageHTML, containerId) {
+export function createMessageBoardStyleA(imageHTML, containerId) {
     if (imageHTML === undefined) {
         imageHTML = constant.getNPCImageHTML("武器屋老板娘");
     }
@@ -14,6 +14,30 @@ export function createMessageBoard(imageHTML, containerId) {
         "                <tr>" +
         "                    <td style='background-color:#F8F0E0'>" + imageHTML + "</td>" +
         "                    <td style='background-color:#000000;color:white;width:100%' id='messageBoard'></td>" +
+        "                </tr>" +
+        "                </tbody>" +
+        "            </table>" +
+        "        </td>" +
+        "    </tr>" +
+        "    </tbody>" +
+        "</table>";
+    $("#" + containerId).html(messageBoardHTML);
+}
+
+export function createMessageBoardStyleB(imageHTML, containerId) {
+    if (imageHTML === undefined) {
+        imageHTML = constant.getNPCImageHTML("武器屋老板娘");
+    }
+    const messageBoardHTML = "" +
+        "<table style='background-color:#888888;width:100%'>" +
+        "    <tbody>" +
+        "    <tr>" +
+        "        <td style='background-color:#F8F0E0'>" +
+        "            <table style='background-color:#888888;border-width:0'>" +
+        "                <tbody>" +
+        "                <tr>" +
+        "                    <td style='background-color:#000000;color:white;width:100%' id='messageBoard'></td>" +
+        "                    <td style='background-color:#F8F0E0'>" + imageHTML + "</td>" +
         "                </tr>" +
         "                </tbody>" +
         "            </table>" +

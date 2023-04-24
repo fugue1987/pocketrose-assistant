@@ -128,7 +128,7 @@ function doProcess() {
     $("body:first").html(html);
 
     const imageHTML = constant.getNPCImageHTML("夜九年");
-    message.createMessageBoard(imageHTML, "messageBoardContainer");
+    message.createMessageBoardStyleA(imageHTML, "messageBoardContainer");
     message.initializeMessageBoard("在这里我来协助各位维护本机（浏览器）的口袋相关设置。<br>" +
         (storage.isLocalStorageDisabled() ? "你的浏览器不支持本地存储，继续使用Cookie存储。" : "看起来你的浏览器支持本地存储，很好，我们可以继续了。<br>" +
             "对了，因为存储机制的升级，我推荐删除掉之前废弃的Cookie信息以减轻浏览器的压力：" +

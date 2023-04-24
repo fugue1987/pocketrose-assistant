@@ -39,7 +39,7 @@ function doProcess() {
     $("body:first").html(p1 + p2 + p3 + p4);
 
     // 创建其余页面组件
-    message.createMessageBoard(undefined, "messageBoardContainer");
+    message.createMessageBoardStyleA(undefined, "messageBoardContainer");
     message.initializeMessageBoard("全新宠物管理UI，持续建设中......");
     $("#messageBoardContainer").find("img:first").attr("id", "goldenCage");
     __bindGoldCage();
