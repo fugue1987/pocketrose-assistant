@@ -169,7 +169,7 @@ export async function leaveCastle(credential) {
             request["out"] = "1";
             request["mode"] = "MAP_MOVE";
             network.sendPostRequest("map.cgi", request, function (html) {
-                message.publishMessageBoard(message._message_castle_leave);
+                message2.publishMessageBoard("你已经离开了城堡。");
                 const plan = initializeMovePlan(html);
                 plan.credential = credential;
                 resolve(plan);
