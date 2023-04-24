@@ -695,7 +695,17 @@ class TownAdventurerGuild {
         locationList.push(town.coordinate);
         locationList.push(...candidates);
         locationList.push(town.coordinate);
-        message.publishMessageBoard(message._message_treasure_path, {"pathList": locationList});
+        if (locationList.length !== 0) {
+            let msg = "探险顺序：";
+            for (let i = 0; i < locationList.length; i++) {
+                const it = locationList[i];
+                msg += it.longText();
+                if (i !== locationList.length - 1) {
+                    msg += "=>";
+                }
+            }
+            message2.publishMessageBoard(msg);
+        }
 
         const foundList = [];
         map.leaveTown(credential).then(plan => {
