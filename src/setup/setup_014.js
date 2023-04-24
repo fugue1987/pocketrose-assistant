@@ -3,8 +3,8 @@ import * as storage from "../common/common_storage";
 
 export class SetupItem {
 
-    render() {
-        doRender();
+    render(id) {
+        doRender(id);
     }
 
 }
