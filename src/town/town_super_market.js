@@ -446,7 +446,7 @@ function __bindBuyButton() {
                 if (p1 === "WEA") {
                     __buyViaWeaponStore(credential, townId, discount, p2, count);
                 } else if (p1 === "ARM") {
-
+                    __buyViaArmorStore(credential, townId, discount, p2, count);
                 } else if (p1 === "ACC") {
 
                 } else if (p1 === "ITE") {
@@ -465,7 +465,24 @@ function __buyViaWeaponStore(credential, townId, discount, select, count) {
     request["select"] = select;
     request["num"] = count;
     request["mark"] = "0";
-    doRefresh(credential);
+    network.sendPostRequest("town.cgi", request, function (html) {
+        message.processResponseHTML(html);
+        service.depositIntoTownBank(credential, undefined)
+            .then(() => {
+                doRefresh(credential);
+                document.getElementById("PocketSuperMarketTitle").scrollIntoView();
+            });
+    });
+}
+
+function __buyViaArmorStore(credential, townId, discount, select, count) {
+    const request = credential.asRequest();
+    request["val_off"] = discount;
+    request["townid"] = townId;
+    request["mode"] = "BUY";
+    request["select"] = select;
+    request["num"] = count;
+    request["mark"] = "1";
     network.sendPostRequest("town.cgi", request, function (html) {
         message.processResponseHTML(html);
         service.depositIntoTownBank(credential, undefined)
