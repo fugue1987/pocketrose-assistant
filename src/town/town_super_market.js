@@ -7,6 +7,7 @@
  */
 
 import * as message from "../common/common_message";
+import * as network from "../common/common_network";
 import * as page from "../common/common_page";
 import * as util from "../common/common_util";
 import * as item from "../pocket/pocket_item";
@@ -29,6 +30,7 @@ function doProcess() {
     const personalEquipmentList = item.parseWeaponStoreItemList(pageHTML);
     const weaponStoreMerchandiseList = merchandise.parseWeaponStoreMerchandiseList(pageHTML);
     const credential = page.generateCredential();
+    const townId = doParseTownId();
     const discount = doParseDiscount();
 
     // 删除整个旧的页面
@@ -49,6 +51,8 @@ function doProcess() {
     html += "</div>";
     $("#PocketSuperMarket").append($(html));
 
+    html = "<div id='TownId' style='display:none'>" + townId + "</div>";
+    $("#PocketSuperMarket").append($(html));
     html = "<div id='Discount' style='display:none'>" + discount + "</div>";
     $("#PocketSuperMarket").append($(html));
 
@@ -91,6 +95,7 @@ function doProcess() {
     message.createMessageBoardStyleB(undefined, "messageBoardContainer");
     message.initializeMessageBoard("欢迎光临，超市全新改版重新开业。选购点什么土特产？");
 
+    doRender(personalEquipmentList);
 }
 
 function doParseRole() {
@@ -108,6 +113,10 @@ function doParseRole() {
     s = util.substringBefore(s, " GOLD");
     role.cash = parseInt(s);
     return role;
+}
+
+function doParseTownId() {
+    return $("input:hidden[name='townid']").val();
 }
 
 function doParseDiscount() {
@@ -151,4 +160,20 @@ function doGenerateRoleTable(userImage, role) {
     html += "</table>";
 
     $("#roleStatus").html(html);
+}
+
+function doRender(personalEquipmentList) {
+
+}
+
+function doRefresh(credential) {
+    const request = credential.asRequest();
+    request["town"] = $("#TownId").text();
+    request["con_str"] = "50";
+    request["mode"] = "ARM_SHOP";
+    network.sendPostRequest("town.cgi", request, function (html) {
+        $("#equipmentContainer").html("");
+        const personalEquipmentList = item.parseWeaponStoreItemList(html);
+        doRender(personalEquipmentList);
+    });
 }
