@@ -29,10 +29,10 @@ function doRender() {
     if ($("body:first").text().includes("下次领取俸禄还需要等待")) {
         $("#ueqtweixin").remove();
         $("body:first").children(":last-child").append("<div></div>");
-        message.createFooterMessage(imageHTML);
+        message.createFooterMessageStyleA(imageHTML);
         message.writeFooterMessage("害我也白跑一趟，晦气！");
     } else {
-        message.createFooterMessage(imageHTML);
+        message.createFooterMessageStyleA(imageHTML);
         message.writeFooterMessage("打、打、打劫。不许笑，我跟这儿打劫呢。IC、IP、IQ卡，通通告诉我密码！");
         message.writeFooterMessage("<input type='button' id='depositButton' value='溜了溜了'>");
     }

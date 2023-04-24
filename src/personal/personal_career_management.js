@@ -22,7 +22,7 @@ function doProcess() {
     $("img[alt='神官']").parent().prev().css("color", "white");
 
     const imageHTML = constant.getNPCImageHTML("白皇");
-    message.createFooterMessage(imageHTML);
+    message.createFooterMessageStyleA(imageHTML);
     message.writeFooterMessage("是的，你没有看错，换人了，某幕后黑手不愿意出镜。不过请放心，转职方面我是专业的，毕竟我一直制霸钉耙榜。<br>");
     message.writeFooterMessage("蓝色的职业代表你已经掌握了。我会把为你推荐的职业红色加深标识出来，当然，前提是如果有能推荐的。<br>");
 

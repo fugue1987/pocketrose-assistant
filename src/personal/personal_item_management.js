@@ -64,7 +64,7 @@ function doProcess() {
         $("#edenSubmit").trigger("click");
     });
     // 创建页尾消息
-    message.createFooterMessage(constant.getNPCImageHTML("饭饭"));
+    message.createFooterMessageStyleA(constant.getNPCImageHTML("饭饭"));
     message.writeFooterMessage("我就要一键祭奠，就要，就要！");
     message.writeFooterMessage("<input type='button' id='consecrateButton' style='color:darkred' value='祭奠选择的装备'>");
 

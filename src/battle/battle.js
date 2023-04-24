@@ -48,7 +48,7 @@ export class BattleRequestInterceptor {
         });
         if (candidates.length > 0) {
             const imageHTML = common_constant.getNPCImageHTML("骷髅");
-            common_message.createFooterMessage(imageHTML);
+            common_message.createFooterMessageStyleB(imageHTML);
 
             for (const it of candidates) {
                 common_message.writeFooterMessage("<b style='font-size:150%'>" + it + "</b><br>");

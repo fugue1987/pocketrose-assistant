@@ -78,7 +78,7 @@ export function processResponseHTML(html) {
     }
 }
 
-export function createFooterMessage(imageHTML) {
+export function createFooterMessageStyleA(imageHTML) {
     if (imageHTML === undefined) {
         imageHTML = constant.getNPCImageHTML("客栈老板娘");
     }
@@ -92,6 +92,30 @@ export function createFooterMessage(imageHTML) {
         "                <tr>" +
         "                    <td style='background-color:#E8E8D0'>" + imageHTML + "</td>" +
         "                    <td style='background-color:#E0D0B0;width:100%' id='footerMessage'></td>" +
+        "                </tr>" +
+        "                </tbody>" +
+        "            </table>" +
+        "        </td>" +
+        "    </tr>" +
+        "    </tbody>" +
+        "</table>";
+    $("div:last").prepend($(messageBoardHTML));
+}
+
+export function createFooterMessageStyleB(imageHTML) {
+    if (imageHTML === undefined) {
+        imageHTML = constant.getNPCImageHTML("客栈老板娘");
+    }
+    const messageBoardHTML = "" +
+        "<table style='background-color:#888888;width:100%'>" +
+        "    <tbody>" +
+        "    <tr>" +
+        "        <td style='background-color:#F8F0E0'>" +
+        "            <table style='background-color:#888888;border-width:0'>" +
+        "                <tbody>" +
+        "                <tr>" +
+        "                    <td style='background-color:#E8E8D0'>" + imageHTML + "</td>" +
+        "                    <td style='background-color:#E0D0B0;width:100%;text-align:center' id='footerMessage'></td>" +
         "                </tr>" +
         "                </tbody>" +
         "            </table>" +
