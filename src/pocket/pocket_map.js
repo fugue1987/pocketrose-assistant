@@ -300,7 +300,7 @@ export function initializeMovePlan(html) {
         }
     });
     message.publishMessageBoard(message._message_move_mode, {"mode": mode});
-    message.publishMessageBoard(message._message_move_scope, {"scope": scope});
+    message2.publishMessageBoard("你确定移动范围" + scope);
     message2.publishMessageBoard("你当前的坐标" + from.longText());
     const plan = new MovePlan();
     plan.scope = scope;
