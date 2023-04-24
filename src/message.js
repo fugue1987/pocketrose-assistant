@@ -28,8 +28,6 @@ export const _message_castle_leave = "_message_castle_leave";
 export const _message_castle_target = "_message_castle_target";
 export const _message_castle_withdraw = "_message_castle_withdraw";
 
-export const _message_move = "_message_move";
-
 function getMessageHandlers() {
     const getProperty = (data, name, defaultValue) => {
         if (data === undefined) {
@@ -152,16 +150,6 @@ function getMessageHandlers() {
         if (amount !== undefined && amount > 0) {
             page.publishMessageBoard(player + "从城堡提款机提取了" + amount + "万现金");
         }
-    };
-    // ------------------------------------------------------------------------
-    // MOVE related message handlers
-    // ------------------------------------------------------------------------
-    handlers[_message_move] = function (data) {
-        const player = getPlayer(data);
-        const direction = data["direction"];
-        const distance = data["distance"];
-        const coordinate = data["coordinate"];
-        page.publishMessageBoard(player + direction + "移动" + distance + "格，到达" + coordinate.longText());
     };
     return handlers;
 }

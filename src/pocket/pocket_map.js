@@ -126,11 +126,7 @@ function moveOnPath(credential, pathList, index, callback) {
             request["direct"] = direction.code;
             request["chara_m"] = distance;
             network.sendPostRequest("map.cgi", request, function () {
-                message.publishMessageBoard(message._message_move, {
-                    "direction": direction.name,
-                    "distance": distance,
-                    "coordinate": to
-                });
+                message2.publishMessageBoard("你" + direction.name + "移动" + distance + "格，到达" + to.longText() + "。");
                 moveOnPath(credential, pathList, index + 1, callback);
             });
         });
