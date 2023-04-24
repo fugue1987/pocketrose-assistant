@@ -204,6 +204,7 @@ function doRenderCareer(role, careerCandidateList) {
     // 已经掌握的职业用蓝色标记
     // 没有掌握的职业用红色标记（满级的情况下）
     // 不在转职列表中的按钮删除
+    // 当前职业绿色显示
     if (role.masterCareerList.includes("小天位")) {
         $("#career_32").css("color", "blue");
         $("#career_33").css("color", "blue");
@@ -219,8 +220,13 @@ function doRenderCareer(role, careerCandidateList) {
             $("#" + buttonId).css("color", "blue");
         } else {
             if (role.level >= 150) {
-                $("#" + buttonId).css("color", "red");
-                $("#" + buttonId).css("font-weight", "bold");
+                if (careerName === role.career) {
+                    $("#" + buttonId).css("color", "green");
+                    $("#" + buttonId).css("font-weight", "bold");
+                } else {
+                    $("#" + buttonId).css("color", "red");
+                    $("#" + buttonId).css("font-weight", "bold");
+                }
             }
         }
         if (!careerCandidateList.includes(careerName)) {
@@ -236,8 +242,13 @@ function doRenderCareer(role, careerCandidateList) {
         for (const recommendation of recommendations) {
             const careerId = career._CAREER_DICT[recommendation]["id"];
             const buttonId = "career_" + careerId;
-            $("#" + buttonId).css("color", "red");
-            $("#" + buttonId).css("font-weight", "bold");
+            if (recommendation === role.career) {
+                $("#" + buttonId).css("color", "green");
+                $("#" + buttonId).css("font-weight", "bold");
+            } else {
+                $("#" + buttonId).css("color", "red");
+                $("#" + buttonId).css("font-weight", "bold");
+            }
         }
     }
 }
