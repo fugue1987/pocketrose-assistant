@@ -80,7 +80,18 @@ export async function executeMovePlan(plan) {
                 plan.scope,
                 plan.mode
             );
-            message.publishMessageBoard(message._message_move_path, {"pathList": pathList});
+            if (pathList.length > 1) {
+                message2.publishMessageBoard("旅途路径已经计算完毕，总共需要次移动" + (pathList.length - 1) + "步");
+                let msg = "旅途路径规划：";
+                for (let i = 0; i < pathList.length; i++) {
+                    let node = pathList[i];
+                    msg += node.longText();
+                    if (i !== pathList.length - 1) {
+                        msg += "=>";
+                    }
+                }
+                message2.publishMessageBoard(msg);
+            }
             moveOnPath(
                 plan.credential,
                 pathList,

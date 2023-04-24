@@ -34,7 +34,6 @@ export const _message_move_mode = "_message_move_mode";
 export const _message_move_scope = "_message_move_scope";
 export const _message_move_source = "_message_move_source";
 export const _message_move_destination = "_message_move_destination";
-export const _message_move_path = "_message_move_path";
 
 function getMessageHandlers() {
     const getProperty = (data, name, defaultValue) => {
@@ -202,21 +201,6 @@ function getMessageHandlers() {
             page.publishMessageBoard(player + "目的地坐标" + destination.longText());
         }
     }
-    handlers[_message_move_path] = function (data) {
-        const pathList = getProperty(data, "pathList");
-        if (pathList !== undefined && pathList.length > 1) {
-            page.publishMessageBoard("旅途路径已经计算完毕，总共需要次移动" + (pathList.length - 1) + "步");
-            let msg = "旅途路径规划：";
-            for (let i = 0; i < pathList.length; i++) {
-                let node = pathList[i];
-                msg += node.longText();
-                if (i !== pathList.length - 1) {
-                    msg += "=>";
-                }
-            }
-            page.publishMessageBoard(msg);
-        }
-    };
     return handlers;
 }
 
