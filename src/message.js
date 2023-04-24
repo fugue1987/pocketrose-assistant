@@ -32,7 +32,6 @@ export const _message_move = "_message_move";
 export const _message_move_await = "_message_move_await";
 export const _message_move_mode = "_message_move_mode";
 export const _message_move_scope = "_message_move_scope";
-export const _message_move_source = "_message_move_source";
 
 function getMessageHandlers() {
     const getProperty = (data, name, defaultValue) => {
@@ -186,13 +185,6 @@ function getMessageHandlers() {
         const scope = getProperty(data, "scope");
         page.publishMessageBoard(player + "确定移动范围" + scope);
     };
-    handlers[_message_move_source] = function (data) {
-        const player = getPlayer(data);
-        const source = getProperty(data, "source");
-        if (source !== undefined) {
-            page.publishMessageBoard(player + "当前的坐标" + source.longText());
-        }
-    }
     return handlers;
 }
 

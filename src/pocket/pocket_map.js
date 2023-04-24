@@ -301,7 +301,7 @@ export function initializeMovePlan(html) {
     });
     message.publishMessageBoard(message._message_move_mode, {"mode": mode});
     message.publishMessageBoard(message._message_move_scope, {"scope": scope});
-    message.publishMessageBoard(message._message_move_source, {"source": from});
+    message2.publishMessageBoard("你当前的坐标" + from.longText());
     const plan = new MovePlan();
     plan.scope = scope;
     plan.mode = mode;
