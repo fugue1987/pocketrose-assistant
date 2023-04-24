@@ -14,41 +14,52 @@ export class TownDashboardProcessor {
     }
 
     process() {
-        // let formBattle = $("form[action='battle.cgi'");
-        // let selectBattle = formBattle.find('select[name="level"]');
-        // let btnBattle = formBattle.parent().next().find('input');
-        // selectBattle.find('option').each(function() {
-        //     if (!$(this).text().includes('中级之塔') && !$(this).text().includes('秘宝之岛')) {
-        //         $(this).remove(); // 移除不包含特定文本的option
-        //     }
-        // });
-        // let inputDigits = '';
-        // $(document).off('keydown.city').on('keydown.city', function (e) {
-        //     const key = e.key;
-        //     if (!isNaN(parseInt(key))) {
-        //         inputDigits += key;
-        //     }
-        //     if (inputDigits.length === 2) {
-        //         switch (inputDigits) {
-        //             case '11':
-        //                 selectBattle.find('option').eq(0).prop('selected', true);
-        //                 break;
-        //             case '22':
-        //                 selectBattle.find('option').eq(1).prop('selected', true);
-        //                 break;
-        //             default:
-        //                 inputDigits = '';
-        //                 break;
-        //         }
-        //         btnBattle.focus();
-        //         // 重置 inputDigits
-        //         inputDigits = '';
-        //     }
-        // });
         const credential = page2.generateCredential();
-
         const preference = setup.getBattlePlacePreference(credential.id);
-        if (preference["primary"] || preference["junior"] || preference["senior"] || preference["zodiac"]) {
+        let count = 0;
+        if (preference["primary"]) {
+            count++;
+        }
+        if (preference["junior"]) {
+            count++;
+        }
+        if (preference["senior"]) {
+            count++;
+        }
+        if (preference["zodiac"]) {
+            count++;
+        }
+        if (count === 1) {
+            // 只设置了一处战斗场所偏好
+            let formBattle = $("form[action='battle.cgi'");
+            let selectBattle = formBattle.find('select[name="level"]');
+            let btnBattle = formBattle.parent().next().find('input');
+            let inputDigits = '';
+            $(document).off('keydown.city').on('keydown.city', function (e) {
+                const key = e.key;
+                if (!isNaN(parseInt(key))) {
+                    inputDigits += key;
+                }
+                if (inputDigits.length === 2) {
+                    switch (inputDigits) {
+                        case '11':
+                            selectBattle.find('option').eq(0).prop('selected', true);
+                            break;
+                        case '22':
+                            selectBattle.find('option').eq(1).prop('selected', true);
+                            break;
+                        default:
+                            inputDigits = '';
+                            break;
+                    }
+                    btnBattle.focus();
+                    // 重置 inputDigits
+                    inputDigits = '';
+                }
+            });
+        }
+
+        if (count > 0) {
             // 设置了战斗场所偏好
             let keepDelim = true;
             $("select[name='level']").find("option").each(function (_idx, option) {
