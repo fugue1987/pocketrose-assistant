@@ -5,7 +5,6 @@
  */
 
 import {loadNPC} from "./npc";
-import {Credential} from "./common/common_util";
 
 export class NPC {
 
@@ -64,13 +63,4 @@ export function publishMessageBoard(message) {
     }
 }
 
-/**
- * Generate Credential object from current HTML form.
- * @returns {Credential}
- */
-export function generateCredential() {
-    let id = $("input:hidden[name='id']:first").attr("value");
-    let pass = $("input:hidden[name='pass']:first").attr("value");
-    return new Credential(id, pass);
-}
 
