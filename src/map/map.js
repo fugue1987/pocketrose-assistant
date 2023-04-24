@@ -4,6 +4,7 @@ import * as page from "../page";
 import * as map from "../pocket/pocket_map";
 import {getTown} from "../pocket/pocket_town";
 import * as message2 from "../common/common_message";
+import {generateTownSelectionTable} from "../common/common_page";
 
 export class WildRequestInterceptor {
     constructor() {
@@ -47,7 +48,7 @@ class WildPostHouse {
         const npc = page.createFooterNPC("花子");
         npc.welcome("没、没有想到这么快我们又见面了。这、这次我只能把你带到城门口。<br>");
         npc.message("<input type='button' id='moveToTown' style='color: blue' value='选择想去哪个城门口'><br>");
-        npc.message(page.generateTownSelectionTable());
+        npc.message(generateTownSelectionTable());
 
         $("#moveToTown").click(function () {
             const townId = $("input:radio[name='townId']:checked").val();

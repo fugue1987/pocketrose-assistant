@@ -6,6 +6,7 @@
 
 import * as util from "./common_util";
 import * as constant from "./common_pocket";
+import {getTownsAsList} from "../pocket/pocket_town";
 
 /**
  * Generate Credential object from current HTML form.
@@ -83,4 +84,47 @@ export function removeUnusedHyperLinks() {
     $("div:last").find("a:first").attr("href", "javascript:void(0)");
     $("div:last").find("a:eq(1)").attr("href", "javascript:void(0)");
     $("div:last").find("a").attr("tabIndex", "-1");
+}
+
+export function generateTownSelectionTable() {
+    let html = "";
+    html += "<table border='1'><tbody>";
+    html += "<thead><tr>" +
+        "<td style='color: white'>选择</td>" +
+        "<td style='color: white'>目的地</td>" +
+        "<td colspan='2' style='color: white'>坐标</td>" +
+        "<td style='color: white'>选择</td>" +
+        "<td style='color: white'>目的地</td>" +
+        "<td colspan='2' style='color: white'>坐标</td>" +
+        "<td style='color: white'>选择</td>" +
+        "<td style='color: white'>目的地</td>" +
+        "<td colspan='2' style='color: white'>坐标</td>" +
+        "<td style='color: white'>选择</td>" +
+        "<td style='color: white'>目的地</td>" +
+        "<td colspan='2' style='color: white'>坐标</td>" +
+        "</tr></thead>";
+
+    const townList = getTownsAsList();
+    for (let i = 0; i < 7; i++) {
+        const row = [];
+        row.push(townList[i * 4]);
+        row.push(townList[i * 4 + 1]);
+        row.push(townList[i * 4 + 2]);
+        row.push(townList[i * 4 + 3]);
+
+        html += "<tr>";
+        for (let j = 0; j < row.length; j++) {
+            const town = row[j];
+            html += "<td><input type='radio' class='townClass' name='townId' value='" + town.id + "'></td>";
+            html += "<td style='color: white'>" + town.name + "</td>";
+            html += "<td style='color: white'>" + town.coordinate.x + "</td>";
+            html += "<td style='color: white'>" + town.coordinate.y + "</td>";
+        }
+        html += "</tr>";
+    }
+
+    html += "</tbody></table>";
+    html += "<br>";
+
+    return html;
 }

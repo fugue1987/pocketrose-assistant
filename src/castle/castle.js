@@ -14,6 +14,7 @@ import {getTown} from "../pocket/pocket_town";
 import {calculateCashDifferenceAmount, depositIntoTownBank, withdrawFromCastleBank} from "../pocket/pocket_service";
 import {CastleWarehouse} from "./castle_warehouse";
 import * as message2 from "../common/common_message";
+import {generateTownSelectionTable} from "../common/common_page";
 
 /**
  * 城堡相关页面的处理入口
@@ -136,7 +137,7 @@ class CastlePostHouse {
         npc.welcome("轮到我啦，上镜+RP，+RP，+RP，重要的事情喊三遍！<br>");
         npc.message("快看看你想去哪里？<br>");
         npc.message("<input type='button' id='returnTown' style='color: blue' value='选好后立刻出发'><br>");
-        npc.message(page.generateTownSelectionTable());
+        npc.message(generateTownSelectionTable());
 
         const postHouse = this;
         $("#returnTown").click(function () {

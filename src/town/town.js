@@ -20,6 +20,7 @@ import {calculateCashDifferenceAmount, depositIntoTownBank, withdrawFromTownBank
 import * as message2 from "../common/common_message";
 import {TownSuperMarket} from "./town_super_market";
 import {isPocketSuperMarketEnabled} from "../setup/setup";
+import {generateTownSelectionTable} from "../common/common_page";
 
 /**
  * 用于拦截并处理浏览器访问town.cgi的请求后返回的页面。
@@ -129,7 +130,7 @@ class TownInnPostHouse {
         npc.message("<div id='townId' style='display: none'></div>");
         npc.message("<div id='castle' style='display: none'></div>");
         npc.message("<br>");
-        npc.message(page.generateTownSelectionTable());
+        npc.message(generateTownSelectionTable());
 
         $("#moveToTown").prop("disabled", true);
         $("#moveToCastle").prop("disabled", true);
