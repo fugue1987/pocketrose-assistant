@@ -29,7 +29,6 @@ export const _message_castle_target = "_message_castle_target";
 export const _message_castle_withdraw = "_message_castle_withdraw";
 
 export const _message_move = "_message_move";
-export const _message_move_await = "_message_move_await";
 
 function getMessageHandlers() {
     const getProperty = (data, name, defaultValue) => {
@@ -163,15 +162,6 @@ function getMessageHandlers() {
         const distance = data["distance"];
         const coordinate = data["coordinate"];
         page.publishMessageBoard(player + direction + "移动" + distance + "格，到达" + coordinate.longText());
-    };
-    handlers[_message_move_await] = function (data) {
-        const player = getPlayer(data);
-        const timeout = getProperty(data, "timeout");
-        if (timeout === undefined) {
-            page.publishMessageBoard(player + "等待移动冷却中......");
-        } else {
-            page.publishMessageBoard(player + "等待移动冷却中......(约" + timeout + "秒)");
-        }
     };
     return handlers;
 }

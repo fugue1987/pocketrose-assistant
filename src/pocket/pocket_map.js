@@ -111,7 +111,7 @@ function moveOnPath(credential, pathList, index, callback) {
         // 已经移动到最后一个点
         callback();
     } else {
-        message.publishMessageBoard(message._message_move_await, {"timeout": 55});
+        message2.publishMessageBoard("你等待移动冷却中......(约55秒)");
         util.latencyExecute(55000, function () {
             const from = pathList[index];
             const to = pathList[index + 1];
