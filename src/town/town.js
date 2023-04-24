@@ -4,6 +4,8 @@
  * ============================================================================
  */
 
+import * as page2 from "../common/common_page";
+import {generateTownSelectionTable} from "../common/common_page";
 import * as dashboard from "../dashboard/dashboard";
 import * as network from "../common/common_network";
 import * as map from "../pocket/pocket_map";
@@ -20,7 +22,6 @@ import {calculateCashDifferenceAmount, depositIntoTownBank, withdrawFromTownBank
 import * as message2 from "../common/common_message";
 import {TownSuperMarket} from "./town_super_market";
 import {isPocketSuperMarketEnabled} from "../setup/setup";
-import {generateTownSelectionTable} from "../common/common_page";
 
 /**
  * 用于拦截并处理浏览器访问town.cgi的请求后返回的页面。
@@ -62,7 +63,7 @@ class TownInnPostHouse {
     process() {
         this.#renderHTML();
 
-        const credential = page.generateCredential();
+        const credential = page2.generateCredential();
         user.loadRole(credential).then(role => {
             const town = findTownByName(role.townName);
             $(".townClass[value='" + town.id + "']").prop("disabled", true);
@@ -160,7 +161,7 @@ class TownInnPostHouse {
 
                 message2.publishMessageBoard("你设定移动目标为" + destinationTown.name + "。");
 
-                const credential = page.generateCredential();
+                const credential = page2.generateCredential();
                 let cash = 0;
                 $("td:parent").each(function (_idx, td) {
                     const text = $(td).text();
@@ -219,7 +220,7 @@ class TownInnPostHouse {
             role.coordinate = town.coordinate;
             message2.publishMessageBoard("你设定移动目标为" + castleName + "。");
 
-            const credential = page.generateCredential();
+            const credential = page2.generateCredential();
             map.leaveTown(credential).then(plan => {
                 plan.source = source;
                 plan.destination = destination;
@@ -407,7 +408,7 @@ class TownGemStore {
 
     #doFuseGem(gemName, name, nameIndex, item, gemIndex, holeCount, holeIndex) {
         const inst = this;
-        const credential = page.generateCredential();
+        const credential = page2.generateCredential();
         const request = credential.asRequest();
         request["select"] = item;
         request["baoshi"] = gemIndex;
@@ -493,7 +494,7 @@ class TownAdventurerGuild {
 
         this.#renderHTML(treasureHintMapCount);
 
-        const credential = page.generateCredential();
+        const credential = page2.generateCredential();
         user.loadRole(credential).then(role => {
             $("#player").text(role.name);
             const town = findTownByName(role.townName);
@@ -623,7 +624,7 @@ class TownAdventurerGuild {
 
                     const player = $("#player").text();
                     message2.initializeMessageBoard("放心，实时播报动态我们是专业的，绝对不比隔壁新开张的驿站差：<br>");
-                    const credential = page.generateCredential();
+                    const credential = page2.generateCredential();
                     message2.publishMessageBoard(player + "登上了车身斑驳的马车，一股说不出的味道扑鼻而来");
                     message2.publishMessageBoard(player + "皱了皱眉头，很不舒服的感觉");
                     message2.publishMessageBoard("嘎吱嘎吱声中，马车出发了");
@@ -684,7 +685,7 @@ class TownAdventurerGuild {
                         }
                     });
                     const amount = calculateCashDifferenceAmount(cash, 1100000);
-                    const credential = page.generateCredential();
+                    const credential = page2.generateCredential();
                     withdrawFromTownBank(credential, amount).then(() => {
                         const player = $("#player").text();
                         const townId = $("#townId").text();

@@ -1,10 +1,11 @@
+import * as page2 from "../common/common_page";
+import {generateTownSelectionTable} from "../common/common_page";
 import * as dashboard from "../dashboard/dashboard";
 import * as network from "../common/common_network";
 import * as page from "../page";
 import * as map from "../pocket/pocket_map";
 import {getTown} from "../pocket/pocket_town";
 import * as message2 from "../common/common_message";
-import {generateTownSelectionTable} from "../common/common_page";
 
 export class WildRequestInterceptor {
     constructor() {
@@ -65,7 +66,7 @@ class WildPostHouse {
                 const town = getTown(townId);
                 message2.publishMessageBoard("你设定移动目标为" + town.name + "。");
 
-                const credential = page.generateCredential();
+                const credential = page2.generateCredential();
                 const request = credential.asRequest();
                 request["mode"] = "STATUS";
                 network.sendPostRequest("status.cgi", request, function (html) {

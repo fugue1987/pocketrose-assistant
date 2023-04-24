@@ -1,5 +1,4 @@
 import * as network from "../common/common_network";
-import * as page from "../page";
 import * as pet from "../pocket/pocket_pet";
 import * as util from "../common/common_util";
 import {Coordinate} from "../common/common_util";
@@ -7,6 +6,7 @@ import * as service from "../pocket/pocket_service";
 import {calculateCashDifferenceAmount, depositIntoTownBank, withdrawFromTownBank} from "../pocket/pocket_service";
 import {findTownBySecret} from "../pocket/pocket_town";
 import * as setup from "../setup/setup";
+import * as page2 from "../common/common_page";
 
 export class TownDashboardProcessor {
 
@@ -45,7 +45,7 @@ export class TownDashboardProcessor {
         //         inputDigits = '';
         //     }
         // });
-        const credential = page.generateCredential();
+        const credential = page2.generateCredential();
 
         const preference = setup.getBattlePlacePreference(credential.id);
         if (preference["primary"] || preference["junior"] || preference["senior"] || preference["zodiac"]) {
@@ -212,7 +212,7 @@ export class TownDashboardProcessor {
 
     #depositAndReturn() {
         const instance = this;
-        const credential = page.generateCredential();
+        const credential = page2.generateCredential();
         depositIntoTownBank(credential, undefined)
             .then(() => {
                 instance.#returnAndRefresh();
@@ -223,7 +223,7 @@ export class TownDashboardProcessor {
      * 返回主页，并且更新HP/MP/资金
      */
     #returnAndRefresh() {
-        const credential = page.generateCredential();
+        const credential = page2.generateCredential();
         const request = credential.asRequest();
         request["mode"] = "STATUS";
         network.sendPostRequest("status.cgi", request, function (html) {

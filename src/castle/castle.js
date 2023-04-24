@@ -7,13 +7,13 @@
 import * as map from "../pocket/pocket_map";
 import {enterTown, leaveCastle} from "../pocket/pocket_map";
 import * as page from "../page";
-import {generateCredential} from "../page";
 import * as util from "../common/common_util";
 import * as user from "../pocket/pocket_user";
 import {getTown} from "../pocket/pocket_town";
 import {calculateCashDifferenceAmount, depositIntoTownBank, withdrawFromCastleBank} from "../pocket/pocket_service";
 import {CastleWarehouse} from "./castle_warehouse";
 import * as message2 from "../common/common_message";
+import * as page2 from "../common/common_page";
 import {generateTownSelectionTable} from "../common/common_page";
 
 /**
@@ -154,7 +154,7 @@ class CastlePostHouse {
                 message2.publishMessageBoard("你设定移动目标为" + town.name + "。");
 
                 const amount = calculateCashDifferenceAmount(cash, 100000);
-                const credential = generateCredential();
+                const credential = page2.generateCredential();
                 withdrawFromCastleBank(credential, amount).then(() => {
                     $("#role_cash").text((cash + amount * 10000) + " GOLD");
                     postHouse.#travelTo(town);
@@ -164,7 +164,7 @@ class CastlePostHouse {
     }
 
     #travelTo(town) {
-        const credential = generateCredential();
+        const credential = page2.generateCredential();
         user.loadRole(credential).then(role => {
             $("#role_name").text(role.name);
 

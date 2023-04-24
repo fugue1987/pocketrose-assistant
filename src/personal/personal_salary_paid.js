@@ -6,8 +6,8 @@
 
 import * as constant from "../common/common_pocket";
 import * as message from "../common/common_message";
-import * as page from "../page";
 import {depositIntoTownBank} from "../pocket/pocket_service";
+import * as page2 from "../common/common_page";
 
 export class PersonalSalaryPaid {
     process() {
@@ -43,7 +43,7 @@ function doRender() {
 function __bindDepositButton() {
     if ($("#depositButton").length > 0) {
         $("#depositButton").click(function () {
-            const credential = page.generateCredential();
+            const credential = page2.generateCredential();
             depositIntoTownBank(credential, undefined).then(() => {
                 $("#returnButton").trigger("click");
             });

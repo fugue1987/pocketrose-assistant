@@ -3,8 +3,8 @@
  * [ 黄 金 笼 子 模 块 ]
  * ============================================================================
  */
-import * as page from "../page";
 import * as network from "../common/common_network";
+import * as page2 from "../common/common_page";
 
 export class PersonalGoldenCage {
     process() {
@@ -31,7 +31,7 @@ function doProcess() {
 
 function __bindTakeOutButton() {
     $("#takeOutButton").click(function () {
-        const credential = page.generateCredential();
+        const credential = page2.generateCredential();
         const request = credential.asRequest();
         const select = $("input:radio:checked").val();
         if (select === undefined) {
