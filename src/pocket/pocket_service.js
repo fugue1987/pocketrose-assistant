@@ -109,7 +109,7 @@ export async function withdrawFromTownBank(credential, amount) {
                 request["mode"] = "BANK_BUY";
                 request["dasu"] = amount;
                 network.sendPostRequest("town.cgi", request, function () {
-                    message.publishMessageBoard(message._message_town_withdraw, {"amount": amount});
+                    message2.publishMessageBoard("你从城市银行提取了" + amount + "万现金。");
                     resolve();
                 });
             }
