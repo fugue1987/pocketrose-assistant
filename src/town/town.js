@@ -86,7 +86,13 @@ class TownInnPostHouse {
     }
 
     #renderHTML() {
-        page.findAndCreateMessageBoard("每天的战斗让你疲倦了吧? 来休息一下吧");
+        const td = $("td:contains('每天的战斗让你疲倦了吧? 来休息一下吧')")
+            .filter(function () {
+                const t = $(this).text();
+                return t.startsWith("欢迎") && t.includes("每天的战斗让你疲倦了吧? 来休息一下吧");
+            });
+        td.attr("id", "messageBoard");
+        td.css("color", "yellow");
 
         $("input:submit[value='宿泊']").attr("id", "restButton");
         $("input:submit[value='返回城市']").attr("id", "returnButton");
@@ -244,7 +250,12 @@ class TownGemStore {
         $("input:submit[value='宝石合成']").attr("id", "fuseButton");
         $("input:submit[value='返回城市']").attr("id", "returnButton");
 
-        page.findAndCreateMessageBoard("您好，这里是合成屋");
+        const td = $("td:contains('您好，这里是合成屋')")
+            .filter(function () {
+                return $(this).text().startsWith("您好，这里是合成屋");
+            });
+        td.attr("id", "messageBoard");
+        td.css("color", "white");
 
         $("img[alt='合成屋']").parent().html(npc.loadNPC("钱小小").imageHTML);
         page.initializeMessageBoard("砸石头这种事儿，难道不是有手就行的？");
@@ -507,7 +518,12 @@ class TownAdventurerGuild {
     }
 
     #renderHTML(mapCount) {
-        page.findAndCreateMessageBoard("因为手持城市图不能使用而烦恼吗？");
+        const td = $("td:contains('因为手持城市图不能使用而烦恼吗？')")
+            .filter(function () {
+                return $(this).text().startsWith("因为手持城市图不能使用而烦恼吗？");
+            });
+        td.attr("id", "messageBoard");
+        td.css("color", "white");
 
         $("td:parent").each(function (_idx, td) {
             const text = $(td).text();
