@@ -169,7 +169,7 @@ class TownInnPostHouse {
                     map.leaveTown(credential).then(plan => {
                         plan.source = source;
                         plan.destination = destination;
-                        message.publishMessageBoard(message._message_move_destination, {"destination": destination});
+                        message2.publishMessageBoard("你的目的地坐标" + destination.longText());
                         map.executeMovePlan(plan).then(() => {
                             map.enterTown(credential, destinationTownId).then(() => {
                                 depositIntoTownBank(credential, undefined).then(() => {

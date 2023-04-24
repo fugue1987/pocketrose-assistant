@@ -33,7 +33,6 @@ export const _message_move_await = "_message_move_await";
 export const _message_move_mode = "_message_move_mode";
 export const _message_move_scope = "_message_move_scope";
 export const _message_move_source = "_message_move_source";
-export const _message_move_destination = "_message_move_destination";
 
 function getMessageHandlers() {
     const getProperty = (data, name, defaultValue) => {
@@ -192,13 +191,6 @@ function getMessageHandlers() {
         const source = getProperty(data, "source");
         if (source !== undefined) {
             page.publishMessageBoard(player + "当前的坐标" + source.longText());
-        }
-    }
-    handlers[_message_move_destination] = function (data) {
-        const player = getPlayer(data);
-        const destination = getProperty(data, "destination");
-        if (destination !== undefined) {
-            page.publishMessageBoard(player + "目的地坐标" + destination.longText());
         }
     }
     return handlers;
