@@ -20,3 +20,23 @@
 2. 宠物管理界面UI改造，ajax改造，集成了宠物封印、宠物赠送等功能。
 
 以上是主要的功能修改，还有很多杂七杂八的增强型修改，就不详细列举了。
+
+### 篡改猴文件头
+
+```
+// ==UserScript==
+// @name         pocketrose assistant
+// @namespace    https://pocketrose.itsns.net.cn/
+// @description  Intercepts and modifies pocketrose CGI requests
+// @icon         data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==
+// @license      mit
+// @author       xiaohaiz,fugue
+// @version      ${version}
+// @grant        unsafeWindow
+// @match        *://pocketrose.itsns.net.cn/*
+// @require      https://cdn.bootcdn.net/ajax/libs/jquery/3.6.4/jquery.min.js
+// @require      https://cdn.bootcdn.net/ajax/libs/js-cookie/3.0.1/js.cookie.min.js
+// @run-at       document-start
+// @unwrap
+// ==/UserScript==
+```
