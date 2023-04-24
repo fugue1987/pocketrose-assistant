@@ -37,7 +37,6 @@ export const _message_move_destination = "_message_move_destination";
 export const _message_move_path = "_message_move_path";
 
 export const _message_treasure_stay_put = "_message_treasure_stay_put";
-export const _message_treasure_await = "_message_treasure_await";
 
 function getMessageHandlers() {
     const getProperty = (data, name, defaultValue) => {
@@ -226,15 +225,6 @@ function getMessageHandlers() {
     handlers[_message_treasure_stay_put] = function (data) {
         const player = getPlayer(data);
         writeMessageBoard("兔子骷髅对" + player + "说：运气真好，原地可以继续探险");
-    };
-    handlers[_message_treasure_await] = function (data) {
-        const player = getPlayer(data);
-        const timeout = getProperty(data, "timeout");
-        if (timeout === undefined) {
-            page.publishMessageBoard(player + "等待探险冷却中......");
-        } else {
-            page.publishMessageBoard(player + "等待探险冷却中......(约" + timeout + "秒)");
-        }
     };
     return handlers;
 }
