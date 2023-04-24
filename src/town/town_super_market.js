@@ -249,7 +249,7 @@ function doPaintFullMerchandiseList(weaponStoreMerchandiseList,
     html += "<tr>";
     html += "<th style='background-color:#E8E8D0'>选择</th>";
     html += "<th style='background-color:#E0D0B0'>商品</th>";
-    html += "<th style='background-color:#E0D0B0'>类型</th>";
+    html += "<th style='background-color:#E0D0B0'>种类</th>";
     html += "<th style='background-color:#EFE0C0'>价格</th>";
     html += "<th style='background-color:#E0D0B0'>威力</th>";
     html += "<th style='background-color:#EFE0C0'>重量</th>";
@@ -348,7 +348,38 @@ function doPaintFullMerchandiseList(weaponStoreMerchandiseList,
 }
 
 function doRender(personalEquipmentList) {
+    let html = "";
+    html += "<table style='background-color:#888888;border-width:0;width:100%'>";
+    html += "<tbody style='background-color:#F8F0E0'>";
+    html += "<tr>";
+    html += "<th style='background-color:#E8E8D0'>装备</th>";
+    html += "<th style='background-color:#E0D0B0'>名字</th>";
+    html += "<th style='background-color:#E0D0B0'>种类</th>";
+    html += "<th style='background-color:#EFE0C0'>效果</th>";
+    html += "<th style='background-color:#E0D0B0'>重量</th>";
+    html += "<th style='background-color:#EFE0C0'>耐久</th>";
+    html += "</tr>";
+    for (const it of personalEquipmentList.asList()) {
+        html += "<tr>";
+        html += "<td style='background-color:#E8E8D0;text-align:center'>" + (it.using ? "" : "★") + "</td>";
+        html += "<td style='background-color:#E0D0B0'>" + it.nameHTML + "</td>";
+        html += "<td style='background-color:#E0D0B0'>" + it.category + "</td>";
+        html += "<td style='background-color:#EFE0C0'>" + it.power + "</td>";
+        html += "<td style='background-color:#E0D0B0'>" + it.weight + "</td>";
+        if (it.maxEndure === 1) {
+            html += "<td style='background-color:#EFE0C0'>-</td>";
+        } else {
+            html += "<td style='background-color:#EFE0C0'>" + it.endure + "/" + it.maxEndure + "</td>";
+        }
+        html += "</tr>";
+    }
+    html += "<tr>";
+    html += "<td style='background-color:#E8E8D0' colspan='6'><b style='color:navy'>剩余空间：</b><b style='color:red'>" + (20 - personalEquipmentList.asList().length) + "</b></td>";
+    html += "</tr>";
+    html += "</tbody>";
+    html += "</table>";
 
+    $("#equipmentContainer").html(html);
 }
 
 function doRefresh(credential) {
