@@ -13,6 +13,7 @@ import * as util from "../common/common_util";
 import * as bank from "../pocket/pocket_bank";
 import * as item from "../pocket/pocket_item";
 import * as merchandise from "../pocket/pocket_merchandise";
+import * as service from "../pocket/pocket_service";
 import * as user from "../pocket/pocket_user";
 
 export class TownSuperMarket {
@@ -64,7 +65,7 @@ function doProcess() {
     html += "<table style='background-color:#888888;width:100%;text-align:center'>";
     html += "   <tbody style='background-color:#F8F0E0'>";
     html += "       <tr>";
-    html += "           <td style='background-color:navy;color:yellowgreen;font-size:200%;font-weight:bold'>" +
+    html += "           <td style='background-color:navy;color:yellowgreen;font-size:200%;font-weight:bold' id='PocketSuperMarketTitle'>" +
         "＜＜ 口 袋 超 市 ＞＞" +
         "</td>";
     html += "       </tr>";
@@ -89,6 +90,7 @@ function doProcess() {
     html += "</table>";
     $("#PocketSuperMarket").append($(html));
 
+    $("#returnButton").attr("tabIndex", 1);
     $("#returnButton").click(function () {
         $("#EdenForm").attr("action", "status.cgi");
         $("#EdenFormPayload").html("<input type='hidden' name='mode' value='STATUS'>");
@@ -348,7 +350,7 @@ function doRender(personalEquipmentList) {
     html += "</tr>";
     for (const it of personalEquipmentList.asList()) {
         html += "<tr>";
-        html += "<td style='background-color:#E8E8D0;text-align:center'>" + (it.using ? "" : "★") + "</td>";
+        html += "<td style='background-color:#E8E8D0;text-align:center'>" + (it.using ? "★" : "") + "</td>";
         html += "<td style='background-color:#E0D0B0'>" + it.nameHTML + "</td>";
         html += "<td style='background-color:#E0D0B0'>" + it.category + "</td>";
         html += "<td style='background-color:#EFE0C0'>" + it.power + "</td>";
@@ -390,8 +392,10 @@ function doRenderBuyOperation() {
     $("#operationContainer").html(html);
 
     if (spaceCount === 0) {
-        $("#dynamicButton").prop("disabled", true);
+        $("#buyButton").prop("disabled", true);
     }
+
+    __bindBuyButton();
 }
 
 function doRefresh(credential) {
@@ -410,5 +414,64 @@ function doRefresh(credential) {
         const personalEquipmentList = item.parseWeaponStoreItemList(html);
         doRender(personalEquipmentList);
         doRenderBuyOperation();
+    });
+}
+
+function __bindBuyButton() {
+    if ($("#buyButton").prop("disabled")) {
+        return;
+    }
+    $("#buyButton").click(function () {
+        const count = parseInt($("select[name='num']").val());
+        const select = $("input:radio:checked").val();
+        if (select === undefined) {
+            message.publishMessageBoard("你没有选择要购买的商品。");
+            return;
+        }
+        let s = $("input:radio:checked").parent().next().next().next().text();
+        s = util.substringBefore(s, " GOLD");
+        const price = parseInt(s);
+
+        const total = price * count;
+        const amount = service.calculateCashDifferenceAmount(0, total);
+
+        const townId = $("#TownId").text();
+        const discount = $("#Discount").text();
+
+        const credential = page.generateCredential();
+        service.withdrawFromTownBank(credential, amount)
+            .then(() => {
+                const p1 = util.substringBefore(select, "_");
+                const p2 = util.substringAfter(select, "_");
+                if (p1 === "WEA") {
+                    __buyViaWeaponStore(credential, townId, discount, p2, count);
+                } else if (p1 === "ARM") {
+
+                } else if (p1 === "ACC") {
+
+                } else if (p1 === "ITE") {
+
+                }
+
+            });
+    });
+}
+
+function __buyViaWeaponStore(credential, townId, discount, select, count) {
+    const request = credential.asRequest();
+    request["val_off"] = discount;
+    request["townid"] = townId;
+    request["mode"] = "BUY";
+    request["select"] = select;
+    request["num"] = count;
+    request["mark"] = "0";
+    doRefresh(credential);
+    network.sendPostRequest("town.cgi", request, function (html) {
+        message.processResponseHTML(html);
+        service.depositIntoTownBank(credential, undefined)
+            .then(() => {
+                doRefresh(credential);
+                document.getElementById("PocketSuperMarketTitle").scrollIntoView();
+            });
     });
 }
