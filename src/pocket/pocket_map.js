@@ -201,7 +201,7 @@ export async function enterTown(credential, townId) {
                         request["givemoney"] = "1";
                         request["mode"] = "MOVE";
                         network.sendPostRequest("status.cgi", request, function () {
-                            message.publishMessageBoard(message._message_town_enter_guard_pass);
+                            message2.publishMessageBoard("门卫通情达理的收取了入城费用放你入城。");
                             const town = getTown(townId);
                             if (town !== undefined) {
                                 message.publishMessageBoard(message._message_town_enter, {"town": town.name});
