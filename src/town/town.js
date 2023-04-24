@@ -5,7 +5,6 @@
  */
 
 import * as dashboard from "../dashboard/dashboard";
-import * as message from "../message";
 import * as network from "../common/common_network";
 import * as map from "../pocket/pocket_map";
 import * as page from "../page";
@@ -144,7 +143,7 @@ class TownInnPostHouse {
                 $("#moveToCastle").prop("disabled", true);
                 $(".townClass").prop("disabled", true);
 
-                message.initializeMessageBoard("我们将实时为你播报旅途的动态：<br>");
+                message2.initializeMessageBoard("我们将实时为你播报旅途的动态：<br>");
                 const townId = $("#townId").text();
                 const town = getTown(townId)
                 const source = town.coordinate;
@@ -195,7 +194,7 @@ class TownInnPostHouse {
             $("#moveToCastle").prop("disabled", true);
             $(".townClass").prop("disabled", true);
 
-            message.initializeMessageBoard("我们将实时为你播报旅途的动态：<br>");
+            message2.initializeMessageBoard("我们将实时为你播报旅途的动态：<br>");
             const townId = $("#townId").text();
             const town = getTown(townId)
             const source = town.coordinate;
@@ -334,7 +333,7 @@ class TownGemStore {
                 }
             }
         });
-        message.writeMessageBoard("选择合成" + name);
+        message2.publishMessageBoard("选择合成" + name);
         let holeCount;
         if (name === "宠物蛋") {
             holeCount = 20;
@@ -347,14 +346,14 @@ class TownGemStore {
         if (holeCount === 0) {
             return;
         }
-        message.writeMessageBoard(name + "还剩余" + holeCount + "孔");
+        message2.publishMessageBoard(name + "还剩余" + holeCount + "孔");
 
         this.#fuseGem(gemName, name, nameIndex, holeCount, 0);
     }
 
     #fuseGem(gemName, name, nameIndex, holeCount, holeIndex) {
         if (holeIndex === holeCount) {
-            message.writeMessageBoard(name + "没有孔了，完成");
+            message2.publishMessageBoard(name + "没有孔了，完成");
             return;
         }
         let item = "";
@@ -379,7 +378,7 @@ class TownGemStore {
         });
         if (lastGemIndex === "" || lastGemIndex === undefined) {
             // 没有石头了
-            message.writeMessageBoard("没有石头了，终止");
+            message2.publishMessageBoard("没有石头了，终止");
             if (gemName === "幸运宝石") {
                 $("#fuseLuckGem").prop("disabled", true);
             }
@@ -404,7 +403,7 @@ class TownGemStore {
         request["mode"] = "BAOSHI_MAKE";
         network.sendPostRequest("town.cgi", request, function (html) {
             const fuseResult = $(html).find("h2:first").text();
-            message.writeMessageBoard("<b style='color:red'>" + fuseResult + "</b>");
+            message2.publishMessageBoard("<b style='color:red'>" + fuseResult + "</b>");
 
             user.loadRole(credential).then(role => {
                 const town = findTownByName(role.townName);
@@ -447,7 +446,7 @@ class TownGemStore {
                     });
 
                     const nextIndex = holeIndex + 1;
-                    message.writeMessageBoard(name + "还剩余" + (holeCount - nextIndex) + "孔");
+                    message2.publishMessageBoard(name + "还剩余" + (holeCount - nextIndex) + "孔");
                     inst.#fuseGem(gemName, name, nameIndex, holeCount, nextIndex);
                 });
             });
@@ -606,18 +605,18 @@ class TownAdventurerGuild {
                     }
 
                     const player = $("#player").text();
-                    message.initializeMessageBoard("放心，实时播报动态我们是专业的，绝对不比隔壁新开张的驿站差：<br>");
+                    message2.initializeMessageBoard("放心，实时播报动态我们是专业的，绝对不比隔壁新开张的驿站差：<br>");
                     const credential = page.generateCredential();
-                    message.writeMessageBoard(player + "登上了车身斑驳的马车，一股说不出的味道扑鼻而来");
-                    message.writeMessageBoard(player + "皱了皱眉头，很不舒服的感觉");
-                    message.writeMessageBoard("嘎吱嘎吱声中，马车出发了");
+                    message2.publishMessageBoard(player + "登上了车身斑驳的马车，一股说不出的味道扑鼻而来");
+                    message2.publishMessageBoard(player + "皱了皱眉头，很不舒服的感觉");
+                    message2.publishMessageBoard("嘎吱嘎吱声中，马车出发了");
 
                     map.leaveTown(credential).then(plan => {
                         plan.source = town.coordinate;
                         plan.destination = new Coordinate(x, y);
                         map.executeMovePlan(plan).then(() => {
-                            message.writeMessageBoard("\"我们到了\"，车夫粗鲁的喊声惊醒了昏昏欲睡的" + player);
-                            message.writeMessageBoard(player + "暗暗发誓再也不乘坐这架马车了");
+                            message2.publishMessageBoard("\"我们到了\"，车夫粗鲁的喊声惊醒了昏昏欲睡的" + player);
+                            message2.publishMessageBoard(player + "暗暗发誓再也不乘坐这架马车了");
                             $("#returnButton").attr("value", "摇摇晃晃走下马车");
                             $("#returnButton").prop("disabled", false);
                             $("#returnButton").removeAttr("style");
@@ -658,7 +657,7 @@ class TownAdventurerGuild {
                     $("#coach_3").prop("disabled", true);
                     $("#treasure").prop("disabled", true);
 
-                    message.initializeMessageBoard("冒险家公会之探险播报：<br>");
+                    message2.initializeMessageBoard("冒险家公会之探险播报：<br>");
 
                     let cash = 0;
                     $("td:parent").each(function (_idx, td) {

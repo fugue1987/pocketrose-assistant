@@ -4,7 +4,6 @@
  * ============================================================================
  */
 
-import * as message from "../message";
 import * as map from "../pocket/pocket_map";
 import {enterTown, leaveCastle} from "../pocket/pocket_map";
 import * as page from "../page";
@@ -149,7 +148,7 @@ class CastlePostHouse {
                 $("input:submit[value='返回城堡']").prop("disabled", true);
                 $("#returnTown").prop("disabled", true);
 
-                message.initializeMessageBoard("开始播报实时动态：<br>");
+                message2.initializeMessageBoard("开始播报实时动态：<br>");
                 const town = getTown(townId);
                 message2.publishMessageBoard("你设定移动目标为" + town.name + "。");
 

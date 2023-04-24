@@ -5,7 +5,6 @@
  */
 
 import * as message2 from "../common/common_message";
-import * as message from "../message";
 import * as network from "../common/common_network";
 
 /**
@@ -21,8 +20,7 @@ export async function consecratePet(credential, petIndex) {
             request["select"] = petIndex;
             request["mode"] = "PETBORN6";
             network.sendPostRequest("mydata.cgi", request, function (html) {
-                const successMessage = $(html).find("h2:first").text();
-                message.writeMessageBoard(successMessage);
+                message2.processResponseHTML(html);
                 resolve();
             });
         });

@@ -1,5 +1,4 @@
 import * as dashboard from "../dashboard/dashboard";
-import * as message from "../message";
 import * as network from "../common/common_network";
 import * as page from "../page";
 import * as map from "../pocket/pocket_map";
@@ -38,7 +37,7 @@ class WildPostHouse {
                 $(img).parent().prev().attr("style", "color:white");
             }
         });
-        message.initializeMessageBoard("能在这荒郊野岭相逢，也是缘分。");
+        message2.initializeMessageBoard("能在这荒郊野岭相逢，也是缘分。");
 
         $("table:eq(2) tr:last").after($("<TR>" +
             "<TD bgcolor=#E0D0B0>计时器</TD>" +
@@ -73,7 +72,7 @@ class WildPostHouse {
                     plan.credential = credential;
                     plan.destination = town.coordinate;
                     map.executeMovePlan(plan).then(() => {
-                        message.writeMessageBoard("已经到达" + town.name + "城门口，希望下次再见");
+                        message2.publishMessageBoard("已经到达" + town.name + "城门口，希望下次再见。");
                         $("input:submit[value='返回上个画面']").prop("disabled", false);
                         $("input:submit[value='返回上个画面']").attr("value", town.name + "门口到了");
                     });
