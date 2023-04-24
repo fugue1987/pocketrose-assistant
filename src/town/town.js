@@ -735,7 +735,7 @@ class TownAdventurerGuild {
             }
         } else {
             // 最后一个坐标已经完成了探险。现在可以回城了
-            message.publishMessageBoard(message._message_treasure_map_exhausted);
+            message2.publishMessageBoard("你的藏宝图已经用完，准备回城。");
             const plan = new map.MovePlan();
             plan.credential = credential;
             plan.source = from;

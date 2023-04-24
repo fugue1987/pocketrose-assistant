@@ -41,7 +41,6 @@ export const _message_treasure_await = "_message_treasure_await";
 export const _message_treasure_path = "_message_treasure_path";
 export const _message_treasure_3bt = "_message_treasure_3bt";
 export const _message_treasure_found = "_message_treasure_found";
-export const _message_treasure_map_exhausted = "_message_treasure_map_exhausted";
 
 function getMessageHandlers() {
     const getProperty = (data, name, defaultValue) => {
@@ -263,10 +262,6 @@ function getMessageHandlers() {
         if (found !== undefined) {
             writeMessageBoard("<b style='color:red'>" + found + "</b>");
         }
-    };
-    handlers[_message_treasure_map_exhausted] = function (data) {
-        const player = getPlayer(data);
-        writeMessageBoard(player + "的藏宝图已经用完，回城");
     };
     return handlers;
 }
