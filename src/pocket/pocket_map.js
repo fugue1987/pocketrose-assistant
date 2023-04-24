@@ -9,6 +9,7 @@ import {calculateDirection, calculateDistance, calculatePath, Coordinate} from "
 import * as network from "../common/common_network";
 import * as message from "../message";
 import {getTown} from "./pocket_town";
+import * as message2 from "../common/common_message";
 
 /**
  * 用于描述移动计划的数据结构。表述了谁从哪里移动到哪里，怎么样的移动方式。
@@ -247,7 +248,7 @@ export async function explore(credential) {
                         resolve("被3BT殴打！");
                     } else {
                         const found = $(html).find("h2:first").text();
-                        message.publishMessageBoard(message._message_treasure_found, {"found": found});
+                        message2.publishMessageBoard("<b style='color:red'>" + found + "</b>");
                         resolve(found);
                     }
                 });

@@ -40,7 +40,6 @@ export const _message_treasure_stay_put = "_message_treasure_stay_put";
 export const _message_treasure_await = "_message_treasure_await";
 export const _message_treasure_path = "_message_treasure_path";
 export const _message_treasure_3bt = "_message_treasure_3bt";
-export const _message_treasure_found = "_message_treasure_found";
 
 function getMessageHandlers() {
     const getProperty = (data, name, defaultValue) => {
@@ -256,12 +255,6 @@ function getMessageHandlers() {
     handlers[_message_treasure_3bt] = function (data) {
         const player = getPlayer(data);
         writeMessageBoard("在探险过程中，突然跳出<b style='color:chartreuse'>3个BT</b>对" + player + "进行了殴打");
-    };
-    handlers[_message_treasure_found] = function (data) {
-        const found = getProperty(data, "found");
-        if (found !== undefined) {
-            writeMessageBoard("<b style='color:red'>" + found + "</b>");
-        }
     };
     return handlers;
 }
