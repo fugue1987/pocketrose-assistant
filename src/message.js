@@ -22,8 +22,6 @@ export const _message_town_target = "_message_town_target";
 export const _message_town_deposit = "_message_town_deposit";
 export const _message_town_withdraw = "_message_town_withdraw";
 
-export const _message_castle_enter = "_message_castle_enter";
-
 function getMessageHandlers() {
     const getProperty = (data, name, defaultValue) => {
         if (data === undefined) {
@@ -107,17 +105,6 @@ function getMessageHandlers() {
         if (amount !== undefined && amount > 0) {
             page.publishMessageBoard(player + "从城市银行提取了" + amount + "万现金");
         }
-    };
-    // ------------------------------------------------------------------------
-    // CASTLE related message handlers
-    // ------------------------------------------------------------------------
-    handlers[_message_castle_enter] = function (data) {
-        const player = getPlayer(data);
-        let castle = getCastle(data);
-        if (castle === undefined) {
-            castle = "城堡";
-        }
-        page.publishMessageBoard(player + "进入了" + castle);
     };
     return handlers;
 }

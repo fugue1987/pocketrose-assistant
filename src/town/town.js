@@ -219,7 +219,7 @@ class TownInnPostHouse {
                 plan.destination = destination;
                 map.executeMovePlan(plan).then(() => {
                     map.enterCastle(credential).then(() => {
-                        message.publishMessageBoard(message._message_castle_enter, {"castle": castleName});
+                        message2.publishMessageBoard("你进入了" + castleName + "。");
 
                         $("form[action='status.cgi']").attr("action", "castlestatus.cgi");
                         $("input:hidden[value='STATUS']").attr("value", "CASTLESTATUS");
