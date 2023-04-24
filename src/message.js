@@ -17,7 +17,6 @@ export const _message_town_enter = "_message_town_enter";
 export const _message_town_enter_await = "_message_town_enter_await";
 export const _message_town_enter_guard = "_message_town_enter_guard";
 export const _message_town_enter_guard_pass = "_message_town_enter_guard_pass";
-export const _message_town_leave = "_message_town_leave";
 
 function getMessageHandlers() {
     const getProperty = (data, name, defaultValue) => {
@@ -71,14 +70,6 @@ function getMessageHandlers() {
     handlers[_message_town_enter_guard_pass] = function (data) {
         const player = getPlayer(data);
         page.publishMessageBoard("门卫通情达理的收取了入城费用放" + player + "入城");
-    };
-    handlers[_message_town_leave] = function (data) {
-        const player = getPlayer(data);
-        let town = getTown(data);
-        if (town === undefined) {
-            town = "所在城市";
-        }
-        page.publishMessageBoard(player + "已经离开了" + town);
     };
     return handlers;
 }

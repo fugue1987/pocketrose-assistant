@@ -146,7 +146,7 @@ export async function leaveTown(credential) {
             request["out"] = "1";
             request["mode"] = "MAP_MOVE";
             network.sendPostRequest("map.cgi", request, function (html) {
-                message.publishMessageBoard(message._message_town_leave);
+                message2.publishMessageBoard("你已经离开了所在城市。");
                 const plan = initializeMovePlan(html);
                 plan.credential = credential;
                 resolve(plan);
