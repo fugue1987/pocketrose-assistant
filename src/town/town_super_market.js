@@ -84,6 +84,7 @@ function doProcess() {
     html += "       <tr>";
     html += "           <td style='text-align:center'>" +
         "<input type='button' id='returnButton' value='返回城市'>" +
+        "<input type='button' id='itemManagementButton' value='装备管理'>" +
         "</td>";
     html += "       </tr>";
     html += "   </tody>";
@@ -94,6 +95,11 @@ function doProcess() {
     $("#returnButton").click(function () {
         $("#EdenForm").attr("action", "status.cgi");
         $("#EdenFormPayload").html("<input type='hidden' name='mode' value='STATUS'>");
+        $("#EdenFormSubmit").trigger("click");
+    });
+    $("#itemManagementButton").click(function () {
+        $("#EdenForm").attr("action", "mydata.cgi");
+        $("#EdenFormPayload").html("<input type='hidden' name='mode' value='USE_ITEM'><input type='hidden' name='town' value='" + townId + "'>");
         $("#EdenFormSubmit").trigger("click");
     });
 

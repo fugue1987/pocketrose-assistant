@@ -114,29 +114,35 @@ export class TownDashboardProcessor {
 
 
         $("option[value='INN']").text("客栈·驿站");
-        $("option[value='ARM_SHOP']").text("武器屋(v2.0)");
-        $("option[value='PRO_SHOP']").text("防具屋(v2.0)");
-        $("option[value='ACC_SHOP']").text("饰品屋(v2.0)");
-        $("option[value='ITEM_SHOP']").text("物品屋(v2.0)");
-        $("option[value='BAOSHI_SHOP']").text("合成屋(v2.0)");
-        $("option[value='LETTER']").text("口袋助手设置(v2.0)");
+        $("option[value='INN']").css("background-color", "yellow");
+        $("option[value='BAOSHI_SHOP']").text("超级合成屋");
+        $("option[value='BAOSHI_SHOP']").css("background-color", "yellow");
+        $("option[value='LETTER']").text("口袋助手设置");
         $("option[value='LETTER']").css("background-color", "yellow");
         if (setup.isItemManagementUIEnabled()) {
-            $("option[value='USE_ITEM']").text("装备管理(v2.0)");
+            $("option[value='USE_ITEM']").text("装备管理");
             $("option[value='USE_ITEM']").css("background-color", "yellow");
             $("option[value='ITEM_SEND']").remove();
         }
         if (setup.isPetManagementUIEnabled()) {
-            $("option[value='PETSTATUS']").text("宠物管理(v2.0)");
+            $("option[value='PETSTATUS']").text("宠物管理");
             $("option[value='PETSTATUS']").css("background-color", "yellow");
             $("option[value='PET_SEND']").remove();
         }
         if (setup.isCareerManagementUIEnabled()) {
-            $("option[value='CHANGE_OCCUPATION']").text("职业管理(v2.0)");
+            $("option[value='CHANGE_OCCUPATION']").text("职业管理");
             $("option[value='CHANGE_OCCUPATION']").css("background-color", "yellow");
             $("option[value='MAGIC']").remove();
         }
+        if (setup.isPocketSuperMarketEnabled()) {
+            $("option[value='ARM_SHOP']").text("口袋超市");
+            $("option[value='ARM_SHOP']").css("background-color", "yellow");
+            $("option[value='PRO_SHOP']").remove();
+            $("option[value='ACC_SHOP']").remove();
+            $("option[value='ITEM_SHOP']").remove();
+        }
         $("option[value='CHANGEMAP']").text("冒险家公会");
+        $("option[value='CHANGEMAP']").css("background-color", "yellow");
 
         // 为某些支持动态更新的表格设置id
         // ＨＰ / ＭＰ / 资金
