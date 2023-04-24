@@ -14,7 +14,6 @@ import * as page from "./page";
 // ============================================================================
 
 export const _message_town_enter = "_message_town_enter";
-export const _message_town_enter_await = "_message_town_enter_await";
 
 function getMessageHandlers() {
     const getProperty = (data, name, defaultValue) => {
@@ -56,10 +55,6 @@ function getMessageHandlers() {
             town = "目的城市";
         }
         page.publishMessageBoard(player + "进入了" + town);
-    };
-    handlers[_message_town_enter_await] = function (data) {
-        const player = getPlayer(data);
-        page.publishMessageBoard(player + "等待进城冷却中......(约55秒)");
     };
     return handlers;
 }

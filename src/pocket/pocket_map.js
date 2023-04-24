@@ -188,7 +188,7 @@ export async function leaveCastle(credential) {
 export async function enterTown(credential, townId) {
     const doEnterTown = (credential, townId) => {
         return new Promise((resolve) => {
-            message.publishMessageBoard(message._message_town_enter_await);
+            message2.publishMessageBoard("你等待进城冷却中......(约55秒)");
             util.latencyExecute(55000, function () {
                 const request = credential.asRequest();
                 request["townid"] = townId;
