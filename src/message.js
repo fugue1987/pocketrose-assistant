@@ -39,7 +39,6 @@ export const _message_move_path = "_message_move_path";
 export const _message_treasure_stay_put = "_message_treasure_stay_put";
 export const _message_treasure_await = "_message_treasure_await";
 export const _message_treasure_path = "_message_treasure_path";
-export const _message_treasure_3bt = "_message_treasure_3bt";
 
 function getMessageHandlers() {
     const getProperty = (data, name, defaultValue) => {
@@ -251,10 +250,6 @@ function getMessageHandlers() {
             }
             writeMessageBoard(msg);
         }
-    };
-    handlers[_message_treasure_3bt] = function (data) {
-        const player = getPlayer(data);
-        writeMessageBoard("在探险过程中，突然跳出<b style='color:chartreuse'>3个BT</b>对" + player + "进行了殴打");
     };
     return handlers;
 }

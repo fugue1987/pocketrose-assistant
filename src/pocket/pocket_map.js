@@ -244,7 +244,7 @@ export async function explore(credential) {
 
                 network.sendPostRequest("map.cgi", request, function (html) {
                     if (html.includes("所持金超过1000000。请先存入银行。")) {
-                        message.publishMessageBoard(message._message_treasure_3bt);
+                        message2.publishMessageBoard("在探险过程中，突然跳出<b style='color:chartreuse'>3个BT</b>对你进行了殴打！");
                         resolve("被3BT殴打！");
                     } else {
                         const found = $(html).find("h2:first").text();
