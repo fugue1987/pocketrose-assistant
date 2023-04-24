@@ -10,6 +10,7 @@ import * as message from "../common/common_message";
 import * as network from "../common/common_network";
 import * as page from "../common/common_page";
 import * as util from "../common/common_util";
+import * as bank from "../pocket/pocket_bank";
 import * as item from "../pocket/pocket_item";
 import * as merchandise from "../pocket/pocket_merchandise";
 import * as user from "../pocket/pocket_user";
@@ -170,7 +171,7 @@ function doPaintRoleStatus(userImage, role) {
     html += "<td style='background-color:#EFE0C0;text-align:right'>" + role.level + "</td>";
     html += "<td style='background-color:#E0D0B0'>" + role.attribute + "</td>";
     html += "<td style='background-color:#EFE0C0'>" + role.career + "</td>";
-    html += "<td style='background-color:#E8E8D0;text-align:right'><span id='cach_amount'>" + role.cash + "</span> GOLD</td>";
+    html += "<td style='background-color:#E8E8D0;text-align:right'><span id='cash_amount'>" + role.cash + "</span> GOLD</td>";
     html += "<td style='background-color:#E8E8D0;text-align:right'><span id='saving_amount'>-</span> GOLD</td>";
     html += "</tr>";
     html += "</tbody>";
@@ -330,21 +331,7 @@ function doPaintFullMerchandiseList(weaponStoreMerchandiseList,
 
     $("#merchandiseContainer").html(html);
 
-    html = "";
-    const spaceCount = parseInt($("#SpaceCount").text());
-    if (spaceCount > 0) {
-        html += "<select name='num'>";
-        for (let i = 1; i <= spaceCount; i++) {
-            html += "<option value='" + i + "'>" + i + "</option>";
-        }
-        html += "</select>";
-    }
-    html += "<input type='button' id='buyButton' class='dynamicButton' value='买入'>";
-    $("#operationContainer").html(html);
-
-    if (spaceCount === 0) {
-        $("#dynamicButton").prop("disabled", true);
-    }
+    doRenderBuyOperation();
 }
 
 function doRender(personalEquipmentList) {
@@ -380,6 +367,31 @@ function doRender(personalEquipmentList) {
     html += "</table>";
 
     $("#equipmentContainer").html(html);
+
+    const credential = page.generateCredential();
+    bank.getBankAccount(credential)
+        .then(account => {
+            $("#cash_amount").text(account.cash);
+            $("#saving_amount").text(account.saving);
+        });
+}
+
+function doRenderBuyOperation() {
+    let html = "";
+    const spaceCount = parseInt($("#SpaceCount").text());
+    if (spaceCount > 0) {
+        html += "<select name='num'>";
+        for (let i = 1; i <= spaceCount; i++) {
+            html += "<option value='" + i + "'>" + i + "</option>";
+        }
+        html += "</select>";
+    }
+    html += "<input type='button' id='buyButton' class='dynamicButton' value='买入'>";
+    $("#operationContainer").html(html);
+
+    if (spaceCount === 0) {
+        $("#dynamicButton").prop("disabled", true);
+    }
 }
 
 function doRefresh(credential) {
@@ -397,5 +409,6 @@ function doRefresh(credential) {
         $("#SpaceCount").text(spaceCount);
         const personalEquipmentList = item.parseWeaponStoreItemList(html);
         doRender(personalEquipmentList);
+        doRenderBuyOperation();
     });
 }
