@@ -61,7 +61,6 @@ export class TownDashboardProcessor {
 
         if (count > 0) {
             // 设置了战斗场所偏好
-            let keepDelim = true;
             $("select[name='level']").find("option").each(function (_idx, option) {
                 const text = $(option).text();
                 if (text.startsWith("秘宝之岛")) {
