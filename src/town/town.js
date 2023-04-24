@@ -724,7 +724,7 @@ class TownAdventurerGuild {
         if (locationIndex !== locationList.length - 2) {
             if (from.x === to.x && from.y === to.y) {
                 // 下一张图在原地
-                message.publishMessageBoard(message._message_treasure_stay_put);
+                message2.publishMessageBoard("兔子骷髅对你说：运气真好，原地可以继续探险。");
                 map.explore(credential).then(found => {
                     foundList.push(found);
                     inst.#seekTreasure(credential, player, town, scope, mode, locationList, locationIndex + 1, foundList);
