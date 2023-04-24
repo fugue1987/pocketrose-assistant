@@ -19,7 +19,6 @@ export const _message_town_enter_guard = "_message_town_enter_guard";
 export const _message_town_enter_guard_pass = "_message_town_enter_guard_pass";
 export const _message_town_leave = "_message_town_leave";
 export const _message_town_target = "_message_town_target";
-export const _message_town_deposit = "_message_town_deposit";
 
 function getMessageHandlers() {
     const getProperty = (data, name, defaultValue) => {
@@ -87,15 +86,6 @@ function getMessageHandlers() {
         const town = getTown(data);
         if (town !== undefined) {
             page.publishMessageBoard(player + "设定移动目标为" + town);
-        }
-    };
-    handlers[_message_town_deposit] = function (data) {
-        const player = getPlayer(data);
-        const amount = getProperty(data, "amount");
-        if (amount !== undefined && amount > 0) {
-            page.publishMessageBoard(player + "在城市银行存入了" + amount + "万现金");
-        } else {
-            page.publishMessageBoard(player + "在城市银行存入了全部现金");
         }
     };
     return handlers;

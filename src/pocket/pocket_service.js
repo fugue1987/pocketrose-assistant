@@ -74,7 +74,7 @@ export async function depositIntoTownBank(credential, amount) {
             if (amount === undefined) {
                 request["azukeru"] = "all";
                 network.sendPostRequest("town.cgi", request, function () {
-                    message.publishMessageBoard(message._message_town_deposit);
+                    message2.publishMessageBoard("你在城市银行存入了全部现金。");
                     resolve();
                 });
             } else {
@@ -83,7 +83,7 @@ export async function depositIntoTownBank(credential, amount) {
                 } else {
                     request["azukeru"] = amount;
                     network.sendPostRequest("town.cgi", request, function () {
-                        message.publishMessageBoard(message._message_town_deposit, {"amount": amount});
+                        message2.publishMessageBoard("你在城市银行存入了" + amount + "万现金。");
                         resolve();
                     });
                 }
