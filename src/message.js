@@ -25,7 +25,6 @@ export const _message_town_withdraw = "_message_town_withdraw";
 export const _message_castle_enter = "_message_castle_enter";
 export const _message_castle_entry = "_message_castle_entry";
 export const _message_castle_leave = "_message_castle_leave";
-export const _message_castle_target = "_message_castle_target";
 
 function getMessageHandlers() {
     const getProperty = (data, name, defaultValue) => {
@@ -137,11 +136,6 @@ function getMessageHandlers() {
             castle = "城堡";
         }
         page.publishMessageBoard(player + "已经离开了" + castle);
-    };
-    handlers[_message_castle_target] = function (data) {
-        const player = getPlayer(data);
-        const castle = getCastle(data);
-        page.publishMessageBoard(player + "设定移动目标为" + castle);
     };
     return handlers;
 }

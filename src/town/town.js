@@ -211,7 +211,7 @@ class TownInnPostHouse {
             role.name = $("#player").text();
             role.townName = town.name;
             role.coordinate = town.coordinate;
-            message.publishMessageBoard(message._message_castle_target, {"castle": castleName});
+            message2.publishMessageBoard("你设定移动目标为" + castleName + "。");
 
             const credential = page.generateCredential();
             map.leaveTown(credential).then(plan => {
