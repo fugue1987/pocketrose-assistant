@@ -30,6 +30,10 @@ export class BattleRequestInterceptor {
         const htmlText = $("body").text();
         if (htmlText.includes("入手！")) {
             this.#processHarvestingIfNecessary();
+        } else {
+            const imageHTML = common_constant.getNPCImageHTML("花子");
+            common_message.createFooterMessageStyleB(imageHTML);
+            common_message.writeFooterMessage("没、没啥事儿，我就是来看一眼的......");
         }
         __battle(htmlText);
     }
