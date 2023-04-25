@@ -57,7 +57,7 @@ function __doGenerateSetupItem() {
     html += "<input type='checkbox' name='star_" + _id + "' class='checkbox_" + _id + "' value='weaponStar'>★";
     const weaponList = $("#WeaponList").text().split(",");
     html += "<select name='weapon_" + _id + "'>";
-    html += "<option class='weapon_option_" + _id + "' value='NONE'>选择武器</option>";
+    html += "<option class='weapon_option_" + _id + "' value='NONE'>无</option>";
     for (const it of weaponList) {
         html += "<option class='weapon_option_" + _id + "' value='" + it + "'>" + it + "</option>";
     }
@@ -65,7 +65,7 @@ function __doGenerateSetupItem() {
     html += "<input type='checkbox' name='star_" + _id + "' class='checkbox_" + _id + "' value='armorStar'>★";
     const armorList = $("#ArmorList").text().split(",");
     html += "<select name='armor_" + _id + "'>";
-    html += "<option class='armor_option_" + _id + "' value='NONE'>选择防具</option>";
+    html += "<option class='armor_option_" + _id + "' value='NONE'>无</option>";
     for (const it of armorList) {
         html += "<option class='armor_option_" + _id + "' value='" + it + "'>" + it + "</option>";
     }
@@ -73,7 +73,7 @@ function __doGenerateSetupItem() {
     html += "<input type='checkbox' name='star_" + _id + "' class='checkbox_" + _id + "' value='accessoryStar'>★";
     const accessoryList = $("#AccessoryList").text().split(",");
     html += "<select name='accessory_" + _id + "'>";
-    html += "<option class='accessory_option_" + _id + "' value='NONE'>选择饰品</option>";
+    html += "<option class='accessory_option_" + _id + "' value='NONE'>无</option>";
     for (const it of accessoryList) {
         html += "<option class='accessory_option_" + _id + "' value='" + it + "'>" + it + "</option>";
     }
