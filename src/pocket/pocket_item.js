@@ -12,7 +12,10 @@
  * ============================================================================
  */
 
-import * as util from "../util";
+import * as util from "../common/common_util";
+import * as page from "../common/common_page";
+import * as pocket from "../common/common_pocket";
+import * as town from "./pocket_town";
 
 // 口袋所有的装备都被分为以下四类：
 
@@ -47,7 +50,40 @@ const PROHIBIT_SELLING_ITEM_LIST = [
     "魔盔 虚无",
     "神冠 灵通",
     "龙",
-    "玉佩"
+    "玉佩",
+    "宠物蛋"
+];
+
+/**
+ * 不计算经验的装备
+ * @type {*[]}
+ */
+const NO_EXPERIENCE_ITEM_LIST = [
+    "大师球",
+    "宗师球",
+    "超力怪兽球",
+    "宠物蛋"
+];
+
+const NONE_REPAIRABLE_ITEM_LIST = [
+    "大师球",
+    "宗师球",
+    "超力怪兽球",
+    "宠物蛋"
+];
+
+/**
+ * 属性重铠
+ * @type {string[]}
+ */
+const ATTRIBUTE_HEAVY_ARMOR_ITEM_LIST = [
+    "千幻碧水猿洛克奇斯",
+    "地纹玄甲龟斯特奥特斯",
+    "幽冥黑鳞蟒罗尼科斯",
+    "火睛混沌兽哈贝达",
+    "羽翅圣光虎阿基勒斯",
+    "金翅追日鹰庞塔雷斯",
+    "风翼三足凤纳托利斯"
 ];
 
 /**
@@ -112,6 +148,98 @@ export class PocketItem {
     get isItem() {
         return this.category === CATEGORY_ITEM;
     }
+
+    get isTreasureBag() {
+        return this.isItem && this.name === "百宝袋";
+    }
+
+    get isGoldenCage() {
+        return this.isItem && this.name === "黄金笼子";
+    }
+
+    get isRepairable() {
+        if (this.isItem) {
+            return this.name.includes("(自动)");
+        } else {
+            return !NONE_REPAIRABLE_ITEM_LIST.includes(this.name);
+        }
+    }
+
+    get fullExperienceRatio() {
+        if (this.isItem) {
+            return -1;
+        }
+        if (NO_EXPERIENCE_ITEM_LIST.includes(this.name)) {
+            return -1;
+        }
+        let maxExperience = 0;
+        if (__isAttributeHeavyArmor(this.name)) {
+            // 属性重铠满级经验为76000
+            maxExperience = 76000;
+        } else if (this.power !== 0) {
+            const powerForUse = Math.abs(this.power);
+            maxExperience = Math.floor(powerForUse * 0.2) * 1000;
+        }
+        if (maxExperience === 0) {
+            return -1;
+        }
+        if (this.experience >= maxExperience) {
+            return 1;
+        }
+        if (this.experience === 0) {
+            return 0;
+        }
+        return this.experience / maxExperience;
+    }
+
+    get checkboxHTML() {
+        if (this.selectable) {
+            return "<input type='checkbox' name='item" + this.index + "' value='" + this.index + "'>";
+        } else {
+            return "";
+        }
+    }
+
+    get usingHTML() {
+        if (!this.using) {
+            return "";
+        }
+        const ration = this.fullExperienceRatio;
+        if (ration === 1) {
+            return "<span title='装备中' style='color:red'>★</span>";
+        } else {
+            return "<span title='装备中'>★</span>";
+        }
+    }
+
+    get experienceHTML() {
+        if (this.isItem) {
+            if (this.name === "藏宝图") {
+                const coordinate = new util.Coordinate(this.power, this.weight);
+                const mapTown = town.getTownByCoordinate(coordinate);
+                if (mapTown !== null) {
+                    return "<b style='color:red'>" + mapTown.name + "</b>";
+                } else {
+                    return "-";
+                }
+            } else {
+                return "-";
+            }
+        }
+        const ratio = this.fullExperienceRatio;
+        if (ratio < 0) {
+            return "-";
+        }
+        if (ratio === 1) {
+            return "<span style='color:red' title='" + this.experience + "'>MAX</span>";
+        }
+        const progressBar = page.generateProgressBarHTML(ratio);
+        return "<span title='" + this.experience + " (" + (ratio * 100).toFixed(2) + "%)'>" + progressBar + "</span>"
+    }
+
+    get isProhibitSellingItem() {
+        return this.using || pocket.isProhibitSellingItem(this.name);
+    }
 }
 
 /**
@@ -147,6 +275,24 @@ export class PocketItemList {
             map[item.index] = item;
         }
         return map;
+    }
+
+    get treasureBag() {
+        for (const item of this.#itemList) {
+            if (item.isTreasureBag) {
+                return item;
+            }
+        }
+        return undefined;
+    }
+
+    get goldenCage() {
+        for (const item of this.#itemList) {
+            if (item.isGoldenCage) {
+                return item;
+            }
+        }
+        return undefined;
     }
 }
 
@@ -357,25 +503,27 @@ export function parseAccessoryStoreItemList(html) {
 
 /**
  * 解析物品店的装备
- * @param html
+ * @param pageHTML
  * @returns {PocketItemList}
  */
-export function parseItemStoreItemList(html) {
+export function parseItemStoreItemList(pageHTML) {
     const itemList = new PocketItemList();
-    $(html).find("table:eq(2) input:radio").each(function (_idx, radio) {
-        const item = new PocketItem();
-        const tr = $(radio).parent().parent();
+    const table = $(pageHTML).find("input:radio:first").closest("table");
+    $(table).find("input:radio").each(function (_idx, radio) {
+        const c1 = $(radio).parent();
+        const c2 = $(c1).next();
+        const c3 = $(c2).next();
+        const c4 = $(c3).next();
+        const c5 = $(c4).next();
+        const c6 = $(c5).next();
+        const c7 = $(c6).next();
+        const c8 = $(c7).next();
 
-        // index & selectable
+        const item = new PocketItem();
         item.index = parseInt($(radio).val());
         item.selectable = !$(radio).prop("disabled");
-
-        // using
-        let s = $(tr).find("th:first").text();
-        item.using = (s === "★");
-
-        // name & star
-        s = $(tr).find("th:eq(1)").text();
+        item.using = ($(c2).text() === "★");
+        let s = $(c3).text();
         if (s.startsWith("齐心★")) {
             item.star = true;
             item.name = util.substringAfter(s, "齐心★");
@@ -383,27 +531,93 @@ export function parseItemStoreItemList(html) {
             item.star = false;
             item.name = s;
         }
-        item.nameHTML = $(tr).find("th:eq(1)").html();
-
-        // category
-        s = $(tr).find("td:eq(1)").text();
-        item.category = s;
-
-        // power & weight & endure
-        s = $(tr).find("td:eq(2)").text();
-        item.power = parseInt(s);
-        s = $(tr).find("td:eq(3)").text();
-        item.weight = parseInt(s);
-        s = $(tr).find("td:eq(4)").text();
+        item.nameHTML = $(c3).html();
+        item.category = $(c4).text();
+        item.power = parseInt($(c5).text());
+        item.weight = parseInt($(c6).text());
+        s = $(c7).text();
         item.endure = parseInt(util.substringBeforeSlash(s));
         item.maxEndure = parseInt(util.substringAfterSlash(s));
-
-        // price
-        s = $(tr).find("td:eq(5)").text();
-        item.price = parseInt(util.substringBefore(s, " Gold"));
-        item.priceHTML = $(tr).find("td:eq(5)").html();
+        item.price = parseInt(util.substringBefore($(c8).text(), " "));
+        item.priceHTML = $(c8).html();
 
         itemList.push(item);
     });
     return itemList;
+}
+
+/**
+ * 从城堡仓库页面解析仓库里面的所有装备。
+ * @param pageHTML
+ * @returns {PocketItemList}
+ */
+export function parseCastleWarehouseItemList(pageHTML) {
+    const itemList = new PocketItemList();
+    const table = $(pageHTML).find("input:checkbox:last").closest("table");
+    $(table).find("input:checkbox").each(function (_idx, checkbox) {
+        const c1 = $(checkbox).parent();
+        const c2 = $(c1).next();
+        const c3 = $(c2).next();
+        const c4 = $(c3).next();
+        const c5 = $(c4).next();
+        const c6 = $(c5).next();
+        const c7 = $(c6).next();
+        const c8 = $(c7).next();
+        const c9 = $(c8).next();
+        const c10 = $(c9).next();
+        const c11 = $(c10).next();
+        const c12 = $(c11).next();
+        const c13 = $(c12).next();
+        const c14 = $(c13).next();
+        const c15 = $(c14).next();
+        const c16 = $(c15).next();
+        const c17 = $(c16).next();
+        const c18 = $(c17).next();
+
+        const item = new PocketItem();
+
+        item.index = parseInt($(checkbox).val());
+        item.selectable = true;
+        item.using = false;
+        let s = $(c3).text();
+        if (s.startsWith("齐心★")) {
+            item.name = util.substringAfter(s, "齐心★");
+            item.star = true;
+        } else {
+            item.name = s;
+            item.star = false;
+        }
+        item.nameHTML = $(c3).html();
+        item.category = $(c4).text();
+        item.power = parseInt($(c5).text());
+        item.weight = parseInt($(c6).text());
+        item.endure = parseInt($(c7).text());
+        item.requiredCareer = $(c8).text();
+        item.requiredAttack = parseInt($(c9).text());
+        item.requiredDefense = parseInt($(c10).text());
+        item.requiredSpecialAttack = parseInt($(c11).text());
+        item.requiredSpecialDefense = parseInt($(c12).text());
+        item.requiredSpeed = parseInt($(c13).text());
+        item.additionalPower = parseInt($(c14).text());
+        item.additionalWeight = parseInt($(c15).text());
+        item.additionalLuck = parseInt($(c16).text());
+        item.experience = parseInt($(c17).text());
+        item.attribute = $(c18).text();
+
+        itemList.push(item);
+    });
+    return itemList;
+}
+
+// ----------------------------------------------------------------------------
+// P R I V A T E   F U N C T I O N S
+// ----------------------------------------------------------------------------
+
+function __isAttributeHeavyArmor(name) {
+    for (const it of ATTRIBUTE_HEAVY_ARMOR_ITEM_LIST) {
+        if (name.endsWith(it)) {
+            return true;
+        }
+    }
+    return false;
 }
