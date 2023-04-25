@@ -132,6 +132,9 @@ function doProcess() {
     html += "        <input type='submit' id='EdenFormSubmit'>";
     html += "    </form>";
     html += "</div>";
+    html += "<div id='WeaponList' style='display:none'></div>";
+    html += "<div id='ArmorList' style='display:none'></div>";
+    html += "<div id='AccessoryList' style='display:none'></div>";
     html += "<table style='background-color:#888888;width:100%;text-align:center'>";
     html += "   <tbody style='background-color:#F8F0E0'>";
     html += "       <tr>";
