@@ -2,6 +2,8 @@ import * as pocket from "../common/common_pocket";
 import * as message from "../common/common_message";
 import * as page from "../common/common_page";
 import * as storage from "../common/common_storage";
+import * as network from "../common/common_network";
+import * as equipment from "../pocket/pocket_equipment";
 import * as s001 from "./setup_001";
 import * as s002 from "./setup_002";
 import * as s003 from "./setup_003";
@@ -170,8 +172,9 @@ function doProcess() {
     message.initializeMessageBoard("在这里我来协助各位维护本机（浏览器）的口袋相关设置。<br>" +
         (storage.isLocalStorageDisabled() ? "你的浏览器不支持本地存储，继续使用Cookie存储。" : "看起来你的浏览器支持本地存储，很好，我们可以继续了。<br>" +
             "对了，因为存储机制的升级，我推荐删除掉之前废弃的Cookie信息以减轻浏览器的压力：" +
-            "<input type='button' id='clearButton' value='清除废弃ＣＯＯＫＩＥ'>" +
-            "<br>"));
+            "<input type='button' id='clearButton' value='清除废弃ＣＯＯＫＩＥ'><br>" +
+            "另外，你也可以加载自己的装备作为套装候选（此操作会触发读秒重置）：" +
+            "<input type='button' id='loadButton' value='加载自己装备库'><br>"));
 
     $("#refreshButton").click(function () {
         const credential = page.generateCredential();
@@ -190,6 +193,24 @@ function doProcess() {
             Cookies.remove(key);
         }
         message.publishMessageBoard("属于自己的废弃Cookie已经清理。");
+    });
+    $("#loadButton").click(function () {
+        const request = credential.asRequest();
+        request["mode"] = "USE_ITEM";
+        network.sendPostRequest("mydata.cgi", request, function (html) {
+            const itemList = equipment.parsePersonalItemList(html);
+            const bag = itemList.treasureBag;
+            if (bag !== undefined) {
+                equipment.openTreasureBag(credential, bag.index)
+                    .then(bagItemList => {
+                        __regenerateEquipmentCandidates(itemList, bagItemList);
+                        $("#refreshButton").trigger("click");
+                    });
+            } else {
+                __regenerateEquipmentCandidates(itemList, undefined);
+                $("#refreshButton").trigger("click");
+            }
+        });
     });
     $("#p_1561").dblclick(function () {
         if ($("#battleFieldSetup").length > 0) {
@@ -275,4 +296,59 @@ function __generateLegacyCookieKeyList(id) {
     cookieKeyList.push("_POCKETROSE_ASSISTANT__ENABLE_NEW_ITEM_UI");
     cookieKeyList.push("_POCKETROSE_ASSISTANT__ENABLE_CAREER_MANAGEMENT_UI");
     return cookieKeyList;
+}
+
+function __regenerateEquipmentCandidates(itemList, bagItemList) {
+    const weaponLib = [];
+    const armorLib = [];
+    const accessoryLib = [];
+
+    for (const it of itemList.asList()) {
+        if (it.isWeapon) {
+            weaponLib.push(it.name);
+        }
+        if (it.isArmor) {
+            armorLib.push(it.name);
+        }
+        if (it.isAccessory) {
+            accessoryLib.push(it.name);
+        }
+    }
+    if (bagItemList !== undefined) {
+        for (const it of bagItemList.asList()) {
+            if (it.isWeapon) {
+                weaponLib.push(it.name);
+            }
+            if (it.isArmor) {
+                armorLib.push(it.name);
+            }
+            if (it.isAccessory) {
+                accessoryLib.push(it.name);
+            }
+        }
+    }
+
+    const weaponCandidates = [];
+    const armorCandidates = [];
+    const accessoryCandidates = [];
+
+    for (const it of pocket._WEAPON_DICT) {
+        if (weaponLib.includes(it)) {
+            weaponCandidates.push(it);
+        }
+    }
+    for (const it of pocket._ARMOR_DICT) {
+        if (armorLib.includes(it)) {
+            armorCandidates.push(it);
+        }
+    }
+    for (const it of pocket._ACCESSORY_DICT) {
+        if (accessoryLib.includes(it)) {
+            accessoryCandidates.push(it);
+        }
+    }
+
+    $("#WeaponList").text(weaponCandidates.join(","));
+    $("#ArmorList").text(armorCandidates.join(","));
+    $("#AccessoryList").text(accessoryCandidates.join(","));
 }
