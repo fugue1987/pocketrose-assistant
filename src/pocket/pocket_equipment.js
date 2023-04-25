@@ -4,6 +4,7 @@
  * ============================================================================
  */
 
+import * as network from "../common/common_network";
 import * as util from "../common/common_util";
 import * as page from "../common/common_page";
 import * as pocket from "../common/common_pocket";
@@ -317,6 +318,16 @@ export class EquipmentSet {
         this.accessoryIndex = undefined;
         this.treasureBagIndex = undefined;
     }
+
+    get isAllFound() {
+        if (this.weaponName !== undefined && this.weaponIndex === undefined) {
+            return false;
+        }
+        if (this.armorName !== undefined && this.armorIndex === undefined) {
+            return false;
+        }
+        return !(this.accessoryName !== undefined && this.accessoryIndex === undefined);
+    }
 }
 
 /**
@@ -569,6 +580,28 @@ export function parseCastleWarehouseItemList(pageHTML) {
     return itemList;
 }
 
+/**
+ * Open treasure bag and return parsed equipments in the bag.
+ * @param credential
+ * @param treasureBagIndex
+ * @returns {Promise<PocketItemList>}
+ */
+export async function openTreasureBag(credential, treasureBagIndex) {
+    const action = (credential, treasureBagIndex) => {
+        return new Promise(resolve => {
+            const request = credential.asRequest();
+            request["chara"] = "1";
+            request["item" + treasureBagIndex] = treasureBagIndex;
+            request["mode"] = "USE";
+            network.sendPostRequest("mydata.cgi", request, function (html) {
+                const itemList = parseTreasureBagItemList(html);
+                resolve(itemList);
+            });
+        });
+    };
+    return await action(credential, treasureBagIndex);
+}
+
 export async function findEquipmentSet(credential, itemList, set) {
     if (itemList === undefined) {
         const pageHTML = page.currentPageHTML();
@@ -597,6 +630,10 @@ export async function findEquipmentSet(credential, itemList, set) {
                 }
             }
             // 在自身完成了检索
+            if (!set.isAllFound && set.treasureBagIndex !== undefined) {
+                // 没有找全，有百宝袋，进继续找。
+            }
+
             resolve();
         });
     };
