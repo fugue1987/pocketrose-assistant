@@ -4,6 +4,7 @@
  * ============================================================================
  */
 
+import * as setup from "../setup/setup";
 import * as network from "../common/common_network";
 import * as user from "../pocket/pocket_user";
 import * as constant from "../common/common_pocket";
@@ -252,9 +253,13 @@ function doRender(itemList) {
     }
 
     const credential = page.generateCredential();
-    const config_a = __loadEquipmentSet_A(credential.id);
+    const config_a = setup.loadEquipmentSet_A(credential.id);
     if (!__isSetConfigAvailable(config_a)) {
         $("#setButton_A").prop("disabled", true);
+    }
+    const config_b = setup.loadEquipmentSet_B(credential.id);
+    if (!__isSetConfigAvailable(config_b)) {
+        $("#setButton_B").prop("disabled", true);
     }
 
     // 绑定点击事件
@@ -267,6 +272,7 @@ function doRender(itemList) {
     __bindDontForgetMeButton(itemList);
     __bindMagicBallButton(itemList);
     __bindSetButton(itemList, "A", config_a);
+    __bindSetButton(itemList, "B", config_b);
     __bindSearchButton();
     __bindSendButton();
     __bindRefreshButton();

@@ -23,6 +23,7 @@ import * as s016 from "./setup_016";
 import * as s017 from "./setup_017";
 import * as s018 from "./setup_018";
 import * as s019 from "./setup_019";
+import * as s020 from "./setup_020";
 
 export function isPokemonWikiEnabled() {
     return storage.getBoolean("_pa_001");
@@ -107,8 +108,21 @@ export function getBattleDepositButtonText() {
     return storage.getString("_pa_018");
 }
 
-export function loadEquipmentSetA(id) {
+export function loadEquipmentSet_A(id) {
     const s = storage.getString("_pa_019_" + id);
+    if (s === "") {
+        const value = {};
+        value["weaponName"] = "NONE";
+        value["armorName"] = "NONE";
+        value["accessoryName"] = "NONE";
+        return value;
+    } else {
+        return JSON.parse(s);
+    }
+}
+
+export function loadEquipmentSet_B(id) {
+    const s = storage.getString("_pa_020_" + id);
     if (s === "") {
         const value = {};
         value["weaponName"] = "NONE";
@@ -253,7 +267,8 @@ const setupItems = [
     new s016.SetupItem(),
     new s017.SetupItem(),
     new s018.SetupItem(),
-    new s019.SetupItem()
+    new s019.SetupItem(),
+    new s020.SetupItem()
 ];
 
 function doRender(credential) {
