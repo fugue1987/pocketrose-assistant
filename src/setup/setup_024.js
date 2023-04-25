@@ -38,7 +38,7 @@ function doRender() {
     $("#Text_" + _id).attr("placeholder", value["text"]);
 
     $("#Setup_" + _id).click(function () {
-        __doSaveSetupItem();
+        __doSaveSetupItem(value["text"]);
     });
 }
 
@@ -59,10 +59,13 @@ function __doGenerateSetupItem() {
     return html;
 }
 
-function __doSaveSetupItem() {
+function __doSaveSetupItem(beforeText) {
     let person = $("#Select_" + _id).val();
     let text = $("#Text_" + _id).val();
     if (text === undefined || text === null || text.trim() === "") {
+        text = beforeText;
+    }
+    if (person === "NONE") {
         text = "";
     }
     const value = {};
