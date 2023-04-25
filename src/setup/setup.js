@@ -134,6 +134,19 @@ export function loadEquipmentSet_B(id) {
     }
 }
 
+export function loadEquipmentSet_C(id) {
+    const s = storage.getString("_pa_021_" + id);
+    if (s === "") {
+        const value = {};
+        value["weaponName"] = "NONE";
+        value["armorName"] = "NONE";
+        value["accessoryName"] = "NONE";
+        return value;
+    } else {
+        return JSON.parse(s);
+    }
+}
+
 export class PersonalSetup {
 
     process() {

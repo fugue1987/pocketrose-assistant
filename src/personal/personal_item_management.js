@@ -12,7 +12,6 @@ import * as message from "../common/common_message";
 import * as page from "../common/common_page";
 import * as item from "../pocket/pocket_equipment";
 import {calculateCashDifferenceAmount, depositIntoTownBank, withdrawFromTownBank} from "../pocket/pocket_service";
-import * as storage from "../common/common_storage";
 
 export class PersonalItemManagement {
     process() {
@@ -261,6 +260,10 @@ function doRender(itemList) {
     if (!__isSetConfigAvailable(config_b)) {
         $("#setButton_B").prop("disabled", true);
     }
+    const config_c = setup.loadEquipmentSet_C(credential.id);
+    if (!__isSetConfigAvailable(config_c)) {
+        $("#setButton_C").prop("disabled", true);
+    }
 
     // 绑定点击事件
     __bindUseButton();
@@ -273,6 +276,7 @@ function doRender(itemList) {
     __bindMagicBallButton(itemList);
     __bindSetButton(itemList, "A", config_a);
     __bindSetButton(itemList, "B", config_b);
+    __bindSetButton(itemList, "C", config_c);
     __bindSearchButton();
     __bindSendButton();
     __bindRefreshButton();
@@ -664,19 +668,6 @@ function __bindConsecrateButton() {
                     });
             });
     });
-}
-
-export function __loadEquipmentSet_A(id) {
-    const s = storage.getString("_pa_019_" + id);
-    if (s === "") {
-        const value = {};
-        value["weaponName"] = "NONE";
-        value["armorName"] = "NONE";
-        value["accessoryName"] = "NONE";
-        return value;
-    } else {
-        return JSON.parse(s);
-    }
 }
 
 function __isSetConfigAvailable(config) {
