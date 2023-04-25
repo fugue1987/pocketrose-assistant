@@ -90,6 +90,16 @@ function __doSaveSetupItem(id) {
     value["armorName"] = $("select[name='armor_" + _id + "']").val();
     value["accessoryName"] = $("select[name='accessory_" + _id + "']").val();
 
+    if (value["weaponName"] === "NONE") {
+        value["weaponStar"] = false;
+    }
+    if (value["armorName"] === "NONE") {
+        value["armorStar"] = false;
+    }
+    if (value["accessoryName"] === "NONE") {
+        value["accessoryStar"] = false;
+    }
+
     storage.set(_key + "_" + id, JSON.stringify(value));
     message.publishMessageBoard("<b style='color:red'>" + _name + "</b>已经设置。");
     $("#refreshButton").trigger("click");

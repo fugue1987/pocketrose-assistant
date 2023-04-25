@@ -574,6 +574,7 @@ function __bindSendButton() {
 
 function __bindRefreshButton() {
     $("#refreshButton").click(function () {
+        message.initializeMessageBoard("");
         const credential = page.generateCredential();
         doRefresh(credential);
     });
