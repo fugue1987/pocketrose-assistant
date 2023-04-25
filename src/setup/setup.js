@@ -27,6 +27,7 @@ import * as s020 from "./setup_020";
 import * as s021 from "./setup_021";
 import * as s022 from "./setup_022";
 import * as s023 from "./setup_023";
+import * as s024 from "./setup_024";
 
 export function isPokemonWikiEnabled() {
     return storage.getBoolean("_pa_001");
@@ -176,6 +177,18 @@ export function loadEquipmentSet_E(id) {
     }
 }
 
+export function getBattleHarvestPrompt() {
+    const s = storage.getString("_pa_024");
+    if (s === "") {
+        const value = {};
+        value["person"] = "NONE";
+        value["text"] = "";
+        return value;
+    } else {
+        return JSON.parse(s);
+    }
+}
+
 export class PersonalSetup {
 
     process() {
@@ -236,7 +249,7 @@ function doProcess() {
     $("#ArmorList").text(pocket._ARMOR_DICT.join(","));
     $("#AccessoryList").text(pocket._ACCESSORY_DICT.join(","));
 
-    const imageHTML = pocket.getNPCImageHTML("夜九年");
+    const imageHTML = pocket.getNPCImageHTML("夜九");
     message.createMessageBoardStyleA(imageHTML, "messageBoardContainer");
     message.initializeMessageBoard("在这里我来协助各位维护本机（浏览器）的口袋相关设置。<br>" +
         (storage.isLocalStorageDisabled() ? "你的浏览器不支持本地存储，继续使用Cookie存储。" : "看起来你的浏览器支持本地存储，很好，我们可以继续了。<br>" +
@@ -313,7 +326,8 @@ const setupItems = [
     new s020.SetupItem(),
     new s021.SetupItem(),
     new s022.SetupItem(),
-    new s023.SetupItem()
+    new s023.SetupItem(),
+    new s024.SetupItem()
 ];
 
 function doRender(credential) {

@@ -78,7 +78,7 @@ export class TownInnPostHouse {
             }
         });
 
-        const imageHTML = pocket.getNPCImageHTML("夜九年");
+        const imageHTML = pocket.getNPCImageHTML("夜九");
         message2.createFooterMessageStyleA(imageHTML);
         message2.writeFooterMessage("驿站试运营中，先把丑话说在前面。<br>");
         message2.writeFooterMessage("你选择我们家驿站服务，我们家免费带你飞。开始旅途后切勿关闭当前页面，这样我们才可以一起浪。<br>" +

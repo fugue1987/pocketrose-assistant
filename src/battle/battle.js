@@ -51,7 +51,7 @@ export class BattleRequestInterceptor {
             }
         });
         if (candidates.length > 0) {
-            const imageHTML = common_constant.getNPCImageHTML("骷髅");
+            const imageHTML = common_constant.getNPCImageHTML("骨头");
             common_message.createFooterMessageStyleB(imageHTML);
 
             for (const it of candidates) {
