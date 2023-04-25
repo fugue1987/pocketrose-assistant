@@ -14,6 +14,8 @@ export class TownDashboardProcessor {
     }
 
     process() {
+        $("input:text").attr("id", "messageInputText");
+
         const credential = page2.generateCredential();
         const preference = setup.getBattlePlacePreference(credential.id);
         let count = 0;
@@ -31,11 +33,15 @@ export class TownDashboardProcessor {
         }
         if (count === 1) {
             // 只设置了一处战斗场所偏好
-            let formBattle = $("form[action='battle.cgi'");
+            let formBattle = $("form[action='battle.cgi']");
             let selectBattle = formBattle.find('select[name="level"]');
             let btnBattle = formBattle.parent().next().find('input');
             let inputDigits = '';
             $(document).off('keydown.city').on('keydown.city', function (e) {
+                if ($("#messageInputText:focus").length > 0) {
+                    // 当前的焦点在消息框，禁用按键辅助
+                    return;
+                }
                 const key = e.key;
                 if (!isNaN(parseInt(key))) {
                     inputDigits += key;

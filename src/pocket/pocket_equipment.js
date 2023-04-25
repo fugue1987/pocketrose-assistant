@@ -232,6 +232,14 @@ export class PocketItem {
     get isProhibitSellingItem() {
         return this.using || pocket.isProhibitSellingItem(this.name);
     }
+
+    get fullName() {
+        if (this.star) {
+            return "齐心★" + this.name;
+        } else {
+            return this.name;
+        }
+    }
 }
 
 /**
@@ -285,6 +293,29 @@ export class PocketItemList {
             }
         }
         return undefined;
+    }
+}
+
+/**
+ * 装备套装的数据结构（不是指口袋里面的套装，而是武器、防具、饰品组成的套装）
+ */
+export class EquipmentSet {
+    weaponName;
+    weaponIndex;
+    armorName;
+    armorIndex;
+    accessoryName;
+    accessoryIndex;
+    treasureBagIndex;
+
+    initialize() {
+        this.weaponName = undefined;
+        this.weaponIndex = undefined;
+        this.armorName = undefined;
+        this.armorIndex = undefined;
+        this.accessoryName = undefined;
+        this.accessoryIndex = undefined;
+        this.treasureBagIndex = undefined;
     }
 }
 
@@ -536,6 +567,40 @@ export function parseCastleWarehouseItemList(pageHTML) {
         itemList.push(item);
     });
     return itemList;
+}
+
+export async function findEquipmentSet(credential, itemList, set) {
+    if (itemList === undefined) {
+        const pageHTML = page.currentPageHTML();
+        itemList = parsePersonalItemList(pageHTML);
+    }
+    const action = (credential, set) => {
+        return new Promise(resolve => {
+            for (const it of itemList.asList()) {
+                if (it.isTreasureBag) {
+                    set.treasureBagIndex = it.index;
+                }
+                if (set.weaponName !== undefined) {
+                    if (it.isWeapon && it.fullName === set.weaponName) {
+                        set.weaponIndex = it.index;
+                    }
+                }
+                if (set.armorName !== undefined) {
+                    if (it.isArmor && it.fullName === set.armorName) {
+                        set.armorIndex = it.index;
+                    }
+                }
+                if (set.accessoryName !== undefined) {
+                    if (it.isAccessory && it.fullName === set.accessoryName) {
+                        set.accessoryIndex = it.index;
+                    }
+                }
+            }
+            // 在自身完成了检索
+            resolve();
+        });
+    };
+    return await action(credential, set);
 }
 
 // ----------------------------------------------------------------------------
