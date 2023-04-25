@@ -4,6 +4,7 @@
  * ============================================================================
  */
 
+import * as message from "../common/common_message";
 import * as network from "../common/common_network";
 import * as util from "../common/common_util";
 import * as page from "../common/common_page";
@@ -256,6 +257,10 @@ export class PocketItemList {
 
     push(item) {
         this.#itemList.push(item);
+    }
+
+    size() {
+        return this.asList().length;
     }
 
     /**
@@ -595,11 +600,39 @@ export async function openTreasureBag(credential, treasureBagIndex) {
             request["mode"] = "USE";
             network.sendPostRequest("mydata.cgi", request, function (html) {
                 const itemList = parseTreasureBagItemList(html);
+                message.publishMessageBoard("你打开了百宝袋，并检索到" + itemList.size() + "件装备。")
                 resolve(itemList);
             });
         });
     };
     return await action(credential, treasureBagIndex);
+}
+
+/**
+ * Take out equipments from treasure bag.
+ * @param credential
+ * @param indexList
+ * @returns {Promise<void>}
+ */
+export async function takeOutFromTreasureBag(credential, indexList) {
+    const action = (credential, indexList) => {
+        return new Promise(resolve => {
+            if (indexList === undefined || indexList === null || indexList.length === 0) {
+                resolve();
+            } else {
+                const request = credential.asRequest();
+                request["mode"] = "GETOUTBAG";
+                for (const index of indexList) {
+                    request["item" + index] = index;
+                    network.sendPostRequest("mydata.cgi", request, function (html) {
+                        message.processResponseHTML(html);
+                        resolve();
+                    });
+                }
+            }
+        });
+    };
+    return await action(credential, indexList);
 }
 
 export async function findEquipmentSet(credential, itemList, set) {
@@ -632,8 +665,32 @@ export async function findEquipmentSet(credential, itemList, set) {
             // 在自身完成了检索
             if (!set.isAllFound && set.treasureBagIndex !== undefined) {
                 // 没有找全，有百宝袋，进继续找。
+                openTreasureBag(credential, set.treasureBagIndex)
+                    .then(bagItemList => {
+                        const candidates = [];
+                        if (set.weaponName !== undefined && set.weaponIndex === undefined) {
+                            for (const bit of bagItemList.asList()) {
+                                if (bit.isWeapon && bit.fullName === set.weaponName) {
+                                    candidates.push(bit.index);
+                                }
+                            }
+                        }
+                        if (set.armorName !== undefined && set.armorIndex === undefined) {
+                            for (const bit of bagItemList.asList()) {
+                                if (bit.isArmor && bit.fullName === set.armorName) {
+                                    candidates.push(bit.index);
+                                }
+                            }
+                        }
+                        if (set.accessoryName !== undefined && set.accessoryIndex === undefined) {
+                            for (const bit of bagItemList.asList()) {
+                                if (bit.isAccessory && bit.fullName === set.accessoryName) {
+                                    candidates.push(bit.index);
+                                }
+                            }
+                        }
+                    });
             }
-
             resolve();
         });
     };
