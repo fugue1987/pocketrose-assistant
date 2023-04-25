@@ -84,5 +84,12 @@ function doRender() {
             $(td).attr("style", "word-break:break-all");
             $(td).html(honorHtml);
         }
+        if (text === "祭奠RP") {
+            const consecrateRP = parseInt($(td).next().text());
+            if (consecrateRP > 0) {
+                $(td).next().css("color", "red");
+                $(td).next().css("font-weight", "bold");
+            }
+        }
     });
 }
