@@ -28,6 +28,14 @@ export function currentPageHTML() {
 }
 
 /**
+ * Return current page text.
+ * @returns {*|jQuery}
+ */
+export function currentPageText() {
+    return $("body:first").text();
+}
+
+/**
  * 查找指定页面的第一个用户头像HTML代码，如果没有找到就返回undefined
  * @param html 入股undefined则使用当前页面
  * @returns {undefined|string}
