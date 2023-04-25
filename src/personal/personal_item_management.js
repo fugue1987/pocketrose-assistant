@@ -197,7 +197,9 @@ function doRender(itemList) {
     html += "                               <input type='button' class='ItemUIButton' id='treasureBagButton' value='百宝袋'>";
     html += "                               <input type='button' class='ItemUIButton' id='goldenCageButton' value='黄金笼子'>";
     html += "                               <input type='button' class='ItemUIButton' id='putAllIntoBagButton' value='全部入袋'>";
-    html += "                               <input type='button' class='ItemUIButton' id='luckCharmButton' value='千与千寻'>";
+    html += "                               <input type='button' class='ItemUIButton' id='luckCharmButton' value='千与千寻' style='color:blue'>";
+    html += "                               <input type='button' class='ItemUIButton' id='dontForgetMeButton' value='勿忘我' style='color:red'>";
+    html += "                               <input type='button' class='ItemUIButton' id='magicBallButton' value='魔法使的闪光弹' style='color:green'>";
     html += "                           </td>";
     html += "                       </tr>";
     html += "                   </tbody>";
@@ -246,6 +248,8 @@ function doRender(itemList) {
     __bindGoldenCageButton(goldenCage);
     __bindPutAllIntoBagButton(itemList);
     __bindLuckCharmButton(itemList);
+    __bindDontForgetMeButton(itemList);
+    __bindMagicBallButton(itemList);
     __bindSearchButton();
     __bindSendButton();
     __bindRefreshButton();
@@ -417,6 +421,32 @@ function __bindLuckCharmButton(itemList) {
         const set = new item.EquipmentSet();
         set.initialize();
         set.accessoryName = "千与千寻";
+        const credential = page.generateCredential();
+        item.findAndUseEquipmentSet(credential, itemList, set)
+            .then(() => {
+                doRefresh(credential);
+            });
+    });
+}
+
+function __bindDontForgetMeButton(itemList) {
+    $("#dontForgetMeButton").click(function () {
+        const set = new item.EquipmentSet();
+        set.initialize();
+        set.accessoryName = "勿忘我";
+        const credential = page.generateCredential();
+        item.findAndUseEquipmentSet(credential, itemList, set)
+            .then(() => {
+                doRefresh(credential);
+            });
+    });
+}
+
+function __bindMagicBallButton(itemList) {
+    $("#magicBallButton").click(function () {
+        const set = new item.EquipmentSet();
+        set.initialize();
+        set.accessoryName = "魔法使的闪光弹";
         const credential = page.generateCredential();
         item.findAndUseEquipmentSet(credential, itemList, set)
             .then(() => {
