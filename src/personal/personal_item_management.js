@@ -74,18 +74,16 @@ function doProcess() {
     // 绑定祭奠按钮事件
     __bindConsecrateButton();
 
-    // 根据主页面获取的是否可以祭奠的状态更新祭奠按钮
-    user.loadRoleStatus(page.generateCredential())
-        .then(status => {
-            if (status.canConsecrate) {
-                $("#consecrateButton").prop("disabled", false);
-            }
-        });
-
-    // 隐藏祭奠按钮，双击出现
+    // 隐藏祭奠按钮，单击出现（因为手机浏览器目前双击事件不知道怎么触发）
     $("#consecrateButton").hide();
     $("#p_3139").click(function () {
-        $("#consecrateButton").toggle();
+        // 根据主页面获取的是否可以祭奠的状态更新祭奠按钮
+        user.loadRoleStatus(credential)
+            .then(status => {
+                if (status.canConsecrate) {
+                    $("#consecrateButton").toggle();
+                }
+            });
     });
 }
 
