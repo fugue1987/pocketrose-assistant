@@ -1,14 +1,6 @@
 /**
  * ============================================================================
  * [ 口 袋 装 备 通 用 模 块 ]
- * ----------------------------------------------------------------------------
- * 1. 装备通用数据结构
- * 2. 解析装备管理界面的装备数据
- * 3. 解析百宝袋的装备数据
- * 4. 解析武器屋的装备数据
- * 5. 解析防具屋的装备数据
- * 6. 解析饰品屋的装备数据
- * 7. 解析物品屋的装备数据
  * ============================================================================
  */
 
@@ -477,69 +469,6 @@ export function parseWeaponStoreItemList(html) {
         s = $(tr).find("td:eq(5)").text();
         item.price = parseInt(util.substringBefore(s, " Gold"));
         item.priceHTML = $(tr).find("td:eq(5)").html();
-
-        itemList.push(item);
-    });
-    return itemList;
-}
-
-/**
- * 解析防具店的装备（与武器店数据保持一致）
- * @param html
- * @returns {PocketItemList}
- */
-export function parseArmorStoreItemList(html) {
-    return parseWeaponStoreItemList(html);
-}
-
-/**
- * 解析饰品店的装备（与武器店数据保持一致）
- * @param html
- * @returns {PocketItemList}
- */
-export function parseAccessoryStoreItemList(html) {
-    return parseWeaponStoreItemList(html);
-}
-
-/**
- * 解析物品店的装备
- * @param pageHTML
- * @returns {PocketItemList}
- */
-export function parseItemStoreItemList(pageHTML) {
-    const itemList = new PocketItemList();
-    const table = $(pageHTML).find("input:radio:first").closest("table");
-    $(table).find("input:radio").each(function (_idx, radio) {
-        const c1 = $(radio).parent();
-        const c2 = $(c1).next();
-        const c3 = $(c2).next();
-        const c4 = $(c3).next();
-        const c5 = $(c4).next();
-        const c6 = $(c5).next();
-        const c7 = $(c6).next();
-        const c8 = $(c7).next();
-
-        const item = new PocketItem();
-        item.index = parseInt($(radio).val());
-        item.selectable = !$(radio).prop("disabled");
-        item.using = ($(c2).text() === "★");
-        let s = $(c3).text();
-        if (s.startsWith("齐心★")) {
-            item.star = true;
-            item.name = util.substringAfter(s, "齐心★");
-        } else {
-            item.star = false;
-            item.name = s;
-        }
-        item.nameHTML = $(c3).html();
-        item.category = $(c4).text();
-        item.power = parseInt($(c5).text());
-        item.weight = parseInt($(c6).text());
-        s = $(c7).text();
-        item.endure = parseInt(util.substringBeforeSlash(s));
-        item.maxEndure = parseInt(util.substringAfterSlash(s));
-        item.price = parseInt(util.substringBefore($(c8).text(), " "));
-        item.priceHTML = $(c8).html();
 
         itemList.push(item);
     });
