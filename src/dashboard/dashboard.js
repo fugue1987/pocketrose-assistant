@@ -349,6 +349,16 @@ export class TownDashboardProcessor {
                     .css("color", "red");
             }
         }
+
+        // 枫丹不显示收益
+        if ($("body:first").text().includes("原帝国冬都，又名白露城，号称四百年无战之都。大陆联合商会所在地，无数传说的源头，号称大冒险大恋爱的起点。")) {
+            $("th:contains('收益')")
+                .filter(function () {
+                    return $(this).text() === "收益";
+                })
+                .next()
+                .text("-");
+        }
     }
 }
 
