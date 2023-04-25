@@ -9,7 +9,7 @@ import * as user from "../pocket/pocket_user";
 import * as constant from "../common/common_pocket";
 import * as message from "../common/common_message";
 import * as page from "../common/common_page";
-import * as item from "../pocket/pocket_item";
+import * as item from "../pocket/pocket_equipment";
 import {calculateCashDifferenceAmount, depositIntoTownBank, withdrawFromTownBank} from "../pocket/pocket_service";
 
 export class PersonalItemManagement {
