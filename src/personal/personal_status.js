@@ -91,5 +91,12 @@ function doRender() {
                 $(td).next().css("font-weight", "bold");
             }
         }
+        if (text === "额外RP") {
+            const additionalRP = parseInt($(td).next().text());
+            if (additionalRP >= 1000) {
+                $(td).next().css("color", "red");
+                $(td).next().css("font-weight", "bold");
+            }
+        }
     });
 }
