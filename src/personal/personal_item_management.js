@@ -481,8 +481,17 @@ function __bindSetButton(itemList, setId, setConfig) {
         set.initialize();
 
         set.weaponName = setConfig["weaponName"];
+        if (setConfig["weaponStar"] !== undefined && setConfig["weaponStar"]) {
+            set.weaponName = "齐心★" + set.weaponName;
+        }
         set.armorName = setConfig["armorName"];
+        if (setConfig["armorStar"] !== undefined && setConfig["armorStar"]) {
+            set.armorName = "齐心★" + set.armorName;
+        }
         set.accessoryName = setConfig["accessoryName"];
+        if (setConfig["accessoryStar"] !== undefined && setConfig["accessoryStar"]) {
+            set.accessoryName = "齐心★" + set.accessoryName;
+        }
 
         const credential = page.generateCredential();
         item.findAndUseEquipmentSet(credential, itemList, set)
