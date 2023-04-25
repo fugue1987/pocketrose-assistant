@@ -29,30 +29,32 @@ export class BattleRequestInterceptor {
 
     #doProcess() {
         const htmlText = $("body").text();
-        const prompt = setup.getBattleHarvestPrompt();
+
         if (htmlText.includes("入手！")) {
+            const prompt = setup.getBattleHarvestPrompt();
             if (prompt["person"] !== undefined && prompt["person"] !== "NONE") {
                 this.#processHarvestingIfNecessary(prompt);
             }
+        } else {
+            const prompt = setup.getNormalBattlePrompt();
+            if (prompt["person"] !== undefined && prompt["person"] !== "NONE") {
+                let person = prompt["person"];
+                if (person === "RANDOM") {
+                    const names = Object.keys(POCKET_NPC_IMAGES);
+                    const persons = [];
+                    for (const name of names) {
+                        if (name.length === 2) {
+                            persons.push(name);
+                        }
+                    }
+                    const idx = util.getRandomInteger(0, persons.length - 1);
+                    person = persons[idx];
+                }
+                const imageHTML = common_constant.getNPCImageHTML(person);
+                common_message.createFooterMessageStyleB(imageHTML);
+                common_message.writeFooterMessage(prompt["text"]);
+            }
         }
-        // else if(prompt["person"] !== undefined && prompt["person"] !== "NONE") {
-        //     let person = prompt["person"];
-        //     if (person === "RANDOM") {
-        //         const names = Object.keys(POCKET_NPC_IMAGES);
-        //         const persons = [];
-        //         for (const name of names) {
-        //             if (name.length === 2) {
-        //                 persons.push(name);
-        //             }
-        //         }
-        //         const idx = util.getRandomInteger(0, persons.length - 1);
-        //         person = persons[idx];
-        //     }
-        //
-        //     const imageHTML = common_constant.getNPCImageHTML(person);
-        //     common_message.createFooterMessageStyleB(imageHTML);
-        //     common_message.writeFooterMessage(prompt["text"]);
-        // }
         __battle(htmlText);
     }
 
