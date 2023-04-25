@@ -331,6 +331,18 @@ export class TownDashboardProcessor {
                     return name + "(" + unit + ")" + "&nbsp;&nbsp;&nbsp;" + battleCount + "战";
                 }
             });
+
+        // 如果满级并且没有关闭转职入口，则战斗前标签用红色显示
+        if (level === 150) {
+            const credential = page2.generateCredential();
+            if (!setup.isDisableCareerEntrance(credential.id)) {
+                $("th:contains('训练·战斗')")
+                    .filter(function () {
+                        return $(this).text() === "训练·战斗";
+                    })
+                    .css("color", "red");
+            }
+        }
     }
 }
 
