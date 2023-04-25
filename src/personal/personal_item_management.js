@@ -197,6 +197,7 @@ function doRender(itemList) {
     html += "                               <input type='button' class='ItemUIButton' id='treasureBagButton' value='百宝袋'>";
     html += "                               <input type='button' class='ItemUIButton' id='goldenCageButton' value='黄金笼子'>";
     html += "                               <input type='button' class='ItemUIButton' id='putAllIntoBagButton' value='全部入袋'>";
+    html += "                               <input type='button' class='ItemUIButton' id='luckCharmButton' value='千与千寻'>";
     html += "                           </td>";
     html += "                       </tr>";
     html += "                   </tbody>";
@@ -244,6 +245,7 @@ function doRender(itemList) {
     __bindTreasureBagButton(treasureBag);
     __bindGoldenCageButton(goldenCage);
     __bindPutAllIntoBagButton(itemList);
+    __bindLuckCharmButton(itemList);
     __bindSearchButton();
     __bindSendButton();
     __bindRefreshButton();
@@ -407,6 +409,19 @@ function __bindPutAllIntoBagButton(itemList) {
             message.processResponseHTML(html);
             doRefresh(credential);
         });
+    });
+}
+
+function __bindLuckCharmButton(itemList) {
+    $("#luckCharmButton").click(function () {
+        const set = new item.EquipmentSet();
+        set.initialize();
+        set.accessoryName = "千与千寻";
+        const credential = page.generateCredential();
+        item.findAndUseEquipmentSet(credential, itemList, set)
+            .then(() => {
+                doRefresh(credential);
+            });
     });
 }
 

@@ -308,19 +308,25 @@ export class PocketItemList {
 export class EquipmentSet {
     weaponName;
     weaponIndex;
+    weaponUsing;
     armorName;
     armorIndex;
+    armorUsing;
     accessoryName;
     accessoryIndex;
+    accessoryUsing;
     treasureBagIndex;
 
     initialize() {
         this.weaponName = undefined;
         this.weaponIndex = undefined;
+        this.weaponUsing = undefined;
         this.armorName = undefined;
         this.armorIndex = undefined;
+        this.armorUsing = undefined;
         this.accessoryName = undefined;
         this.accessoryIndex = undefined;
+        this.accessoryUsing = undefined;
         this.treasureBagIndex = undefined;
     }
 
@@ -635,71 +641,126 @@ export async function takeOutFromTreasureBag(credential, indexList) {
     return await action(credential, indexList);
 }
 
-export async function findEquipmentSet(credential, itemList, set) {
-    if (itemList === undefined) {
-        const pageHTML = page.currentPageHTML();
-        itemList = parsePersonalItemList(pageHTML);
-    }
-    const action = (credential, set) => {
+export async function findAndUseEquipmentSet(credential, itemList, set) {
+    const action = (credential, itemList, set) => {
         return new Promise(resolve => {
-            for (const it of itemList.asList()) {
-                if (it.isTreasureBag) {
-                    set.treasureBagIndex = it.index;
-                }
-                if (set.weaponName !== undefined) {
-                    if (it.isWeapon && it.fullName === set.weaponName) {
-                        set.weaponIndex = it.index;
-                    }
-                }
-                if (set.armorName !== undefined) {
-                    if (it.isArmor && it.fullName === set.armorName) {
-                        set.armorIndex = it.index;
-                    }
-                }
-                if (set.accessoryName !== undefined) {
-                    if (it.isAccessory && it.fullName === set.accessoryName) {
-                        set.accessoryIndex = it.index;
-                    }
-                }
-            }
+            set = __scanEquipmentSet(itemList, set);
             // 在自身完成了检索
             if (!set.isAllFound && set.treasureBagIndex !== undefined) {
                 // 没有找全，有百宝袋，进继续找。
                 openTreasureBag(credential, set.treasureBagIndex)
                     .then(bagItemList => {
-                        const candidates = [];
+                        const candidateIndexList = [];
                         if (set.weaponName !== undefined && set.weaponIndex === undefined) {
                             for (const bit of bagItemList.asList()) {
                                 if (bit.isWeapon && bit.fullName === set.weaponName) {
-                                    candidates.push(bit.index);
+                                    message.publishMessageBoard("在百宝袋中找到了武器：" + bit.nameHTML);
+                                    candidateIndexList.push(bit.index);
                                 }
                             }
                         }
                         if (set.armorName !== undefined && set.armorIndex === undefined) {
                             for (const bit of bagItemList.asList()) {
                                 if (bit.isArmor && bit.fullName === set.armorName) {
-                                    candidates.push(bit.index);
+                                    message.publishMessageBoard("在百宝袋中找到了防具：" + bit.nameHTML);
+                                    candidateIndexList.push(bit.index);
                                 }
                             }
                         }
                         if (set.accessoryName !== undefined && set.accessoryIndex === undefined) {
                             for (const bit of bagItemList.asList()) {
                                 if (bit.isAccessory && bit.fullName === set.accessoryName) {
-                                    candidates.push(bit.index);
+                                    message.publishMessageBoard("在百宝袋中找到了饰品：" + bit.nameHTML);
+                                    candidateIndexList.push(bit.index);
                                 }
                             }
                         }
+                        if (candidateIndexList.length > 0) {
+                            // 在百宝袋中找到了需要的装备，准备拿出来
+                            takeOutFromTreasureBag(credential, candidateIndexList)
+                                .then(() => {
+                                    const request = credential.asRequest();
+                                    request["mode"] = "USE_ITEM";
+                                    network.sendPostRequest("mydata.cgi", request, function (html) {
+                                        const newItemList = parsePersonalItemList(html);
+                                        set = __scanEquipmentSet(newItemList, set);
+                                        __useEquipmentSet(credential, set, resolve);
+                                    });
+                                });
+                        } else {
+                            // 在百宝袋中没有找到需要的装备
+                            __useEquipmentSet(credential, set, resolve);
+                        }
                     });
+            } else {
+                __useEquipmentSet(credential, set, resolve);
             }
-            resolve();
         });
     };
-    return await action(credential, set);
+    return await action(credential, itemList, set);
 }
 
 // ----------------------------------------------------------------------------
 // P R I V A T E   F U N C T I O N S
 // ----------------------------------------------------------------------------
+
+function __useEquipmentSet(credential, set, resolve) {
+    const request = credential.asRequest();
+    request["chara"] = "1";
+    request["mode"] = "USE";
+    let count = 0;
+    if (set.weaponIndex !== undefined && set.weaponUsing !== undefined && !set.weaponUsing) {
+        count++;
+        request["item" + set.weaponIndex] = set.weaponIndex;
+    }
+    if (set.armorIndex !== undefined && set.armorUsing !== undefined && !set.armorUsing) {
+        count++;
+        request["item" + set.armorIndex] = set.armorIndex;
+    }
+    if (set.accessoryIndex !== undefined && set.accessoryUsing !== undefined && !set.accessoryUsing) {
+        count++;
+        request["item" + set.accessoryIndex] = set.accessoryIndex;
+    }
+    if (count === 0) {
+        message.publishMessageBoard("没有找到对应的装备，忽略。");
+        resolve();
+    } else {
+        network.sendPostRequest("mydata.cgi", request, function (html) {
+            message.processResponseHTML(html);
+            resolve();
+        });
+    }
+}
+
+function __scanEquipmentSet(itemList, set) {
+    for (const it of itemList.asList()) {
+        if (it.isTreasureBag) {
+            set.treasureBagIndex = it.index;
+        }
+        if (set.weaponName !== undefined) {
+            if (it.isWeapon && it.fullName === set.weaponName) {
+                message.publishMessageBoard("在身上找到了武器：" + it.nameHTML);
+                set.weaponIndex = it.index;
+                set.weaponUsing = it.using;
+            }
+        }
+        if (set.armorName !== undefined) {
+            if (it.isArmor && it.fullName === set.armorName) {
+                message.publishMessageBoard("在身上找到了防具：" + it.nameHTML);
+                set.armorIndex = it.index;
+                set.armorUsing = it.using;
+            }
+        }
+        if (set.accessoryName !== undefined) {
+            if (it.isAccessory && it.fullName === set.accessoryName) {
+                message.publishMessageBoard("在身上找到了饰品：" + it.nameHTML);
+                set.accessoryIndex = it.index;
+                set.accessoryUsing = it.using;
+            }
+        }
+    }
+    return set;
+}
 
 function __isAttributeHeavyArmor(name) {
     for (const it of ATTRIBUTE_HEAVY_ARMOR_ITEM_LIST) {
