@@ -2,20 +2,39 @@ export function isLocalStorageDisabled() {
     return !window.localStorage
 }
 
+export function remove(key) {
+    if (isLocalStorageDisabled()) {
+        Cookies.remove(key);
+    } else {
+        localStorage.removeItem(key);
+    }
+}
+
 export function set(key, value) {
     if (isLocalStorageDisabled()) {
-        __setIntoCookie(key, value);
+        Cookies.set(key, value, {expires: 36500});
     } else {
-        __setIntoLocalStorage(key, value);
+        localStorage.setItem(key, value);
     }
 }
 
 export function get(key) {
     if (isLocalStorageDisabled()) {
-        return __getFromCookie(key);
+        return Cookies.get(key);
     } else {
-        return __getFromLocalStorage(key);
+        return localStorage.getItem(key);
     }
+}
+
+export function getString(key) {
+    const value = localStorage.getItem(key);
+    if (value === undefined ||
+        value === null ||
+        value === "undefined" ||
+        value === "null") {
+        return "";
+    }
+    return value;
 }
 
 export function getBoolean(key) {
@@ -52,24 +71,4 @@ export function getFloat(key, defaultValue) {
         return defaultValue;
     }
     return parseFloat(value);
-}
-
-// ----------------------------------------------------------------------------
-// P R I V A T E   F U N C T I O N S
-// ----------------------------------------------------------------------------
-
-function __setIntoCookie(key, value) {
-    Cookies.set(key, value, {expires: 36500});
-}
-
-function __getFromCookie(key) {
-    return Cookies.get(key);
-}
-
-function __setIntoLocalStorage(key, value) {
-    localStorage.setItem(key, value);
-}
-
-function __getFromLocalStorage(key) {
-    return localStorage.getItem(key);
 }

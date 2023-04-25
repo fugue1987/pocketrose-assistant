@@ -65,6 +65,11 @@ export function __battle(htmlText) {
     $('input[value="返回更新"]').attr('id', 'updateButton');
     $('input[value="返回银行"]').attr('id', 'bankButton');
 
+    let buttonText = setup.getBattleReturnButtonText();
+    if (buttonText !== "") {
+        $("#returnButton").val(buttonText);
+    }
+
     // 返回更新按钮不再需要
     $('#updateButton').parent().remove();
 
