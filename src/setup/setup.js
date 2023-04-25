@@ -1,4 +1,4 @@
-import * as constant from "../common/common_pocket";
+import * as pocket from "../common/common_pocket";
 import * as message from "../common/common_message";
 import * as page from "../common/common_page";
 import * as storage from "../common/common_storage";
@@ -20,6 +20,7 @@ import * as s015 from "./setup_015";
 import * as s016 from "./setup_016";
 import * as s017 from "./setup_017";
 import * as s018 from "./setup_018";
+import * as s019 from "./setup_019";
 
 export function isPokemonWikiEnabled() {
     return storage.getBoolean("_pa_001");
@@ -160,7 +161,11 @@ function doProcess() {
     html += "<div style='text-align:center'>" + lastDivHTML + "</div>";
     $("body:first").html(html);
 
-    const imageHTML = constant.getNPCImageHTML("夜九年");
+    $("#WeaponList").text(pocket._WEAPON_DICT.join(","));
+    $("#ArmorList").text(pocket._ARMOR_DICT.join(","));
+    $("#AccessoryList").text(pocket._ACCESSORY_DICT.join(","));
+
+    const imageHTML = pocket.getNPCImageHTML("夜九年");
     message.createMessageBoardStyleA(imageHTML, "messageBoardContainer");
     message.initializeMessageBoard("在这里我来协助各位维护本机（浏览器）的口袋相关设置。<br>" +
         (storage.isLocalStorageDisabled() ? "你的浏览器不支持本地存储，继续使用Cookie存储。" : "看起来你的浏览器支持本地存储，很好，我们可以继续了。<br>" +
@@ -213,7 +218,8 @@ const setupItems = [
     new s015.SetupItem(),
     new s016.SetupItem(),
     new s017.SetupItem(),
-    new s018.SetupItem()
+    new s018.SetupItem(),
+    new s019.SetupItem()
 ];
 
 function doRender(credential) {
