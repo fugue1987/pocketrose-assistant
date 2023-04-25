@@ -11,6 +11,7 @@ import * as message from "../common/common_message";
 import * as page from "../common/common_page";
 import * as item from "../pocket/pocket_equipment";
 import {calculateCashDifferenceAmount, depositIntoTownBank, withdrawFromTownBank} from "../pocket/pocket_service";
+import * as storage from "../common/common_storage";
 
 export class PersonalItemManagement {
     process() {
@@ -207,6 +208,15 @@ function doRender(itemList) {
     html += "           </td>";
     html += "       </tr>";
     html += "       <tr>";
+    html += "           <td style='background-color:#E8E8D0;text-align:right' colspan='20'>";
+    html += "               <input type='button' class='ItemUIButton' id='setButton_A' value='套装Ａ'>";
+    html += "               <input type='button' class='ItemUIButton' id='setButton_B' value='套装Ｂ'>";
+    html += "               <input type='button' class='ItemUIButton' id='setButton_C' value='套装Ｃ'>";
+    html += "               <input type='button' class='ItemUIButton' id='setButton_D' value='套装Ｄ'>";
+    html += "               <input type='button' class='ItemUIButton' id='setButton_E' value='套装Ｅ'>";
+    html += "           </td>";
+    html += "       </tr>";
+    html += "       <tr>";
     html += "          <td style='background-color:#E8E8D0;text-align:right' colspan='20'>";
     html += "              <input type='text' id='receiver' size='15' maxlength='20'>";
     html += "              <input type='button' class='ItemUIButton' id='searchButton' value='找人'>";
@@ -241,6 +251,12 @@ function doRender(itemList) {
         $("#goldenCageButton").css("display", "none");
     }
 
+    const credential = page.generateCredential();
+    const config_a = __loadEquipmentSet_A(credential.id);
+    if (!__isSetConfigAvailable(config_a)) {
+        $("#setButton_A").prop("disabled", true);
+    }
+
     // 绑定点击事件
     __bindUseButton();
     __bindPutIntoBugButton(itemList);
@@ -250,12 +266,12 @@ function doRender(itemList) {
     __bindLuckCharmButton(itemList);
     __bindDontForgetMeButton(itemList);
     __bindMagicBallButton(itemList);
+    __bindSetButton(itemList, "A", config_a);
     __bindSearchButton();
     __bindSendButton();
     __bindRefreshButton();
 
     // 渲染并且绑定可以出售的装备
-    const credential = page.generateCredential();
     const request = credential.asRequest();
     request["con_str"] = "50";
     request["mode"] = "ARM_SHOP";
@@ -455,6 +471,27 @@ function __bindMagicBallButton(itemList) {
     });
 }
 
+function __bindSetButton(itemList, setId, setConfig) {
+    const buttonId = "setButton_" + setId;
+    if ($("#" + buttonId).prop("disabled")) {
+        return;
+    }
+    $("#" + buttonId).click(function () {
+        const set = new item.EquipmentSet();
+        set.initialize();
+
+        set.weaponName = setConfig["weaponName"];
+        set.armorName = setConfig["armorName"];
+        set.accessoryName = setConfig["accessoryName"];
+
+        const credential = page.generateCredential();
+        item.findAndUseEquipmentSet(credential, itemList, set)
+            .then(() => {
+                doRefresh(credential);
+            });
+    });
+}
+
 function __bindSearchButton() {
     $("#searchButton").click(function () {
         let receiver = $("#receiver").val();
@@ -612,4 +649,24 @@ function __bindConsecrateButton() {
                     });
             });
     });
+}
+
+export function __loadEquipmentSet_A(id) {
+    const s = storage.getString("_pa_019_" + id);
+    if (s === "") {
+        const value = {};
+        value["weaponName"] = "NONE";
+        value["armorName"] = "NONE";
+        value["accessoryName"] = "NONE";
+        return value;
+    } else {
+        return JSON.parse(s);
+    }
+}
+
+function __isSetConfigAvailable(config) {
+    const a = config["weaponName"];
+    const b = config["armorName"];
+    const c = config["accessoryName"];
+    return (a !== undefined && a !== "NONE") || (b !== undefined && b !== "NONE") || (c !== undefined && c !== "NONE");
 }

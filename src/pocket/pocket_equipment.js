@@ -630,11 +630,11 @@ export async function takeOutFromTreasureBag(credential, indexList) {
                 request["mode"] = "GETOUTBAG";
                 for (const index of indexList) {
                     request["item" + index] = index;
-                    network.sendPostRequest("mydata.cgi", request, function (html) {
-                        message.processResponseHTML(html);
-                        resolve();
-                    });
                 }
+                network.sendPostRequest("mydata.cgi", request, function (html) {
+                    message.processResponseHTML(html);
+                    resolve();
+                });
             }
         });
     };

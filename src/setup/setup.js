@@ -107,8 +107,8 @@ export function getBattleDepositButtonText() {
     return storage.getString("_pa_018");
 }
 
-export function loadEquipmentSetA() {
-    const s = storage.getString("_pa_019");
+export function loadEquipmentSetA(id) {
+    const s = storage.getString("_pa_019_" + id);
     if (s === "") {
         const value = {};
         value["weaponName"] = "NONE";
