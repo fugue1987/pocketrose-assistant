@@ -24,6 +24,7 @@ import * as s017 from "./setup_017";
 import * as s018 from "./setup_018";
 import * as s019 from "./setup_019";
 import * as s020 from "./setup_020";
+import * as s021 from "./setup_021";
 
 export function isPokemonWikiEnabled() {
     return storage.getBoolean("_pa_001");
@@ -281,7 +282,8 @@ const setupItems = [
     new s017.SetupItem(),
     new s018.SetupItem(),
     new s019.SetupItem(),
-    new s020.SetupItem()
+    new s020.SetupItem(),
+    new s021.SetupItem()
 ];
 
 function doRender(credential) {
