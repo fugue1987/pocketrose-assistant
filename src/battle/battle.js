@@ -69,6 +69,10 @@ export function __battle(htmlText) {
     if (buttonText !== "") {
         $("#returnButton").val(buttonText);
     }
+    buttonText = setup.getBattleLodgeButtonText();
+    if (buttonText !== "") {
+        $("#innButton").val(buttonText);
+    }
 
     // 返回更新按钮不再需要
     $('#updateButton').parent().remove();
@@ -82,12 +86,6 @@ export function __battle(htmlText) {
     $('#bankButton').parent().prepend('<input type="hidden" name="azukeru" value="all">');
     //$('#bankButton').attr('value', __cookie_getDepositButtonText());
     $('input[value="BANK"]').attr('value', 'BANK_SELL');
-
-    // 修改返回住宿按钮
-    //$('#innButton').attr('value', __cookie_getLodgeButtonText());
-
-    // 修改返回按钮
-    //$('#returnButton').attr('value', __cookie_getReturnButtonText());
 
     var resultText = $('#ueqtweixin').text();
     // 耐久度初始值10000以下的最大的质数，表示没有发现回血道具

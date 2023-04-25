@@ -17,6 +17,7 @@ import * as s012 from "./setup_012";
 import * as s013 from "./setup_013";
 import * as s014 from "./setup_014";
 import * as s015 from "./setup_015";
+import * as s016 from "./setup_016";
 
 export function isPokemonWikiEnabled() {
     return storage.getBoolean("_pa_001");
@@ -87,6 +88,10 @@ export function isDisableCareerEntrance(id) {
 
 export function getBattleReturnButtonText() {
     return storage.getString("_pa_015");
+}
+
+export function getBattleLodgeButtonText() {
+    return storage.getString("_pa_016");
 }
 
 export class PersonalSetup {
@@ -192,7 +197,8 @@ const setupItems = [
     new s012.SetupItem(),
     new s013.SetupItem(),
     new s014.SetupItem(),
-    new s015.SetupItem()
+    new s015.SetupItem(),
+    new s016.SetupItem()
 ];
 
 function doRender(credential) {

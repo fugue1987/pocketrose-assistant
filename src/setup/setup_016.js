@@ -9,8 +9,8 @@ export class SetupItem {
 
 }
 
-const _id = "015";
-const _name = "战斗的返回台词";
+const _id = "016";
+const _name = "战斗的住宿台词";
 const _key = "_pa_" + _id;
 
 function doRender() {
