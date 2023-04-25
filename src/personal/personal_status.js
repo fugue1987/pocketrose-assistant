@@ -92,7 +92,15 @@ function doRender() {
             }
         }
         if (text === "额外RP") {
-            const additionalRP = parseInt($(td).next().text());
+            let additionalRP = 0;
+            const s = $(td).next().text();
+            if (s.includes(" + ")) {
+                const p1 = util.substringBefore(s, " + ");
+                const p2 = util.substringAfter(s, " + ");
+                additionalRP = parseInt(p1) + parseInt(p2);
+            } else {
+                additionalRP = parseInt(s);
+            }
             if (additionalRP >= 1000) {
                 $(td).next().css("color", "red");
                 $(td).next().css("font-weight", "bold");
