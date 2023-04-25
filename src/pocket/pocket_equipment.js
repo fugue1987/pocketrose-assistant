@@ -722,7 +722,7 @@ function __useEquipmentSet(credential, set, resolve) {
         request["item" + set.accessoryIndex] = set.accessoryIndex;
     }
     if (count === 0) {
-        message.publishMessageBoard("没有找到对应的装备，忽略。");
+        message.publishMessageBoard("没有找到对应的装备或者正在装备中，忽略。");
         resolve();
     } else {
         network.sendPostRequest("mydata.cgi", request, function (html) {
