@@ -28,6 +28,7 @@ import * as s021 from "./setup_021";
 import * as s022 from "./setup_022";
 import * as s023 from "./setup_023";
 import * as s024 from "./setup_024";
+import * as s025 from "./setup_025";
 
 export function isPokemonWikiEnabled() {
     return storage.getBoolean("_pa_001");
@@ -189,6 +190,18 @@ export function getBattleHarvestPrompt() {
     }
 }
 
+export function getNormalBattlePrompt() {
+    const s = storage.getString("_pa_025");
+    if (s === "") {
+        const value = {};
+        value["person"] = "NONE";
+        value["text"] = "";
+        return value;
+    } else {
+        return JSON.parse(s);
+    }
+}
+
 export class PersonalSetup {
 
     process() {
@@ -327,7 +340,8 @@ const setupItems = [
     new s021.SetupItem(),
     new s022.SetupItem(),
     new s023.SetupItem(),
-    new s024.SetupItem()
+    new s024.SetupItem(),
+    new s025.SetupItem()
 ];
 
 function doRender(credential) {
