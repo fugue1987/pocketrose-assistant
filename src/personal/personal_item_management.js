@@ -268,6 +268,10 @@ function doRender(itemList) {
     if (!__isSetConfigAvailable(config_d)) {
         $("#setButton_D").prop("disabled", true);
     }
+    const config_e = setup.loadEquipmentSet_E(credential.id);
+    if (!__isSetConfigAvailable(config_e)) {
+        $("#setButton_E").prop("disabled", true);
+    }
 
     // 绑定点击事件
     __bindUseButton();
@@ -282,6 +286,7 @@ function doRender(itemList) {
     __bindSetButton(itemList, "B", config_b);
     __bindSetButton(itemList, "C", config_c);
     __bindSetButton(itemList, "D", config_d);
+    __bindSetButton(itemList, "E", config_e);
     __bindSearchButton();
     __bindSendButton();
     __bindRefreshButton();

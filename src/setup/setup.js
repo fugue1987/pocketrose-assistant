@@ -26,6 +26,7 @@ import * as s019 from "./setup_019";
 import * as s020 from "./setup_020";
 import * as s021 from "./setup_021";
 import * as s022 from "./setup_022";
+import * as s023 from "./setup_023";
 
 export function isPokemonWikiEnabled() {
     return storage.getBoolean("_pa_001");
@@ -151,6 +152,19 @@ export function loadEquipmentSet_C(id) {
 
 export function loadEquipmentSet_D(id) {
     const s = storage.getString("_pa_022_" + id);
+    if (s === "") {
+        const value = {};
+        value["weaponName"] = "NONE";
+        value["armorName"] = "NONE";
+        value["accessoryName"] = "NONE";
+        return value;
+    } else {
+        return JSON.parse(s);
+    }
+}
+
+export function loadEquipmentSet_E(id) {
+    const s = storage.getString("_pa_023_" + id);
     if (s === "") {
         const value = {};
         value["weaponName"] = "NONE";
@@ -298,7 +312,8 @@ const setupItems = [
     new s019.SetupItem(),
     new s020.SetupItem(),
     new s021.SetupItem(),
-    new s022.SetupItem()
+    new s022.SetupItem(),
+    new s023.SetupItem()
 ];
 
 function doRender(credential) {
