@@ -644,9 +644,7 @@ export async function takeOutFromTreasureBag(credential, indexList) {
 export async function findAndUseEquipmentSet(credential, itemList, set) {
     const action = (credential, itemList, set) => {
         return new Promise(resolve => {
-            console.log(JSON.stringify(set));
             set = __scanEquipmentSet(itemList, set);
-            console.log(JSON.stringify(set));
             // 在自身完成了检索
             if (!set.isAllFound && set.treasureBagIndex !== undefined) {
                 // 没有找全，有百宝袋，进继续找。
@@ -655,7 +653,6 @@ export async function findAndUseEquipmentSet(credential, itemList, set) {
                         const candidateIndexList = [];
                         if (set.weaponName !== undefined && set.weaponIndex === undefined) {
                             for (const bit of bagItemList.asList()) {
-                                console.log(bit.fullName);
                                 if (bit.isWeapon && bit.fullName === set.weaponName) {
                                     message.publishMessageBoard("在百宝袋中找到了武器：" + bit.nameHTML);
                                     candidateIndexList.push(bit.index);

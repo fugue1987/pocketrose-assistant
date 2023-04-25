@@ -27,7 +27,6 @@ function doRender() {
 
     let value;
     const s = storage.getString(_key);
-    console.log("load: " + s);
     if (s === "") {
         value = {};
         value["person"] = "NONE";
@@ -69,7 +68,6 @@ function __doSaveSetupItem() {
     const value = {};
     value["person"] = person;
     value["text"] = text;
-    console.log(JSON.stringify(value));
     storage.set(_key, JSON.stringify(value));
     message.publishMessageBoard("<b style='color:red'>" + _name + "</b>已经设置。");
     $("#refreshButton").trigger("click");
