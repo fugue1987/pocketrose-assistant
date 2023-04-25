@@ -77,6 +77,10 @@ export function __battle(htmlText) {
     if (buttonText !== "") {
         $("#blacksmithButton").val(buttonText);
     }
+    buttonText = setup.getBattleDepositButtonText();
+    if (buttonText !== "") {
+        $("#bankButton").val(buttonText);
+    }
 
     // 返回更新按钮不再需要
     $('#updateButton').parent().remove();
