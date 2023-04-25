@@ -107,6 +107,19 @@ export function getBattleDepositButtonText() {
     return storage.getString("_pa_018");
 }
 
+export function loadEquipmentSetA() {
+    const s = storage.getString("_pa_019");
+    if (s === "") {
+        const value = {};
+        value["weaponName"] = "NONE";
+        value["armorName"] = "NONE";
+        value["accessoryName"] = "NONE";
+        return value;
+    } else {
+        return JSON.parse(s);
+    }
+}
+
 export class PersonalSetup {
 
     process() {
