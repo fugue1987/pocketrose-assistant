@@ -43,6 +43,7 @@ function doProcess() {
         }
 
         if (!$("#townTaxButton").prop("disabled")) {
+            $("#townTaxButton").attr("tabIndex", -1);
             const townId = $("input:hidden[name='townid']").val();
             __bindTownTaxButton(townId);
         }
