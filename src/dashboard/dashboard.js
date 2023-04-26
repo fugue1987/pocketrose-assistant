@@ -19,7 +19,7 @@ export class TownDashboardProcessor {
         page2.removeGoogleAnalyticsScript();
 
         $("input:submit[value='更新']").attr("id", "refreshButton");
-
+        $("#refreshButton").attr("tabIndex", 1);
         $("input:text").attr("id", "messageInputText");
 
         const credential = page2.generateCredential();
