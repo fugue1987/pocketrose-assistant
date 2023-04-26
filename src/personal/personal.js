@@ -9,6 +9,7 @@ import * as personal_pet_management from "./personal_pet_management";
 import {PersonalCareerManagement} from "./personal_career_management";
 import * as setup from "../setup/setup";
 import * as page from "../common/common_page";
+import {PersonalRoleSwitched} from "./personal_role_switched";
 
 export class PersonalRequestInterceptor {
 
@@ -60,6 +61,8 @@ export class PersonalRequestInterceptor {
                 if (setup.isCareerManagementUIEnabled()) {
                     new PersonalCareerManagement().process();
                 }
+            } else if (pageText.includes("切换了分身")) {
+                new PersonalRoleSwitched().process();
             } else if (pageText.includes("给其他人发送消息")) {
                 // 助手设置
                 new setup.PersonalSetup().process();

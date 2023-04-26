@@ -15,4 +15,9 @@ export class PersonalRoleSwitched {
 }
 
 function doProcess() {
+    $("input:submit[value='返回城市']").attr("id", "returnButton");
+    $("#returnButton").val("返回装备管理");
+    $("#returnButton").attr("tabIndex", 1);
+    $("form[action='status.cgi']").attr("action", "mydata.cgi");
+    $("input:hidden[value='STATUS']").val("USE_ITEM");
 }
