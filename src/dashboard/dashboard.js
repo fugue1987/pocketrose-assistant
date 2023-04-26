@@ -14,6 +14,9 @@ export class TownDashboardProcessor {
     }
 
     process() {
+        page2.removeUnusedHyperLinks();
+        page2.removeGoogleAnalyticsScript();
+
         $("input:text").attr("id", "messageInputText");
 
         const credential = page2.generateCredential();
