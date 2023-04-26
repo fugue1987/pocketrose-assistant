@@ -11,7 +11,7 @@ import * as network from "../common/common_network";
 import * as page from "../common/common_page";
 import * as util from "../common/common_util";
 import * as bank from "../pocket/pocket_bank";
-import * as item from "../pocket/pocket_item";
+import * as item from "../pocket/pocket_equipment";
 import * as merchandise from "../pocket/pocket_merchandise";
 import * as service from "../pocket/pocket_service";
 import * as user from "../pocket/pocket_user";

@@ -12,7 +12,7 @@ import * as network from "../common/common_network";
 import * as user from "../pocket/pocket_user";
 import * as service from "../pocket/pocket_service";
 import {calculateCashDifferenceAmount, depositIntoTownBank, withdrawFromTownBank} from "../pocket/pocket_service";
-import * as item from "../pocket/pocket_item";
+import * as item from "../pocket/pocket_equipment";
 
 export class PersonalPetManagement {
     process() {

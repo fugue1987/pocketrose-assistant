@@ -14,6 +14,11 @@ export class TownDashboardProcessor {
     }
 
     process() {
+        page2.removeUnusedHyperLinks();
+        page2.removeGoogleAnalyticsScript();
+
+        $("input:text").attr("id", "messageInputText");
+
         const credential = page2.generateCredential();
         const preference = setup.getBattlePlacePreference(credential.id);
         let count = 0;
@@ -31,11 +36,15 @@ export class TownDashboardProcessor {
         }
         if (count === 1) {
             // 只设置了一处战斗场所偏好
-            let formBattle = $("form[action='battle.cgi'");
+            let formBattle = $("form[action='battle.cgi']");
             let selectBattle = formBattle.find('select[name="level"]');
             let btnBattle = formBattle.parent().next().find('input');
             let inputDigits = '';
             $(document).off('keydown.city').on('keydown.city', function (e) {
+                if ($("#messageInputText:focus").length > 0) {
+                    // 当前的焦点在消息框，禁用按键辅助
+                    return;
+                }
                 const key = e.key;
                 if (!isNaN(parseInt(key))) {
                     inputDigits += key;
@@ -331,6 +340,28 @@ export class TownDashboardProcessor {
                     return name + "(" + unit + ")" + "&nbsp;&nbsp;&nbsp;" + battleCount + "战";
                 }
             });
+
+        // 如果满级并且没有关闭转职入口，则战斗前标签用红色显示
+        if (level === 150) {
+            const credential = page2.generateCredential();
+            if (!setup.isDisableCareerEntrance(credential.id)) {
+                $("th:contains('训练·战斗')")
+                    .filter(function () {
+                        return $(this).text() === "训练·战斗";
+                    })
+                    .css("color", "red");
+            }
+        }
+
+        // 枫丹不显示收益
+        if ($("body:first").text().includes("原帝国冬都，又名白露城，号称四百年无战之都。大陆联合商会所在地，无数传说的源头，号称大冒险大恋爱的起点。")) {
+            $("th:contains('收益')")
+                .filter(function () {
+                    return $(this).text() === "收益";
+                })
+                .next()
+                .text("-");
+        }
     }
 }
 

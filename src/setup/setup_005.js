@@ -38,6 +38,7 @@ function __doGenerateSetupItem() {
     selection += "<option class='Class_" + _id + "' value='2'>2战一存</option>";
     selection += "<option class='Class_" + _id + "' value='5'>5战一存</option>";
     selection += "<option class='Class_" + _id + "' value='10'>10战一存</option>";
+    selection += "<option class='Class_" + _id + "' value='20'>20战一存</option>";
     selection += "</select>";
     return selection;
 }

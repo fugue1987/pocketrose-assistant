@@ -4,12 +4,13 @@
  * ============================================================================
  */
 
+import * as setup from "../setup/setup";
 import * as network from "../common/common_network";
 import * as user from "../pocket/pocket_user";
 import * as constant from "../common/common_pocket";
 import * as message from "../common/common_message";
 import * as page from "../common/common_page";
-import * as item from "../pocket/pocket_item";
+import * as item from "../pocket/pocket_equipment";
 import {calculateCashDifferenceAmount, depositIntoTownBank, withdrawFromTownBank} from "../pocket/pocket_service";
 
 export class PersonalItemManagement {
@@ -197,10 +198,22 @@ function doRender(itemList) {
     html += "                               <input type='button' class='ItemUIButton' id='treasureBagButton' value='百宝袋'>";
     html += "                               <input type='button' class='ItemUIButton' id='goldenCageButton' value='黄金笼子'>";
     html += "                               <input type='button' class='ItemUIButton' id='putAllIntoBagButton' value='全部入袋'>";
+    html += "                               <input type='button' class='ItemUIButton' id='luckCharmButton' value='千与千寻' style='color:blue'>";
+    html += "                               <input type='button' class='ItemUIButton' id='dontForgetMeButton' value='勿忘我' style='color:red'>";
+    html += "                               <input type='button' class='ItemUIButton' id='magicBallButton' value='魔法使的闪光弹' style='color:green'>";
     html += "                           </td>";
     html += "                       </tr>";
     html += "                   </tbody>";
     html += "               </table>";
+    html += "           </td>";
+    html += "       </tr>";
+    html += "       <tr>";
+    html += "           <td style='background-color:#E8E8D0;text-align:right' colspan='20'>";
+    html += "               <input type='button' class='ItemUIButton' id='setButton_A' value='套装Ａ'>";
+    html += "               <input type='button' class='ItemUIButton' id='setButton_B' value='套装Ｂ'>";
+    html += "               <input type='button' class='ItemUIButton' id='setButton_C' value='套装Ｃ'>";
+    html += "               <input type='button' class='ItemUIButton' id='setButton_D' value='套装Ｄ'>";
+    html += "               <input type='button' class='ItemUIButton' id='setButton_E' value='套装Ｅ'>";
     html += "           </td>";
     html += "       </tr>";
     html += "       <tr>";
@@ -238,18 +251,47 @@ function doRender(itemList) {
         $("#goldenCageButton").css("display", "none");
     }
 
+    const credential = page.generateCredential();
+    const config_a = setup.loadEquipmentSet_A(credential.id);
+    if (!__isSetConfigAvailable(config_a)) {
+        $("#setButton_A").prop("disabled", true);
+    }
+    const config_b = setup.loadEquipmentSet_B(credential.id);
+    if (!__isSetConfigAvailable(config_b)) {
+        $("#setButton_B").prop("disabled", true);
+    }
+    const config_c = setup.loadEquipmentSet_C(credential.id);
+    if (!__isSetConfigAvailable(config_c)) {
+        $("#setButton_C").prop("disabled", true);
+    }
+    const config_d = setup.loadEquipmentSet_D(credential.id);
+    if (!__isSetConfigAvailable(config_d)) {
+        $("#setButton_D").prop("disabled", true);
+    }
+    const config_e = setup.loadEquipmentSet_E(credential.id);
+    if (!__isSetConfigAvailable(config_e)) {
+        $("#setButton_E").prop("disabled", true);
+    }
+
     // 绑定点击事件
     __bindUseButton();
     __bindPutIntoBugButton(itemList);
     __bindTreasureBagButton(treasureBag);
     __bindGoldenCageButton(goldenCage);
     __bindPutAllIntoBagButton(itemList);
+    __bindLuckCharmButton(itemList);
+    __bindDontForgetMeButton(itemList);
+    __bindMagicBallButton(itemList);
+    __bindSetButton(itemList, "A", config_a);
+    __bindSetButton(itemList, "B", config_b);
+    __bindSetButton(itemList, "C", config_c);
+    __bindSetButton(itemList, "D", config_d);
+    __bindSetButton(itemList, "E", config_e);
     __bindSearchButton();
     __bindSendButton();
     __bindRefreshButton();
 
     // 渲染并且绑定可以出售的装备
-    const credential = page.generateCredential();
     const request = credential.asRequest();
     request["con_str"] = "50";
     request["mode"] = "ARM_SHOP";
@@ -410,6 +452,75 @@ function __bindPutAllIntoBagButton(itemList) {
     });
 }
 
+function __bindLuckCharmButton(itemList) {
+    $("#luckCharmButton").click(function () {
+        const set = new item.EquipmentSet();
+        set.initialize();
+        set.accessoryName = "千与千寻";
+        const credential = page.generateCredential();
+        item.findAndUseEquipmentSet(credential, itemList, set)
+            .then(() => {
+                doRefresh(credential);
+            });
+    });
+}
+
+function __bindDontForgetMeButton(itemList) {
+    $("#dontForgetMeButton").click(function () {
+        const set = new item.EquipmentSet();
+        set.initialize();
+        set.accessoryName = "勿忘我";
+        const credential = page.generateCredential();
+        item.findAndUseEquipmentSet(credential, itemList, set)
+            .then(() => {
+                doRefresh(credential);
+            });
+    });
+}
+
+function __bindMagicBallButton(itemList) {
+    $("#magicBallButton").click(function () {
+        const set = new item.EquipmentSet();
+        set.initialize();
+        set.accessoryName = "魔法使的闪光弹";
+        const credential = page.generateCredential();
+        item.findAndUseEquipmentSet(credential, itemList, set)
+            .then(() => {
+                doRefresh(credential);
+            });
+    });
+}
+
+function __bindSetButton(itemList, setId, setConfig) {
+    const buttonId = "setButton_" + setId;
+    if ($("#" + buttonId).prop("disabled")) {
+        return;
+    }
+    $("#" + buttonId).click(function () {
+        const set = new item.EquipmentSet();
+        set.initialize();
+
+        set.weaponName = setConfig["weaponName"];
+        if (setConfig["weaponStar"] !== undefined && setConfig["weaponStar"]) {
+            set.weaponName = "齐心★" + set.weaponName;
+        }
+        set.armorName = setConfig["armorName"];
+        if (setConfig["armorStar"] !== undefined && setConfig["armorStar"]) {
+            set.armorName = "齐心★" + set.armorName;
+        }
+        set.accessoryName = setConfig["accessoryName"];
+        if (setConfig["accessoryStar"] !== undefined && setConfig["accessoryStar"]) {
+            set.accessoryName = "齐心★" + set.accessoryName;
+        }
+
+        const credential = page.generateCredential();
+        item.findAndUseEquipmentSet(credential, itemList, set)
+            .then(() => {
+                doRefresh(credential);
+            });
+    });
+}
+
 function __bindSearchButton() {
     $("#searchButton").click(function () {
         let receiver = $("#receiver").val();
@@ -463,6 +574,7 @@ function __bindSendButton() {
 
 function __bindRefreshButton() {
     $("#refreshButton").click(function () {
+        message.initializeMessageBoard("");
         const credential = page.generateCredential();
         doRefresh(credential);
     });
@@ -567,4 +679,11 @@ function __bindConsecrateButton() {
                     });
             });
     });
+}
+
+function __isSetConfigAvailable(config) {
+    const a = config["weaponName"];
+    const b = config["armorName"];
+    const c = config["accessoryName"];
+    return (a !== undefined && a !== "NONE") || (b !== undefined && b !== "NONE") || (c !== undefined && c !== "NONE");
 }

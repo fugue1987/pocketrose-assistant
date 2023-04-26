@@ -2,14 +2,21 @@ import * as util from "./common_util";
 
 export const DOMAIN = "https://pocketrose.itsns.net.cn/pocketrose";
 
-const POCKET_NPC_IMAGES = {
+export const POCKET_NPC_IMAGES = {
     "武器屋老板娘": DOMAIN + "/image/etc/27.gif",
     "客栈老板娘": DOMAIN + "/image/etc/30.gif",
 
+    "夜三": DOMAIN + "/image/head/1117.gif",
     "花子": DOMAIN + "/image/head/1126.gif",
-    "骷髅": DOMAIN + "/image/head/1160.gif",
-    "夜九年": DOMAIN + "/image/head/1561.gif",
+    "骨头": DOMAIN + "/image/head/1160.gif",
+    "七七": DOMAIN + "/image/head/1368.gif",
+    "夜九": DOMAIN + "/image/head/1561.gif",
+    "路路": DOMAIN + "/image/head/2201.gif",
     "饭饭": DOMAIN + "/image/head/3139.gif",
+    "亲戚": DOMAIN + "/image/head/3188.gif",
+    "莫莫": DOMAIN + "/image/head/4200.gif",
+    "青鸟": DOMAIN + "/image/head/7184.gif",
+    "末末": DOMAIN + "/image/head/8173.gif",
     "白皇": DOMAIN + "/image/head/11134.gif"
 };
 
@@ -482,11 +489,11 @@ export function isUnavailableTreasureHintMap(x, y) {
 }
 
 export const NPC_DEFINITION = {
-    '夜九年': {
+    '夜九': {
         'image': OLD_DOMAIN + '/image/head/1561.gif',
         'intro': ''
     },
-    '夜苍凉': {
+    '夜三': {
         'image': OLD_DOMAIN + '/image/head/1117.gif',
         'intro': ''
     },
@@ -548,8 +555,8 @@ export class NPC {
 }
 
 const NPCS = {
-    "夜九年": new NPC("夜九年", "1561"),
-    "夜苍凉": new NPC("夜苍凉", "1117"),
+    "夜九": new NPC("夜九", "1561"),
+    "夜三": new NPC("夜三", "1117"),
     "青鸟": new NPC("青鸟", "7184"),
     "末末": new NPC("末末", "8173"),
     "白皇": new NPC("白皇", "11134"),

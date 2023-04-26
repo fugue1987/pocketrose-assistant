@@ -5,7 +5,7 @@
  */
 
 import * as page from "../common/common_page";
-import * as item from "../pocket/pocket_item";
+import * as item from "../pocket/pocket_equipment";
 
 export class CastleWarehouse {
 

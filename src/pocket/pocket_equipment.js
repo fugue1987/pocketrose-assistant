@@ -1,17 +1,11 @@
 /**
  * ============================================================================
  * [ 口 袋 装 备 通 用 模 块 ]
- * ----------------------------------------------------------------------------
- * 1. 装备通用数据结构
- * 2. 解析装备管理界面的装备数据
- * 3. 解析百宝袋的装备数据
- * 4. 解析武器屋的装备数据
- * 5. 解析防具屋的装备数据
- * 6. 解析饰品屋的装备数据
- * 7. 解析物品屋的装备数据
  * ============================================================================
  */
 
+import * as message from "../common/common_message";
+import * as network from "../common/common_network";
 import * as util from "../common/common_util";
 import * as page from "../common/common_page";
 import * as pocket from "../common/common_pocket";
@@ -240,6 +234,14 @@ export class PocketItem {
     get isProhibitSellingItem() {
         return this.using || pocket.isProhibitSellingItem(this.name);
     }
+
+    get fullName() {
+        if (this.star) {
+            return "齐心★" + this.name;
+        } else {
+            return this.name;
+        }
+    }
 }
 
 /**
@@ -255,6 +257,10 @@ export class PocketItemList {
 
     push(item) {
         this.#itemList.push(item);
+    }
+
+    size() {
+        return this.asList().length;
     }
 
     /**
@@ -293,6 +299,45 @@ export class PocketItemList {
             }
         }
         return undefined;
+    }
+}
+
+/**
+ * 装备套装的数据结构（不是指口袋里面的套装，而是武器、防具、饰品组成的套装）
+ */
+export class EquipmentSet {
+    weaponName;
+    weaponIndex;
+    weaponUsing;
+    armorName;
+    armorIndex;
+    armorUsing;
+    accessoryName;
+    accessoryIndex;
+    accessoryUsing;
+    treasureBagIndex;
+
+    initialize() {
+        this.weaponName = undefined;
+        this.weaponIndex = undefined;
+        this.weaponUsing = undefined;
+        this.armorName = undefined;
+        this.armorIndex = undefined;
+        this.armorUsing = undefined;
+        this.accessoryName = undefined;
+        this.accessoryIndex = undefined;
+        this.accessoryUsing = undefined;
+        this.treasureBagIndex = undefined;
+    }
+
+    get isAllFound() {
+        if (this.weaponName !== undefined && this.weaponIndex === undefined) {
+            return false;
+        }
+        if (this.armorName !== undefined && this.armorIndex === undefined) {
+            return false;
+        }
+        return !(this.accessoryName !== undefined && this.accessoryIndex === undefined);
     }
 }
 
@@ -484,69 +529,6 @@ export function parseWeaponStoreItemList(html) {
 }
 
 /**
- * 解析防具店的装备（与武器店数据保持一致）
- * @param html
- * @returns {PocketItemList}
- */
-export function parseArmorStoreItemList(html) {
-    return parseWeaponStoreItemList(html);
-}
-
-/**
- * 解析饰品店的装备（与武器店数据保持一致）
- * @param html
- * @returns {PocketItemList}
- */
-export function parseAccessoryStoreItemList(html) {
-    return parseWeaponStoreItemList(html);
-}
-
-/**
- * 解析物品店的装备
- * @param pageHTML
- * @returns {PocketItemList}
- */
-export function parseItemStoreItemList(pageHTML) {
-    const itemList = new PocketItemList();
-    const table = $(pageHTML).find("input:radio:first").closest("table");
-    $(table).find("input:radio").each(function (_idx, radio) {
-        const c1 = $(radio).parent();
-        const c2 = $(c1).next();
-        const c3 = $(c2).next();
-        const c4 = $(c3).next();
-        const c5 = $(c4).next();
-        const c6 = $(c5).next();
-        const c7 = $(c6).next();
-        const c8 = $(c7).next();
-
-        const item = new PocketItem();
-        item.index = parseInt($(radio).val());
-        item.selectable = !$(radio).prop("disabled");
-        item.using = ($(c2).text() === "★");
-        let s = $(c3).text();
-        if (s.startsWith("齐心★")) {
-            item.star = true;
-            item.name = util.substringAfter(s, "齐心★");
-        } else {
-            item.star = false;
-            item.name = s;
-        }
-        item.nameHTML = $(c3).html();
-        item.category = $(c4).text();
-        item.power = parseInt($(c5).text());
-        item.weight = parseInt($(c6).text());
-        s = $(c7).text();
-        item.endure = parseInt(util.substringBeforeSlash(s));
-        item.maxEndure = parseInt(util.substringAfterSlash(s));
-        item.price = parseInt(util.substringBefore($(c8).text(), " "));
-        item.priceHTML = $(c8).html();
-
-        itemList.push(item);
-    });
-    return itemList;
-}
-
-/**
  * 从城堡仓库页面解析仓库里面的所有装备。
  * @param pageHTML
  * @returns {PocketItemList}
@@ -609,9 +591,176 @@ export function parseCastleWarehouseItemList(pageHTML) {
     return itemList;
 }
 
+/**
+ * Open treasure bag and return parsed equipments in the bag.
+ * @param credential
+ * @param treasureBagIndex
+ * @returns {Promise<PocketItemList>}
+ */
+export async function openTreasureBag(credential, treasureBagIndex) {
+    const action = (credential, treasureBagIndex) => {
+        return new Promise(resolve => {
+            const request = credential.asRequest();
+            request["chara"] = "1";
+            request["item" + treasureBagIndex] = treasureBagIndex;
+            request["mode"] = "USE";
+            network.sendPostRequest("mydata.cgi", request, function (html) {
+                const itemList = parseTreasureBagItemList(html);
+                message.publishMessageBoard("你打开了百宝袋，并检索到" + itemList.size() + "件装备。")
+                resolve(itemList);
+            });
+        });
+    };
+    return await action(credential, treasureBagIndex);
+}
+
+/**
+ * Take out equipments from treasure bag.
+ * @param credential
+ * @param indexList
+ * @returns {Promise<void>}
+ */
+export async function takeOutFromTreasureBag(credential, indexList) {
+    const action = (credential, indexList) => {
+        return new Promise(resolve => {
+            if (indexList === undefined || indexList === null || indexList.length === 0) {
+                resolve();
+            } else {
+                const request = credential.asRequest();
+                request["mode"] = "GETOUTBAG";
+                for (const index of indexList) {
+                    request["item" + index] = index;
+                }
+                network.sendPostRequest("mydata.cgi", request, function (html) {
+                    message.processResponseHTML(html);
+                    resolve();
+                });
+            }
+        });
+    };
+    return await action(credential, indexList);
+}
+
+export async function findAndUseEquipmentSet(credential, itemList, set) {
+    const action = (credential, itemList, set) => {
+        return new Promise(resolve => {
+            set = __scanEquipmentSet(itemList, set);
+            // 在自身完成了检索
+            if (!set.isAllFound && set.treasureBagIndex !== undefined) {
+                // 没有找全，有百宝袋，进继续找。
+                openTreasureBag(credential, set.treasureBagIndex)
+                    .then(bagItemList => {
+                        const candidateIndexList = [];
+                        if (set.weaponName !== undefined && set.weaponIndex === undefined) {
+                            for (const bit of bagItemList.asList()) {
+                                if (bit.isWeapon && bit.fullName === set.weaponName) {
+                                    message.publishMessageBoard("在百宝袋中找到了武器：" + bit.nameHTML);
+                                    candidateIndexList.push(bit.index);
+                                }
+                            }
+                        }
+                        if (set.armorName !== undefined && set.armorIndex === undefined) {
+                            for (const bit of bagItemList.asList()) {
+                                if (bit.isArmor && bit.fullName === set.armorName) {
+                                    message.publishMessageBoard("在百宝袋中找到了防具：" + bit.nameHTML);
+                                    candidateIndexList.push(bit.index);
+                                }
+                            }
+                        }
+                        if (set.accessoryName !== undefined && set.accessoryIndex === undefined) {
+                            for (const bit of bagItemList.asList()) {
+                                if (bit.isAccessory && bit.fullName === set.accessoryName) {
+                                    message.publishMessageBoard("在百宝袋中找到了饰品：" + bit.nameHTML);
+                                    candidateIndexList.push(bit.index);
+                                }
+                            }
+                        }
+                        if (candidateIndexList.length > 0) {
+                            // 在百宝袋中找到了需要的装备，准备拿出来
+                            takeOutFromTreasureBag(credential, candidateIndexList)
+                                .then(() => {
+                                    const request = credential.asRequest();
+                                    request["mode"] = "USE_ITEM";
+                                    network.sendPostRequest("mydata.cgi", request, function (html) {
+                                        const newItemList = parsePersonalItemList(html);
+                                        set = __scanEquipmentSet(newItemList, set);
+                                        __useEquipmentSet(credential, set, resolve);
+                                    });
+                                });
+                        } else {
+                            // 在百宝袋中没有找到需要的装备
+                            __useEquipmentSet(credential, set, resolve);
+                        }
+                    });
+            } else {
+                __useEquipmentSet(credential, set, resolve);
+            }
+        });
+    };
+    return await action(credential, itemList, set);
+}
+
 // ----------------------------------------------------------------------------
 // P R I V A T E   F U N C T I O N S
 // ----------------------------------------------------------------------------
+
+function __useEquipmentSet(credential, set, resolve) {
+    const request = credential.asRequest();
+    request["chara"] = "1";
+    request["mode"] = "USE";
+    let count = 0;
+    if (set.weaponIndex !== undefined && set.weaponUsing !== undefined && !set.weaponUsing) {
+        count++;
+        request["item" + set.weaponIndex] = set.weaponIndex;
+    }
+    if (set.armorIndex !== undefined && set.armorUsing !== undefined && !set.armorUsing) {
+        count++;
+        request["item" + set.armorIndex] = set.armorIndex;
+    }
+    if (set.accessoryIndex !== undefined && set.accessoryUsing !== undefined && !set.accessoryUsing) {
+        count++;
+        request["item" + set.accessoryIndex] = set.accessoryIndex;
+    }
+    if (count === 0) {
+        message.publishMessageBoard("没有找到对应的装备或者正在装备中，忽略。");
+        resolve();
+    } else {
+        network.sendPostRequest("mydata.cgi", request, function (html) {
+            message.processResponseHTML(html);
+            resolve();
+        });
+    }
+}
+
+function __scanEquipmentSet(itemList, set) {
+    for (const it of itemList.asList()) {
+        if (it.isTreasureBag) {
+            set.treasureBagIndex = it.index;
+        }
+        if (set.weaponName !== undefined) {
+            if (it.isWeapon && it.fullName === set.weaponName) {
+                message.publishMessageBoard("在身上找到了武器：" + it.nameHTML);
+                set.weaponIndex = it.index;
+                set.weaponUsing = it.using;
+            }
+        }
+        if (set.armorName !== undefined) {
+            if (it.isArmor && it.fullName === set.armorName) {
+                message.publishMessageBoard("在身上找到了防具：" + it.nameHTML);
+                set.armorIndex = it.index;
+                set.armorUsing = it.using;
+            }
+        }
+        if (set.accessoryName !== undefined) {
+            if (it.isAccessory && it.fullName === set.accessoryName) {
+                message.publishMessageBoard("在身上找到了饰品：" + it.nameHTML);
+                set.accessoryIndex = it.index;
+                set.accessoryUsing = it.using;
+            }
+        }
+    }
+    return set;
+}
 
 function __isAttributeHeavyArmor(name) {
     for (const it of ATTRIBUTE_HEAVY_ARMOR_ITEM_LIST) {

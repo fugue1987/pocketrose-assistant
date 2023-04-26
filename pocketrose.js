@@ -513,11 +513,11 @@ const _ACCESSORY_DICT = [
 ];
 
 const _NPC_DICT = {
-    '夜九年': {
+    '夜九': {
         'image': POCKETROSE_DOMAIN + '/image/head/1561.gif',
         'intro': ''
     },
-    '夜苍凉': {
+    '夜三': {
         'image': POCKETROSE_DOMAIN + '/image/head/1117.gif',
         'intro': ''
     },
@@ -2167,7 +2167,7 @@ function __town_inn(htmlText) {
         }
     });
 
-    __page_constructNpcMessageTable("夜九年");
+    __page_constructNpcMessageTable("夜九");
     __page_writeNpcMessage("驿站试运营中，先把丑话说在前面。<br>");
     __page_writeNpcMessage("你选择我们家驿站服务，我们家免费带你飞。开始旅途后切勿关闭当前页面，这样我们才可以一起浪。<br>" +
         "如果你关闭当前页面则意味着你方毁约，你会处于什么样的位置和状态我们家不会负责。开始旅途后<br>" +
@@ -3389,7 +3389,7 @@ function __personalStatus_cookieManagement(htmlText) {
     $("body:first").html(reformatBodyHtml);
 
     $("input:submit[value='返回城市']").attr("id", "returnButton");
-    __page_constructNpcMessageTable("夜九年");
+    __page_constructNpcMessageTable("夜九");
     __page_writeNpcMessage("在这里我来协助各位维护本机（浏览器）的口袋相关设置：&nbsp;" +
         "<a href='javascript:void(0)' id='listAllEquipment' style='color: gold'><b>选择所有装备</b></a>&nbsp;&nbsp;&nbsp;" +
         "<a href='javascript:void(0)' id='listOwnEquipment' style='color: gold'><b>选择自有装备</b></a>" +
