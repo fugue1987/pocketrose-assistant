@@ -308,8 +308,20 @@ function doProcess() {
         });
     });
     $("#p_1561").dblclick(function () {
-        if ($("#battleFieldSetup").length > 0) {
-            $("#battleFieldSetup").toggle();
+        // Get setup 001-005 status
+        const s1 = $("#Select_001").val();
+        const s2 = $("#Select_002").val();
+        const s3 = $("#Select_003").val();
+        const s4 = $("#Select_004").val();
+        const s5 = $("#Select_005").val();
+        if (s1 === "1" &&
+            s2 === "0.2" &&
+            s3 === "20" &&
+            s4 === "20" &&
+            s5 === "2") {
+            if ($("#battleFieldSetup").length > 0) {
+                $("#battleFieldSetup").toggle();
+            }
         }
     });
 
