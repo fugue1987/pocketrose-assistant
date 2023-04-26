@@ -52,7 +52,7 @@ export class BattleRequestInterceptor {
                 }
                 const imageHTML = common_constant.getNPCImageHTML(person);
                 common_message.createFooterMessageStyleB(imageHTML);
-                common_message.writeFooterMessage(prompt["text"]);
+                common_message.writeFooterMessage($("<td>" + prompt["text"] + "</td>").text());
             }
         }
         __battle(htmlText);
@@ -89,7 +89,7 @@ export class BattleRequestInterceptor {
             for (const it of candidates) {
                 common_message.writeFooterMessage("<b style='font-size:150%'>" + it + "</b><br>");
             }
-            common_message.writeFooterMessage(prompt["text"]);
+            common_message.writeFooterMessage($("<td>" + prompt["text"] + "</td>").text());
         }
     }
 }
