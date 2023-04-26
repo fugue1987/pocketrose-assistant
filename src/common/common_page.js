@@ -4,10 +4,10 @@
  * ============================================================================
  */
 
-import * as util from "./common_util";
 import * as constant from "./common_pocket";
 import {_old_loadNPC} from "./common_pocket";
 import {getTownsAsList} from "../pocket/pocket_town";
+import {Credential} from "./credential";
 
 /**
  * Generate Credential object from current HTML form.
@@ -16,7 +16,7 @@ import {getTownsAsList} from "../pocket/pocket_town";
 export function generateCredential() {
     let id = $("input:hidden[name='id']:first").attr("value");
     let pass = $("input:hidden[name='pass']:first").attr("value");
-    return new util.Credential(id, pass);
+    return new Credential(id, pass);
 }
 
 /**
