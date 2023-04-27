@@ -1,9 +1,9 @@
 import * as message2 from "../common/common_message";
 import * as page2 from "../common/common_page";
-import {_old_createFooterNPC, generateTownSelectionTable} from "../common/common_page";
-import {getTown} from "../pocket/pocket_town";
+import * as town from "../pocket/pocket_town";
 import * as network from "../common/common_network";
 import * as map from "../pocket/pocket_map";
+import * as pocket from "../common/common_pocket";
 
 export class WildPostHouse {
     constructor() {
@@ -27,10 +27,10 @@ export class WildPostHouse {
             "<TD bgcolor=#E8E8D0 colspan=3 id='count_up_timer' style='color: red;text-align: right'>-</TD>" +
             "</TR>"));
 
-        const npc = _old_createFooterNPC("花子");
-        npc.welcome("没、没有想到这么快我们又见面了。这、这次我只能把你带到城门口。<br>");
-        npc.message("<input type='button' id='moveToTown' style='color: blue' value='选择想去哪个城门口'><br>");
-        npc.message(generateTownSelectionTable());
+        const imageHTML = pocket.getNPCImageHTML("花子");
+        message2.writeFooterMessage("没、没有想到这么快我们又见面了。这、这次我只能把你带到城门口。<br>");
+        message2.writeFooterMessage("<input type='button' id='moveToTown' style='color: blue' value='选择想去哪个城门口'><br>");
+        message2.writeFooterMessage(town.generateTownSelectionTableStyleB());
 
         $("#moveToTown").click(function () {
             const townId = $("input:radio[name='townId']:checked").val();
@@ -44,8 +44,8 @@ export class WildPostHouse {
                 $("select[name='mode']").prop("disabled", true);
                 $("table:eq(7)").remove();
 
-                const town = getTown(townId);
-                message2.publishMessageBoard("你设定移动目标为" + town.name + "。");
+                const destinationTown = town.getTown(townId);
+                message2.publishMessageBoard("你设定移动目标为" + destinationTown.name + "。");
 
                 const credential = page2.generateCredential();
                 const request = credential.asRequest();
@@ -53,11 +53,11 @@ export class WildPostHouse {
                 network.sendPostRequest("status.cgi", request, function (html) {
                     const plan = map.initializeMovePlan(html);
                     plan.credential = credential;
-                    plan.destination = town.coordinate;
+                    plan.destination = destinationTown.coordinate;
                     map.executeMovePlan(plan).then(() => {
-                        message2.publishMessageBoard("已经到达" + town.name + "城门口，希望下次再见。");
+                        message2.publishMessageBoard("已经到达" + destinationTown.name + "城门口，希望下次再见。");
                         $("input:submit[value='返回上个画面']").prop("disabled", false);
-                        $("input:submit[value='返回上个画面']").attr("value", town.name + "门口到了");
+                        $("input:submit[value='返回上个画面']").attr("value", destinationTown.name + "门口到了");
                     });
                 });
             }
