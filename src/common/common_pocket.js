@@ -1,6 +1,5 @@
 import * as util from "./common_util";
-
-export const DOMAIN = "https://pocketrose.itsns.net.cn/pocketrose";
+import {DOMAIN} from "./constant";
 
 export const POCKET_NPC_IMAGES = {
     "武器屋老板娘": DOMAIN + "/image/etc/27.gif",

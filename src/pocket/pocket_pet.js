@@ -4,9 +4,9 @@
  * ============================================================================
  */
 
-import * as constant from "../common/common_pocket";
 import * as util from "../common/common_util";
 import * as network from "../common/common_network";
+import {DOMAIN} from "../common/constant";
 
 /**
  * 描述宠物的通用数据结构。
@@ -45,7 +45,7 @@ export class PocketPet {
     code;
 
     get imageHTML() {
-        const src = constant.DOMAIN + "/image/pet/" + this.picture;
+        const src = DOMAIN + "/image/pet/" + this.picture;
         return "<img src='" + src + "' width='64' height='64' alt='" + this.race + "' style='border-width:0'>";
     }
 

@@ -5,7 +5,7 @@
  */
 
 import * as page from "../common/common_page";
-import * as constant from "../common/common_pocket";
+import {DOMAIN} from "../common/constant";
 
 export class TownPetMapHouse {
 
@@ -25,7 +25,7 @@ function doProcess() {
     $("td:parent").each(function (_i, element) {
         const img = $(element).children("img");
         const src = img.attr("src");
-        if (src !== undefined && src.indexOf(constant.DOMAIN + "/image/386/") !== -1) {
+        if (src !== undefined && src.indexOf(DOMAIN + "/image/386/") !== -1) {
             const code = img.attr("alt");
             const count = $(element).next();
 
