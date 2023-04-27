@@ -1,4 +1,4 @@
-import {_old_loadNPC} from "../common/common_pocket";
+import * as pocket from "../common/common_pocket";
 import * as message2 from "../common/common_message";
 import * as util from "../common/common_util";
 import * as page2 from "../common/common_page";
@@ -25,7 +25,8 @@ export class TownGemStore {
         td.attr("id", "messageBoard");
         td.css("color", "white");
 
-        $("img[alt='合成屋']").parent().html(_old_loadNPC("钱小小").imageHTML);
+        const imageHTML = pocket.getNPCImageHTML("武器屋老板娘");
+        $("img[alt='合成屋']").parent().html(imageHTML);
         message2.initializeMessageBoard("砸石头这种事儿，难道不是有手就行的？");
 
         $("input:radio[name='select']").each(function (_idx, radio) {
@@ -89,7 +90,7 @@ export class TownGemStore {
         $("#fusePowerGem").click(function () {
             inst.#prepareFuseGem("威力宝石");
         });
-        $("#npc_1567").dblclick(function () {
+        $("#p_27").dblclick(function () {
             $("#fusePowerGem").toggle();
         });
     }
