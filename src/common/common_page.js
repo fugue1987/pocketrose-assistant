@@ -140,9 +140,6 @@ export function generateTownSelectionTable() {
 
 export function generateTownSelectionTableStyleB() {
     let html = "";
-    // html += "<table style='background-color:#888888;border-width:0;width:100%'>";
-    // html += "<tbody style='background-color:#F8F0E0'>";
-    // html += "<tr><td>";
     html += "<table style='background-color:#888888;width:100%'><tbody style='background-color:#F8F0E0'>";
     html += "<tr>" +
         "<th style='background-color:#E8E8D0'>选择</th>" +
@@ -180,9 +177,6 @@ export function generateTownSelectionTableStyleB() {
     }
 
     html += "</tbody></table>";
-    // html += "</td></tr>";
-    // html += "</tbody>";
-    // html += "</table>";
     html += "<br>";
 
     return html;
