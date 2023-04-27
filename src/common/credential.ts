@@ -3,10 +3,10 @@
  */
 export class Credential {
 
-    #id;
-    #pass;
+    readonly #id;
+    readonly #pass;
 
-    constructor(id, pass) {
+    constructor(id: string, pass: string) {
         this.#id = id;
         this.#pass = pass;
     }
@@ -15,7 +15,7 @@ export class Credential {
      * Get credential id property.
      * @returns {string}
      */
-    get id() {
+    get id(): string {
         return this.#id;
     }
 
@@ -23,7 +23,7 @@ export class Credential {
      * Get credential pass property.
      * @returns {string}
      */
-    get pass() {
+    get pass(): string {
         return this.#pass;
     }
 
