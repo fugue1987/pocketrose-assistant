@@ -1,12 +1,13 @@
 import * as util from "../common/common_util";
 import * as page2 from "../common/common_page";
-import {_old_createFooterNPC, generateTownSelectionTable} from "../common/common_page";
 import * as message2 from "../common/common_message";
+import * as town from "../pocket/pocket_town";
 import {getTown} from "../pocket/pocket_town";
 import {calculateCashDifferenceAmount, depositIntoTownBank, withdrawFromCastleBank} from "../pocket/pocket_service";
 import * as user from "../pocket/pocket_user";
 import * as map from "../pocket/pocket_map";
 import {enterTown, leaveCastle} from "../pocket/pocket_map";
+import * as pocket from "../common/common_pocket";
 
 /**
  * 城堡驿站
@@ -57,11 +58,12 @@ export class CastlePostHouse {
             }
         });
 
-        const npc = _old_createFooterNPC("饭饭");
-        npc.welcome("轮到我啦，上镜+RP，+RP，+RP，重要的事情喊三遍！<br>");
-        npc.message("快看看你想去哪里？<br>");
-        npc.message("<input type='button' id='returnTown' style='color: blue' value='选好后立刻出发'><br>");
-        npc.message(generateTownSelectionTable());
+        const imageHTML = pocket.getNPCImageHTML("饭饭");
+        message2.createFooterMessageStyleA(imageHTML);
+        message2.writeFooterMessage("轮到我啦，上镜+RP，+RP，+RP，重要的事情喊三遍！<br>");
+        message2.writeFooterMessage("快看看你想去哪里？<br>");
+        message2.writeFooterMessage("<input type='button' id='returnTown' style='color: blue' value='选好后立刻出发'><br>");
+        message2.writeFooterMessage(town.generateTownSelectionTableStyleB());
 
         const postHouse = this;
         $("#returnTown").click(function () {

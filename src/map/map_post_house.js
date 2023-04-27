@@ -28,6 +28,7 @@ export class WildPostHouse {
             "</TR>"));
 
         const imageHTML = pocket.getNPCImageHTML("花子");
+        message2.createFooterMessageStyleA(imageHTML);
         message2.writeFooterMessage("没、没有想到这么快我们又见面了。这、这次我只能把你带到城门口。<br>");
         message2.writeFooterMessage("<input type='button' id='moveToTown' style='color: blue' value='选择想去哪个城门口'><br>");
         message2.writeFooterMessage(town.generateTownSelectionTableStyleB());
