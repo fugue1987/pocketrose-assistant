@@ -74,8 +74,6 @@ export function isProhibitSellingItem(name) {
  * ============================================================================
  */
 
-
-export const OLD_DOMAIN = "https://pocketrose.itsns.net.cn/pocketrose";
 export const _CITY_DICT = {
     "1": {
         "name": "贤者之城",
