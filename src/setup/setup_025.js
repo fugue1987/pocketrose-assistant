@@ -46,6 +46,7 @@ function __doGenerateSetupItem() {
     let html = "";
     html += "<select id='Select_" + _id + "'>";
     html += "<option class='option_class_" + _id + "' value='NONE'>禁用</option>";
+    html += "<option class='option_class_" + _id + "' value='SELF'>自己</option>";
     html += "<option class='option_class_" + _id + "' value='RANDOM'>随机</option>";
     const names = Object.keys(POCKET_NPC_IMAGES);
     for (const name of names) {

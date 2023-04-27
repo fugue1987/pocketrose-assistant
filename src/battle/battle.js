@@ -4,6 +4,8 @@
  * ============================================================================
  */
 
+import * as page from "../common/common_page";
+import {findFirstUserImageHTML} from "../common/common_page";
 import * as util from "../common/common_util";
 import * as common_constant from "../common/common_pocket";
 import {POCKET_NPC_IMAGES} from "../common/common_pocket";
@@ -28,18 +30,22 @@ export class BattleRequestInterceptor {
     }
 
     #doProcess() {
-        const htmlText = $("body").text();
+        const pageHTML = page.currentPageHTML();
+        const htmlText = page.currentPageText();
 
         if (htmlText.includes("入手！")) {
             const prompt = setup.getBattleHarvestPrompt();
             if (prompt["person"] !== undefined && prompt["person"] !== "NONE") {
-                this.#processHarvestingIfNecessary(prompt);
+                this.#processHarvestingIfNecessary(pageHTML, prompt);
             }
         } else {
             const prompt = setup.getNormalBattlePrompt();
             if (prompt["person"] !== undefined && prompt["person"] !== "NONE") {
                 let person = prompt["person"];
-                if (person === "RANDOM") {
+                let imageHTML;
+                if (person === "SELF") {
+                    imageHTML = page.findFirstUserImageHTML(pageHTML);
+                } else if (person === "RANDOM") {
                     const names = Object.keys(POCKET_NPC_IMAGES);
                     const persons = [];
                     for (const name of names) {
@@ -49,8 +55,8 @@ export class BattleRequestInterceptor {
                     }
                     const idx = util.getRandomInteger(0, persons.length - 1);
                     person = persons[idx];
+                    imageHTML = common_constant.getNPCImageHTML(person);
                 }
-                const imageHTML = common_constant.getNPCImageHTML(person);
                 common_message.createFooterMessageStyleB(imageHTML);
                 common_message.writeFooterMessage($("<td>" + prompt["text"] + "</td>").text());
             }
@@ -58,7 +64,7 @@ export class BattleRequestInterceptor {
         __battle(htmlText);
     }
 
-    #processHarvestingIfNecessary(prompt) {
+    #processHarvestingIfNecessary(pageHTML, prompt) {
         const candidates = [];
         $("p").each(function (_idx, p) {
             if ($(p).text().includes("入手！")) {
@@ -72,7 +78,10 @@ export class BattleRequestInterceptor {
         });
         if (candidates.length > 0) {
             let person = prompt["person"];
-            if (person === "RANDOM") {
+            let imageHTML;
+            if (person === "SELF") {
+                imageHTML = findFirstUserImageHTML(pageHTML);
+            } else if (person === "RANDOM") {
                 const names = Object.keys(POCKET_NPC_IMAGES);
                 const persons = [];
                 for (const name of names) {
@@ -82,9 +91,8 @@ export class BattleRequestInterceptor {
                 }
                 const idx = util.getRandomInteger(0, persons.length - 1);
                 person = persons[idx];
+                imageHTML = common_constant.getNPCImageHTML(person);
             }
-
-            const imageHTML = common_constant.getNPCImageHTML(person);
             common_message.createFooterMessageStyleB(imageHTML);
             for (const it of candidates) {
                 common_message.writeFooterMessage("<b style='font-size:150%'>" + it + "</b><br>");
