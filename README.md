@@ -1,30 +1,42 @@
 # pocketrose-assistant
 
-pocketrose(某页游)脚本，主要包括调整1-4代宝可梦宠物的中文名等。
+### 功能说明
 
-### 2.0.0.RC1
+#### 战斗部分
 
-1. 底层结构重构，模块化改造。脚本使用npm构建，可阅读源码联系请github。
-2. 移动模块重写，重新抽象移动相关业务逻辑。移动过程中增加计时器。
-3. 消息板模块，解构业务与展现。
-4. 结构重构过程中杂七杂八的修改特别多，不一一列举了。
-5. 武器屋、防具屋、饰品屋、物品屋升级改造。
-6. 运送屋、宠物赠送屋升级改造。
-7. 运送屋目前完全改造成ajax结构。
-8. 城堡提供驿站功能，可回城。
+1. 根据战斗结果的页面分析，推荐后续的行为。为玩家只保留返回、住宿、存钱、修理四选一的按钮。
+2. 战斗后自动页面触底，方便玩家选择。
+3. 战斗如果有入手，在页面最下面显示NPC窗口提示玩家。
 
-### 2.0.0.RC2
+#### 冒险部分
 
-1. 物品装备升级改造中，实现自动取钱祭奠功能。
-2. 物品装备页面可快捷打开百宝袋。
-3. 物品装备页面可快捷打开黄金笼子。
-4. 物品装备页面满级装备加上特殊显示。
-5. 旅途计时器改为倒计时。
+1. 实现自动移动的基础模块，实现在地图两点间移动路径的计算和行动。并提供到达目的地后的回调。
+2. 城市客栈升级客栈+驿站，提供到其他城市和自己城堡的自动移动功能。
+3. 原藏宝图以旧换新升级为冒险家公会，可以指定移动到地图任意坐标。并可以选择自由的1~N张藏宝图，一次移动并探索，全部完成后自动回城。
 
-### 2.0.0.RC3
+#### 管理部分
 
-1. 紧急修复版本：取消一键祭奠的按钮，太危险了。
+1. 装备管理界面UI改造，ajax改造，集成了装备出售、装备发送等功能。
+2. 宠物管理界面UI改造，ajax改造，集成了宠物封印、宠物赠送等功能。
 
-### 2.0.0.RC4
+以上是主要的功能修改，还有很多杂七杂八的增强型修改，就不详细列举了。
 
-1. 提供一键砸光身上所有石头的功能。
+### 篡改猴文件头
+
+```
+// ==UserScript==
+// @name         pocketrose assistant
+// @namespace    https://pocketrose.itsns.net.cn/
+// @description  Intercepts and modifies pocketrose CGI requests
+// @icon         data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==
+// @license      mit
+// @author       xiaohaiz,fugue
+// @version      ${version}
+// @grant        unsafeWindow
+// @match        *://pocketrose.itsns.net.cn/*
+// @require      https://cdn.bootcdn.net/ajax/libs/jquery/3.6.4/jquery.min.js
+// @require      https://cdn.bootcdn.net/ajax/libs/js-cookie/3.0.1/js.cookie.min.js
+// @run-at       document-start
+// @unwrap
+// ==/UserScript==
+```
