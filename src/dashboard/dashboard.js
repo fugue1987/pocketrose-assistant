@@ -7,6 +7,7 @@ import {calculateCashDifferenceAmount, depositIntoTownBank, withdrawFromTownBank
 import {findTownBySecret} from "../pocket/pocket_town";
 import * as setup from "../setup/setup";
 import * as page2 from "../common/common_page";
+import {DashboardTownTax} from "./dashboard_town_tax";
 
 export class TownDashboardProcessor {
 
@@ -17,6 +18,8 @@ export class TownDashboardProcessor {
         page2.removeUnusedHyperLinks();
         page2.removeGoogleAnalyticsScript();
 
+        $("input:submit[value='更新']").attr("id", "refreshButton");
+        $("#refreshButton").attr("tabIndex", 1);
         $("input:text").attr("id", "messageInputText");
 
         const credential = page2.generateCredential();
@@ -185,6 +188,8 @@ export class TownDashboardProcessor {
             .attr("id", "cash_cell");
 
         this.#renderHTML();
+
+        new DashboardTownTax().process();
 
         new PocketEventProcessor().process();
 

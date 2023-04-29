@@ -11,6 +11,7 @@ import {CastleRequestInterceptor} from "./castle/castle";
 import {PersonalRequestInterceptor} from "./personal/personal";
 import {TownRequestInterceptor} from "./town/town";
 import {MapRequestInterceptor} from "./map/map";
+import {InformationRequestInterceptor} from "./information/information";
 
 const CGI_MAPPING = {
     "/battle.cgi": new BattleRequestInterceptor(),
@@ -19,7 +20,8 @@ const CGI_MAPPING = {
     "/town.cgi": new TownRequestInterceptor(),
     "/castlestatus.cgi": new CastleRequestInterceptor(),
     "/castle.cgi": new CastleRequestInterceptor(),
-    "/map.cgi": new MapRequestInterceptor()
+    "/map.cgi": new MapRequestInterceptor(),
+    "/town_print.cgi": new InformationRequestInterceptor()
 };
 
 $(function () {

@@ -1,6 +1,6 @@
+import * as pocket from "../common/common_pocket";
 import {isUnavailableTreasureHintMap} from "../common/common_pocket";
 import * as page2 from "../common/common_page";
-import {_old_createFooterNPC} from "../common/common_page";
 import * as user from "../pocket/pocket_user";
 import {findTownByName, getTown} from "../pocket/pocket_town";
 import * as message2 from "../common/common_message";
@@ -99,8 +99,9 @@ export class TownAdventurerGuild {
         $("input:submit[value='交换']").attr("id", "exchangeButton");
         $("input:submit[value='返回城市']").attr("id", "returnButton");
 
-        const npc = _old_createFooterNPC("花子");
-        npc.welcome("欢、欢、欢迎光临冒险家公会，等等，你这、这是什么表情？你肯定是认错人了，前几天你领薪水后碰、碰到的绝对" +
+        const imageHTML = pocket.getNPCImageHTML("花子");
+        message2.createFooterMessageStyleA(imageHTML);
+        message2.writeFooterMessage("欢、欢、欢迎光临冒险家公会，等等，你这、这是什么表情？你肯定是认错人了，前几天你领薪水后碰、碰到的绝对" +
             "不、不、不是我！[漫长的沉默中] 你、你怎么不相信我的话，人与人之间基本的信、信任呢？[再次漫长的沉默] 算了，你这次要去哪里？" +
             "我免费让人带你过去。你出门去上、上、上马车吧。<br>");
 
@@ -117,16 +118,16 @@ export class TownAdventurerGuild {
             select += "<option value='" + i + "'>" + i + "</option>";
         }
         select += "</select>";
-        npc.message(select);
-        npc.message("<input type='button' id='coach_1' style='color: blue' value='车门上鸢尾兰的纹章熠熠生辉'>");
-        npc.message("<input type='button' id='coach_2' style='color: red' value='车身上剑与盾透露出铁血的气息'>");
-        npc.message("<input type='button' id='coach_3' style='color: black' value='斑驳的车身上隐约可见半拉兔子骷髅的形状'>");
-        npc.message("<div id='player' style='display: none'></div>");
-        npc.message("<div id='townId' style='display: none'></div>");
+        message2.writeFooterMessage(select);
+        message2.writeFooterMessage("<input type='button' id='coach_1' style='color: blue' value='车门上鸢尾兰的纹章熠熠生辉'>");
+        message2.writeFooterMessage("<input type='button' id='coach_2' style='color: red' value='车身上剑与盾透露出铁血的气息'>");
+        message2.writeFooterMessage("<input type='button' id='coach_3' style='color: black' value='斑驳的车身上隐约可见半拉兔子骷髅的形状'>");
+        message2.writeFooterMessage("<div id='player' style='display: none'></div>");
+        message2.writeFooterMessage("<div id='townId' style='display: none'></div>");
         if (mapCount > 0) {
-            npc.message("<br>");
-            npc.message("什、什、什么？？你有藏宝图！要不要去试试手气？在上面选好你想探险的藏宝图。<br>");
-            npc.message("<input type='button' id='treasure' style='color: red' value='带上藏宝图跟上兔子骷髅的脚步'>");
+            message2.writeFooterMessage("<br>");
+            message2.writeFooterMessage("什、什、什么？？你有藏宝图！要不要去试试手气？在上面选好你想探险的藏宝图。<br>");
+            message2.writeFooterMessage("<input type='button' id='treasure' style='color: red' value='带上藏宝图跟上兔子骷髅的脚步'>");
         }
 
         $("#coach_1").prop("disabled", true);

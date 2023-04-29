@@ -1,8 +1,7 @@
 import * as pocket from "../common/common_pocket";
 import * as page2 from "../common/common_page";
-import {generateTownSelectionTableStyleB} from "../common/common_page";
 import * as user from "../pocket/pocket_user";
-import {findTownByName, getTown} from "../pocket/pocket_town";
+import {findTownByName, generateTownSelectionTableStyleB, getTown} from "../pocket/pocket_town";
 import * as castle from "../pocket/pocket_castle";
 import * as message2 from "../common/common_message";
 import * as util from "../common/common_util";
